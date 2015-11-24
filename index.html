@@ -1,0 +1,642 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>xd_xd&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="xd_xd">
+    
+
+    
+    <meta name="description">
+<meta property="og:type" content="website">
+<meta property="og:title" content="xd_xd's blog">
+<meta property="og:url" content="http://stayliv3.github.io/index.html">
+<meta property="og:site_name" content="xd_xd's blog">
+<meta property="og:description">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="xd_xd's blog">
+<meta name="twitter:description">
+
+    
+    <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="xd_xd&#39;s blog" title="xd_xd&#39;s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="xd_xd&#39;s blog">xd_xd&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:stayliv3.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main">
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2015/11/24/hello-world/" title="Hello World" itemprop="url">
+  
+    <h1 itemprop="name">Hello World</h1>
+    
+     
+           <p itemprop="description" >Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the </p>
+        
+    
+    <time datetime="2015-11-24T06:11:19.000Z" itemprop="datePublished">Nov 24 2015</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2015/11/23/华山杯CTF做过的几道题/" title="华山杯CTF做过的几道题" itemprop="url">
+  
+    <h1 itemprop="name">华山杯CTF做过的几道题</h1>
+    
+     
+           <p itemprop="description" >花时间做了几道题，感觉还是有收获的。虽然死亡之ping这些知识点不熟悉，web的python题还是学到了不少知识。
+登录的时候会随机报错。查看返回django的调试模式泄露源码。
+
+通过改变参数多次尝试报错，可以或得部分代码：
+c = json.loads(request.bod</p>
+        
+    
+    <time datetime="2015-11-23T08:04:35.000Z" itemprop="datePublished">Nov 23 2015</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2015/11/16/瞎折腾之sublime插件导入第三方库/" title="瞎折腾之sublime插件导入第三方库" itemprop="url">
+  
+    <h1 itemprop="name">瞎折腾之sublime插件导入第三方库</h1>
+    
+     
+           <p itemprop="description" >花了好几个小时解决了一个问题，走了不少弯路，需要总结分析一下。
+需求只是想用写一个sublime插件来完成一些sql操作。python操作sql，很自然的想用MySQLdb库。但是sublime使用的是自己的python环境，跟系统是隔离的。通过stackoverflow得知基本</p>
+        
+    
+    <time datetime="2015-11-16T08:47:47.000Z" itemprop="datePublished">Nov 16 2015</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2015/11/11/使用docker搭建测试环境/" title="使用docker搭建测试环境" itemprop="url">
+  
+    <h1 itemprop="name">使用docker搭建测试环境</h1>
+    
+     
+           <p itemprop="description" ></p>
+        
+    
+    <time datetime="2015-11-11T08:52:09.000Z" itemprop="datePublished">Nov 11 2015</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2015/11/10/sqlmap-risk-参数/" title="sqlmap risk 参数" itemprop="url">
+  
+    <h1 itemprop="name">sqlmap risk 参数</h1>
+    
+     
+           <p itemprop="description" >测试一个注入点，手工测试验证应该存在注入但是用sqlmap没跑出来。测试发现需要指定risk 3，sqlmap才会使用or语句进行测试，才可以识别出这个注入点。
+python sqlmap.py -u &quot;http://comment.10jqka.com.cn/api/stock</p>
+        
+    
+    <time datetime="2015-11-10T10:26:33.000Z" itemprop="datePublished">Nov 10 2015</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2015/11/03/几个DOM-XSS案例分析/" title="几个DOM XSS案例分析" itemprop="url">
+  
+    <h1 itemprop="name">几个DOM XSS案例分析</h1>
+    
+     
+           <p itemprop="description" >案例一：
+搜索框输入payload，点击搜索的时候触发。利用起来比较鸡肋，一直对dom xss没有仔细分析过，记录一下dom xss的常规分析方法。
+
+在输入框中输入单引号，查看console报错。定位到goPage函数。
+定位到相关代码：
+function getSearchK</p>
+        
+    
+    <time datetime="2015-11-03T07:03:31.000Z" itemprop="datePublished">Nov 3 2015</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2015/10/27/Java-JMX-Server-代码执行漏洞利用及防御/" title="Java JMX Server 代码执行漏洞利用及防御" itemprop="url">
+  
+    <h1 itemprop="name">Java JMX Server 代码执行漏洞利用及防御</h1>
+    
+     
+           <p itemprop="description" >#jmx基本概念官方说法：JMX（Java Management Extensions，即Java管理扩展）是一个为应用程序、设备、系统等植入管理功能的框架。JMX可以跨越一系列异构操作系统平台、系统体系结构和网络传输协议，灵活的开发无缝集成的系统、网络和服务管理应用通常用来监控</p>
+        
+    
+    <time datetime="2015-10-27T07:03:44.000Z" itemprop="datePublished">Oct 27 2015</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2015/10/22/YII应用一个SQL注入分析/" title="Yii应用一个SQL注入分析" itemprop="url">
+  
+    <h1 itemprop="name">Yii应用一个SQL注入分析</h1>
+    
+     
+           <p itemprop="description" >#漏洞发现过程黑盒测试发现。使用工具burpsuite。当在购物车中删除商品时，发送数据包如下：
+POST /cart/miniDel.html HTTP/1.1
+id=219&#39;
+报sql语法错误，经过手工确认可以注入sql语句。
+Exception (Database Exce</p>
+        
+    
+    <time datetime="2015-10-22T06:29:03.000Z" itemprop="datePublished">Oct 22 2015</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2015/10/20/xss工具sleep-puppy手册/" title="xss工具sleep puppy手册" itemprop="url">
+  
+    <h1 itemprop="name">xss工具sleep puppy手册</h1>
+    
+     
+           <p itemprop="description" >sleep puppy是owasp出品的一个XSS工具，官方描述是Sleep Puppy是一个XSS payload管理框架，可以长期的管理，跟踪XSS的传播。
+跟国内的xssme一样，定位于xss的利用和盲打。老外特地提到了盲打这个场景，只是他们换了一个说法，貌似blind x</p>
+        
+    
+    <time datetime="2015-10-20T08:07:54.000Z" itemprop="datePublished">Oct 20 2015</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2015/09/06/part5-通过qemu和ida远程调试设备固件/" title="part5 通过qemu和ida远程调试设备固件" itemprop="url">
+  
+    <h1 itemprop="name">part5 通过qemu和ida远程调试设备固件</h1>
+    
+     
+           <p itemprop="description" >上一篇讲到通过静态分析发现SQL注入漏洞。很多情况下动态分析会方便调试复杂的应用。所以这一篇中会讨论使用qemu和ida搭建动态调试环境的内容。
+我们的目标程序TEW-654TR是小端的MIPS程序，所以要想在我们的主机上执行这个二进制程序的话需要使用模拟器。qemu就是一款优秀</p>
+        
+    
+    <time datetime="2015-09-06T07:18:15.000Z" itemprop="datePublished">Sep 6 2015</time>
+  </a>
+</section>
+
+
+
+
+
+
+
+  <nav id="page-nav" class="clearfix unexpand">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/2/">Next<span></span></a>
+  </nav>
+
+</div>
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/前端安全/" title="前端安全">前端安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/加密解密/" title="加密解密">加密解密<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/古典密码/" title="古典密码">古典密码<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/奇技淫巧/" title="奇技淫巧">奇技淫巧<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>1</sup></a></li>
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统运维/" title="系统运维">系统运维<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/黑盒测试/" title="黑盒测试">黑盒测试<sup>6</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/php/" title="php">php<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/qemu/" title="qemu">qemu<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/sqlmap/" title="sqlmap">sqlmap<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/折腾/" title="折腾">折腾<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcpdump/" title="tcpdump">tcpdump<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/密码学/" title="密码学">密码学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/加密解密/" title="加密解密">加密解密<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ctf/" title="ctf">ctf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/docker/" title="docker">docker<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/php-wdcp/" title="php,wdcp">php,wdcp<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/解包/" title="解包">解包<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/binwalk/" title="binwalk">binwalk<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/hackrf/" title="hackrf">hackrf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/burpsuite/" title="burpsuite">burpsuite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/brupsuite/" title="brupsuite">brupsuite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Yii/" title="Yii">Yii<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://sco4x0.com" target="_blank" title="sco4x0&#39;s blog">sco4x0&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://virusdefender.net" target="_blank" title="virusdefender&#39;s blog">virusdefender&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackersb.cn/" target="_blank" title="Striker&#39;s blog">Striker&#39;s blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Larry Page in Google. <br/>
+			This is my blog,believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2015 
+		
+		<a href="/about" target="_blank" title="xd_xd">xd_xd</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"xdxd"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253479891'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1253479891' type='text/javascript'%3E%3C/script%3E"));</script>
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+ </html>

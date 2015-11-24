@@ -1,0 +1,593 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>xkungfoo2015记录 | xd_xd&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="xd_xd">
+    
+
+    
+    <meta name="description" content="上周去上海参加xkungfoo2015。记录下一些感受。
+近两年议题多跟mobile有关，可见移动安全这个领域的崛起。
+##跨进程域利用内核漏洞提升Android权限 
+虽然不研究linux内核和安卓安全，对linux内核的一些安全机制也仅仅是了解。但是对这个议题的案例还是觉得很有启发。感兴趣的点是攻防对抗的过程和安卓安全策略的设计。类比到熟悉的web领域，很多安全策略，防御机制，绕过方法，权限绕">
+<meta property="og:type" content="article">
+<meta property="og:title" content="xkungfoo2015记录">
+<meta property="og:url" content="http://stayliv3.github.io/2015/04/27/xkungfoo2015记录/index.html">
+<meta property="og:site_name" content="xd_xd's blog">
+<meta property="og:description" content="上周去上海参加xkungfoo2015。记录下一些感受。
+近两年议题多跟mobile有关，可见移动安全这个领域的崛起。
+##跨进程域利用内核漏洞提升Android权限 
+虽然不研究linux内核和安卓安全，对linux内核的一些安全机制也仅仅是了解。但是对这个议题的案例还是觉得很有启发。感兴趣的点是攻防对抗的过程和安卓安全策略的设计。类比到熟悉的web领域，很多安全策略，防御机制，绕过方法，权限绕">
+<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="xkungfoo2015记录">
+<meta name="twitter:description" content="上周去上海参加xkungfoo2015。记录下一些感受。
+近两年议题多跟mobile有关，可见移动安全这个领域的崛起。
+##跨进程域利用内核漏洞提升Android权限 
+虽然不研究linux内核和安卓安全，对linux内核的一些安全机制也仅仅是了解。但是对这个议题的案例还是觉得很有启发。感兴趣的点是攻防对抗的过程和安卓安全策略的设计。类比到熟悉的web领域，很多安全策略，防御机制，绕过方法，权限绕">
+
+    
+    <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="xd_xd&#39;s blog" title="xd_xd&#39;s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="xd_xd&#39;s blog">xd_xd&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:stayliv3.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/04/27/xkungfoo2015记录/" title="xkungfoo2015记录" itemprop="url">xkungfoo2015记录</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
+		
+  <p class="article-time">
+    <time datetime="2015-04-27T02:44:20.000Z" itemprop="datePublished"> 发表于 Apr 27 2015</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			
+		
+		</div>
+		
+		<p>上周去上海参加<a href="http://www.xkungfoo.org/program.html" target="_blank" rel="external">xkungfoo2015</a>。记录下一些感受。</p>
+<p>近两年议题多跟mobile有关，可见移动安全这个领域的崛起。</p>
+<p>##跨进程域利用内核漏洞提升Android权限 </p>
+<p>虽然不研究linux内核和安卓安全，对linux内核的一些安全机制也仅仅是了解。但是对这个议题的案例还是觉得很有启发。感兴趣的点是攻防对抗的过程和安卓安全策略的设计。类比到熟悉的web领域，很多安全策略，防御机制，绕过方法，权限绕过等等，感到从原理上来说都是类似的。不同的可能是这个是linux内核的一个安全机制，web领域可能是浏览器的一个安全策略。但在设计方式和攻防对抗上都有很多相似的地方。</p>
+<p>##打造移动金融核心程序安全流水线</p>
+<p>这个虽然是对<a href="http://www.nagain.com/shop/" target="_blank" rel="external">北京娜迦</a>的广告。但是确实是长见识。看到了在加壳加固领域有这么资深的玩法。商城的服务价格也是非常良心，有机会可以弄个app测试一下。</p>
+<p>##关于Office Word程序的漏洞发掘</p>
+<p>同样不懂漏洞挖掘，不过能做自由职业者，全职的漏洞猎手也是很多同行羡慕的事情啊。听演讲的内容应该是作者做了一个自动化的漏洞fuzz工具。而且漏洞挖掘的方向是一些需要交互才可以利用的word漏洞。这个跟web也很像。目前在web领域需要交互才可以利用的漏洞也不怎么被重视。以前如果想做这样一个系统的话可能会觉得难以完成，看作者这里应该也是利用了很多现有的工具。其实现在觉得有这么多方便的工具，包括开源的代码。个人想做一个系统还是可以实现的，不需要懂每一个细节。也不需要造很多轮子，更好的利用现有工具的功能接纳到自己的体系中，实现自己想要的功能才是正经事。</p>
+<p>##基于Binder调用攻击Android系统服务提权</p>
+<p>这个听的真的不怎么懂。感觉作者说了很多技术细节，函数名之类的。最大的感受就是安卓系统漏洞挖掘好像也没有那么复杂。很多常见的漏洞漏洞是依然存在的。</p>
+<p>##社会工程学攻击的实例化</p>
+<p>p0tt1的内容还是比较期待的，虽然案例都是公开的。相信他那还有很多有意思的案例只是没法公开。社会工程学做到这个程度，总结出来很多成熟的模型，思路也是让人叹为观止。针对社会工程学的防御感觉还是比较困难的一件事情。</p>
+<p>##生物特征识别与智能风险防控</p>
+<p>这个应该算是科普吧。学到了现在生物特征识别的一些基础知识。记得苹果刚出来指纹识别的时候，在支付宝的天下无贼大会上，阿里的人说由于服务端是无法拿到指纹数据的，所以用指纹做支付是一件不靠谱的事，说他们不会用指纹来做支付，因为无法保证安全。可是现在支付宝用指纹做支付了。可能是因为在特定机型，有硬件保证客户端安全，所以实施了这个方案？RSA上好像有演示如何对指纹进行攻击。对业务来说可能是没有绝对的安全存在的，只要风险可以接受就可以做。</p>
+<p>用生物特征替代用户名密码这个方向还是很有意思的。</p>
+<p>##下一代安全移动OS体系及金融支付平台介绍</p>
+<p>其实很多议题名字都是有点高大上了。内容还是比较实在的。<a href="http://sudo-team.com/" target="_blank" rel="external">http://sudo-team.com/</a>  讲了从安卓系统上来看移动安全风险。抛开应用本身，从系统上可以做哪些事情来做到安全。如果安卓的一些设计不够安全，作为甲方做的肯定是从app的设计上来避免这些风险。而这里介绍的是定制安卓的系统，避免这些风险。虽然他们做这个是做一个产品，为某些厂商服务。还是觉得挺长见识，原来从另外一些人的角度，从另一个层面来做这些东西也可以保证安全。</p>
+<p>##移动支付时代的安全</p>
+<p>这个是讲伪基站。虽然这个话题的很多东西其实都知道。但是自己并没有真实的深入追踪过微基站的黑色产业链条。从别人亲身经历的追踪过程，真人讲出来发现的黑产的能力，还是很让人感觉更真切，更真实的感觉到生活中存在的风险。</p>
+<p>总的来说基本就是出来见见世面。期待明年X。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://stayliv3.github.io/2015/04/27/xkungfoo2015记录/" data-title="xkungfoo2015记录 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015/05/06/验证码安全设计/" title="验证码安全设计">
+  <strong>上一篇：</strong><br/>
+  <span>
+  验证码安全设计</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015/04/24/关于密码哈希存储方案的设计/"  title="关于密码哈希存储方案的设计">
+ <strong>下一篇：</strong><br/> 
+ <span>关于密码哈希存储方案的设计
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2015/04/27/xkungfoo2015记录/" data-title="xkungfoo2015记录" data-url="http://stayliv3.github.io/2015/04/27/xkungfoo2015记录/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ 
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/前端安全/" title="前端安全">前端安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/加密解密/" title="加密解密">加密解密<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/古典密码/" title="古典密码">古典密码<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/奇技淫巧/" title="奇技淫巧">奇技淫巧<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>1</sup></a></li>
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统运维/" title="系统运维">系统运维<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/黑盒测试/" title="黑盒测试">黑盒测试<sup>6</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/php/" title="php">php<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/qemu/" title="qemu">qemu<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/sqlmap/" title="sqlmap">sqlmap<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/折腾/" title="折腾">折腾<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcpdump/" title="tcpdump">tcpdump<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/密码学/" title="密码学">密码学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/加密解密/" title="加密解密">加密解密<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ctf/" title="ctf">ctf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/docker/" title="docker">docker<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/php-wdcp/" title="php,wdcp">php,wdcp<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/解包/" title="解包">解包<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/binwalk/" title="binwalk">binwalk<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/hackrf/" title="hackrf">hackrf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/burpsuite/" title="burpsuite">burpsuite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/brupsuite/" title="brupsuite">brupsuite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Yii/" title="Yii">Yii<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://sco4x0.com" target="_blank" title="sco4x0&#39;s blog">sco4x0&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://virusdefender.net" target="_blank" title="virusdefender&#39;s blog">virusdefender&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackersb.cn/" target="_blank" title="Striker&#39;s blog">Striker&#39;s blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Larry Page in Google. <br/>
+			This is my blog,believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2015 
+		
+		<a href="/about" target="_blank" title="xd_xd">xd_xd</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"xdxd"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253479891'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1253479891' type='text/javascript'%3E%3C/script%3E"));</script>
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

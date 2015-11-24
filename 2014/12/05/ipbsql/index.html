@@ -1,0 +1,683 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>IP.Board 3.4.7 SQL注入分析 | xd_xd&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="xd_xd">
+    
+
+    
+    <meta name="description" content="##参考资料http://www.freebuf.com/articles/web/53018.htmlhttp://seclists.org/fulldisclosure/2014/Nov/20
+##代码分析
+根据之前的漏洞分析可知，入口在interface/ipsconnect/ipconnect.php文件。查看这个文件可以得知，这个文件主要定义了一个ipsConnect类，剩余的逻辑如下：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="IP.Board 3.4.7 SQL注入分析">
+<meta property="og:url" content="http://stayliv3.github.io/2014/12/05/ipbsql/index.html">
+<meta property="og:site_name" content="xd_xd's blog">
+<meta property="og:description" content="##参考资料http://www.freebuf.com/articles/web/53018.htmlhttp://seclists.org/fulldisclosure/2014/Nov/20
+##代码分析
+根据之前的漏洞分析可知，入口在interface/ipsconnect/ipconnect.php文件。查看这个文件可以得知，这个文件主要定义了一个ipsConnect类，剩余的逻辑如下：">
+<meta property="og:image" content="http://stayliv3.github.io/images/ipb1.jpg">
+<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="IP.Board 3.4.7 SQL注入分析">
+<meta name="twitter:description" content="##参考资料http://www.freebuf.com/articles/web/53018.htmlhttp://seclists.org/fulldisclosure/2014/Nov/20
+##代码分析
+根据之前的漏洞分析可知，入口在interface/ipsconnect/ipconnect.php文件。查看这个文件可以得知，这个文件主要定义了一个ipsConnect类，剩余的逻辑如下：">
+
+    
+    <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="xd_xd&#39;s blog" title="xd_xd&#39;s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="xd_xd&#39;s blog">xd_xd&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:stayliv3.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2014/12/05/ipbsql/" title="IP.Board 3.4.7 SQL注入分析" itemprop="url">IP.Board 3.4.7 SQL注入分析</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
+		
+  <p class="article-time">
+    <time datetime="2014-12-04T18:03:22.000Z" itemprop="datePublished"> 发表于 Dec 5 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			
+		
+		</div>
+		
+		<p>##参考资料<br><a href="http://www.freebuf.com/articles/web/53018.html" target="_blank" rel="external">http://www.freebuf.com/articles/web/53018.html</a><br><a href="http://seclists.org/fulldisclosure/2014/Nov/20" target="_blank" rel="external">http://seclists.org/fulldisclosure/2014/Nov/20</a></p>
+<p>##代码分析</p>
+<p>根据之前的漏洞分析可知，入口在interface/ipsconnect/ipconnect.php文件。查看这个文件可以得知，这个文件主要定义了一个ipsConnect类，剩余的逻辑如下：</p>
+<pre><code>/**
+ *
+ * Map - can <span class="keyword">modify</span> <span class="keyword">to</span> add additional parameters, but the IPS Community Suite will <span class="keyword">only</span> send the defaults
+ *
+ */
+<span class="variable">$map</span> = <span class="keyword">array</span>(
+    <span class="string">'login'</span>        =&gt; <span class="keyword">array</span>( <span class="string">'idType'</span>, <span class="string">'id'</span>, <span class="string">'password'</span>, <span class="string">'key'</span>, <span class="string">'redirect'</span>, <span class="string">'redirectHash'</span> ),
+    <span class="string">'logout'</span>    =&gt; <span class="keyword">array</span>( <span class="string">'id'</span>, <span class="string">'key'</span>, <span class="string">'redirect'</span>, <span class="string">'redirectHash'</span> ),
+    <span class="string">'register'</span>    =&gt; <span class="keyword">array</span>( <span class="string">'key'</span>, <span class="string">'username'</span>, <span class="string">'displayname'</span>, <span class="string">'password'</span>, <span class="string">'email'</span>, <span class="string">'revalidateurl'</span> ),
+    <span class="string">'cookies'</span>    =&gt; <span class="keyword">array</span>( <span class="string">'data'</span> ),
+    <span class="string">'check'</span>        =&gt; <span class="keyword">array</span>( <span class="string">'key'</span>, <span class="string">'id'</span>, <span class="string">'username'</span>, <span class="string">'displayname'</span>, <span class="string">'email'</span> ),
+    <span class="string">'change'</span>    =&gt; <span class="keyword">array</span>( <span class="string">'id'</span>, <span class="string">'key'</span>, <span class="string">'username'</span>, <span class="string">'displayname'</span>, <span class="string">'email'</span>, <span class="string">'password'</span>, <span class="string">'redirect'</span>, <span class="string">'redirectHash'</span> ),
+    <span class="string">'validate'</span>    =&gt; <span class="keyword">array</span>( <span class="string">'id'</span>, <span class="string">'key'</span> ),
+    <span class="string">'delete'</span>    =&gt; <span class="keyword">array</span>( <span class="string">'id'</span>, <span class="string">'key'</span> )
+    );
+
+/**
+ *
+ * Process Logic - do not <span class="keyword">modify</span>
+ *
+ */ 
+<span class="variable">$ipsConnect</span> = new ipsConnect();
+<span class="keyword">if</span> ( isset( $_REQUEST[<span class="string">'act'</span>] ) and isset( <span class="variable">$map</span>[ $_REQUEST[<span class="string">'act'</span>] ] ) )
+{
+    <span class="variable">$params</span> = array();
+    foreach ( <span class="variable">$map</span>[ $_REQUEST[<span class="string">'act'</span>] ] as <span class="variable">$k</span> )
+    {
+        <span class="variable">$params</span>[ <span class="variable">$k</span> ] = $_REQUEST[ <span class="variable">$k</span> ];
+    }
+
+    call_user_func_array( array( <span class="variable">$ipsConnect</span>, $_REQUEST[<span class="string">'act'</span>] ), <span class="variable">$params</span> );
+}
+
+exit;
+</code></pre><p>$map是定义一个数组，先不管它。后面的逻辑也比较简单，一个主要的知识点就是call_user_func_array的作用。他是调用回调函数，并把一个数组参数作为回调函数的参数。使用示例如下：</p>
+<pre><code>&lt;?php
+<span class="keyword">function</span> foobar(<span class="variable">$arg</span>, <span class="variable">$arg2</span>) {
+    echo __FUNCTION_<span class="number">_</span>, <span class="string">" got $arg and $arg2\n"</span>;
+}
+class foo {
+    function bar(<span class="variable">$arg</span>, <span class="variable">$arg2</span>) {
+        echo __METHOD_<span class="number">_</span>, <span class="string">" got $arg and $arg2\n"</span>;
+    }
+}
+
+
+// Call the foobar() <span class="keyword">function</span> with <span class="number">2</span> arguments
+call_user_func_array(<span class="string">"foobar"</span>, <span class="keyword">array</span>(<span class="string">"one"</span>, <span class="string">"two"</span>));
+
+// Call the <span class="variable">$foo-</span>&gt;bar() method with <span class="number">2</span> arguments
+<span class="variable">$foo</span> = new foo;
+call_user_func_array(<span class="keyword">array</span>(<span class="variable">$foo</span>, <span class="string">"bar"</span>), <span class="keyword">array</span>(<span class="string">"three"</span>, <span class="string">"four"</span>));
+?&gt; 
+</code></pre><p>所以这里$_REQUEST[‘act’]为login的时候就是调用$ipsConnect对象的login方法，根据公开的poc：</p>
+<pre><code>act=login&amp;idType=id&amp;id[]=-<span class="number">1</span>&amp;id[]=-<span class="number">1</span>)<span class="built_in">and</span> <span class="number">1</span>!=<span class="string">"'"</span> <span class="built_in">and</span> extractvalue(<span class="number">1</span>,concat(<span class="number">0</span>x3a,(<span class="built_in">SELECT</span>
+<span class="built_in">COUNT</span>(*) <span class="keyword">FROM</span> <span class="built_in">members</span>)))<span class="preprocessor">#'</span>
+</code></pre><p>可以得之，漏洞出在login方法中。从interface/ipsconnect/ipconnect.php 748行可知，login方法可以接收6个参数。</p>
+<pre><code><span class="string">'login'</span>        =&gt; <span class="function"><span class="title">array</span><span class="params">( <span class="string">'idType'</span>, <span class="string">'id'</span>, <span class="string">'password'</span>, <span class="string">'key'</span>, <span class="string">'redirect'</span>, <span class="string">'redirectHash'</span> )</span></span>
+</code></pre><p>从poc中也可以知道存在注入的参数是’id’这个参数。然后再分析login方法，可以发现，可能存在问题的只有</p>
+<pre><code><span class="variable">$member</span> = IPSMember::load( <span class="variable">$identifierValue</span>, <span class="string">'none'</span>, <span class="variable">$identifier</span> );
+</code></pre><p>这里的调用了。这个在之前的分析文章里已经说明了。但是这里load函数里面其实还有一些别的逻辑。我们可以跟下去看看。</p>
+<p>load方法是/admin/sources/base/ipsMember.php文件中，IPSMember类的一个静态方法。load的函数原型为：</p>
+<pre><code>static public <span class="keyword">function</span> load( <span class="variable">$member</span>_key, <span class="variable">$extra</span>_tables=<span class="string">'all'</span>, <span class="variable">$key</span>_type=<span class="string">''</span> )
+</code></pre><p>从之前的分析可以知道$member_key这个参数都是用户可控的，也就是poc中id参数，而$key_type这个参数在login方法中有个白名单的限制，</p>
+<pre><code><span class="keyword">if</span> ( in_array( <span class="variable">$identifier</span>, <span class="keyword">array</span>( <span class="string">'id'</span>, <span class="string">'email'</span>, <span class="string">'username'</span> ) ) )
+</code></pre><p>只能是id，email，username3个写死的字符串中的一个。</p>
+<p>分析load方法，在1059行，可以看到</p>
+<pre><code><span class="variable">$multiple_ids</span> = array_map( <span class="string">'intval'</span>, <span class="variable">$member_key</span> ); <span class="regexp">//</span> <span class="constant">Bug </span><span class="comment">#20908</span>
+<span class="variable">$member_field</span> = <span class="string">'member_id'</span>;
+</code></pre><p>传进来的$member_key被intval了，还有个注释bug fixed 的注释。那这样子就不应该存在问题啊。仔细一看，原来前面有个if条件，</p>
+<pre><code><span class="keyword">if</span> ( ! <span class="variable">$key</span>_type )
+</code></pre><p>前面说过，这个$key_type只能是白名单的字符串，所以这个条件判断是false。不会进入到这个分支中。从这里也可以看出来，这个load以前应该是也出过问题，但是仅仅修复了这一个点。</p>
+<p>查看if的else分支，1082行：</p>
+<pre><code><span class="keyword">else</span>
+{
+    switch( <span class="variable">$key</span>_type )
+    {
+        default:
+        case <span class="string">'id'</span>:
+            if ( is_array( <span class="variable">$member</span>_key ) )
+            {
+                <span class="variable">$multiple</span>_ids = <span class="variable">$member</span>_key;
+            }
+            else
+</code></pre><p>看到$member_key赋值给了$multiple_ids，没有经过其他处理。在1368行，$multiple_ids拼接到了sql语句中。</p>
+<pre><code><span class="keyword">if</span> ( count( <span class="variable">$joins</span> ) )
+    {
+        ipsRegistry::DB()-&gt;build( array( <span class="string">'select'</span>   =&gt; <span class="string">'m.*, m.member_id as my_member_id'</span>,
+                                         <span class="string">'from'</span>     =&gt; array( <span class="string">'members'</span> =&gt; <span class="string">'m'</span> ),
+                                         <span class="string">'where'</span>    =&gt; ( is_array( <span class="variable">$multiple</span>_ids ) AND count( <span class="variable">$multiple</span>_ids ) ) ?  <span class="string">'m.'</span>. <span class="variable">$member</span>_field . <span class="string">' IN ('</span> . implode( <span class="string">','</span>, <span class="variable">$multiple</span>_ids ) . <span class="string">')'</span> : <span class="string">'m.'</span>. <span class="variable">$member</span>_field . <span class="string">'='</span> . <span class="variable">$member</span>_value,
+                                         <span class="string">'add_join'</span> =&gt; <span class="variable">$joins</span> ) );
+</code></pre><p>这里就是最后进入sql的地方了。</p>
+<p>这个过程中有意思的一点就是前面提到过，在load方法中有这样一句。</p>
+<pre><code><span class="variable">$multiple_ids</span> = array_map( <span class="string">'intval'</span>, <span class="variable">$member_key</span> ); <span class="regexp">//</span> <span class="constant">Bug </span><span class="comment">#20908</span>
+</code></pre><p>这里有个bug 修改的标记。说明以前可能出过漏洞。我没有细查ipb的漏洞历史，如果这一句在之前的版本是没有过滤的话，直接</p>
+<pre><code><span class="variable">$multiple</span>_ids = <span class="variable">$member</span>_key;  
+</code></pre><p>也是存在SQL注入漏洞的。跟这个漏洞的利用基本一样。在interface/ipsconnect/ipconnect.php522行</p>
+<pre><code>public <span class="keyword">function</span> check( <span class="variable">$key</span>, <span class="variable">$id</span>, <span class="variable">$username</span>, <span class="variable">$displayname</span>, <span class="variable">$email</span> )
+{
+    <span class="variable">$return</span> = array( <span class="string">'username'</span> =&gt; NULL, <span class="string">'displayname'</span> =&gt; NULL, <span class="string">'email'</span> =&gt; NULL );
+
+    <span class="variable">$member</span> = array();
+    if ( <span class="variable">$id</span> )
+    {
+        <span class="variable">$member</span> = IPSMember::load( <span class="variable">$id</span> );
+</code></pre><p>这个check方法也调用了IPSMember::load，而这里由于只传了一个参数，所以load方法的后面几个参数都是默认值，刚好会进入这个分支。</p>
+<p><img src="/images/ipb1.jpg" alt="11"></p>
+<p>##漏洞检测</p>
+<p>poc里写死了表明</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://stayliv3.github.io/2014/12/05/ipbsql/" data-title="IP.Board 3.4.7 SQL注入分析 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2014/12/18/ecshop/" title="ecshop patch15分析">
+  <strong>上一篇：</strong><br/>
+  <span>
+  ecshop patch15分析</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2014/12/01/burp/"  title="burpsuite csrf poc 乱码问题">
+ <strong>下一篇：</strong><br/> 
+ <span>burpsuite csrf poc 乱码问题
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2014/12/05/ipbsql/" data-title="IP.Board 3.4.7 SQL注入分析" data-url="http://stayliv3.github.io/2014/12/05/ipbsql/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ 
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/前端安全/" title="前端安全">前端安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/加密解密/" title="加密解密">加密解密<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/古典密码/" title="古典密码">古典密码<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/奇技淫巧/" title="奇技淫巧">奇技淫巧<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>1</sup></a></li>
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统运维/" title="系统运维">系统运维<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/黑盒测试/" title="黑盒测试">黑盒测试<sup>6</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/php/" title="php">php<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/qemu/" title="qemu">qemu<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/sqlmap/" title="sqlmap">sqlmap<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/折腾/" title="折腾">折腾<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcpdump/" title="tcpdump">tcpdump<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/密码学/" title="密码学">密码学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/加密解密/" title="加密解密">加密解密<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ctf/" title="ctf">ctf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/docker/" title="docker">docker<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/php-wdcp/" title="php,wdcp">php,wdcp<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/解包/" title="解包">解包<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/binwalk/" title="binwalk">binwalk<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/hackrf/" title="hackrf">hackrf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/burpsuite/" title="burpsuite">burpsuite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/brupsuite/" title="brupsuite">brupsuite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Yii/" title="Yii">Yii<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://sco4x0.com" target="_blank" title="sco4x0&#39;s blog">sco4x0&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://virusdefender.net" target="_blank" title="virusdefender&#39;s blog">virusdefender&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackersb.cn/" target="_blank" title="Striker&#39;s blog">Striker&#39;s blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Larry Page in Google. <br/>
+			This is my blog,believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2015 
+		
+		<a href="/about" target="_blank" title="xd_xd">xd_xd</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"xdxd"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253479891'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1253479891' type='text/javascript'%3E%3C/script%3E"));</script>
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

@@ -1,0 +1,703 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Yii应用一个SQL注入分析 | xd_xd&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="xd_xd">
+    
+
+    
+    <meta name="description" content="#漏洞发现过程黑盒测试发现。使用工具burpsuite。当在购物车中删除商品时，发送数据包如下：
+POST /cart/miniDel.html HTTP/1.1
+id=219&apos;
+报sql语法错误，经过手工确认可以注入sql语句。
+Exception (Database Exception) &amp;amp;#039;yii\db\Exception&amp;amp;#039; with message &amp;am">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Yii应用一个SQL注入分析">
+<meta property="og:url" content="http://stayliv3.github.io/2015/10/22/YII应用一个SQL注入分析/index.html">
+<meta property="og:site_name" content="xd_xd's blog">
+<meta property="og:description" content="#漏洞发现过程黑盒测试发现。使用工具burpsuite。当在购物车中删除商品时，发送数据包如下：
+POST /cart/miniDel.html HTTP/1.1
+id=219&apos;
+报sql语法错误，经过手工确认可以注入sql语句。
+Exception (Database Exception) &amp;amp;#039;yii\db\Exception&amp;amp;#039; with message &amp;am">
+<meta property="og:image" content="http://stayliv3.github.io/images/yiisqli1.png">
+<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Yii应用一个SQL注入分析">
+<meta name="twitter:description" content="#漏洞发现过程黑盒测试发现。使用工具burpsuite。当在购物车中删除商品时，发送数据包如下：
+POST /cart/miniDel.html HTTP/1.1
+id=219&apos;
+报sql语法错误，经过手工确认可以注入sql语句。
+Exception (Database Exception) &amp;amp;#039;yii\db\Exception&amp;amp;#039; with message &amp;am">
+
+    
+    <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="xd_xd&#39;s blog" title="xd_xd&#39;s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="xd_xd&#39;s blog">xd_xd&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:stayliv3.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/10/22/YII应用一个SQL注入分析/" title="Yii应用一个SQL注入分析" itemprop="url">Yii应用一个SQL注入分析</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
+		
+  <p class="article-time">
+    <time datetime="2015-10-22T06:29:03.000Z" itemprop="datePublished"> 发表于 Oct 22 2015</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			
+		
+		</div>
+		
+		<p>#漏洞发现过程<br>黑盒测试发现。使用工具burpsuite。当在购物车中删除商品时，发送数据包如下：</p>
+<pre><code>POST /cart/miniDel.html HTTP/<span class="number">1.1</span>
+id=<span class="number">219</span>'
+</code></pre><p>报sql语法错误，经过手工确认可以注入sql语句。</p>
+<pre><code>Exception (Database Exception) &amp;<span class="string">#039</span>;yii\db\Exception&amp;<span class="string">#039</span>; <span class="keyword">with</span> <span class="keyword">message</span> &amp;<span class="string">#039</span>;SQLSTATE[<span class="number">42000</span>]: Syntax error <span class="keyword">or</span> access violation: <span class="number">1064</span> You have an error <span class="keyword">in</span> your SQL syntax; check the manual that corresponds <span class="keyword">to</span> your MySQL server version <span class="keyword">for</span> the right syntax <span class="keyword">to</span> use <span class="keyword">near</span> &amp;<span class="string">#039</span>;&amp;<span class="string">#039</span>;)&amp;<span class="string">#039</span>; at line <span class="number">1</span>
+</code></pre><p>SQL注入是高危漏洞。这里利用这个漏洞可能导致数据库所有信息泄漏。</p>
+<p>#代码分析跟踪<br>跟踪分析代码从controller跟到model，到Yii框架的api就可以清晰的获知整个数据在应用内的流向和进入的函数。<br>url/cart/miniDel.html路由到/mall/apps/main/controllers/CartController.php中的actionMiniDel方法：</p>
+<pre><code>/**
+ * MINI层删除交互
+ */
+public <span class="keyword">function</span> actionMiniDel()
+{
+    <span class="variable">$product</span>_ids = Yii::<span class="variable">$app-</span>&gt;request-&gt;post(<span class="string">'id'</span>);
+    <span class="variable">$res</span> = CartApi::model()-&gt;getDeltCartList(<span class="variable">$this-</span>&gt;uid, <span class="variable">$product</span>_ids);
+
+    <span class="variable">$data</span> = <span class="variable">$this-</span>&gt;getMiniData(<span class="variable">$this-</span>&gt;uid, <span class="variable">$res</span>);
+    common\helpers\Helper::ajaxReturn([<span class="string">'status'</span>=&gt;true,<span class="string">'msg'</span>=&gt;<span class="string">'success'</span>,<span class="string">'data'</span>=&gt;<span class="variable">$data</span>]);
+}
+</code></pre><p>用户提交的id参数赋值给了$product_ids，然后进入了getDeltCartList方法。跟进该方法：</p>
+<pre><code>/**
+ * 删除--前端交互的购物车列表信息
+ */
+public <span class="keyword">function</span> getDeltCartList(<span class="variable">$uid</span>, <span class="variable">$product</span>_ids, <span class="variable">$allDel</span>=<span class="literal">false</span>)
+{
+    \common\cookie_cart\Cart::initCookieCartNum(<span class="variable">$uid</span>,true);
+    if (!isset(<span class="variable">$uid</span>) || empty(<span class="variable">$uid</span>) || !(int) <span class="variable">$uid</span>&gt;<span class="number">0</span>)
+
+        return \common\cookie_cart\Cart::delCartByGuest(<span class="variable">$product</span>_ids, <span class="variable">$allDel</span>);
+
+    return CartService::getDeltCartList(<span class="variable">$uid</span>, <span class="variable">$product</span>_ids);
+}
+</code></pre><p>getDelCartList方法判断用户是否登录，登录的话调用CartService的静态方法getDeltCartList方法操作用户购物车。进入CartService::getDeltCartList:</p>
+<pre><code>/**
+ * 删除--前端交互的购物车列表信息
+ */
+public static <span class="keyword">function</span> getDeltCartList(<span class="variable">$user</span>_id, <span class="variable">$product</span>_ids)
+{
+    if(intval(<span class="variable">$user</span>_id)&gt;<span class="number">0</span> &amp;&amp; !empty(<span class="variable">$product</span>_ids))
+    {
+        <span class="variable">$res</span> = self::delCart(<span class="variable">$user</span>_id, <span class="variable">$product</span>_ids);
+        if(<span class="variable">$res</span>===false) return false;
+        return self::getInitCartList(<span class="variable">$user</span>_id, <span class="variable">$mini</span>=false, <span class="variable">$checkd</span>=false);
+    }
+    return self::getInitCartList(<span class="variable">$user</span>_id, <span class="variable">$mini</span>=false, <span class="variable">$checkd</span>=false);;
+}
+</code></pre><p>跟进delCart：</p>
+<pre><code>public static <span class="keyword">function</span> delCart(<span class="variable">$user</span>_id, <span class="variable">$product</span>_ids)
+{
+    if(!isset(<span class="variable">$user</span>_id) || !intval(<span class="variable">$user</span>_id)&gt;<span class="number">0</span> || !<span class="variable">$product</span>_ids) return false;
+    <span class="variable">$transaction</span> = \Yii::<span class="variable">$app-</span>&gt;db-&gt;beginTransaction();
+    try {
+
+        <span class="variable">$cartData</span> = Carts::find()
+                    -&gt;where([<span class="string">"and"</span>,[<span class="string">"="</span>,<span class="string">"user_id"</span>,<span class="variable">$user</span>_id],
+                            [<span class="string">"="</span>,<span class="string">"market_type"</span>,<span class="number">4</span>],
+                            [<span class="string">"&gt;"</span>,<span class="string">"market_id"</span>,<span class="number">0</span>]])
+                    -&gt;all();
+
+        if (!empty(<span class="variable">$cartData</span>)) {
+            foreach (<span class="variable">$cartData</span> as <span class="variable">$v</span>) {
+
+                if (in_array(<span class="variable">$v-</span>&gt;product_id, <span class="variable">$product</span>_ids)) {
+                    <span class="variable">$param</span> = [
+                            <span class="string">'user_id'</span>=&gt;<span class="variable">$user</span>_id,
+                            <span class="string">'goods_id'</span>=&gt;<span class="variable">$v-</span>&gt;goods_id,
+                            <span class="string">'product_id'</span>=&gt;<span class="variable">$v-</span>&gt;product_id,
+                            <span class="string">'num'</span> =&gt;<span class="number">0</span>
+                    ];
+                    \api\MarketApi::model()-&gt;addUserBuyNum(<span class="variable">$param</span>);
+                }
+            }
+        }
+        Carts::deleteAll(<span class="string">"user_id={$user_id} and product_id in({$product_ids})"</span>);
+</code></pre><p>这里可以看到用户输入的数据拼接到了字符串user_id={$user_id} and product_id in({$product_ids})进入了deleteAll方法。这个字符串看起来是一个查询条件。继续跟进deleteAll方法：</p>
+<pre><code>/**
+ * Deletes rows <span class="keyword">in</span> the table using the provided conditions.
+ * WARNING: If you do not specify any condition, this method will <span class="keyword">delete</span> ALL rows <span class="keyword">in</span> the table.
+ *
+ * For example, <span class="keyword">to</span> <span class="keyword">delete</span> all customers whose status is <span class="number">3</span>:
+ *
+ * &lt;!--￼<span class="number">0</span>--&gt;
+
+ *
+ * @param string|<span class="keyword">array</span> <span class="variable">$condition</span> the conditions that will be put <span class="keyword">in</span> the WHERE part <span class="keyword">of</span> the DELETE SQL.
+ * Please refer <span class="keyword">to</span> [[Query::where()]] on how <span class="keyword">to</span> specify this parameter.
+ * @param <span class="keyword">array</span> <span class="variable">$params</span> the parameters (name =&gt; <span class="keyword">value</span>) <span class="keyword">to</span> be bound <span class="keyword">to</span> the query.
+ * @<span class="keyword">return</span> integer the number <span class="keyword">of</span> rows deleted
+ */
+public static <span class="keyword">function</span> deleteAll(<span class="variable">$condition</span> = <span class="string">''</span>, <span class="variable">$params</span> = [])
+{
+    <span class="variable">$command</span> = static::getDb()-&gt;createCommand();
+    <span class="variable">$command-</span>&gt;delete(static::tableName(), <span class="variable">$condition</span>, <span class="variable">$params</span>);
+    //表更新成功时，记录表最后更新时间
+    if(<span class="variable">$command-</span>&gt;execute()){
+        \Yii::<span class="variable">$app-</span>&gt;cache-&gt;set(static::tableName(), time());
+        return true;
+    }
+    return false;
+}
+</code></pre><p>从deleteAll的英文注释看起来，这应该是一个通用的方法。用来删除数据库中的数据。下一步就是确认deleteAll方法是否有做防SQL注入的转义。deleteAll使用了createCommand()。查询Yii 2.0 api文档得知。<a href="http://www.yiiframework.com/doc-2.0/yii-db-command.html" target="_blank" rel="external">Class yii\db\Command</a>可以直接数据库中执行任意SQL语句。比如：</p>
+<pre><code><span class="variable">$users</span> = <span class="variable">$connection-</span>&gt;createCommand(<span class="string">'SELECT * FROM user'</span>)-&gt;queryAll();
+</code></pre><p>该类的delete方法接受3个参数：<br><img src="/images/yiisqli1.png" alt=""><br>可知，delete方法本身提供参数化的方法，可以避免SQL注入。示例为：</p>
+<pre><code>$user=<span class="attribute">Yii</span>::app<span class="function"><span class="params">()</span>-&gt;</span>db-&gt;createCommand<span class="function"><span class="params">()</span>
+-&gt;</span><span class="keyword">delete</span>(<span class="string">'tbl_user'</span>, <span class="string">'user_id=:id'</span>, array(<span class="string">':id'</span>=&gt;<span class="number">2</span>));
+</code></pre><p>这里用户输入直接拼接到了$condition里，而condition是Where的条件。可以有两种类型，字符串或者数组。关于Yii如何处理$condition可以参考<a href="http://www.yiiframework.com/doc-2.0/yii-db-query.html#where(" target="_blank" rel="external">api手册</a>-detail).condition为字符串时，直接作为where的条件进入SQL语句。因为这里把用户输入放到了condition字符串中，所以导致了SQL注入。</p>
+<p>#代码修复方案<br>Yii处理$condition的<a href="http://www.yiiframework.com/doc-2.0/yii-db-query.html#where(" target="_blank" rel="external">api手册</a>-detail)中可以得知，conditon为数组的时候有两种形式：</p>
+<pre><code>The <span class="variable">$condition</span> parameter should be either a string (e.g. <span class="string">'id=1'</span>) or an <span class="keyword">array</span>.
+The <span class="variable">$condition</span> specified <span class="keyword">as</span> an <span class="keyword">array</span> can be <span class="keyword">in</span> one <span class="keyword">of</span> the following two formats:
+hash format: [<span class="string">'column1'</span> =&gt; value1, <span class="string">'column2'</span> =&gt; value2, ...]
+operator format: [operator, operand1, operand2, ...]
+</code></pre><p>而条件为in的时候：</p>
+<pre><code><span class="keyword">in</span>: operand <span class="number">1</span> should be a column <span class="keyword">or</span> DB expression, <span class="keyword">and</span> operand <span class="number">2</span> be an <span class="keyword">array</span> representing the range <span class="keyword">of</span> the values that the column <span class="keyword">or</span> DB expression should be <span class="keyword">in</span>. <span class="keyword">For</span> example, [<span class="string">'in'</span>, <span class="string">'id'</span>, [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]] will generate id <span class="keyword">IN</span> (<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>). The <span class="function"><span class="keyword">method</span> <span class="title">will</span> <span class="title">properly</span> <span class="title">quote</span> <span class="title">the</span> <span class="title">column</span> <span class="title">name</span> <span class="title">and</span> <span class="title">escape</span> <span class="title">values</span> <span class="title">in</span> <span class="title">the</span> <span class="title">range</span>.
+
+<span class="title">and</span>:</span> the operands should be concatenated together <span class="keyword">using</span> <span class="keyword">AND</span>. <span class="keyword">For</span> example, [<span class="string">'and'</span>, <span class="string">'id=1'</span>, <span class="string">'id=2'</span>] will generate id=<span class="number">1</span> <span class="keyword">AND</span> id=<span class="number">2</span>. <span class="keyword">If</span> an operand <span class="keyword">is</span> an <span class="keyword">array</span>, it will be converted <span class="keyword">into</span> a string <span class="keyword">using</span> the rules described here. <span class="keyword">For</span> example, [<span class="string">'and'</span>, <span class="string">'type=1'</span>, [<span class="string">'or'</span>, <span class="string">'id=1'</span>, <span class="string">'id=2'</span>]] will generate <span class="keyword">type</span>=<span class="number">1</span> <span class="keyword">AND</span> (id=<span class="number">1</span> <span class="keyword">OR</span> id=<span class="number">2</span>). The <span class="function"><span class="keyword">method</span> <span class="title">will</span> <span class="title">not</span> <span class="title">do</span> <span class="title">any</span> <span class="title">quoting</span> <span class="title">or</span> <span class="title">escaping</span>.</span>
+</code></pre><p>使用in的时候会自动转义，这样也就避免的SQL注入，所以这里使用数组形式就可以避免SQL注入。但是这里貌似也有个坑就是使用and的时候，手册写到The method will not do any quoting or escaping。这样的话使用and，即使使用数组传递参数，如果参数中拼接了用户输入，也可能存在SQL注入。这样的话如果需要使用command类是执行sql，如果and条件中有用户可控数据，就需要使用参数绑定来避免sql注入。</p>
+<p>查找代码中所有condition中使用了字符串方式，并且字符串中拼接了用户输入的代码，排查该类型编码缺陷导致的SQL注入漏洞。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/代码审计/">代码审计</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Yii/">Yii</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://stayliv3.github.io/2015/10/22/YII应用一个SQL注入分析/" data-title="Yii应用一个SQL注入分析 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015/10/27/Java-JMX-Server-代码执行漏洞利用及防御/" title="Java JMX Server 代码执行漏洞利用及防御">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Java JMX Server 代码执行漏洞利用及防御</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015/10/20/xss工具sleep-puppy手册/"  title="xss工具sleep puppy手册">
+ <strong>下一篇：</strong><br/> 
+ <span>xss工具sleep puppy手册
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2015/10/22/YII应用一个SQL注入分析/" data-title="Yii应用一个SQL注入分析" data-url="http://stayliv3.github.io/2015/10/22/YII应用一个SQL注入分析/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ 
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/前端安全/" title="前端安全">前端安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/加密解密/" title="加密解密">加密解密<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/古典密码/" title="古典密码">古典密码<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/奇技淫巧/" title="奇技淫巧">奇技淫巧<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>1</sup></a></li>
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统运维/" title="系统运维">系统运维<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/黑盒测试/" title="黑盒测试">黑盒测试<sup>6</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/php/" title="php">php<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/qemu/" title="qemu">qemu<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/sqlmap/" title="sqlmap">sqlmap<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/折腾/" title="折腾">折腾<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcpdump/" title="tcpdump">tcpdump<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/密码学/" title="密码学">密码学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/加密解密/" title="加密解密">加密解密<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ctf/" title="ctf">ctf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/docker/" title="docker">docker<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/php-wdcp/" title="php,wdcp">php,wdcp<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/解包/" title="解包">解包<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/binwalk/" title="binwalk">binwalk<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/hackrf/" title="hackrf">hackrf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/burpsuite/" title="burpsuite">burpsuite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/brupsuite/" title="brupsuite">brupsuite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Yii/" title="Yii">Yii<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://sco4x0.com" target="_blank" title="sco4x0&#39;s blog">sco4x0&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://virusdefender.net" target="_blank" title="virusdefender&#39;s blog">virusdefender&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackersb.cn/" target="_blank" title="Striker&#39;s blog">Striker&#39;s blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Larry Page in Google. <br/>
+			This is my blog,believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2015 
+		
+		<a href="/about" target="_blank" title="xd_xd">xd_xd</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"xdxd"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253479891'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1253479891' type='text/javascript'%3E%3C/script%3E"));</script>
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

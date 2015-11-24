@@ -1,0 +1,617 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>yxcms1.2.6任意文件删除漏洞分析 | xd_xd&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="xd_xd">
+    
+
+    
+    <meta name="description" content="测试版本:1.2.6
+YXcms的在使用unlink函数删除文件的时候没有考虑到对该参数做一个限制，导致存在很多个任意文件删除的漏洞。漏洞代码也比较直接，比如：
+if(!empty($_POST[&apos;oldheadpic&apos;])){
+    $picpath=$this-&amp;gt;uploadpath.$_POST[&apos;oldheadpic&apos;];
+    if(file_exists($picpath))">
+<meta property="og:type" content="article">
+<meta property="og:title" content="yxcms1.2.6任意文件删除漏洞分析">
+<meta property="og:url" content="http://stayliv3.github.io/2014/10/21/yxcms/index.html">
+<meta property="og:site_name" content="xd_xd's blog">
+<meta property="og:description" content="测试版本:1.2.6
+YXcms的在使用unlink函数删除文件的时候没有考虑到对该参数做一个限制，导致存在很多个任意文件删除的漏洞。漏洞代码也比较直接，比如：
+if(!empty($_POST[&apos;oldheadpic&apos;])){
+    $picpath=$this-&amp;gt;uploadpath.$_POST[&apos;oldheadpic&apos;];
+    if(file_exists($picpath))">
+<meta property="og:image" content="http://stayliv3.github.io/!--￼0-->/images/13204650360976da2b9e451f6d5366cfcf0e79aa.jpg">
+<meta property="og:image" content="http://stayliv3.github.io/!--￼1-->/images/140937252a1e26c50d80fe821969db4056338236.jpg">
+<meta property="og:image" content="http://stayliv3.github.io/!--￼2-->/images/14093754b38d5b50b578927334c7942f150bf3fd.jpg">
+<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="yxcms1.2.6任意文件删除漏洞分析">
+<meta name="twitter:description" content="测试版本:1.2.6
+YXcms的在使用unlink函数删除文件的时候没有考虑到对该参数做一个限制，导致存在很多个任意文件删除的漏洞。漏洞代码也比较直接，比如：
+if(!empty($_POST[&apos;oldheadpic&apos;])){
+    $picpath=$this-&amp;gt;uploadpath.$_POST[&apos;oldheadpic&apos;];
+    if(file_exists($picpath))">
+
+    
+    <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="xd_xd&#39;s blog" title="xd_xd&#39;s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="xd_xd&#39;s blog">xd_xd&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:stayliv3.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2014/10/21/yxcms/" title="yxcms1.2.6任意文件删除漏洞分析" itemprop="url">yxcms1.2.6任意文件删除漏洞分析</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
+		
+  <p class="article-time">
+    <time datetime="2014-10-20T20:07:34.000Z" itemprop="datePublished"> 发表于 Oct 21 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			
+		
+		</div>
+		
+		<p>测试版本:1.2.6</p>
+<p>YXcms的在使用unlink函数删除文件的时候没有考虑到对该参数做一个限制，导致存在很多个任意文件删除的漏洞。漏洞代码也比较直接，比如：</p>
+<pre><code><span class="keyword">if</span>(!<span class="keyword">empty</span>($_POST[<span class="string">'oldheadpic'</span>])){
+    <span class="variable">$picpath</span>=<span class="variable">$this-</span>&gt;uploadpath.$_POST[<span class="string">'oldheadpic'</span>];
+    if(file_exists(<span class="variable">$picpath</span>)) @unlink(<span class="variable">$picpath</span>);
+</code></pre><p>这里是更新头像之后删除旧的头像图片。而旧头像的路径是直接从客户端发送的参数，接受之后仅仅判断了一下文件是否存在，如果存在就删除。从而存在漏洞。</p>
+<p>任意文件删除的漏洞有好几个点都存在，官方也进行了一些修复。先看一下官方修复的方式，这里是乌云报过的漏洞。<a href="http://wooyun.org/bugs/wooyun-2010-047226" target="_blank" rel="external">http://wooyun.org/bugs/wooyun-2010-047226</a> 修复前存在问题的代码：</p>
+<pre><code><span class="keyword">if</span>(!<span class="keyword">empty</span>($_POST[<span class="string">'oldpicture'</span>]) &amp;&amp; $_POST[<span class="string">'oldpicture'</span>]!=<span class="variable">$this-</span>&gt;nopic){
+
+    <span class="variable">$picpath</span>=<span class="variable">$this-</span>&gt;uploadpath.$_POST[<span class="string">'oldpicture'</span>];
+
+    echo <span class="variable">$picpath</span>;
+
+    if(file_exists(<span class="variable">$picpath</span>)) @unlink(<span class="variable">$picpath</span>);//删除文艺文件
+</code></pre><p>修复之后的代码：</p>
+<pre><code><span class="keyword">if</span>(!<span class="keyword">empty</span>($_POST[<span class="string">'oldpicture'</span>]) &amp;&amp; $_POST[<span class="string">'oldpicture'</span>]!=<span class="variable">$this-</span>&gt;nopic){
+        <span class="variable">$picpath</span>=<span class="variable">$this-</span>&gt;uploadpath.$_POST[<span class="string">'oldpicture'</span>];
+        <span class="variable">$lasts</span>=strtolower(substr($_POST[<span class="string">'oldpicture'</span>],-<span class="number">3</span>));
+        if(file_exists(<span class="variable">$picpath</span>) &amp;&amp; in_array(<span class="variable">$lasts</span>,array(<span class="string">'gif'</span>,<span class="string">'jpg'</span>,<span class="string">'png'</span>,<span class="string">'bmp'</span>))) @unlink(<span class="variable">$picpath</span>);
+    }
+</code></pre><p>这里加入了一个对传入的$_POST[‘oldpicture’]参数的判断，判断这个文件名后缀是否是gif，jpg等。这个修复方案显示是不完善的。之所以存在任意文件删除的问题根源在于传入的文件名$_POST[‘oldpicture’]完全可控，可以使用任意的”.. / \ “字符来遍历任意路径下的文件。所以防御的思路应该是从限制任意路径遍历入手，而不是限制文件类型。限制了文件类型最直接的问题就是可以这个漏洞退化成了一个删除任意图片文件。任何一个注册用户都可以将整个站点的所有图片文件删除。而在php5.3.4以前的版本中，可以使用\0(0x00字节)进行文件操作的截断。所以对布署在php5.3.4以前版本中的应用来说，任意文件删除的漏洞依然没有修复。</p>
+<p>最后分析一个最新版中二次操作导致的任意文件删除漏洞。这个漏洞还没有人公开分析过。问题代码存在photoController.php。通过搜索unlink关键字定位到代码：</p>
+<pre><code><span class="keyword">if</span>(!<span class="keyword">empty</span>(<span class="variable">$photos</span>[<span class="string">'photolist'</span>])){
+    <span class="variable">$phoarr</span>=explode(<span class="string">','</span>,<span class="variable">$photos</span>[<span class="string">'photolist'</span>]);
+    foreach (<span class="variable">$phoarr</span> as <span class="variable">$vo</span>){
+        if(file_exists(<span class="variable">$path</span>.<span class="variable">$vo</span>))
+        unlink(<span class="variable">$path</span>.<span class="variable">$vo</span>);
+        if(file_exists(<span class="variable">$path</span>.<span class="string">'thumb_'</span>.<span class="variable">$vo</span>))
+        @unlink(<span class="variable">$path</span>.<span class="string">'thumb_'</span>.<span class="variable">$vo</span>);
+    }
+</code></pre><p>删除使用的数据来源于$photos[‘photolist’]变量。315行，变量$photo来源于数据库中查询的结果</p>
+<pre><code><span class="variable">$photos</span>=model(<span class="string">'photo'</span>)-&gt;find(<span class="string">"id='$id'"</span>,<span class="string">'photolist,sort,extfield,account'</span>);
+</code></pre><p>经过分析，photo表里的数据在新建图集或者编辑图集的时候插入数据库的。数据来源于用户数据。相关代码该文件151行：</p>
+<pre><code><span class="keyword">if</span>(!<span class="keyword">empty</span>($_POST[<span class="string">'photolist'</span>]))
+<span class="variable">$data</span>[<span class="string">'photolist'</span>]=implode(<span class="string">','</span>,$_POST[<span class="string">'photolist'</span>]);
+<span class="keyword">if</span>(!<span class="keyword">empty</span>($_POST[<span class="string">'conlist'</span>]))
+<span class="variable">$data</span>[<span class="string">'conlist'</span>]=implode(<span class="string">','</span>,<span class="keyword">in</span>($_POST[<span class="string">'conlist'</span>]));
+<span class="keyword">if</span>(model(<span class="string">'photo'</span>)-&gt;<span class="keyword">insert</span>(<span class="variable">$data</span>))
+<span class="variable">$this-</span>&gt;success(<span class="string">'图集添加成功~'</span>,url(<span class="string">'photo/index'</span>));
+<span class="keyword">else</span> <span class="variable">$this-</span>&gt;error(<span class="string">'图集添加失败'</span>);
+</code></pre><p>从$_POST[‘photolist’]中取了数据，插入到了photo表中。所以添加图集的时候，修改post数据中photolist%5B%5D=../../protected/apps/install/install.lock 就可控制目标数据。</p>
+<p><img src="!--￼0--&gt;/images/13204650360976da2b9e451f6d5366cfcf0e79aa.jpg" alt="data"></p>
+<p>删除图集的时候就可以看到数据被带入unlink函数中，安装锁定文件被删除。</p>
+<p><img src="!--￼1--&gt;/images/140937252a1e26c50d80fe821969db4056338236.jpg" alt=""></p>
+<p>访问任意页面就会跳到安装页了。</p>
+<p><img src="!--￼2--&gt;/images/14093754b38d5b50b578927334c7942f150bf3fd.jpg" alt="data"></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://stayliv3.github.io/2014/10/21/yxcms/" data-title="yxcms1.2.6任意文件删除漏洞分析 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2014/10/23/yxcmssql/" title="yxcms一个二次注入分析">
+  <strong>上一篇：</strong><br/>
+  <span>
+  yxcms一个二次注入分析</span>
+</a>
+</div>
+
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2014/10/21/yxcms/" data-title="yxcms1.2.6任意文件删除漏洞分析" data-url="http://stayliv3.github.io/2014/10/21/yxcms/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ 
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/前端安全/" title="前端安全">前端安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/加密解密/" title="加密解密">加密解密<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/古典密码/" title="古典密码">古典密码<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/奇技淫巧/" title="奇技淫巧">奇技淫巧<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>1</sup></a></li>
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统运维/" title="系统运维">系统运维<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/黑盒测试/" title="黑盒测试">黑盒测试<sup>6</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/php/" title="php">php<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/qemu/" title="qemu">qemu<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/sqlmap/" title="sqlmap">sqlmap<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/折腾/" title="折腾">折腾<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcpdump/" title="tcpdump">tcpdump<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/密码学/" title="密码学">密码学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/加密解密/" title="加密解密">加密解密<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ctf/" title="ctf">ctf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/docker/" title="docker">docker<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/php-wdcp/" title="php,wdcp">php,wdcp<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/解包/" title="解包">解包<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/binwalk/" title="binwalk">binwalk<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/hackrf/" title="hackrf">hackrf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/burpsuite/" title="burpsuite">burpsuite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/brupsuite/" title="brupsuite">brupsuite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Yii/" title="Yii">Yii<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://sco4x0.com" target="_blank" title="sco4x0&#39;s blog">sco4x0&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://virusdefender.net" target="_blank" title="virusdefender&#39;s blog">virusdefender&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackersb.cn/" target="_blank" title="Striker&#39;s blog">Striker&#39;s blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Larry Page in Google. <br/>
+			This is my blog,believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2015 
+		
+		<a href="/about" target="_blank" title="xd_xd">xd_xd</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"xdxd"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253479891'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1253479891' type='text/javascript'%3E%3C/script%3E"));</script>
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

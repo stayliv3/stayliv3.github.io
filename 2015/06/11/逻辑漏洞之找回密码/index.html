@@ -1,0 +1,605 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>逻辑漏洞之找回密码 | xd_xd&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="xd_xd">
+    
+
+    
+    <meta name="description" content="毫无疑问，找回密码这个功能是一个很容易出现漏洞的功能。乌云知识库已经有4篇文章介绍找回密码的测试方式。总的来说，姿势很多。所以这里想从找回密码功能设计的角度分析一下，怎么设计一个安全的找回密码功能。当进行安全测试的时候，需要从哪几个角度去考虑可能出现的问题。目的是尝试在一个统一的模型里归纳找回密码功能的安全问题。
+#逻辑本质
+目前的用户体系里，依然是采用用户名和密码的方式来进行用户认证的。用户忘记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="逻辑漏洞之找回密码">
+<meta property="og:url" content="http://stayliv3.github.io/2015/06/11/逻辑漏洞之找回密码/index.html">
+<meta property="og:site_name" content="xd_xd's blog">
+<meta property="og:description" content="毫无疑问，找回密码这个功能是一个很容易出现漏洞的功能。乌云知识库已经有4篇文章介绍找回密码的测试方式。总的来说，姿势很多。所以这里想从找回密码功能设计的角度分析一下，怎么设计一个安全的找回密码功能。当进行安全测试的时候，需要从哪几个角度去考虑可能出现的问题。目的是尝试在一个统一的模型里归纳找回密码功能的安全问题。
+#逻辑本质
+目前的用户体系里，依然是采用用户名和密码的方式来进行用户认证的。用户忘记">
+<meta property="og:image" content="http://stayliv3.github.io/images/zhaohuimima1.png">
+<meta property="og:image" content="http://stayliv3.github.io/images/zhaohuimima2.png">
+<meta property="og:image" content="http://stayliv3.github.io/images/zhaohuimima3.png">
+<meta property="og:image" content="http://stayliv3.github.io/images/zhaohuimima4.png">
+<meta property="og:image" content="http://stayliv3.github.io/images/zhaohuimima5.png">
+<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="逻辑漏洞之找回密码">
+<meta name="twitter:description" content="毫无疑问，找回密码这个功能是一个很容易出现漏洞的功能。乌云知识库已经有4篇文章介绍找回密码的测试方式。总的来说，姿势很多。所以这里想从找回密码功能设计的角度分析一下，怎么设计一个安全的找回密码功能。当进行安全测试的时候，需要从哪几个角度去考虑可能出现的问题。目的是尝试在一个统一的模型里归纳找回密码功能的安全问题。
+#逻辑本质
+目前的用户体系里，依然是采用用户名和密码的方式来进行用户认证的。用户忘记">
+
+    
+    <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="xd_xd&#39;s blog" title="xd_xd&#39;s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="xd_xd&#39;s blog">xd_xd&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:stayliv3.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/06/11/逻辑漏洞之找回密码/" title="逻辑漏洞之找回密码" itemprop="url">逻辑漏洞之找回密码</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
+		
+  <p class="article-time">
+    <time datetime="2015-06-11T06:01:03.000Z" itemprop="datePublished"> 发表于 Jun 11 2015</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			
+		
+		</div>
+		
+		<p>毫无疑问，找回密码这个功能是一个很容易出现漏洞的功能。乌云知识库已经有4篇文章介绍找回密码的测试方式。总的来说，姿势很多。所以这里想从找回密码功能设计的角度分析一下，怎么设计一个安全的找回密码功能。当进行安全测试的时候，需要从哪几个角度去考虑可能出现的问题。目的是尝试在一个统一的模型里归纳找回密码功能的安全问题。</p>
+<p>#逻辑本质</p>
+<p>目前的用户体系里，依然是采用用户名和密码的方式来进行用户认证的。用户忘记了密码也是一个十分常见的场景。所以需要给用户提供一个忘记密码的场景下重新获得账号控制权的方式。所以这个功能设计的一个场景其实是一个用户并不拥有某个账号的密码，他需要通过某些途径向系统证明他是这个账号的所有者。反过来我们在设计找回密码功能的时候，是提供一个认证用户的途径。正常情况下，是通过密码来认证用户的。找回密码的情况是在没有密码的基础上正确认证用户。</p>
+<p>常见的方式有回答预设的问题，通过手机发送验证码，通过邮件发送链接或者验证码等。这样设计的一个基础是账户的拥有者虽然忘记了密码，但是该账户的拥有者具备一些其他人不具备的属性，比如知道之前拥有者自己设置的保护问题的答案，类似于我的爸爸叫什么，小学哪里上的之类，比如拥有该账户关联的手机和邮箱的所有权。显然密保问题的答案虽然相对私密，但是依赖于具体的问题。有些问题的答案也许通过社工就可以获得。所以一般找回密码功能都是基于账号拥有者具备该账户关联的手机和邮箱的所有权进行设计的。</p>
+<p>#验证流程</p>
+<p>通过上面的分析，找回密码的逻辑可以转化为如何识别某一个用户是某个手机或者邮箱的拥有者。常见的手段是服务端给手机(邮箱)发送一个验证码或者链接，用户正确输入验证码或者点击链接就认为是手机(邮箱)的拥有者，给他恢复与该手机(邮箱)关联的用户权限。验证码和链接的作用相当于临时密码。所以整个找回密码的核心流程如下:</p>
+<p><img src="/images/zhaohuimima1.png" alt=""></p>
+<p>最简单的情况下，客户端只需要发送2次请求就可以找回密码，流程越少越安全。但是目前大部分厂商依然使用了3步请求来完成重置密码的操作。可能是为了用户体验的考虑，一般都加了一步临时密码的验证。下面是概括的一个安全的找回密码设计方案。目前大部分厂商的找回密码流程可以看做是下面流程的子集。<br><img src="/images/zhaohuimima2.png" alt=""></p>
+<p>#漏洞挖掘</p>
+<p>CSRF，SQL注入，越权修改密码，越权绑定邮箱等等漏洞也会导致修改任意用户密码。这里只讨论找回密码流程设计实现上出现的问题。通过对大量案例进行分析，可以总结出容易出现问题的可以归纳为两种。一是临时密码的保护出现问题，位数太少可以爆破，算法泄露，返回到了客户端。二是把客户端发送的数据作为了后端逻辑的依据，主要是发送验证码到客户端提供的手机上，根据客户端提供的UID修改对应的密码。实际上找回密码这个场景，需要客户端的数据之后一个就是需要找回密码的账户的ID。其他的数据都应该从后台查而不是从客户端获取。此外还有一种特殊点的情况，使用session作为用户身份的识别。这种情况一般出现相对大一些的网站比如聚美优品和易付宝，在这个功能开发中有了一定的多步骤业务逻辑的设计，可惜没有设计完美。在整个找回密码过程中，通过session识别用户。但是没有考虑到。第一步进行session绑定的时候，session对应的用户是可以伪造的。本质上是把客户端发送的数据作为了后端逻辑的依据。这个测试的时候基本就两种情况。一是在验证临时密码的时候伪造session对应的用户，再一个是在修改密码的环节伪造session。</p>
+<p>#微信的案例</p>
+<p><a href="http://www.wooyun.org/bugs/wooyun-2010-011720" target="_blank" rel="external">微信任意用户密码修改漏洞</a><br><img src="/images/zhaohuimima3.png" alt=""><br>微信的这个问题，表面上是对验证次数的限制被绕过导致的。扯远一点，这个绕过挺有意思的。它是对数据进行了清洗，然后传入了后面的逻辑。从安全设计上来说，最完全的做法是对数据进行检查，如果发现非法数据就阻断请求，而不是清洗之后进入后续逻辑。从找回密码功能来说，采用了 4-5位的小空间的随机数做临时密码是导致这个漏洞出现的根源。</p>
+<p>#360的案例</p>
+<p><a href="http://www.wooyun.org/bugs/wooyun-2012-08333" target="_blank" rel="external">奇虎360任意用户密码修改漏洞</a><br><img src="/images/zhaohuimima4.png" alt=""></p>
+<pre><code>重设密码地址：<span class="link_url">http://i.360.cn/findpwd/setpwdfromemail?vc=c4ce4dd3d566ef83f9</span>[<span class="link_label">马赛克</span>]&amp;u=[马赛克]%40gmail.com,马上重设密码！
+</code></pre><p>这个案例中是由于生成临时密码的算法被破解。从32位字母数字推断出是时间戳md5。临时密码泄露也就导致了整个找回密码功能的用户识别机制失效。其实这种类型的漏洞，<a href="http://www.wooyun.org/bugs/wooyun-2013-046999" target="_blank" rel="external">当当网的例子更加经典</a>,采用了手机号加验证码md5取前10位，都被猜出来了。</p>
+<p>#易付宝的案例</p>
+<p>易付宝这个案例就是上面说过的</p>
+<p><a href="http://www.wooyun.org/bugs/wooyun-2015-0120853" target="_blank" rel="external">苏宁易付宝任意重置密码登入</a><br><img src="/images/zhaohuimima5.png" alt=""></p>
+<p>这个案例虽然没有公开，但是重置密码就是上面说过的几个分析角度。最复杂的情况就是通过session识别用户而已。这里就是最后修改密码的环节，采用了session对应的用户作为被修改的对象。但是绑定session是在第一步的时候做的。可以伪造。造成了任意用户密码修改。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/黑盒测试/">黑盒测试</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/逻辑漏洞/">逻辑漏洞</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://stayliv3.github.io/2015/06/11/逻辑漏洞之找回密码/" data-title="逻辑漏洞之找回密码 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015/06/18/phpcms加解密历史漏洞学习/" title="phpcms加解密历史漏洞学习">
+  <strong>上一篇：</strong><br/>
+  <span>
+  phpcms加解密历史漏洞学习</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015/06/09/代码审计之命令执行/"  title="代码审计之命令执行">
+ <strong>下一篇：</strong><br/> 
+ <span>代码审计之命令执行
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2015/06/11/逻辑漏洞之找回密码/" data-title="逻辑漏洞之找回密码" data-url="http://stayliv3.github.io/2015/06/11/逻辑漏洞之找回密码/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ 
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/前端安全/" title="前端安全">前端安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/加密解密/" title="加密解密">加密解密<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/古典密码/" title="古典密码">古典密码<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/奇技淫巧/" title="奇技淫巧">奇技淫巧<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>1</sup></a></li>
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统运维/" title="系统运维">系统运维<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/黑盒测试/" title="黑盒测试">黑盒测试<sup>6</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/php/" title="php">php<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/qemu/" title="qemu">qemu<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/sqlmap/" title="sqlmap">sqlmap<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/折腾/" title="折腾">折腾<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcpdump/" title="tcpdump">tcpdump<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/密码学/" title="密码学">密码学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/加密解密/" title="加密解密">加密解密<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ctf/" title="ctf">ctf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/docker/" title="docker">docker<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/php-wdcp/" title="php,wdcp">php,wdcp<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/解包/" title="解包">解包<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/binwalk/" title="binwalk">binwalk<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/hackrf/" title="hackrf">hackrf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/burpsuite/" title="burpsuite">burpsuite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/brupsuite/" title="brupsuite">brupsuite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Yii/" title="Yii">Yii<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://sco4x0.com" target="_blank" title="sco4x0&#39;s blog">sco4x0&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://virusdefender.net" target="_blank" title="virusdefender&#39;s blog">virusdefender&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackersb.cn/" target="_blank" title="Striker&#39;s blog">Striker&#39;s blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Larry Page in Google. <br/>
+			This is my blog,believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2015 
+		
+		<a href="/about" target="_blank" title="xd_xd">xd_xd</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"xdxd"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253479891'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1253479891' type='text/javascript'%3E%3C/script%3E"));</script>
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

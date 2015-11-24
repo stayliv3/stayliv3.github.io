@@ -1,0 +1,631 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>mysql的几个小特性在sql注入中的应用 | xd_xd&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="xd_xd">
+    
+
+    
+    <meta name="description" content="mysql的几个小特性在sql注入中的应用
+###参考资料
+https://websec.wordpress.com/2008/09/09/mysql-authentication-bypass/
+http://bugs.mysql.com/bug.php?id=39337
+http://www.exploit-db.com/papers/18263/
+mysql运算时的数据类型自动转换测试数据生">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mysql的几个小特性在sql注入中的应用">
+<meta property="og:url" content="http://stayliv3.github.io/2014/10/31/mysqlfeature/index.html">
+<meta property="og:site_name" content="xd_xd's blog">
+<meta property="og:description" content="mysql的几个小特性在sql注入中的应用
+###参考资料
+https://websec.wordpress.com/2008/09/09/mysql-authentication-bypass/
+http://bugs.mysql.com/bug.php?id=39337
+http://www.exploit-db.com/papers/18263/
+mysql运算时的数据类型自动转换测试数据生">
+<meta property="og:image" content="http://stayliv3.github.io/images/mysqlfeature1.jpg">
+<meta property="og:image" content="http://stayliv3.github.io/images/mysqlfeature2.jpg">
+<meta property="og:image" content="http://stayliv3.github.io/images/mysqlfeature3.jpg">
+<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="mysql的几个小特性在sql注入中的应用">
+<meta name="twitter:description" content="mysql的几个小特性在sql注入中的应用
+###参考资料
+https://websec.wordpress.com/2008/09/09/mysql-authentication-bypass/
+http://bugs.mysql.com/bug.php?id=39337
+http://www.exploit-db.com/papers/18263/
+mysql运算时的数据类型自动转换测试数据生">
+
+    
+    <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="xd_xd&#39;s blog" title="xd_xd&#39;s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="xd_xd&#39;s blog">xd_xd&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:stayliv3.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2014/10/31/mysqlfeature/" title="mysql的几个小特性在sql注入中的应用" itemprop="url">mysql的几个小特性在sql注入中的应用</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
+		
+  <p class="article-time">
+    <time datetime="2014-10-30T20:04:08.000Z" itemprop="datePublished"> 发表于 Oct 31 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#mysql运算时的数据类型自动转换"><span class="toc-number">1.</span> <span class="toc-text">mysql运算时的数据类型自动转换</span></a></li></ol>
+		
+		</div>
+		
+		<p>mysql的几个小特性在sql注入中的应用</p>
+<p>###参考资料</p>
+<p><a href="https://websec.wordpress.com/2008/09/09/mysql-authentication-bypass/" target="_blank" rel="external">https://websec.wordpress.com/2008/09/09/mysql-authentication-bypass/</a></p>
+<p><a href="http://bugs.mysql.com/bug.php?id=39337" target="_blank" rel="external">http://bugs.mysql.com/bug.php?id=39337</a></p>
+<p><a href="http://www.exploit-db.com/papers/18263/" target="_blank" rel="external">http://www.exploit-db.com/papers/18263/</a></p>
+<h3 id="mysql运算时的数据类型自动转换">mysql运算时的数据类型自动转换</h3><p>测试数据生成</p>
+<pre><code><span class="operator"><span class="keyword">create</span> <span class="keyword">database</span> test_db;</span>
+<span class="operator"><span class="keyword">use</span> test_db;</span>
+<span class="operator"><span class="keyword">create</span> <span class="keyword">table</span> <span class="keyword">users</span>(<span class="keyword">num</span> <span class="built_in">int</span> <span class="keyword">not</span> <span class="literal">null</span>, <span class="keyword">id</span> <span class="built_in">varchar</span>(<span class="number">30</span>) <span class="keyword">not</span> <span class="literal">null</span>, <span class="keyword">password</span> <span class="built_in">int</span>(<span class="number">30</span>) <span class="keyword">not</span> <span class="literal">null</span>, primary <span class="keyword">key</span>(<span class="keyword">num</span>));</span>
+
+<span class="operator"><span class="keyword">insert</span> <span class="keyword">into</span> <span class="keyword">users</span> <span class="keyword">values</span>(<span class="number">1</span>, <span class="string">'admin'</span>, <span class="string">'111111'</span>);</span>
+<span class="operator"><span class="keyword">insert</span> <span class="keyword">into</span> <span class="keyword">users</span> <span class="keyword">values</span>(<span class="number">2</span>, <span class="string">'222wh1ant'</span>, <span class="string">'222222'</span>);</span>
+<span class="operator"><span class="keyword">insert</span> <span class="keyword">into</span> <span class="keyword">users</span> <span class="keyword">values</span>(<span class="number">3</span>, <span class="string">'secuholic'</span>, <span class="string">'333333'</span>);</span>
+</code></pre><p>测试1：</p>
+<pre><code><span class="operator"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">users</span> <span class="keyword">where</span> <span class="keyword">id</span> = <span class="number">0</span></span>
+</code></pre><p>结果为 </p>
+<p><img src="/images/mysqlfeature1.jpg" alt="mysql"></p>
+<p>之所以会有这个结果，是因为id给出的条件是=0，0是一个int型的变量。所以mysql会把表中id一列的数据先转换成int型再跟0比较，’admin’和’secuholic’字符串转换成数字是0，’222wh1ant’转换成数字是222，这个规则是php中的类型转换差不多的。我们可以测试一下：</p>
+<pre><code><span class="operator"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">users</span> <span class="keyword">where</span> <span class="keyword">id</span> =<span class="number">222</span></span>
+</code></pre><p>结果果然跟预期一样。</p>
+<p><img src="/images/mysqlfeature2.jpg" alt="mysql"></p>
+<p>上面的例子是比较运算=的类型转换。其他的运算符也存在同样的类型转换问题。比如:</p>
+<p>空字符串减去空字符串，运算结果是数字零。<br><img src="/images/mysqlfeature3.jpg" alt="mysql"></p>
+<p>利用这个特性可以构造出一些比较有意思的利用方式。比如：<a href="http://www.sqlzoo.net/hack/" target="_blank" rel="external">http://www.sqlzoo.net/hack/</a></p>
+<p>可以利用这样一个payload来绕过,用户名填</p>
+<pre><code><span class="quoted">'-</span>
+</code></pre><p>密码填</p>
+<pre><code><span class="comment">'</span>
+</code></pre><p>这样构造成的sql语句为</p>
+<pre><code><span class="built_in">where</span> username = <span class="string">''</span>-<span class="string">' and password='</span><span class="string">''</span>
+</code></pre><p>最终的运算相当于空字符串减去字符串” and password=’” 运算结果为0，最终的where条件为where<br>username = 0。</p>
+<p>当然这个地方还有个小trick就是最后一个字符串’ and password=’’’这里怎么理解。在字符串中单引号是可以为单引号转义的，只要单引号是成对的就不不会报错。可以参考这里<a href="http://websec.ca/kb/sql_injection" target="_blank" rel="external">http://websec.ca/kb/sql_injection</a></p>
+<pre><code>Given the query <span class="operator"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="keyword">Table</span> <span class="keyword">WHERE</span> <span class="keyword">id</span> = <span class="string">'1'</span>;</span>
+
+'    False
+''    True
+"    False
+""    True
+\    False
+\\    True
+
+Examples:
+<span class="operator"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> Articles <span class="keyword">WHERE</span> <span class="keyword">id</span> = <span class="string">'1'''</span>;</span>
+<span class="operator"><span class="keyword">SELECT</span> <span class="number">1</span> <span class="keyword">FROM</span> dual <span class="keyword">WHERE</span> <span class="number">1</span> = <span class="string">'1'''''''''''''</span><span class="keyword">UNION</span> <span class="keyword">SELECT</span> <span class="string">'2'</span>;</span>
+Notes:
+
+You can <span class="operator"><span class="keyword">use</span> <span class="keyword">as</span> many apostrophes <span class="keyword">and</span> quotations <span class="keyword">as</span> you want <span class="keyword">as</span> <span class="keyword">long</span> <span class="keyword">as</span> they pair up.
+It <span class="keyword">is</span> also possible <span class="keyword">to</span> continue the <span class="keyword">statement</span> <span class="keyword">after</span> the <span class="keyword">chain</span> <span class="keyword">of</span> quotes.
+Quotes escape quotes.</span>
+</code></pre>  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://stayliv3.github.io/2014/10/31/mysqlfeature/" data-title="mysql的几个小特性在sql注入中的应用 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2014/11/17/strcmp/" title="strcmp绕过问题">
+  <strong>上一篇：</strong><br/>
+  <span>
+  strcmp绕过问题</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2014/10/29/ecshoplogin/"  title="ecshop前台任意用户登录漏洞分析记录">
+ <strong>下一篇：</strong><br/> 
+ <span>ecshop前台任意用户登录漏洞分析记录
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2014/10/31/mysqlfeature/" data-title="mysql的几个小特性在sql注入中的应用" data-url="http://stayliv3.github.io/2014/10/31/mysqlfeature/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#mysql运算时的数据类型自动转换"><span class="toc-number">1.</span> <span class="toc-text">mysql运算时的数据类型自动转换</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/前端安全/" title="前端安全">前端安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/加密解密/" title="加密解密">加密解密<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/古典密码/" title="古典密码">古典密码<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/奇技淫巧/" title="奇技淫巧">奇技淫巧<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>1</sup></a></li>
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统运维/" title="系统运维">系统运维<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/黑盒测试/" title="黑盒测试">黑盒测试<sup>6</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/php/" title="php">php<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/qemu/" title="qemu">qemu<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/sqlmap/" title="sqlmap">sqlmap<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/折腾/" title="折腾">折腾<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcpdump/" title="tcpdump">tcpdump<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/密码学/" title="密码学">密码学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/加密解密/" title="加密解密">加密解密<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ctf/" title="ctf">ctf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/docker/" title="docker">docker<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/php-wdcp/" title="php,wdcp">php,wdcp<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/解包/" title="解包">解包<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/binwalk/" title="binwalk">binwalk<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/hackrf/" title="hackrf">hackrf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/burpsuite/" title="burpsuite">burpsuite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/brupsuite/" title="brupsuite">brupsuite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Yii/" title="Yii">Yii<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://sco4x0.com" target="_blank" title="sco4x0&#39;s blog">sco4x0&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://virusdefender.net" target="_blank" title="virusdefender&#39;s blog">virusdefender&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackersb.cn/" target="_blank" title="Striker&#39;s blog">Striker&#39;s blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Larry Page in Google. <br/>
+			This is my blog,believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2015 
+		
+		<a href="/about" target="_blank" title="xd_xd">xd_xd</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"xdxd"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253479891'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1253479891' type='text/javascript'%3E%3C/script%3E"));</script>
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

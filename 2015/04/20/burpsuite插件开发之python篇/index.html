@@ -1,0 +1,624 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>burpsuite插件开发之python篇 | xd_xd&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="xd_xd">
+    
+
+    
+    <meta name="description" content="#简介
+Burpsuite作为web测试的神器，已经人手必备了。它提供的一系列互相配合的工具，极大的提高了手工测试的效率，从1.5版本开始，Burpsuite开始支持扩展。用户可以自己开发扩展实现一些特殊的需求。不过目前关于Burpsuite扩展开发的中文资料很少。这里抛砖引玉总结一下学习的过程。
+#基础知识
+目前burpsuite官方支持用java，python，ruby开发扩展，选择还是很多的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="burpsuite插件开发之python篇">
+<meta property="og:url" content="http://stayliv3.github.io/2015/04/20/burpsuite插件开发之python篇/index.html">
+<meta property="og:site_name" content="xd_xd's blog">
+<meta property="og:description" content="#简介
+Burpsuite作为web测试的神器，已经人手必备了。它提供的一系列互相配合的工具，极大的提高了手工测试的效率，从1.5版本开始，Burpsuite开始支持扩展。用户可以自己开发扩展实现一些特殊的需求。不过目前关于Burpsuite扩展开发的中文资料很少。这里抛砖引玉总结一下学习的过程。
+#基础知识
+目前burpsuite官方支持用java，python，ruby开发扩展，选择还是很多的">
+<meta property="og:image" content="http://stayliv3.github.io/images/burpsuiteext1.png">
+<meta property="og:image" content="http://stayliv3.github.io/images/burpsuiteext2.png">
+<meta property="og:image" content="http://stayliv3.github.io/images/burpsuiteext3.png">
+<meta property="og:image" content="http://stayliv3.github.io/images/burpsuiteext4.png">
+<meta property="og:image" content="http://stayliv3.github.io/images/burpsuiteext5.png">
+<meta property="og:image" content="http://stayliv3.github.io/images/burpsuiteext6.png">
+<meta property="og:image" content="http://stayliv3.github.io/images/burpsuiteext7.png">
+<meta property="og:image" content="http://stayliv3.github.io/images/burpsuiteext8.png">
+<meta property="og:image" content="http://stayliv3.github.io/images/burpsuiteext9.png">
+<meta property="og:updated_time" content="2015-11-24T03:27:37.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="burpsuite插件开发之python篇">
+<meta name="twitter:description" content="#简介
+Burpsuite作为web测试的神器，已经人手必备了。它提供的一系列互相配合的工具，极大的提高了手工测试的效率，从1.5版本开始，Burpsuite开始支持扩展。用户可以自己开发扩展实现一些特殊的需求。不过目前关于Burpsuite扩展开发的中文资料很少。这里抛砖引玉总结一下学习的过程。
+#基础知识
+目前burpsuite官方支持用java，python，ruby开发扩展，选择还是很多的">
+
+    
+    <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="xd_xd&#39;s blog" title="xd_xd&#39;s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="xd_xd&#39;s blog">xd_xd&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:stayliv3.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/04/20/burpsuite插件开发之python篇/" title="burpsuite插件开发之python篇" itemprop="url">burpsuite插件开发之python篇</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
+		
+  <p class="article-time">
+    <time datetime="2015-04-20T10:03:03.000Z" itemprop="datePublished"> 发表于 Apr 20 2015</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			
+		
+		</div>
+		
+		<p>#简介</p>
+<p>Burpsuite作为web测试的神器，已经人手必备了。它提供的一系列互相配合的工具，极大的提高了手工测试的效率，从1.5版本开始，Burpsuite开始支持扩展。用户可以自己开发扩展实现一些特殊的需求。不过目前关于Burpsuite扩展开发的中文资料很少。这里抛砖引玉总结一下学习的过程。</p>
+<p>#基础知识</p>
+<p>目前burpsuite官方支持用java，python，ruby开发扩展，选择还是很多的。Brupsuite的扩展可以实现非常多的功能，比如自定义扫描，修改http请求和响应，修改burp配置等等。几乎所以burpsuite功能都支持在扩展中进行控制。所以其实是可以用扩展把自己经常使用的功能做成自动化的。这也应该是一个最终的学习目标。<a href="http://portswigger.net/burp/extender/" target="_blank" rel="external">官方文档</a>是首选的资料。中文介绍资料可以参考<a href="http://drops.wooyun.org/papers/3962" target="_blank" rel="external">BurpSuite扩展API和HelloWold</a>。</p>
+<p>#环境配置</p>
+<p>安装python开发的扩展需要配置Jython环境。<a href="http://www.jython.org/downloads.html" target="_blank" rel="external">Jython下载</a>直接下载Standalone Jar版本就可以。在extender标签页中选择options标签。在python environment中选中刚刚下载的jython standalon jar。</p>
+<p><img src="/images/burpsuiteext1.png" alt="images"></p>
+<p>如果下载的是jython installer。需要在安装的时候选择standlone类型。之后再在burpsuite中选择安装目录下的jython.jar.<br><img src="/images/burpsuiteext2.png" alt=""></p>
+<p>如果没有配置好jython环境。添加python编写的扩展会报错。<br><img src="/images/burpsuiteext3.png" alt=""></p>
+<p>#常用接口介绍</p>
+<p>burpsuite的文档中给了多个样例以及详细的<a href="http://portswigger.net/burp/extender/api/index.html" target="_blank" rel="external">API文档</a>。<br><img src="/images/burpsuiteext4.png" alt=""></p>
+<p>个人觉得最快的方法还是阅读现成的扩展代码。很多需求稍微修改现成的扩展就可以完成。Burp的Bapp store里的扩展安装之后默认是在burpsuite同目录下的bapps的文件夹内。<br><img src="/images/burpsuiteext5.png" alt=""></p>
+<p>简单介绍一下几个最常用的接口：</p>
+<p>interface IBurpExtender: 这个接口所有的扩展都需要实现. </p>
+<p>Interface IBurpExtenderCallbacks: 这个接口几乎是必备的。在编写扩展的过程中会经常用到。</p>
+<p>Interface IExtensionHelpers: 这个接口是新加的。提供了编写扩展中常用的一些通用函数，比如编解码、构造请求等。这样就不需要重负造轮子了。</p>
+<p>Interface IHttpRequestResponse: 这个接口包含了每个请求和响应的细节。在Brupsuite中的每个请求或者响应都是IHttpRequestResponse实例。</p>
+<p>#第一个burpsuite扩展</p>
+<p>在web测试过程中，使用repeater调试接口是很常见的一个使用方式。现在很多接口都是返回包含unicode明文的json数据，比如这种</p>
+<pre><code>{"<span class="attribute">result</span>":<span class="value"><span class="string">"passwd_error"</span></span>,"<span class="attribute">msg</span>":<span class="value"><span class="string">"\u7528\u6237\u540d\u5bc6\u7801\u9519\u8bef"</span></span>}
+</code></pre><p>由于brup的decoder没有对unicode的解码，每次想要看一下这些unicode是是什么意思的时候都需要复制出来使用其他工具解码。可以使用burp扩展来实现自动解码unicode，从而提高测试的流畅性。</p>
+<p>首先引入所需要的模块，在BurpExtender类中定义我们需要的方法。</p>
+<p><img src="/images/burpsuiteext6.png" alt=""></p>
+<p>toolFlag是burpsuite中对工具进行识别的方式，proxy是4，repeater是64.可以在<a href="http://portswigger.net/burp/extender/api/constant-values.html#burp.IBurpExtenderCallbacks" target="_blank" rel="external">文档</a>里查看所有工具对应的flag值。这里几行代码就是先解码返回值，查找unicode明文，进行解码，之后再更新响应的body。</p>
+<p><img src="/images/burpsuiteext7.png" alt=""></p>
+<p>加载扩展之前，repeater看到的返回：</p>
+<p><img src="/images/burpsuiteext8.png" alt=""></p>
+<p>加载扩展之后：</p>
+<p><img src="/images/burpsuiteext9.png" alt=""></p>
+<p>代码下载地址:<a href="https://github.com/stayliv3/burpsuite-changeU" target="_blank" rel="external">github</a></p>
+<p>#相关资料</p>
+<p><a href="http://drops.wooyun.org/papers/3962" target="_blank" rel="external">BurpSuite 扩展开发[1]-API与HelloWold</a><br><a href="http://www.burpextensions.com/category/tutorials/" target="_blank" rel="external">burpextensions.com</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/黑盒测试/">黑盒测试</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/burpsuite/">burpsuite</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://stayliv3.github.io/2015/04/20/burpsuite插件开发之python篇/" data-title="burpsuite插件开发之python篇 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015/04/24/关于密码哈希存储方案的设计/" title="关于密码哈希存储方案的设计">
+  <strong>上一篇：</strong><br/>
+  <span>
+  关于密码哈希存储方案的设计</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015/04/17/失效的撞库防御策略之cookie/"  title="失效的撞库防御策略之cookie">
+ <strong>下一篇：</strong><br/> 
+ <span>失效的撞库防御策略之cookie
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2015/04/20/burpsuite插件开发之python篇/" data-title="burpsuite插件开发之python篇" data-url="http://stayliv3.github.io/2015/04/20/burpsuite插件开发之python篇/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ 
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/前端安全/" title="前端安全">前端安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/加密解密/" title="加密解密">加密解密<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/古典密码/" title="古典密码">古典密码<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/奇技淫巧/" title="奇技淫巧">奇技淫巧<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>1</sup></a></li>
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统运维/" title="系统运维">系统运维<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/黑盒测试/" title="黑盒测试">黑盒测试<sup>6</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/php/" title="php">php<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/qemu/" title="qemu">qemu<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/sqlmap/" title="sqlmap">sqlmap<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/折腾/" title="折腾">折腾<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcpdump/" title="tcpdump">tcpdump<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/密码学/" title="密码学">密码学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/加密解密/" title="加密解密">加密解密<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ctf/" title="ctf">ctf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/docker/" title="docker">docker<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/php-wdcp/" title="php,wdcp">php,wdcp<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/解包/" title="解包">解包<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/binwalk/" title="binwalk">binwalk<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/hackrf/" title="hackrf">hackrf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/burpsuite/" title="burpsuite">burpsuite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/brupsuite/" title="brupsuite">brupsuite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Yii/" title="Yii">Yii<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://sco4x0.com" target="_blank" title="sco4x0&#39;s blog">sco4x0&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://virusdefender.net" target="_blank" title="virusdefender&#39;s blog">virusdefender&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackersb.cn/" target="_blank" title="Striker&#39;s blog">Striker&#39;s blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Larry Page in Google. <br/>
+			This is my blog,believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2015 
+		
+		<a href="/about" target="_blank" title="xd_xd">xd_xd</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"xdxd"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253479891'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1253479891' type='text/javascript'%3E%3C/script%3E"));</script>
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

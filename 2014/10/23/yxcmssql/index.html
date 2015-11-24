@@ -1,0 +1,613 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>yxcms一个二次注入分析 | xd_xd&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="xd_xd">
+    
+
+    
+    <meta name="description" content="漏洞来源:http://huakai.paxmac.org/?p=751分析版本1.2.6
+/protected/apps/member/controller/photoController.php
+添加图集的时候，public function add() 中$data[‘sort’]=$_POST[‘sort’];post的sort变量进入数据data中，之后插入了数据库if(model(‘p">
+<meta property="og:type" content="article">
+<meta property="og:title" content="yxcms一个二次注入分析">
+<meta property="og:url" content="http://stayliv3.github.io/2014/10/23/yxcmssql/index.html">
+<meta property="og:site_name" content="xd_xd's blog">
+<meta property="og:description" content="漏洞来源:http://huakai.paxmac.org/?p=751分析版本1.2.6
+/protected/apps/member/controller/photoController.php
+添加图集的时候，public function add() 中$data[‘sort’]=$_POST[‘sort’];post的sort变量进入数据data中，之后插入了数据库if(model(‘p">
+<meta property="og:image" content="http://stayliv3.github.io/images/yxcmssql11.jpg">
+<meta property="og:image" content="http://stayliv3.github.io/images/yxcmssql2.jpg">
+<meta property="og:image" content="http://stayliv3.github.io/images/yxcmssql3.jpg">
+<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="yxcms一个二次注入分析">
+<meta name="twitter:description" content="漏洞来源:http://huakai.paxmac.org/?p=751分析版本1.2.6
+/protected/apps/member/controller/photoController.php
+添加图集的时候，public function add() 中$data[‘sort’]=$_POST[‘sort’];post的sort变量进入数据data中，之后插入了数据库if(model(‘p">
+
+    
+    <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="xd_xd&#39;s blog" title="xd_xd&#39;s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="xd_xd&#39;s blog">xd_xd&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:stayliv3.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2014/10/23/yxcmssql/" title="yxcms一个二次注入分析" itemprop="url">yxcms一个二次注入分析</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
+		
+  <p class="article-time">
+    <time datetime="2014-10-22T19:44:18.000Z" itemprop="datePublished"> 发表于 Oct 23 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			
+		
+		</div>
+		
+		<p>漏洞来源:<a href="http://huakai.paxmac.org/?p=751" target="_blank" rel="external">http://huakai.paxmac.org/?p=751</a><br>分析版本1.2.6</p>
+<p>/protected/apps/member/controller/photoController.php</p>
+<p>添加图集的时候，public function add() 中$data[‘sort’]=$_POST[‘sort’];post的sort变量进入数据data中，之后插入了数据库if(model(‘photo’)-&gt;insert($data))。</p>
+<p>添加图集执行的sql如下：</p>
+<pre><code><span class="number">2014</span>/<span class="number">10</span>/<span class="number">22</span> <span class="number">16</span>:<span class="number">08</span>    INSERT INTO yx_photo  (<span class="escape">`a</span>ccount<span class="escape">`,</span><span class="escape">`s</span>ort<span class="escape">`,</span><span class="escape">`e</span>xsort<span class="escape">`,</span><span class="escape">`t</span>itle<span class="escape">`,</span><span class="escape">`k</span>eywords<span class="escape">`,</span><span class="escape">`p</span>icture<span class="escape">`,</span><span class="escape">`d</span>escription<span class="escape">`,</span><span class="escape">`c</span>ontent<span class="escape">`,</span><span class="escape">`m</span>ethod<span class="escape">`,</span><span class="escape">`t</span>pcontent<span class="escape">`,</span><span class="escape">`i</span>spass<span class="escape">`,</span><span class="escape">`r</span>ecmd<span class="escape">`,</span><span class="escape">`h</span>its<span class="escape">`,</span><span class="escape">`n</span>order<span class="escape">`,</span><span class="escape">`a</span>ddtime<span class="escape">`,</span><span class="escape">`p</span>hotolist<span class="escape">`,</span><span class="escape">`c</span>onlist<span class="escape">`)</span> VALUES ('yx_test',',<span class="number">000000</span>,<span class="number">100002</span>\'','','<span class="number">11111111111</span>\\\'','<span class="number">11111111111</span>\\\'','﻿array(<span class="number">1</span>) {  [\<span class="string">"Filedata\"</span>]=&gt;  array(<span class="number">5</span>) {    [\<span class="string">"name\"</span>]=&gt;    string(<span class="number">12</span>) \<span class="string">"Penguins.jpg\"</span>    [\<span class="string">"type\"</span>]=&gt;    string(<span class="number">24</span>) \<span class="string">"application/octet-stream\"</span>    [\<span class="string">"tmp_name\"</span>]=&gt;    string(<span class="number">47</span>) \<span class="string">"C:\\Users\\pentest\\AppData\\Local\\Temp\\phpB93C.tmp\"</span>    [\<span class="string">"error\"</span>]=&gt;    int(<span class="number">0</span>)    [\<span class="string">"size\"</span>]=&gt;    int(<span class="number">777835</span>)  }}<span class="number">1410220407112004315418</span>.jpg ','<span class="number">11111111111</span>\\\'','<span class="number">11111111111</span>\\\'','photo/content','photo_content','<span class="number">0</span>','<span class="number">0</span>','<span class="number">0</span>','<span class="number">0</span>','<span class="number">1413965310</span>','﻿array(<span class="number">1</span>) {\r\n  [','')
+</code></pre><p>这里可以看到由于yxcms一些防御策略的缺陷，进行了两次转义，插入了数据库。根据前辈的分析，验证发现sql报错。<br><img src="/images/yxcmssql11.jpg" alt="sql"></p>
+<p>这里一开始不知道怎么定位分析这个问题。通过一番尝试发现整个的思路可以是这样的。分析添加图集的函数发现sort直接进入了数据库。然后搜索</p>
+<pre><code>model<span class="command">\(</span><span class="command">\'</span>photo<span class="command">\'</span><span class="command">\)</span><span class="special">[</span><span class="command">\s</span><span class="command">\S</span><span class="special">]</span>+<span class="command">\[</span>'sort'<span class="command">\]</span>
+</code></pre><p>根据yxcms的编码特点，一个文件中进行了photo表的数据库操作，并且该文件中含有sort字符串，匹配的结果就只有两条，基本就可以定位到这个问题了。只是一个猜测~~<br>跟进到columncontroller的content函数，跟到photocon函数里。</p>
+<pre><code><span class="variable">$sortid</span>=substr(<span class="variable">$info</span>[<span class="string">'sort'</span>],-<span class="number">6</span>,<span class="number">6</span>);
+        <span class="variable">$tabid</span>=model(<span class="string">'sort'</span>)-&gt;find(<span class="string">"id='{$sortid}'"</span>,<span class="string">'extendid'</span>);
+</code></pre><p>substr函数反回字符串的子串：</p>
+<pre><code>&lt;?php
+<span class="variable">$rest</span> = substr(<span class="string">"abcdef"</span>, -<span class="number">1</span>);    // 返回 <span class="string">"f"</span>
+<span class="variable">$rest</span> = substr(<span class="string">"abcdef"</span>, -<span class="number">2</span>);    // 返回 <span class="string">"ef"</span>
+<span class="variable">$rest</span> = substr(<span class="string">"abcdef"</span>, -<span class="number">3</span>, <span class="number">1</span>); // 返回 <span class="string">"d"</span>
+?&gt; 
+</code></pre><p>所以上面这个点限制了字符串的长度，到270行看到下面的代码：</p>
+<pre><code>//获取拓展数据结束
+        <span class="variable">$topsort</span>=substr(<span class="variable">$info</span>[<span class="string">'sort'</span>],<span class="number">0</span>,<span class="number">14</span>); //获取顶级类
+        <span class="variable">$upnews</span>=model(<span class="string">'photo'</span>)-&gt;find(<span class="string">"ispass='1'  AND id&gt;'$id' AND sort like '{$topsort}%'"</span>,<span class="string">'id,title,method'</span>,<span class="string">'id ASC'</span>,<span class="number">1</span>);//上一篇
+        <span class="variable">$downnews</span>=model(<span class="string">'photo'</span>)-&gt;find(<span class="string">"ispass='1' AND id&lt;'$id' AND sort like '{$topsort}%'"</span>,<span class="string">'id,title,method'</span>,<span class="string">'id DESC'</span>,<span class="number">1</span>);//下一篇
+        <span class="variable">$crumbs</span>=<span class="variable">$this-</span>&gt;crumbs(<span class="variable">$info</span>[<span class="string">'sort'</span>]);//面包屑导航
+</code></pre><p>跟进crumbs函数：</p>
+<pre><code>protected  <span class="keyword">function</span>  crumbs(<span class="variable">$path</span>=<span class="string">',000000'</span>)
+{
+    <span class="variable">$crumb</span>=array();
+    if(strlen(<span class="variable">$path</span>)&gt;<span class="number">7</span>){
+        <span class="variable">$ids</span>=substr(<span class="variable">$path</span>,<span class="number">8</span>);
+        <span class="variable">$crumb</span>=model(<span class="string">'sort'</span>)-&gt;select(<span class="string">"id IN($ids)"</span>,<span class="string">'id,type,name,ename,method,url,extendid'</span>,<span class="string">'deep'</span>);
+        foreach (<span class="variable">$crumb</span> as <span class="variable">$key</span>=&gt;<span class="variable">$vo</span>){
+            <span class="variable">$crumb</span>[<span class="variable">$key</span>][<span class="string">'url'</span>]=getURl(<span class="variable">$vo</span>[<span class="string">'type'</span>],<span class="variable">$vo</span>[<span class="string">'method'</span>],<span class="variable">$vo</span>[<span class="string">'url'</span>],<span class="variable">$vo</span>[<span class="string">'id'</span>],<span class="variable">$vo</span>[<span class="string">'extendid'</span>],<span class="variable">$vo</span>[<span class="string">'ename'</span>]);
+        }
+    }
+    return <span class="variable">$crumb</span>;
+}
+</code></pre><p>这里$ids也没有加单引号。</p>
+<p><img src="/images/yxcmssql2.jpg" alt="sql"></p>
+<p>通过黑盒的方式测试出字段3会回显，获得数据库版本的信息。</p>
+<p><img src="/images/yxcmssql3.jpg" alt="sql"></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://stayliv3.github.io/2014/10/23/yxcmssql/" data-title="yxcms一个二次注入分析 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2014/10/27/xctf1/" title="xctf web150">
+  <strong>上一篇：</strong><br/>
+  <span>
+  xctf web150</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2014/10/21/yxcms/"  title="yxcms1.2.6任意文件删除漏洞分析">
+ <strong>下一篇：</strong><br/> 
+ <span>yxcms1.2.6任意文件删除漏洞分析
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2014/10/23/yxcmssql/" data-title="yxcms一个二次注入分析" data-url="http://stayliv3.github.io/2014/10/23/yxcmssql/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ 
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/前端安全/" title="前端安全">前端安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/加密解密/" title="加密解密">加密解密<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/古典密码/" title="古典密码">古典密码<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/奇技淫巧/" title="奇技淫巧">奇技淫巧<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>1</sup></a></li>
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统运维/" title="系统运维">系统运维<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/黑盒测试/" title="黑盒测试">黑盒测试<sup>6</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/php/" title="php">php<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/qemu/" title="qemu">qemu<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/sqlmap/" title="sqlmap">sqlmap<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/折腾/" title="折腾">折腾<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcpdump/" title="tcpdump">tcpdump<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/密码学/" title="密码学">密码学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/加密解密/" title="加密解密">加密解密<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ctf/" title="ctf">ctf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/docker/" title="docker">docker<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/php-wdcp/" title="php,wdcp">php,wdcp<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/解包/" title="解包">解包<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/binwalk/" title="binwalk">binwalk<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/hackrf/" title="hackrf">hackrf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/burpsuite/" title="burpsuite">burpsuite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/brupsuite/" title="brupsuite">brupsuite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Yii/" title="Yii">Yii<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://sco4x0.com" target="_blank" title="sco4x0&#39;s blog">sco4x0&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://virusdefender.net" target="_blank" title="virusdefender&#39;s blog">virusdefender&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackersb.cn/" target="_blank" title="Striker&#39;s blog">Striker&#39;s blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Larry Page in Google. <br/>
+			This is my blog,believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2015 
+		
+		<a href="/about" target="_blank" title="xd_xd">xd_xd</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"xdxd"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253479891'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1253479891' type='text/javascript'%3E%3C/script%3E"));</script>
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

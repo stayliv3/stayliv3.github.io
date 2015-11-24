@@ -1,0 +1,653 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>xctf web150 | xd_xd&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="xd_xd">
+    
+
+    
+    <meta name="description" content="只只做出来第一题~，说一下第一题。访问给出的url，返回doggy!php!。由于经验不足一开始不知道这是什么意思。根据题目的内容说登录验证有问题，就猜测登录的入口。login.php admin.php都不对。然后尝试Doggy.php也是不存在，根据返回信息说是ubuntu服务器，所以区分大小写。访问doggy.php返回登陆界面。这时候才想到doggy!php!的提示是指doggy.php。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="xctf web150">
+<meta property="og:url" content="http://stayliv3.github.io/2014/10/27/xctf1/index.html">
+<meta property="og:site_name" content="xd_xd's blog">
+<meta property="og:description" content="只只做出来第一题~，说一下第一题。访问给出的url，返回doggy!php!。由于经验不足一开始不知道这是什么意思。根据题目的内容说登录验证有问题，就猜测登录的入口。login.php admin.php都不对。然后尝试Doggy.php也是不存在，根据返回信息说是ubuntu服务器，所以区分大小写。访问doggy.php返回登陆界面。这时候才想到doggy!php!的提示是指doggy.php。">
+<meta property="og:image" content="http://stayliv3.github.io/images/xctf1.jpg">
+<meta property="og:image" content="http://stayliv3.github.io/images/xctf2.jpg">
+<meta property="og:image" content="http://stayliv3.github.io/images/xctf3.jpg">
+<meta property="og:image" content="http://stayliv3.github.io/images/xctf4.jpg">
+<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="xctf web150">
+<meta name="twitter:description" content="只只做出来第一题~，说一下第一题。访问给出的url，返回doggy!php!。由于经验不足一开始不知道这是什么意思。根据题目的内容说登录验证有问题，就猜测登录的入口。login.php admin.php都不对。然后尝试Doggy.php也是不存在，根据返回信息说是ubuntu服务器，所以区分大小写。访问doggy.php返回登陆界面。这时候才想到doggy!php!的提示是指doggy.php。">
+
+    
+    <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="xd_xd&#39;s blog" title="xd_xd&#39;s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="xd_xd&#39;s blog">xd_xd&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:stayliv3.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2014/10/27/xctf1/" title="xctf web150" itemprop="url">xctf web150</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
+		
+  <p class="article-time">
+    <time datetime="2014-10-26T21:01:09.000Z" itemprop="datePublished"> 发表于 Oct 27 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			
+		
+		</div>
+		
+		<p>只只做出来第一题~，说一下第一题。访问给出的url，返回doggy!php!。由于经验不足一开始不知道这是什么意思。根据题目的内容说登录验证有问题，就猜测登录的入口。login.php admin.php都不对。然后尝试Doggy.php也是不存在，根据返回信息说是ubuntu服务器，所以区分大小写。访问doggy.php返回登陆界面。这时候才想到doggy!php!的提示是指doggy.php。毕竟是web的题目，第一步得有web的url或者接口才能继续。</p>
+<p>登陆接口查看源码：</p>
+<pre><code><span class="doctype">&lt;!DOCTYPE html&gt;</span>
+<span class="tag">&lt;<span class="title">style</span>&gt;</span><span class="css">
+ * <span class="rules">{<span class="rule"><span class="attribute">margin</span>:<span class="value"><span class="number">0</span></span></span>; <span class="rule"><span class="attribute">padding</span>:<span class="value"><span class="number">0</span></span></span>;}</span>
+ <span class="tag">body</span> <span class="rules">{<span class="rule"><span class="attribute">background-color</span>:<span class="value"><span class="hexcolor">#ddd</span></span></span>;}</span>
+ <span class="id">#mdiv</span> <span class="rules">{<span class="rule"><span class="attribute">width</span>:<span class="value"><span class="number">200px</span></span></span>; <span class="rule"><span class="attribute">text-align</span>:<span class="value">center</span></span>; <span class="rule"><span class="attribute">margin</span>:<span class="value"><span class="number">50px</span> auto</span></span>;}</span>
+ <span class="tag">input</span><span class="attr_selector">[type=text]</span>,<span class="tag">input</span><span class="attr_selector">[type=[password]</span> <span class="rules">{<span class="rule"><span class="attribute">width</span>:<span class="value"><span class="number">100px</span></span></span>;}</span>
+ <span class="tag">td</span> <span class="rules">{<span class="rule"><span class="attribute">text-align</span>:<span class="value">center</span></span>;}</span>
+</span><span class="tag">&lt;/<span class="title">style</span>&gt;</span>
+<span class="tag">&lt;<span class="title">body</span>&gt;</span>
+AN EASY ONE FROM DOGGY...
+<span class="tag">&lt;<span class="title">form</span> <span class="attribute">method</span>=<span class="value">"post"</span> <span class="attribute">action</span>=<span class="value">"./doggy.php"</span>&gt;</span>
+<span class="tag">&lt;<span class="title">div</span> <span class="attribute">id</span>=<span class="value">"mdiv"</span>&gt;</span>
+<span class="tag">&lt;<span class="title">table</span>&gt;</span>
+<span class="tag">&lt;<span class="title">tr</span>&gt;</span><span class="tag">&lt;<span class="title">td</span>&gt;</span>ID<span class="tag">&lt;/<span class="title">td</span>&gt;</span><span class="tag">&lt;<span class="title">td</span>&gt;</span><span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"text"</span> <span class="attribute">name</span>=<span class="value">"id"</span> /&gt;</span><span class="tag">&lt;/<span class="title">td</span>&gt;</span><span class="tag">&lt;/<span class="title">tr</span>&gt;</span>
+<span class="tag">&lt;<span class="title">tr</span>&gt;</span><span class="tag">&lt;<span class="title">td</span>&gt;</span>PW<span class="tag">&lt;/<span class="title">td</span>&gt;</span><span class="tag">&lt;<span class="title">td</span>&gt;</span><span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"password"</span> <span class="attribute">name</span>=<span class="value">"ps"</span> /&gt;</span><span class="tag">&lt;/<span class="title">td</span>&gt;</span><span class="tag">&lt;/<span class="title">tr</span>&gt;</span>
+<span class="tag">&lt;<span class="title">tr</span>&gt;</span><span class="tag">&lt;<span class="title">td</span> <span class="attribute">colspan</span>=<span class="value">"2"</span>&gt;</span><span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"submit"</span> <span class="attribute">value</span>=<span class="value">"login"</span> /&gt;</span><span class="tag">&lt;/<span class="title">td</span>&gt;</span><span class="tag">&lt;/<span class="title">tr</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">table</span>&gt;</span>
+ <span class="comment">&lt;!-- &lt;div&gt;ni kan bu jian wo&lt;a href='?view-source'&gt;get source&lt;/a&gt;&lt;/div&gt; --&gt;</span>
+<span class="tag">&lt;/<span class="title">form</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">body</span>&gt;</span>
+<span class="comment">&lt;!--
+you have blocked accounts.
+adog / gougou
+--&gt;</span>
+</code></pre><p>有两个有价值的注释</p>
+<pre><code><span class="comment">&lt;!-- &lt;div&gt;ni kan bu jian wo&lt;a href='?view-source'&gt;get source&lt;/a&gt;&lt;/div&gt; --&gt;</span>
+    you have blocked accounts.
+adog / gougou
+</code></pre><p>一个a标签，指向?view-source的路径。访问返回了当前文件的源码。</p>
+<pre><code>&lt;?php
+
+<span class="keyword">if</span> (isset($_GET[<span class="string">'view-source'</span>])) {
+    show_source(__FILE_<span class="number">_</span>);
+    exit();
+}
+
+
+
+ <span class="keyword">if</span>(isset($_POST[<span class="string">'id'</span>]) &amp;&amp; isset($_POST[<span class="string">'ps'</span>])){
+  include(<span class="string">"flag.php"</span>);
+
+  mysql_connect(<span class="string">"localhost"</span>,<span class="string">"adog"</span>,<span class="string">"adog123"</span>);
+  mysql_select_db (<span class="string">"adog"</span>);
+  mysql_query(<span class="string">"set names utf8"</span>);
+
+  <span class="variable">$key</span> = flag();
+
+  <span class="variable">$id</span> = mysql_real_escape_string(trim($_POST[<span class="string">'id'</span>]));
+  <span class="variable">$ps</span> = mysql_real_escape_string(trim($_POST[<span class="string">'ps'</span>]));
+
+  <span class="variable">$row</span>=mysql_fetch_array(mysql_query(<span class="string">"select * from users where id='$id' and ps=md5('$ps')"</span>));
+
+  if(isset(<span class="variable">$row</span>[<span class="string">'id'</span>])){
+   if(<span class="variable">$id</span>==<span class="string">'adog'</span>){
+    echo <span class="string">"your account is blocked"</span>;
+   }else{
+    echo <span class="string">"login ok"</span>.<span class="string">"&lt;br /&gt;"</span>;
+    echo <span class="string">"Password : "</span>.<span class="variable">$key</span>;
+   }
+  }else{
+   echo <span class="string">"wrong.."</span>;
+  }
+ }
+?&gt;
+</code></pre><p>查看源码，发现进行了转义，所以第一猜想的注入就不存在了。根据给出的已经blocked的帐号，猜测要点应该是绕过if($id==’adog’)的判断，进入login ok的逻辑。注意这里判断采用的是$id而不是数据库取出的$row[‘id’]。进行一个简单的测试.</p>
+<p><img src="/images/xctf1.jpg" alt="1"></p>
+<p>发现当字符串后面有空格的时候，mysql查询的时候是忽略这些空格的。所以这种情况下，$id和$row[‘id’]就不想等了。一个是’admin\s\s\s\s\s\s’一个是’admin’。但是$id在获取的时候进行了trim处理。$id = mysql_real_escape_string(trim($_POST[‘id’]))。所以空格肯定不可以用了。这个方向也比较明确，可以尝试fuzz看看是否有其他的字符会想空格一样被mysql忽略同时不会被trim函数过滤掉。</p>
+<pre><code>trim(PHP <span class="number">4</span>, PHP <span class="number">5</span>)
+
+trim — 去除字符串首尾处的空白字符（或者其他字符）
+
+说明¶string trim ( string <span class="variable">$str</span> [, string <span class="variable">$charlist</span> = <span class="string">" \t\n\r\0\x0B"</span> ] )
+此函数返回字符串 str 去除首尾空白字符后的结果。如果不指定第二个参数，trim() 将去除这些字符： 
+
+<span class="string">" "</span> (ASCII <span class="number">32</span> (<span class="number">0x20</span>))，普通空格符。 
+<span class="string">"\t"</span> (ASCII <span class="number">9</span> (<span class="number">0x09</span>))，制表符。 
+<span class="string">"\n"</span> (ASCII <span class="number">10</span> (<span class="number">0x0A</span>))，换行符。 
+<span class="string">"\r"</span> (ASCII <span class="number">13</span> (<span class="number">0x0D</span>))，回车符。 
+<span class="string">"\0"</span> (ASCII <span class="number">0</span> (<span class="number">0x00</span>))，空字节符。 
+<span class="string">"\x0B"</span> (ASCII <span class="number">11</span> (<span class="number">0x0B</span>))，垂直制表符。 
+</code></pre><p>直接fuzz的结果如下，有6个字符会被trim过滤掉。跟php文档的说明一直。从0xc2-0xef的字符的字符会被过滤掉。php中指定了mysql使用的字符集是uft-8，mysql_query(“set names utf8”)。utf-8是兼容us-ASCII的字符集。从0x80-0xFF在utf-8中都没有指定对应的字符，所以这个段内的字符都是非法字符。<a href="http://www.leavesongs.com/PENETRATION/Mini-XCTF-Writeup.html" target="_blank" rel="external">XCTF两道web题目的writeup</a>这里fuzz显示了的字符应该是浏览器设置了8859系列字符集的原因。</p>
+<p><img src="/images/xctf2.jpg" alt="1"><br><img src="/images/xctf3.jpg" alt="1"><br><img src="/images/xctf4.jpg" alt="1"></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://stayliv3.github.io/2014/10/27/xctf1/" data-title="xctf web150 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2014/10/27/mysql布尔类型和php布尔类型的区别/" title="关于mysql中字符串转换成布尔类型数据">
+  <strong>上一篇：</strong><br/>
+  <span>
+  关于mysql中字符串转换成布尔类型数据</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2014/10/23/yxcmssql/"  title="yxcms一个二次注入分析">
+ <strong>下一篇：</strong><br/> 
+ <span>yxcms一个二次注入分析
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2014/10/27/xctf1/" data-title="xctf web150" data-url="http://stayliv3.github.io/2014/10/27/xctf1/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ 
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/前端安全/" title="前端安全">前端安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/加密解密/" title="加密解密">加密解密<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/古典密码/" title="古典密码">古典密码<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/奇技淫巧/" title="奇技淫巧">奇技淫巧<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>1</sup></a></li>
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统运维/" title="系统运维">系统运维<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/黑盒测试/" title="黑盒测试">黑盒测试<sup>6</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/php/" title="php">php<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/qemu/" title="qemu">qemu<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/sqlmap/" title="sqlmap">sqlmap<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/折腾/" title="折腾">折腾<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcpdump/" title="tcpdump">tcpdump<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/密码学/" title="密码学">密码学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/加密解密/" title="加密解密">加密解密<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ctf/" title="ctf">ctf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/docker/" title="docker">docker<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/php-wdcp/" title="php,wdcp">php,wdcp<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/解包/" title="解包">解包<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/binwalk/" title="binwalk">binwalk<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/hackrf/" title="hackrf">hackrf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/burpsuite/" title="burpsuite">burpsuite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/brupsuite/" title="brupsuite">brupsuite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Yii/" title="Yii">Yii<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://sco4x0.com" target="_blank" title="sco4x0&#39;s blog">sco4x0&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://virusdefender.net" target="_blank" title="virusdefender&#39;s blog">virusdefender&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackersb.cn/" target="_blank" title="Striker&#39;s blog">Striker&#39;s blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Larry Page in Google. <br/>
+			This is my blog,believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2015 
+		
+		<a href="/about" target="_blank" title="xd_xd">xd_xd</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"xdxd"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253479891'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1253479891' type='text/javascript'%3E%3C/script%3E"));</script>
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

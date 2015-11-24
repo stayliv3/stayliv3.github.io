@@ -1,0 +1,610 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>逆向路由器固件之解包 | xd_xd&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="xd_xd">
+    
+
+    
+    <meta name="description" content="这个系列的文章以逆向路由器固件的方式来挖掘路由器中存在的漏洞。本篇文章主要以介绍解包固件工具为主。文中演示用的固件可以在这里下载。由于针对设备的攻击越来越多，很多厂商把不提供固件下载作为一种安全策略。所有有些时候只能通过物理的方式从设备中导出固件。后续的文章中会介绍相关技术。
+##通用的linux RE工具
+file — 用来检测是否是有效的文件和文件类型hexdump —16进制导出工具stri">
+<meta property="og:type" content="article">
+<meta property="og:title" content="逆向路由器固件之解包">
+<meta property="og:url" content="http://stayliv3.github.io/2015/08/24/逆向路由器固件之解包/index.html">
+<meta property="og:site_name" content="xd_xd's blog">
+<meta property="og:description" content="这个系列的文章以逆向路由器固件的方式来挖掘路由器中存在的漏洞。本篇文章主要以介绍解包固件工具为主。文中演示用的固件可以在这里下载。由于针对设备的攻击越来越多，很多厂商把不提供固件下载作为一种安全策略。所有有些时候只能通过物理的方式从设备中导出固件。后续的文章中会介绍相关技术。
+##通用的linux RE工具
+file — 用来检测是否是有效的文件和文件类型hexdump —16进制导出工具stri">
+<meta property="og:image" content="http://stayliv3.github.io/images/Filetool.png">
+<meta property="og:image" content="http://stayliv3.github.io/images/Hexdump.png">
+<meta property="og:image" content="http://stayliv3.github.io/images/stringsuboot.png">
+<meta property="og:image" content="http://stayliv3.github.io/images/Binwalkresults.png">
+<meta property="og:image" content="http://stayliv3.github.io/images/fmk1.png">
+<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="逆向路由器固件之解包">
+<meta name="twitter:description" content="这个系列的文章以逆向路由器固件的方式来挖掘路由器中存在的漏洞。本篇文章主要以介绍解包固件工具为主。文中演示用的固件可以在这里下载。由于针对设备的攻击越来越多，很多厂商把不提供固件下载作为一种安全策略。所有有些时候只能通过物理的方式从设备中导出固件。后续的文章中会介绍相关技术。
+##通用的linux RE工具
+file — 用来检测是否是有效的文件和文件类型hexdump —16进制导出工具stri">
+
+    
+    <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="xd_xd&#39;s blog" title="xd_xd&#39;s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="xd_xd&#39;s blog">xd_xd&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:stayliv3.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/08/24/逆向路由器固件之解包/" title="逆向路由器固件之解包" itemprop="url">逆向路由器固件之解包</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
+		
+  <p class="article-time">
+    <time datetime="2015-08-24T03:31:54.000Z" itemprop="datePublished"> 发表于 Aug 24 2015</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			
+		
+		</div>
+		
+		<p>这个系列的文章以逆向路由器固件的方式来挖掘路由器中存在的漏洞。本篇文章主要以介绍解包固件工具为主。文中演示用的固件可以在这里<a href="http://www.tp-link.com/resources/software/TL-WR841N_V8_130506.zip" target="_blank" rel="external">下载</a>。由于针对设备的攻击越来越多，很多厂商把不提供固件下载作为一种安全策略。所有有些时候只能通过物理的方式从设备中导出固件。后续的文章中会介绍相关技术。</p>
+<p>##通用的linux RE工具</p>
+<p><a href="http://linux.die.net/man/1/file" target="_blank" rel="external">file</a> — 用来检测是否是有效的文件和文件类型<br><a href="http://www.freebsd.org/cgi/man.cgi?query=hexdump&amp;sektion=1" target="_blank" rel="external">hexdump</a> —16进制导出工具<br><a href="http://unixhelp.ed.ac.uk/CGI/man-cgi?strings" target="_blank" rel="external">strings</a> 跟hexdump类似但是可以以可读的形式展示<br><a href="http://linux.die.net/man/1/dd" target="_blank" rel="external">dd</a> — 从二进制文件中挖掘数据<br><a href="http://www.manpagez.com/man/1/lzma/" target="_blank" rel="external">lzma</a> — 解压LZMA文件</p>
+<p>##第三方工具</p>
+<p><a href="http://binwalk.org/" target="_blank" rel="external">binwalk</a> — 通过固件文件头来分析文件和文件系统<br><a href="https://code.google.com/p/firmware-mod-kit/" target="_blank" rel="external">Fireware Mod Kit</a> — 自动化分析固件文件的一系列脚本<br><a href="http://www.tldp.org/HOWTO/SquashFS-HOWTO/mksqoverview.html" target="_blank" rel="external">squashfs-tools</a> — 可以通过apt-get squashfs-tools 来安装。用来处理squashfs的一系列工具</p>
+<p>##初步分析</p>
+<p>通常来说逆向工程的第一步就是使用上面列出的通用linux工具从要分析的文件中挖掘出尽量多的信息。通过这些信息来决定下一步进行的分析。比如使用hexdump发现sqsh意味着文件中有一个squashfs文件系统或者识别出了固件包中常用的boot loader U-Boot。</p>
+<p>#File Tool</p>
+<p>文件工具通常只是告诉我们这个文件是否是已知的文件类型，某些情况下可以识别出文件的种类，比如数据文件。</p>
+<p>使用file分析路由器固件如下：<br><img src="/images/Filetool.png" alt=""><br>file分析的结果可以告诉我们该文件是否是已知的类型，是否需要进一步分析。这里的结果我们可以看到仅仅是显示数据文件。</p>
+<p>#hexdump</p>
+<p>hexdump 工具可以让你分析文件中的每一个字节，这是非常有价值的。使用hexdump分析固件如下：</p>
+<p>上面的命令会把hexdump的结果写入到文件hexTP.txt中做进一步分析。-C选项是设置hexdump输出为hex+ASCII的方式，更便于阅读。输出的文件十分巨大，这个例子中我们可以从文件头的地方看到这个固件是属于TP-Link的，但是这个信息我们已经知道了。所以下一步就是尝试strings命令，看看是否可以获得更多的信息。<br><img src="/images/Hexdump.png" alt=""></p>
+<p>#strings</p>
+<p>作为初始的信息收集，strings可能是最常用和做好用的工具之一，因为它可以显示文件中所有可打印的数据。跟使用hexdump一样，最好把strings的结果写入文件分析，以免下次想要分析的时候还需要重复一遍strings命令。<br><img src="/images/stringsuboot.png" alt=""><br>从strings的结果中，我们发现了一些有趣的信息。</p>
+<p>这个信息就在strings结果文件开始的地方，稍微往后翻一下或者搜索一下文件系统常用的boot loader名字比如U-boot，就可以找到这些信息。现在我们已经知道这个嵌入式系统使用U-boot作为boot loader，而且知道了它的版本信息。</p>
+<p>#Binwalk</p>
+<p>binwalk会分析二进制文件中可能的固件头或者文件系统，然后输出识别出的每个部分以及对应的偏移量。使用binwalk分析固件如下：<br><img src="/images/Binwalkresults.png" alt=""><br>binwalk给出了大量有用的信息。从这些信息中可以得知这个固件是运行在MIPS架构上的一个linux系统。使用了squashfs文件系统。同时也再次确认boot loader是U-boot。关于binwalk的更详细的用法可以参考<a href="http://www.freebuf.com/tools/15266.html" target="_blank" rel="external">Binwalk：后门（固件）分析利器</a>。</p>
+<p>##提取文件系统</p>
+<p>终于到了最关键的一步，我们要从固件镜像中分离出文件系统的内容。因为是linux系统，可以预见一些标准的linux文件比如passwd和shadow可能会有一些敏感信息。</p>
+<p>很多人使用dd来分离文件系统的内容。使用binwalk和Firmware Modification Kit来解包最简单方便。</p>
+<p>使用binwalk的-e参数可以自动把固件镜像中的所有文件都解出来。</p>
+<pre><code>binwalk -<span class="keyword">e</span> &lt;<span class="keyword">input</span> <span class="keyword">file</span>&gt;
+</code></pre><p>使用Firmware Modification Kit中的extract-firmware.sh脚本会更加高效。如果你想重打包修改之后的固件的话可以使用build-firmware.sh来打包固件。这样可以节省大量时间自己解包和管理所有的偏移。</p>
+<p><a href="http://www.freebuf.com/articles/terminal/75524.html" target="_blank" rel="external">极路由安全设计架构分析</a>这里分析的极路由的那个固件包，使用FMK就可以一键解包。<br><img src="/images/fmk1.png" alt=""></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/万物互联/">万物互联</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/解包/">解包</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://stayliv3.github.io/2015/08/24/逆向路由器固件之解包/" data-title="逆向路由器固件之解包 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015/08/24/逆向路由器固件之二/" title="逆向路由器固件之二">
+  <strong>上一篇：</strong><br/>
+  <span>
+  逆向路由器固件之二</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015/08/14/MVC框架中路由模块容易出现的安全问题/"  title="MVC框架中路由模块容易出现的安全问题">
+ <strong>下一篇：</strong><br/> 
+ <span>MVC框架中路由模块容易出现的安全问题
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2015/08/24/逆向路由器固件之解包/" data-title="逆向路由器固件之解包" data-url="http://stayliv3.github.io/2015/08/24/逆向路由器固件之解包/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ 
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/前端安全/" title="前端安全">前端安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/加密解密/" title="加密解密">加密解密<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/古典密码/" title="古典密码">古典密码<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/奇技淫巧/" title="奇技淫巧">奇技淫巧<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>1</sup></a></li>
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统运维/" title="系统运维">系统运维<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/黑盒测试/" title="黑盒测试">黑盒测试<sup>6</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/php/" title="php">php<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/qemu/" title="qemu">qemu<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/sqlmap/" title="sqlmap">sqlmap<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/折腾/" title="折腾">折腾<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcpdump/" title="tcpdump">tcpdump<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/密码学/" title="密码学">密码学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/加密解密/" title="加密解密">加密解密<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ctf/" title="ctf">ctf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/docker/" title="docker">docker<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/php-wdcp/" title="php,wdcp">php,wdcp<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/解包/" title="解包">解包<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/binwalk/" title="binwalk">binwalk<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/hackrf/" title="hackrf">hackrf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/burpsuite/" title="burpsuite">burpsuite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/brupsuite/" title="brupsuite">brupsuite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Yii/" title="Yii">Yii<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://sco4x0.com" target="_blank" title="sco4x0&#39;s blog">sco4x0&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://virusdefender.net" target="_blank" title="virusdefender&#39;s blog">virusdefender&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackersb.cn/" target="_blank" title="Striker&#39;s blog">Striker&#39;s blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Larry Page in Google. <br/>
+			This is my blog,believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2015 
+		
+		<a href="/about" target="_blank" title="xd_xd">xd_xd</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"xdxd"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253479891'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1253479891' type='text/javascript'%3E%3C/script%3E"));</script>
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

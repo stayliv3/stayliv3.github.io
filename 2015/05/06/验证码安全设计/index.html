@@ -1,0 +1,601 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>验证码安全设计 | xd_xd&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="xd_xd">
+    
+
+    
+    <meta name="description" content="这里讨论一下验证码设计过程中的那些坑。主要是设计中存在缺陷导致验证码失效的情况，不包括OCR识别。网上已经可以找到一些总结验证码容易出现问题的地方，但都是一些零散的点。这里希望从设计流程的层面解读一下，不仅仅是指出容易出现的问题，更想探究一下如何更好的设计可以避免这些问题。水平有限，不恰当的地方欢迎指出。
+#验证码的目的
+CAPTCHA，全称全自动区分计算机和人类的图灵测试(Completely">
+<meta property="og:type" content="article">
+<meta property="og:title" content="验证码安全设计">
+<meta property="og:url" content="http://stayliv3.github.io/2015/05/06/验证码安全设计/index.html">
+<meta property="og:site_name" content="xd_xd's blog">
+<meta property="og:description" content="这里讨论一下验证码设计过程中的那些坑。主要是设计中存在缺陷导致验证码失效的情况，不包括OCR识别。网上已经可以找到一些总结验证码容易出现问题的地方，但都是一些零散的点。这里希望从设计流程的层面解读一下，不仅仅是指出容易出现的问题，更想探究一下如何更好的设计可以避免这些问题。水平有限，不恰当的地方欢迎指出。
+#验证码的目的
+CAPTCHA，全称全自动区分计算机和人类的图灵测试(Completely">
+<meta property="og:image" content="http://stayliv3.github.io/images/yanzhengma1.png">
+<meta property="og:image" content="http://stayliv3.github.io/images/yanzhengma2.png">
+<meta property="og:image" content="http://stayliv3.github.io/images/yanzhengma3.png">
+<meta property="og:image" content="http://stayliv3.github.io/images/yanzhengma4.png">
+<meta property="og:image" content="http://stayliv3.github.io/images/yanzhengma5.png">
+<meta property="og:image" content="http://stayliv3.github.io/images/yanzhengma6.png">
+<meta property="og:image" content="http://stayliv3.github.io/images/yanzhengma7.png">
+<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="验证码安全设计">
+<meta name="twitter:description" content="这里讨论一下验证码设计过程中的那些坑。主要是设计中存在缺陷导致验证码失效的情况，不包括OCR识别。网上已经可以找到一些总结验证码容易出现问题的地方，但都是一些零散的点。这里希望从设计流程的层面解读一下，不仅仅是指出容易出现的问题，更想探究一下如何更好的设计可以避免这些问题。水平有限，不恰当的地方欢迎指出。
+#验证码的目的
+CAPTCHA，全称全自动区分计算机和人类的图灵测试(Completely">
+
+    
+    <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="xd_xd&#39;s blog" title="xd_xd&#39;s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="xd_xd&#39;s blog">xd_xd&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:stayliv3.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/05/06/验证码安全设计/" title="验证码安全设计" itemprop="url">验证码安全设计</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
+		
+  <p class="article-time">
+    <time datetime="2015-05-06T02:48:25.000Z" itemprop="datePublished"> 发表于 May 6 2015</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			
+		
+		</div>
+		
+		<p>这里讨论一下验证码设计过程中的那些坑。主要是设计中存在缺陷导致验证码失效的情况，不包括OCR识别。网上已经可以找到一些总结验证码容易出现问题的地方，但都是一些零散的点。这里希望从设计流程的层面解读一下，不仅仅是指出容易出现的问题，更想探究一下如何更好的设计可以避免这些问题。水平有限，不恰当的地方欢迎指出。</p>
+<p>#验证码的目的</p>
+<p>CAPTCHA，全称全自动区分计算机和人类的图灵测试(Completely Automated Public Turing test to tell Computers and Humans Apart)，是一种典型的挑战-应答测试，目的是用来区分人类和机器的。更详细参考<a href="http://zh.wikipedia.org/wiki/%E9%AA%8C%E8%AF%81%E7%A0%81" target="_blank" rel="external">维基百科</a>。在WEB安全领域，为了避免某些接口或功能被机器滥用，通常通过验证码的方式来过滤机器的请求。<br><img src="/images/yanzhengma1.png" alt="验证码示例"></p>
+<p>#验证码流程</p>
+<p>很多网站第一次登录就有验证码，而第一次登录即使是机器行为，也达不到滥用的标准。反而增加了所有用户的成本，降低了体验。更好的设计应该是最初是没有验证码的，当检测到异常的时候，出现验证码。所以整个流程应该是这样的。</p>
+<p><img src="/images/yanzhengma2.png" alt="验证码流程"></p>
+<p>##触发验证码策略</p>
+<p>目前所有的验证码绕过的问题，应该都算设计上没有考虑好。先看第一个关键的一步，何时触发验证码策略。既然验证码的目的是识别人和机器。那么在给目标用户展示验证码的时候就会遇到一个很核心的问题，如何识别这个用户。因为只有这个用户行为有些异常，如何区分这个用户和其他用户？在登录这个场景来说，比如sessionID，比如IP，比如用户名，哪个更合适呢。大家都知道sessionID是可以伪造的。所以用IP来区分用户更加合适，虽然这会导致使用同一个IP出口的用户也出现验证码。这里以新浪微博手机版登录测试。第一次登录没有验证码，多次登录出现验证码。但是此时删除cookie。就又可以不使用验证码登录了。当然这里实际上对IP也进行了检测，所以没有办法进行暴力破解。</p>
+<p><img src="/images/yanzhengma3.png" alt=""><br><img src="/images/yanzhengma4.png" alt=""><br>使用cookie等用户可控的参数作为验证码触发策略案例参考<a href="http://wooyun.org/bugs/wooyun-2015-0108637" target="_blank" rel="external">天天果园某接口撞库泄露用户登录凭据(验证码绕过)</a>。<br>触发验证码阶段需要使用IP对用户进行区分，这里一个常见的缺陷就是使用了用户可控的输入作为来源IP，比如X-Forwarded-For等。参考案例：<a href="http://wooyun.org/bugs/wooyun-2015-0108980" target="_blank" rel="external">优酷主站某接口撞库</a>。这里比较经典的案例还有discuz的暴力破解问题，参考<a href="http://blog.wangzhan.360.cn/?p=135" target="_blank" rel="external">DZ自动爆破工具原理分析</a>。discuz使用了$_SERVER[‘HTTP_CLIENT_IP’]作为IP来源，而这个变量是用户可控的。</p>
+<p><strong>触发验证码策略阶段存在的主要缺陷是用来识别用户的凭据是用户端可控可伪造的。用户可以伪造一个新的用户身份从而绕过验证码触发的策略。</strong><br>具体的体现就是使用sessionID识别用户，或者虽然采用了IP识别用户，但是使用了Client-IP等用户可控的变量作为来源。<strong>正确的方案应该是使用$_SERVER[‘REMOTE_ADDR’]php作为识别用户的依据，当访问异常时进行验证码验证，此后一段时间内，来自该IP的请求都标记为需要验证码的请求，需要通过验证码验证才处理请求。</strong></p>
+<p>##生成跟当前用户绑定的验证码</p>
+<p>这个过程也是十分容易出现问题的。当然这个验证码是需要在服务端生成的。类似于<a href="http://www.wooyun.org/bugs/wooyun-2014-082411" target="_blank" rel="external">南开大学信息门户网站设计不当可以爆破用户密码</a>这种在本地用js生成验证码，用js验证的设计连最基本的不要在客户端做认证的原则都违背了。在早期的一些小网站上可能存在，但也应该比较少见了。这里就忽略这种设计了。</p>
+<p><strong>产生的验证码是有一定的要求的，需要客户端无法预测，无法暴力破解，不能从其他的方式得知，保证只能通过从验证码图片上识别才能获得验证码。</strong>常见的没有遵守这几点的缺陷有<a href="http://www.wooyun.org/bugs/wooyun-2012-06634" target="_blank" rel="external">索尼验证码实现缺陷</a>,用html模拟验证码的样式，看起来像是图片验证码，实际上是html，可以直接获得明文。程序员的这个思路也是醉了，显然没有理解为什么要做验证码。或者把验证码直接返回给了客户端，也有的编码一下返回给客户端，都是不行的。比如<a href="http://www.wooyun.org/bugs/wooyun-2014-086797" target="_blank" rel="external">吉祥航空任意客票遍历</a>。也有的验证码答案的空间太小，比如<a href="http://www.wooyun.org/bugs/wooyun-2013-025245" target="_blank" rel="external">139邮箱图验证码绕过漏洞</a>，只有abcd四种可能，随便猜一个的正确率都有25%了。4位字母数字验证码，共1679616个可能，可以认为是无法暴力破解的。</p>
+<p><img src="/images/yanzhengma5.png" alt="电信验证码"></p>
+<p>这里验证码绑定用户，一般都是通过session绑定。虽然识别用户是否需要验证码通过IP来判断，但是IP毕竟无法保证只有一个用户使用。也有一些应用设计一个验证码ID的参数，随机生成一个验证码ID参数跟验证码绑定，返回验证码ID给客户端，客户端提交验证码ID和验证码来验证码。原理跟绑定sessionID是类似的。</p>
+<p>##验证验证码</p>
+<p>这个阶段出现的问题相对较少。验证本来就是做一下比较很简单的事情，但是程序员在实现的时候也可能出现各种坑。比如<a href="http://www.wooyun.org/bugs/wooyun-2013-025065" target="_blank" rel="external">ecshop绕过验证码暴利破解2</a>,当验证码字段为空时，服务端就不进行比较直接进入下一步了。<a href="http://www.wooyun.org/bugs/wooyun-2012-05095" target="_blank" rel="external">百度空间用户登录绕过验证码验证</a>使用0000可以正确验证任意验证码。</p>
+<p><img src="/images/yanzhengma6.png" alt="验证码"></p>
+<p>##验证完成之后销毁验证码</p>
+<p><strong>这里也是一个经常出现问题的地方。很多验证码设计中都没有在服务端主动销毁验证码的机制，而是依赖客户端刷新来覆盖旧的验证码。导致一个验证码可以重复使用。</strong>从验证码的作用上来说，一次正确的验证码输入只能保证这一次请求被处理，下一次请求依然需要重新输入验证码。案例<a href="http://www.wooyun.org/bugs/wooyun-2010-046547" target="_blank" rel="external">乌云集市验证码机制绕过</a>。当然验证失败，也需要销毁验证码，让客户端刷新验证码。因为既然用户识别这个验证码失败，说明用户可能识别这个验证码有一些问题，所以换一个也是更好的体验。</p>
+<p>##内部接口暴露导致可以控制后端逻辑</p>
+<p>此外还有一种常见的设计问题。在一些设计比较充分的系统，验证码的相关业务可能提供了比较多的接口，比如可以控制这个请求是否需要验证码。生成复杂度多少的验证码之类。这种接口本来应该是系统内部调用的，如果暴露给了最终用户，就导致用户可以控制后端逻辑，从而绕过验证码。案例<a href="http://www.wooyun.org/bugs/wooyun-2014-071289" target="_blank" rel="external">阿里巴巴某员工登录接口验证码绕过</a>,<a href="http://www.wooyun.org/bugs/wooyun-2012-014563" target="_blank" rel="external">凡客某处验证码绕过漏洞</a>。阿里这个验证码接口传递的数据中有个字段叫needcheckcode=true，把true改成false，服务端就不进行验证了。</p>
+<p><img src="/images/yanzhengma7.png" alt="阿里验证码"></p>
+<p>通常来说，触发验证码的策略，生成跟用户绑定的验证码，验证完成之后是否销毁验证码都是很容易出现问题的地方。但只要仔细的过一遍这些可能出现的问题，是可以设计出一个可靠的验证码系统的。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://stayliv3.github.io/2015/05/06/验证码安全设计/" data-title="验证码安全设计 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015/05/11/awvs批量扫描系统/" title="awvs批量扫描系统">
+  <strong>上一篇：</strong><br/>
+  <span>
+  awvs批量扫描系统</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015/04/27/xkungfoo2015记录/"  title="xkungfoo2015记录">
+ <strong>下一篇：</strong><br/> 
+ <span>xkungfoo2015记录
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2015/05/06/验证码安全设计/" data-title="验证码安全设计" data-url="http://stayliv3.github.io/2015/05/06/验证码安全设计/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ 
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/前端安全/" title="前端安全">前端安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/加密解密/" title="加密解密">加密解密<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/古典密码/" title="古典密码">古典密码<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/奇技淫巧/" title="奇技淫巧">奇技淫巧<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>1</sup></a></li>
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统运维/" title="系统运维">系统运维<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/黑盒测试/" title="黑盒测试">黑盒测试<sup>6</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/php/" title="php">php<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/qemu/" title="qemu">qemu<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/sqlmap/" title="sqlmap">sqlmap<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/折腾/" title="折腾">折腾<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcpdump/" title="tcpdump">tcpdump<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/密码学/" title="密码学">密码学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/加密解密/" title="加密解密">加密解密<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ctf/" title="ctf">ctf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/docker/" title="docker">docker<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/php-wdcp/" title="php,wdcp">php,wdcp<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/解包/" title="解包">解包<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/binwalk/" title="binwalk">binwalk<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/hackrf/" title="hackrf">hackrf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/burpsuite/" title="burpsuite">burpsuite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/brupsuite/" title="brupsuite">brupsuite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Yii/" title="Yii">Yii<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://sco4x0.com" target="_blank" title="sco4x0&#39;s blog">sco4x0&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://virusdefender.net" target="_blank" title="virusdefender&#39;s blog">virusdefender&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackersb.cn/" target="_blank" title="Striker&#39;s blog">Striker&#39;s blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Larry Page in Google. <br/>
+			This is my blog,believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2015 
+		
+		<a href="/about" target="_blank" title="xd_xd">xd_xd</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"xdxd"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253479891'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1253479891' type='text/javascript'%3E%3C/script%3E"));</script>
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
