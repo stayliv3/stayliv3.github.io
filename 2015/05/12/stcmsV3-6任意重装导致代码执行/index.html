@@ -29,7 +29,7 @@ STCMS音乐系统V3.6免费版没有对用户重装进行限制。如果用户�
 require(dirname(__FILE__).&quot;/common.inc.ph">
 <meta property="og:image" content="http://stayliv3.github.io/images/stcms1.png">
 <meta property="og:image" content="http://stayliv3.github.io/images/stcms2.png">
-<meta property="og:updated_time" content="2015-11-24T06:50:22.000Z">
+<meta property="og:updated_time" content="2015-11-24T07:05:39.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="stcmsV3.6任意重装导致代码执行">
 <meta name="twitter:description" content="#问题描述
@@ -203,7 +203,7 @@ require(dirname(__FILE__).&quot;/common.inc.ph">
         echo <span class="string">"数据库配置成功，正在安装数据库... &lt;br&gt;"</span>;
 </code></pre><p>##漏洞利用poc</p>
 <p>配置正确可以连接的数据库信息。数据库表前缀写<br>
-${phpinfo()}
+${ phpinfo()}
 ，注意phpinfo前有空格。因为表前缀字段处于双引号中，而双引号会被转义，所以无法跳出双引号。采用可变变量的方式执行代码。访问首页可以看到代码执行。</p>
 <p><img src="/images/stcms2.png" alt=""></p>
 <p>##参考资料 </p>
@@ -283,7 +283,7 @@ ${phpinfo()}
 		  
 		
 		  
-			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>9</sup></a></li>
+			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>10</sup></a></li>
 		  
 		
 		  

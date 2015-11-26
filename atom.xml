@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://stayliv3.github.io/"/>
-  <updated>2015-11-24T06:11:19.000Z</updated>
+  <updated>2015-11-24T03:27:38.000Z</updated>
   <id>http://stayliv3.github.io/</id>
   
   <author>
@@ -13,28 +13,6 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
-  
-  <entry>
-    <title><![CDATA[Hello World]]></title>
-    <link href="http://stayliv3.github.io/2015/11/24/hello-world/"/>
-    <id>http://stayliv3.github.io/2015/11/24/hello-world/</id>
-    <published>2015-11-24T06:11:19.000Z</published>
-    <updated>2015-11-24T06:11:19.000Z</updated>
-    <content type="html"><![CDATA[<p>Welcome to <a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="http://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="http://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick_Start">Quick Start</h2><h3 id="Create_a_new_post">Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run_server">Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate_static_files">Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy_to_remote_sites">Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>Welcome to <a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="http://hexo.io]]>
-    </summary>
-    
-  </entry>
   
   <entry>
     <title><![CDATA[华山杯CTF做过的几道题]]></title>
@@ -1011,6 +989,33 @@ Usage:
       <category term="密码学" scheme="http://stayliv3.github.io/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/"/>
     
       <category term="加密解密" scheme="http://stayliv3.github.io/categories/%E5%8A%A0%E5%AF%86%E8%A7%A3%E5%AF%86/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[手机上使用tcpdump抓包]]></title>
+    <link href="http://stayliv3.github.io/2015/07/07/%E6%89%8B%E6%9C%BA%E4%B8%8A%E4%BD%BF%E7%94%A8tcpdump%E6%8A%93%E5%8C%85%E5%88%86%E6%9E%90/"/>
+    <id>http://stayliv3.github.io/2015/07/07/手机上使用tcpdump抓包分析/</id>
+    <published>2015-07-07T06:51:38.000Z</published>
+    <updated>2015-11-24T03:27:38.000Z</updated>
+    <content type="html"><![CDATA[<p>主要记录下手机上使用tcpdump抓包常用的命令和遇到的一个小问题。详细的细节可以参考<a href="http://www.cnblogs.com/anee/archive/2013/09/12/3316139.html" target="_blank" rel="external">基于tcpdump的Android智能移动终端数据包捕获完整解决方案</a>,看这名字就足够高大上。</p>
+<p>#adb常用的命令</p>
+<pre><code>adb devices 列出连接的设备
+adb <span class="keyword">shell</span>  获得android设备<span class="keyword">shell</span>
+<span class="keyword">su</span>   提升权限到root
+adb push <span class="keyword">D</span>:/tcpdump /data/<span class="keyword">local</span>/tcpdump 上传文件
+adb pull /data/<span class="keyword">local</span>/<span class="keyword">test</span>.pcap .  下载文件
+</code></pre><p>#tcpdump常用命令</p>
+<p>遇到一个问题，就是抓取到的数据包是不全的。每个包最后都少了很多数据。原因是tcpdump没有指定s参数。s参数代表抓取数据包的长度，需要指定为0，不限制数据包的长度即可。</p>
+<pre><code>./tcpdump -s0 -w test<span class="class">.pcap</span> 
+</code></pre>]]></content>
+    <summary type="html">
+    <![CDATA[<p>主要记录下手机上使用tcpdump抓包常用的命令和遇到的一个小问题。详细的细节可以参考<a href="http://www.cnblogs.com/anee/archive/2013/09/12/3316139.html" target="_blank" rel="ext]]>
+    </summary>
+    
+      <category term="tcpdump" scheme="http://stayliv3.github.io/tags/tcpdump/"/>
+    
+      <category term="移动安全" scheme="http://stayliv3.github.io/categories/%E7%A7%BB%E5%8A%A8%E5%AE%89%E5%85%A8/"/>
     
   </entry>
   
