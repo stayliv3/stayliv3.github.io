@@ -4,41 +4,44 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>wdcp漏洞学习 | xd_xd&#39;s blog</title>
+    <title>绿麻雀网贷系统安全审计 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description" content="#相关资料wdcp登录认证绕过
-#漏洞分析
-伪造cookie绕过登录：影响版本2.2一下。
-login.php 82行
-if (isset($_COOKIE[&apos;wdcp_user&apos;]) and ($_COOKIE[&apos;wdcp_user&apos;]!=&quot;deleted&quot;)) {
-//if (($_COOKIE[&apos;wdcp_user&apos;]!=&quot;deleted&quot;)) {
-    $wdcp_user=$_COOK">
+    <meta name="description" content="##sql注入
+##文件管理
+##业务逻辑
+##文件包含
+##命令执行
+###源码总体分析基于thinkphp3.0开发，所以thinkphp在sql注入和文件包含上的坑都可能存在。典型的thinkphp应用。由于绿麻雀是闭源系统，所以没有最新的源码
+###历史漏洞分析
+wooyun乌云上有多个sql注入漏洞，在先知上有个getshell的漏洞，但是看不到详情。分析乌云上5个sql注入漏洞目前公开">
 <meta property="og:type" content="article">
-<meta property="og:title" content="wdcp漏洞学习">
-<meta property="og:url" content="http://stayliv3.github.io/2015/05/27/wdcp漏洞学习/index.html">
+<meta property="og:title" content="绿麻雀网贷系统安全审计">
+<meta property="og:url" content="http://stayliv3.github.io/2015/11/30/绿麻雀网贷系统安全审计/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="#相关资料wdcp登录认证绕过
-#漏洞分析
-伪造cookie绕过登录：影响版本2.2一下。
-login.php 82行
-if (isset($_COOKIE[&apos;wdcp_user&apos;]) and ($_COOKIE[&apos;wdcp_user&apos;]!=&quot;deleted&quot;)) {
-//if (($_COOKIE[&apos;wdcp_user&apos;]!=&quot;deleted&quot;)) {
-    $wdcp_user=$_COOK">
-<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+<meta property="og:description" content="##sql注入
+##文件管理
+##业务逻辑
+##文件包含
+##命令执行
+###源码总体分析基于thinkphp3.0开发，所以thinkphp在sql注入和文件包含上的坑都可能存在。典型的thinkphp应用。由于绿麻雀是闭源系统，所以没有最新的源码
+###历史漏洞分析
+wooyun乌云上有多个sql注入漏洞，在先知上有个getshell的漏洞，但是看不到详情。分析乌云上5个sql注入漏洞目前公开">
+<meta property="og:updated_time" content="2015-11-30T09:00:00.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="wdcp漏洞学习">
-<meta name="twitter:description" content="#相关资料wdcp登录认证绕过
-#漏洞分析
-伪造cookie绕过登录：影响版本2.2一下。
-login.php 82行
-if (isset($_COOKIE[&apos;wdcp_user&apos;]) and ($_COOKIE[&apos;wdcp_user&apos;]!=&quot;deleted&quot;)) {
-//if (($_COOKIE[&apos;wdcp_user&apos;]!=&quot;deleted&quot;)) {
-    $wdcp_user=$_COOK">
+<meta name="twitter:title" content="绿麻雀网贷系统安全审计">
+<meta name="twitter:description" content="##sql注入
+##文件管理
+##业务逻辑
+##文件包含
+##命令执行
+###源码总体分析基于thinkphp3.0开发，所以thinkphp在sql注入和文件包含上的坑都可能存在。典型的thinkphp应用。由于绿麻雀是闭源系统，所以没有最新的源码
+###历史漏洞分析
+wooyun乌云上有多个sql注入漏洞，在先知上有个getshell的漏洞，但是看不到详情。分析乌云上5个sql注入漏洞目前公开">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -98,14 +101,14 @@ if (isset($_COOKIE[&apos;wdcp_user&apos;]) and ($_COOKIE[&apos;wdcp_user&apos;]!
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/05/27/wdcp漏洞学习/" title="wdcp漏洞学习" itemprop="url">wdcp漏洞学习</a>
+      <a href="/2015/11/30/绿麻雀网贷系统安全审计/" title="绿麻雀网贷系统安全审计" itemprop="url">绿麻雀网贷系统安全审计</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2015-05-27T06:46:49.000Z" itemprop="datePublished"> 发表于 May 27 2015</time>
+    <time datetime="2015-11-30T08:37:24.000Z" itemprop="datePublished"> 发表于 Nov 30 2015</time>
     
   </p>
 </header>
@@ -118,75 +121,30 @@ if (isset($_COOKIE[&apos;wdcp_user&apos;]) and ($_COOKIE[&apos;wdcp_user&apos;]!
 		
 		</div>
 		
-		<p>#相关资料<br><a href="http://wooyun.org/bugs/wooyun-2010-05835" target="_blank" rel="external">wdcp登录认证绕过</a></p>
-<p>#漏洞分析</p>
-<p>伪造cookie绕过登录：影响版本2.2一下。</p>
-<p>login.php 82行</p>
-<pre><code><span class="keyword">if</span> (isset($_COOKIE[<span class="string">'wdcp_user'</span>]) and ($_COOKIE[<span class="string">'wdcp_user'</span>]!=<span class="string">"deleted"</span>)) {
-//if (($_COOKIE[<span class="string">'wdcp_user'</span>]!=<span class="string">"deleted"</span>)) {
-    <span class="variable">$wdcp</span>_user=$_COOKIE[<span class="string">'wdcp_user'</span>];
-    <span class="variable">$wdcp</span>_uid=$_COOKIE[<span class="string">'wdcp_uid'</span>];
-    <span class="variable">$wdcp</span>_gid=$_COOKIE[<span class="string">'wdcp_gid'</span>];
-    <span class="variable">$wdcp</span>_us=$_COOKIE[<span class="string">'wdcp_us'</span>];
-    <span class="variable">$wdcp</span>_lt=$_COOKIE[<span class="string">'wdcp_lt'</span>];
-    //echo <span class="string">"wdcp_lt:"</span>.<span class="variable">$wdcp</span>_lt;echo <span class="string">"&lt;br&gt;"</span>;
-    user_l_check(<span class="variable">$wdcp</span>_lt);
-    if (<span class="variable">$wdcp</span>_gid==<span class="number">1</span>) {
-        session_start();
-        <span class="variable">$sessionId</span> = session_id();
-        //setcookie(<span class="string">'PHPSESSID'</span>, <span class="variable">$sessionId</span>, time() + <span class="number">180</span>,<span class="string">'/'</span>);
-        }
-    //echo $_COOKIE[<span class="string">'wdcp_user'</span>].<span class="string">"|"</span>.$_COOKIE[<span class="string">'wdcp_uid'</span>].<span class="string">"|"</span>.$_COOKIE[<span class="string">'wdcp_gid'</span>].<span class="string">"|"</span>.$_COOKIE[<span class="string">'wdcp_us'</span>].<span class="string">"&lt;br&gt;"</span>;
-    //echo <span class="variable">$wdcp</span>_user.<span class="string">"|"</span>.<span class="variable">$wdcp</span>_uid.<span class="string">"|"</span>.<span class="variable">$wdcp</span>_gid.<span class="string">"|"</span>.<span class="variable">$wdcp</span>_us;//exit;
-
-}
-</code></pre><p>跟进user_l_check函数：</p>
-<pre><code><span class="keyword">function</span> user_l_check(<span class="variable">$ul</span>_str=<span class="number">0</span>) {
-    global <span class="variable">$wdcp</span>_user,<span class="variable">$wdcp</span>_uid,<span class="variable">$wdcp</span>_gid,<span class="variable">$wdcp</span>_us;
-    //<span class="variable">$str</span>=<span class="string">'wdl_a'</span>;
-    <span class="variable">$str</span>=substr(md5(<span class="variable">$wdcp</span>_user.<span class="variable">$wdcp</span>_uid),<span class="number">8</span>,<span class="number">6</span>);
-    //echo <span class="variable">$str</span>.<span class="string">"&lt;br&gt;"</span>;
-    if (<span class="variable">$ul</span>_str==<span class="number">0</span>) {
-        //echo <span class="variable">$str</span>;
-        //echo <span class="variable">$str</span>.<span class="string">"&lt;br&gt;"</span>;
-        //<span class="variable">$msg</span>=<span class="variable">$str</span>.<span class="string">"|"</span>.<span class="variable">$wdcp</span>_user.<span class="string">"|"</span>.<span class="variable">$wdcp</span>_uid.<span class="string">"|"</span>.<span class="variable">$wdcp</span>_gid.<span class="string">"|"</span>.<span class="variable">$wdcp</span>_us;
-        //file_put_contents(WD_ROOT.<span class="string">"/data/1.txt"</span>,<span class="variable">$msg</span>);
-        return md5(<span class="variable">$str</span>.<span class="variable">$wdcp</span>_user.<span class="variable">$wdcp</span>_uid.<span class="variable">$wdcp</span>_gid.<span class="variable">$wdcp</span>_us);
-    }else {
-        //echo ;
-        //echo <span class="variable">$str</span>.<span class="string">"&lt;br&gt;"</span>;
-        //echo <span class="variable">$str</span>.<span class="string">"|"</span>.<span class="variable">$wdcp</span>_user.<span class="string">"|"</span>.<span class="variable">$wdcp</span>_uid.<span class="string">"|"</span>.<span class="variable">$wdcp</span>_gid.<span class="string">"|"</span>.<span class="variable">$wdcp</span>_us.<span class="string">"   2&lt;br&gt;"</span>;
-        //<span class="variable">$msg</span>=<span class="variable">$str</span>.<span class="string">"|"</span>.<span class="variable">$wdcp</span>_user.<span class="string">"|"</span>.<span class="variable">$wdcp</span>_uid.<span class="string">"|"</span>.<span class="variable">$wdcp</span>_gid.<span class="string">"|"</span>.<span class="variable">$wdcp</span>_us;
-        //file_put_contents(WD_ROOT.<span class="string">"/data/2.txt"</span>,<span class="variable">$msg</span>);
-        <span class="variable">$s1</span>=md5(<span class="variable">$str</span>.<span class="variable">$wdcp</span>_user.<span class="variable">$wdcp</span>_uid.<span class="variable">$wdcp</span>_gid.<span class="variable">$wdcp</span>_us);
-        //echo <span class="string">"1:"</span>.<span class="variable">$ul</span>_str.<span class="string">"|"</span>.<span class="variable">$s1</span>.<span class="string">"&lt;br&gt;"</span>;//exit;
-        //file_put_contents(WD_ROOT.<span class="string">"/data/3.txt"</span>,<span class="variable">$ul</span>_str);
-        //file_put_contents(WD_ROOT.<span class="string">"/data/4.txt"</span>,<span class="variable">$s1</span>);
-        if (strcmp(<span class="variable">$ul</span>_str,<span class="variable">$s1</span>)!=<span class="number">0</span>) {
-            del_cookie();
-            //echo <span class="string">"login err"</span>;
-            str_go_url(<span class="string">"登录信息错误！"</span>,<span class="number">1</span>);
-            //go_back(<span class="string">"登录信息错误!"</span>);
-        }
-    }
-</code></pre><p>函数中用来做比较的信息也都是来自cookie。所以可以伪造cookie。直接登录。</p>
-<p>修复后的代码：</p>
-<pre><code><span class="keyword">if</span> (isset($_SESSION[<span class="string">'is_l'</span>])) {
-    <span class="variable">$wdcp</span>_user=$_COOKIE[<span class="string">'wdcp_user'</span>];
-    <span class="variable">$wdcp</span>_uid=$_COOKIE[<span class="string">'wdcp_uid'</span>];
-    <span class="variable">$wdcp</span>_gid=$_COOKIE[<span class="string">'wdcp_gid'</span>];
-    <span class="variable">$wdcp</span>_ggid=$_COOKIE[<span class="string">'wdcp_ggid'</span>];
-    <span class="variable">$wdcp</span>_us=$_COOKIE[<span class="string">'wdcp_us'</span>];
-    //<span class="variable">$wdcp</span>_lt=$_COOKIE[<span class="string">'wdcp_lt'</span>];
-    //session_start();
-    //print_r($_SESSION);
-    <span class="variable">$wdcp</span>_lt=$_SESSION[<span class="string">'is_l'</span>];
-</code></pre><p>将用于检查的$wdcp_lt字段存在session里放在服务端。并判断服务端是否存在该字段，存在才进入检查逻辑。</p>
+		<p>##sql注入</p>
+<p>##文件管理</p>
+<p>##业务逻辑</p>
+<p>##文件包含</p>
+<p>##命令执行</p>
+<p>###源码总体分析<br>基于thinkphp3.0开发，所以thinkphp在sql注入和文件包含上的坑都可能存在。典型的thinkphp应用。<br>由于绿麻雀是闭源系统，所以没有最新的源码</p>
+<p>###历史漏洞分析</p>
+<p><a href="http://www.wooyun.org/corps/%E7%BB%BF%E9%BA%BB%E9%9B%80" target="_blank" rel="external">wooyun</a>乌云上有多个sql注入漏洞，在先知上有个getshell的漏洞，但是看不到详情。分析乌云上5个sql注入漏洞目前公开的有3个均是由于thinkphp where条件为字符串，直接拼接到sql语句中导致。</p>
+<p>##sql注入</p>
   
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
 
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/代码审计/">代码审计</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/php/">php</a>
+  </div>
 
 </div>
 
@@ -194,7 +152,7 @@ if (isset($_COOKIE[&apos;wdcp_user&apos;]) and ($_COOKIE[&apos;wdcp_user&apos;]!
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://stayliv3.github.io/2015/05/27/wdcp漏洞学习/" data-title="wdcp漏洞学习 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
+	  <div data-url="http://stayliv3.github.io/2015/11/30/绿麻雀网贷系统安全审计/" data-title="绿麻雀网贷系统安全审计 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -207,19 +165,11 @@ if (isset($_COOKIE[&apos;wdcp_user&apos;]) and ($_COOKIE[&apos;wdcp_user&apos;]!
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2015/05/29/thinkphp-SQL学习/" title="thinkphp SQL注入风险分析">
-  <strong>上一篇：</strong><br/>
-  <span>
-  thinkphp SQL注入风险分析</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2015/05/27/docker-kali/"  title="mac使用kali Docker Images">
+<a href="/2015/11/27/mysql执行语句监控/"  title="mysql执行语句监控">
  <strong>下一篇：</strong><br/> 
- <span>mac使用kali Docker Images
+ <span>mysql执行语句监控
 </span>
 </a>
 </div>
@@ -228,7 +178,7 @@ if (isset($_COOKIE[&apos;wdcp_user&apos;]) and ($_COOKIE[&apos;wdcp_user&apos;]!
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/05/27/wdcp漏洞学习/" data-title="wdcp漏洞学习" data-url="http://stayliv3.github.io/2015/05/27/wdcp漏洞学习/"></div>
+	<div class="ds-thread" data-thread-key="2015/11/30/绿麻雀网贷系统安全审计/" data-title="绿麻雀网贷系统安全审计" data-url="http://stayliv3.github.io/2015/11/30/绿麻雀网贷系统安全审计/"></div>
 </section>
 
 

@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://stayliv3.github.io/"/>
-  <updated>2015-11-27T08:19:13.000Z</updated>
+  <updated>2015-11-30T09:00:00.000Z</updated>
   <id>http://stayliv3.github.io/</id>
   
   <author>
@@ -13,6 +13,37 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[绿麻雀网贷系统安全审计]]></title>
+    <link href="http://stayliv3.github.io/2015/11/30/%E7%BB%BF%E9%BA%BB%E9%9B%80%E7%BD%91%E8%B4%B7%E7%B3%BB%E7%BB%9F%E5%AE%89%E5%85%A8%E5%AE%A1%E8%AE%A1/"/>
+    <id>http://stayliv3.github.io/2015/11/30/绿麻雀网贷系统安全审计/</id>
+    <published>2015-11-30T08:37:24.000Z</published>
+    <updated>2015-11-30T09:00:00.000Z</updated>
+    <content type="html"><![CDATA[<p>##sql注入</p>
+<p>##文件管理</p>
+<p>##业务逻辑</p>
+<p>##文件包含</p>
+<p>##命令执行</p>
+<p>###源码总体分析<br>基于thinkphp3.0开发，所以thinkphp在sql注入和文件包含上的坑都可能存在。典型的thinkphp应用。<br>由于绿麻雀是闭源系统，所以没有最新的源码</p>
+<p>###历史漏洞分析</p>
+<p><a href="http://www.wooyun.org/corps/%E7%BB%BF%E9%BA%BB%E9%9B%80" target="_blank" rel="external">wooyun</a>乌云上有多个sql注入漏洞，在先知上有个getshell的漏洞，但是看不到详情。分析乌云上5个sql注入漏洞目前公开的有3个均是由于thinkphp where条件为字符串，直接拼接到sql语句中导致。</p>
+<p>##sql注入</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>##sql注入</p>
+<p>##文件管理</p>
+<p>##业务逻辑</p>
+<p>##文件包含</p>
+<p>##命令执行</p>
+<p>###源码总体分析<br>基于thinkphp3.0开发，所以thinkphp在sql注入和文件包含上的坑都可能存在。典型的thin]]>
+    </summary>
+    
+      <category term="php" scheme="http://stayliv3.github.io/tags/php/"/>
+    
+      <category term="代码审计" scheme="http://stayliv3.github.io/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[mysql执行语句监控]]></title>
@@ -967,41 +998,6 @@ Usage:
       <category term="物联网,命令注入" scheme="http://stayliv3.github.io/tags/%E7%89%A9%E8%81%94%E7%BD%91-%E5%91%BD%E4%BB%A4%E6%B3%A8%E5%85%A5/"/>
     
       <category term="万物互联" scheme="http://stayliv3.github.io/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[密码学之Reused Key Attack]]></title>
-    <link href="http://stayliv3.github.io/2015/07/07/%E5%AF%86%E7%A0%81%E5%AD%A6%E4%B9%8BReused-Key-Attack/"/>
-    <id>http://stayliv3.github.io/2015/07/07/密码学之Reused-Key-Attack/</id>
-    <published>2015-07-07T07:54:19.000Z</published>
-    <updated>2015-11-24T03:27:38.000Z</updated>
-    <content type="html"><![CDATA[<p>#reused key attack</p>
-<p>参考《白帽子讲web安全》第11章 加密算法和随机数。</p>
-<p>流密码加密算法的使用中，最常见的错误是使用同一个密钥进行多次加解密。流密码的加密是基于异或(XOR)操作进行的。XOR操作规则如下：</p>
-<pre><code><span class="number">1</span> xor <span class="number">1</span>=<span class="number">0</span> 
-<span class="number">1</span> xor <span class="number">0</span>=<span class="number">1</span> 
-<span class="number">0</span> xor <span class="number">1</span>=<span class="number">1</span> 
-<span class="number">0</span> xor <span class="number">0</span>=<span class="number">0</span> 
-</code></pre><p>假设有密钥C，明文A，明文B，那么XOR加密可以表示为：</p>
-<pre><code><span class="function"><span class="title">E</span><span class="params">(A)</span></span> = A xor C
-<span class="function"><span class="title">E</span><span class="params">(B)</span></span> = B xor C
-</code></pre><p>密文是公开的，所以很容易计算 </p>
-<pre><code><span class="function"><span class="title">E</span><span class="params">(A)</span></span> xor <span class="function"><span class="title">E</span><span class="params">(B)</span></span>
-</code></pre><p>根据异或的规则，如果两个数相同，则xor运算的结果为0。</p>
-<pre><code>E<span class="comment">(A)</span> <span class="keyword">xor</span> E<span class="comment">(B)</span> = <span class="comment">(A xor C)</span> <span class="keyword">xor</span> <span class="comment">(B xor C)</span> = A <span class="keyword">xor</span> C <span class="keyword">xor</span> B <span class="keyword">xor</span> C = A <span class="keyword">xor</span> B
-</code></pre><p>所以E(A),E(B),A,B四个数据中只要知道3个就可以推算出剩下的一个。这个过程完全不需要密钥C的参与。</p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>#reused key attack</p>
-<p>参考《白帽子讲web安全》第11章 加密算法和随机数。</p>
-<p>流密码加密算法的使用中，最常见的错误是使用同一个密钥进行多次加解密。流密码的加密是基于异或(XOR)操作进行的。XOR操作规则如下：</p>
-<pre>]]>
-    </summary>
-    
-      <category term="密码学" scheme="http://stayliv3.github.io/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/"/>
-    
-      <category term="加密解密" scheme="http://stayliv3.github.io/categories/%E5%8A%A0%E5%AF%86%E8%A7%A3%E5%AF%86/"/>
     
   </entry>
   
