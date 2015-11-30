@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>xd_xd&#39;s blog</title>
+    <title>mysql执行语句监控 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
@@ -12,13 +12,14 @@
 
     
     <meta name="description">
-<meta property="og:type" content="website">
-<meta property="og:title" content="xd_xd's blog">
-<meta property="og:url" content="http://stayliv3.github.io/page/7/index.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mysql执行语句监控">
+<meta property="og:url" content="http://stayliv3.github.io/2015/11/27/mysql执行语句监控/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
 <meta property="og:description">
+<meta property="og:updated_time" content="2015-11-27T08:19:13.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="xd_xd's blog">
+<meta name="twitter:title" content="mysql执行语句监控">
 <meta name="twitter:description">
 
     
@@ -73,242 +74,83 @@
 </div>
     </header>
     <div id="container">
-      <div id="main">
-
+      <div id="main" class="post" itemscope itemprop="blogPost">
   
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2015/03/25/maccms/" title="maccms urldecode导致的注入" itemprop="url">
-  
-    <h1 itemprop="name">maccms urldecode导致的注入</h1>
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
     
-     
-           <p itemprop="description" >分析maccms的历史漏洞，发现在大量白帽子的洗礼下，安全性的提升还是很快的。尤其是引入360_safe3.
-
-php导致漏洞的利用成本增加。记录一下分析相关代码的过程。。在最新版中这些漏洞都已经修复了。而且最新版的360也开始检测urldecode之前的变量是否存在危险字符了。</p>
-        
+      <a href="/2015/11/27/mysql执行语句监控/" title="mysql执行语句监控" itemprop="url">mysql执行语句监控</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
+		
+  <p class="article-time">
+    <time datetime="2015-11-27T08:19:13.000Z" itemprop="datePublished"> 发表于 Nov 27 2015</time>
     
-    <time datetime="2015-03-25T08:34:58.000Z" itemprop="datePublished">Mar 25 2015</time>
-  </a>
-</section>
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			
+		
+		</div>
+		
+		  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
 
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2015/03/24/xionghaicms/" title="熊海cms 代码审计" itemprop="url">
-  
-    <h1 itemprop="name">熊海cms 代码审计</h1>
-    
-     
-           <p itemprop="description" >官网：http://www.isea.pw/
-#问题一：本地文件包含
-&amp;lt;?php
-//单一入口模式
-error_reporting(0); //关闭错误显示
-$file=addslashes($_GET[&#39;r&#39;]); //接收文件名
-$action=$file==&#39;&#39;?&#39;i</p>
-        
-    
-    <time datetime="2015-03-24T08:24:05.000Z" itemprop="datePublished">Mar 24 2015</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2015/03/24/phpshe/" title="phpshe 商城安装过程分析" itemprop="url">
-  
-    <h1 itemprop="name">phpshe 商城安装过程分析</h1>
-    
-     
-           <p itemprop="description" >http://wooyun.org/bugs/wooyun-2010-062047phpshe商城之前没有对重装的流程做校验，存在任意重新安装的漏洞。其实对于安装过程存在的风险，好的安全解决方案应该是安装完成之后删除安装文件夹。
-分析版本PHPSHE1.3
-安装流程可能存在的风险</p>
-        
-    
-    <time datetime="2015-03-24T03:00:47.000Z" itemprop="datePublished">Mar 24 2015</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2015/01/21/break/" title="如果switch没有break(php,javascript)" itemprop="url">
-  
-    <h1 itemprop="name">如果switch没有break(php,javascript)</h1>
-    
-     
-           <p itemprop="description" >如果switch没有break(php,javascript)
-社区一个讨论帖中提到如下一段代码的LFI利用问题：
-&amp;lt;?php
-if (isset($_GET[&#39;a&#39;]))
-{
-        $a= $_GET[&#39;a&#39;];
-        switch ($a)
-    </p>
-        
-    
-    <time datetime="2015-01-20T18:26:04.000Z" itemprop="datePublished">Jan 21 2015</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2015/01/14/piwigo/" title="piwigo CVE-2014-9115" itemprop="url">
-  
-    <h1 itemprop="name">piwigo CVE-2014-9115</h1>
-    
-     
-           <p itemprop="description" >免费开源相册Piwigo&amp;lt;= v2.7.1 SQL注入漏洞分析
-http://www.freebuf.com/articles/web/55075.html
-http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2014-9</p>
-        
-    
-    <time datetime="2015-01-14T14:04:36.000Z" itemprop="datePublished">Jan 14 2015</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2014/12/18/ecshop/" title="ecshop patch15分析" itemprop="url">
-  
-    <h1 itemprop="name">ecshop patch15分析</h1>
-    
-     
-           <p itemprop="description" >之前乌云有个ecshop的漏洞关注度比较高，http://www.wooyun.org/bugs/wooyun-2014-086052，出补丁了就看了下。当然结论就是没发现啥有价值的东西。下面是一个简要的分析过程。
-看官方的说明，没看到有修复高危的SQL注入。
-
-先下载好patc</p>
-        
-    
-    <time datetime="2014-12-17T19:14:09.000Z" itemprop="datePublished">Dec 18 2014</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2014/12/05/ipbsql/" title="IP.Board 3.4.7 SQL注入分析" itemprop="url">
-  
-    <h1 itemprop="name">IP.Board 3.4.7 SQL注入分析</h1>
-    
-     
-           <p itemprop="description" >##参考资料http://www.freebuf.com/articles/web/53018.htmlhttp://seclists.org/fulldisclosure/2014/Nov/20
-##代码分析
-根据之前的漏洞分析可知，入口在interface/ipsconnec</p>
-        
-    
-    <time datetime="2014-12-04T18:03:22.000Z" itemprop="datePublished">Dec 5 2014</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2014/12/01/burp/" title="burpsuite csrf poc 乱码问题" itemprop="url">
-  
-    <h1 itemprop="name">burpsuite csrf poc 乱码问题</h1>
-    
-     
-           <p itemprop="description" >burpsuite csrf poc 乱码问题关于burpsuite生成的csrf poc的方法。路径为：右键-&amp;gt; engagement tools -&amp;gt;generate CSRF Poc。
-
-burpsuite自动生成csrf poc的功能已经很强大了。默认可以生成</p>
-        
-    
-    <time datetime="2014-11-30T19:50:12.000Z" itemprop="datePublished">Dec 1 2014</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2014/11/27/wap/" title="wap2.0php代码审计学习" itemprop="url">
-  
-    <h1 itemprop="name">wap2.0php代码审计学习</h1>
-    
-     
-           <p itemprop="description" >##wap2.0安装
-下载地址http://sourceforge.net/projects/awap/files/wap-2.0/，有3种不同操作系统平台的程序包。由于在windows环境下测试的时候发现有些bug。所以这里的测试环境采用了ubuntu+wap-2.0.x86.</p>
-        
-    
-    <time datetime="2014-11-27T14:41:27.000Z" itemprop="datePublished">Nov 27 2014</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2014/11/25/discuz/" title="discuz X 任意文件删除漏洞学习" itemprop="url">
-  
-    <h1 itemprop="name">discuz X 任意文件删除漏洞学习</h1>
-    
-     
-           <p itemprop="description" >##测试方式漏洞来源：http://www.wooyun.org/bugs/wooyun-2010-065513先说一下这个漏洞的利用过程吧。这个原帖里已经写的比较清楚了。注册用户。1，访问：http://localhost/Discuz_X3.1_SC_UTF8/upload/</p>
-        
-    
-    <time datetime="2014-11-25T12:46:47.000Z" itemprop="datePublished">Nov 25 2014</time>
-  </a>
-</section>
-
-
-
-
-
-
-
-  <nav id="page-nav" class="clearfix unexpand">
-    <a class="extend prev" rel="prev" href="/page/6/"><span></span>Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/8/">Next<span></span></a>
-  </nav>
 
 </div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://stayliv3.github.io/2015/11/27/mysql执行语句监控/" data-title="mysql执行语句监控 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2015/11/23/华山杯CTF做过的几道题/"  title="华山杯CTF做过的几道题">
+ <strong>下一篇：</strong><br/> 
+ <span>华山杯CTF做过的几道题
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2015/11/27/mysql执行语句监控/" data-title="mysql执行语句监控" data-url="http://stayliv3.github.io/2015/11/27/mysql执行语句监控/"></div>
+</section>
+
+
+</div>  
       <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ 
+ 
+  </div>
 
 <div id="asidepart">
 <div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
@@ -561,6 +403,11 @@ $(document).ready(function(){
     o.css("top",Math.max(80,260-$(this).scrollTop()));
   });
   
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
   $(window).resize(function(){
     getSize(); 
     if (myWidth >= 1024) {
@@ -569,12 +416,69 @@ $(document).ready(function(){
       m.removeClass('moveMain');
       a.css('display', 'block').removeClass('fadeOut');
       o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
         
     }
   });
 });
 </script>
 
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
 
 
 
@@ -649,4 +553,4 @@ $(document).ready(function(){
 <!-- Tiny_search End -->
 
   </body>
- </html>
+</html>
