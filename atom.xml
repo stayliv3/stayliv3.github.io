@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://stayliv3.github.io/"/>
-  <updated>2015-12-02T07:58:54.000Z</updated>
+  <updated>2015-11-30T09:10:00.000Z</updated>
   <id>http://stayliv3.github.io/</id>
   
   <author>
@@ -13,46 +13,6 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
-  
-  <entry>
-    <title><![CDATA[支付漏洞总结]]></title>
-    <link href="http://stayliv3.github.io/2015/12/02/%E6%94%AF%E4%BB%98%E6%BC%8F%E6%B4%9E%E6%80%BB%E7%BB%93/"/>
-    <id>http://stayliv3.github.io/2015/12/02/支付漏洞总结/</id>
-    <published>2015-12-02T05:47:07.000Z</published>
-    <updated>2015-12-02T07:58:54.000Z</updated>
-    <content type="html"><![CDATA[<h2 id="前言">前言</h2><p>大家对支付漏洞的理解通常都是篡改价格，已有的对支付漏洞的总结也是对现有的一些案例的经验式归类，没有上升到对在线支付流程深入分析的一个层面。这里尝试从分析在线支付流程，在线支付厂商的接入方式开始，深入业务分析整个在线交易流程中容易出现的安全问题。</p>
-<h2 id="支付宝/在线支付流程">支付宝/在线支付流程</h2><p><a href="https://cshall.alipay.com/support/help_detail.htm?help_id=476935" target="_blank" rel="external">支付宝即时到账接口开发流程</a></p>
-<p>在线支付从功能上来说是通过支付宝的支付渠道，付款者直接汇款给另一个拥有支付宝账号的收款者。整个流程说明如下：引用自支付宝文档。<br><img src="/images/zaixianzhifu1.png" alt=""></p>
-<pre><code>(<span class="number">1</span>)构造请求数据
-商户根据支付宝提供的接口规则，通过程序生成得到签名结果及要传输给支付宝的数据集合。
-(<span class="number">2</span>)发送请求数据
-把构造完成的数据集合，通过页面链接跳转或表单提交的方式传递给支付宝。
-(<span class="number">3</span>)支付宝对请求数据进行处理
-支付宝得到这些集合后，会先进行安全校验等验证，一系列验证通过后便会处理这次发送过来的数据请求。
-(<span class="number">4</span>)返回处理的结果数据
-对于处理完成的交易，支付宝会以两种方式把数据反馈给商户网站。
-程序上自动进行重新构造URL地址链接，在用户当前页面上通过自动跳转的方式跳回商户在请求时设定好的页面路径地址（参数return_url，如果商户没有设定，则不会进行该操作）
-支付宝服务器主动发起通知，调用商户在请求时设定好的页面路径（参数notify_url，如果商户没有设定，则不会进行该操作）。
-(<span class="number">5</span>)对获取的返回结果数据进行处理
-商户在同步通知处理页面（参数return_url指定页面文件）或服务器异步通知页面（参数notify_url指定页面文件）获取支付宝返回的结果数据后，可以结合自身网站的业务逻辑进行数据处理（如：订单更新、自动充值到会员账号中等）。
-</code></pre><h2 id="业务思考">业务思考</h2><p>通过这个流程可以知道。应用端做的两个重要步骤，一个是拼接支付的请求，返回给用户浏览器，用户浏览器请求支付宝接口，进入支付流程，整个支付的环节是和支付宝端交互，支付完成之后，支付宝通过通知接口给应用发送支付成功的通知。应用通过支付宝的通知信息来判断支付是否成功。</p>
-<h2 id="风险分析">风险分析</h2><p>首先第二步，发送请求数据。这一步虽然是在用户的浏览器端完成的。但是支付接口都有强制的签名来保证完整性，所以这里数据是无法篡改的，在签名key不泄露的情况下。所以通常见到的支付漏洞都是第一步，应用构造请求数据的时候出现的缺陷。</p>
-<p>对于交易这一业务功能来讲，应用只需要用户提供商品id和商品数量就可以满足支付所需要的所有数据了。这个地方容易出现的问题主要有以下几种：</p>
-<p>1，直接把订单的总金额从客户端获取，放在了构造的请求交易数据中。<br>2，虽然只传递商品id和数量，但是数量没有做白名单限制，造成可以输入负数或者大数造成计算溢出，导致最终计算的订单金额出现错误。<br>3，除了商品数量和商品id，还有其他参与订单金额计算的参数从客户端获取，比如运费等</p>
-<p>第三步和第四步是支付宝进行的处理，所以也不存在问题。第五步，支付宝通知应用用户付款成功，这里支付宝设计了notify_id供应用来验证通知信息是否是有效的。但是一般很少见人用，因为这一步数据也是有签名的。只要应用对支付宝的通知信息进行签名验证就可以。但是这个验证是应用自己来控制的，并不像第二步是支付宝控制的进行签名验证，所以一旦应用没有对支付宝通知信息进行签名验证就会导致伪造支付宝的通知信息，欺骗应用支付成功的漏洞。这种类型的问题看到的案例比较少。比如<a href="http://wooyun.org/bugs/wooyun-2010-0146510" target="_blank" rel="external">我是如何1元再购特斯拉的</a>。这种类型的问题应该也比较常见，可能是对这个逻辑的测试还不够关注。</p>
-<p>所以通过分析整个在线支付的流程可以看到，容易出现支付漏洞的有两个点，一个是构造支付请求的阶段，一个是对返回的结果数据进行处理的阶段。这里分析的是一个典型的支付流程，此外还有一些比较复杂的交易设计，比如设计了可以修改订单的功能等，随着功能的增加也会引入一些安全问题。</p>
-<h2 id="安全的设计方案：">安全的设计方案：</h2><p>只从客户端获取商品id和数量，对数量范围进行限制。对接受支付宝通知的接口对通知信息进行签名验证，对支付金额和订单金额进行对比以及验证支付订单号避免重放攻击。只要考虑到这几个问题，就可以设计一个比较安全的支付流程。</p>
-<h2 id="参考资料">参考资料</h2><p><a href="http://drops.wooyun.org/papers/345" target="_blank" rel="external">乌云drops</a></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<h2 id="前言">前言</h2><p>大家对支付漏洞的理解通常都是篡改价格，已有的对支付漏洞的总结也是对现有的一些案例的经验式归类，没有上升到对在线支付流程深入分析的一个层面。这里尝试从分析在线支付流程，在线支付厂商的接入方式开始，深入业务分析整个在线交易流程中容易出现的安]]>
-    </summary>
-    
-      <category term="支付漏洞" scheme="http://stayliv3.github.io/tags/%E6%94%AF%E4%BB%98%E6%BC%8F%E6%B4%9E/"/>
-    
-      <category term="黑盒测试" scheme="http://stayliv3.github.io/categories/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95/"/>
-    
-  </entry>
   
   <entry>
     <title><![CDATA[绿麻雀网贷系统安全审计]]></title>
@@ -1007,6 +967,38 @@ Usage:
       <category term="加密解密" scheme="http://stayliv3.github.io/tags/%E5%8A%A0%E5%AF%86%E8%A7%A3%E5%AF%86/"/>
     
       <category term="古典密码" scheme="http://stayliv3.github.io/categories/%E5%8F%A4%E5%85%B8%E5%AF%86%E7%A0%81/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[AirLive摄像机命令注入漏洞]]></title>
+    <link href="http://stayliv3.github.io/2015/07/08/AirLive%E6%91%84%E5%83%8F%E6%9C%BA%E5%91%BD%E4%BB%A4%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E/"/>
+    <id>http://stayliv3.github.io/2015/07/08/AirLive摄像机命令注入漏洞/</id>
+    <published>2015-07-08T07:09:12.000Z</published>
+    <updated>2015-11-24T03:27:37.000Z</updated>
+    <content type="html"><![CDATA[<p>#影响范围:</p>
+<pre><code><span class="number">1</span>、AirLive BU-<span class="number">2015</span>，固件版本<span class="number">1.03</span><span class="number">.18</span> <span class="number">16.06</span><span class="number">.2014</span>
+<span class="number">2</span>、AirLive BU-<span class="number">3026</span>，固件版本<span class="number">1.43</span> <span class="number">21.08</span><span class="number">.2014</span>
+<span class="number">3</span>、AirLive MD-<span class="number">3025</span>，固件版本<span class="number">1.81</span> <span class="number">21.08</span><span class="number">.2014</span>
+<span class="number">4</span>、AirLive WL-<span class="number">2000</span>CAM，固件版本LM<span class="number">.1</span><span class="number">.6</span><span class="number">.18</span> <span class="number">14.10</span><span class="number">.2011</span>
+<span class="number">5</span>、AirLive POE-<span class="number">200</span>CAM v2 ，固件版本LM<span class="number">.1</span><span class="number">.6</span><span class="number">.17</span><span class="number">.01</span>
+</code></pre><p><img src="/images/airlive1.png" alt=""></p>
+<p>#命令注入漏洞测试</p>
+<p>通过关键字可以在互联网上找到airlive的摄像机。通过以下链接测试系统命令注入漏洞，这里注入ls命令测试。</p>
+<pre><code>http://<span class="number">90.178.21.235</span>:8080/cgi_test.cgi?write_tan&amp;<span class="comment">;ls&amp;   </span>
+</code></pre><p><img src="/images/airlive2.png" alt=""></p>
+<p>由于这里对write_tan参数的长度进行了限制，所以这个漏洞利用起来有一定的难度，这里仅仅是演示命令注入漏洞的效果。</p>
+<p>#技术细节<br>参考<a href="http://www.coresecurity.com/advisories/airlive-multiple-products-os-command-injection" target="_blank" rel="external">airlive-multiple-products-os-command-injection</a></p>
+<p>#参考资料<br><a href="http://www.freebuf.com/news/71870.html" target="_blank" rel="external">AirLive IP监控相机存在命令注入漏洞</a><br><a href="http://www.coresecurity.com/advisories/airlive-multiple-products-os-command-injection" target="_blank" rel="external">airlive-multiple-products-os-command-injection</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>#影响范围:</p>
+<pre><code><span class="number">1</span>、AirLive BU-<span class="number">2015</span>，固件版本<span class="number">1.03</span><span]]>
+    </summary>
+    
+      <category term="物联网,命令注入" scheme="http://stayliv3.github.io/tags/%E7%89%A9%E8%81%94%E7%BD%91-%E5%91%BD%E4%BB%A4%E6%B3%A8%E5%85%A5/"/>
+    
+      <category term="万物互联" scheme="http://stayliv3.github.io/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
     
   </entry>
   
