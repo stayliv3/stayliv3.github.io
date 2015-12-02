@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://stayliv3.github.io/"/>
-  <updated>2015-11-30T09:00:00.000Z</updated>
+  <updated>2015-11-30T09:10:00.000Z</updated>
   <id>http://stayliv3.github.io/</id>
   
   <author>
@@ -19,7 +19,7 @@
     <link href="http://stayliv3.github.io/2015/11/30/%E7%BB%BF%E9%BA%BB%E9%9B%80%E7%BD%91%E8%B4%B7%E7%B3%BB%E7%BB%9F%E5%AE%89%E5%85%A8%E5%AE%A1%E8%AE%A1/"/>
     <id>http://stayliv3.github.io/2015/11/30/绿麻雀网贷系统安全审计/</id>
     <published>2015-11-30T08:37:24.000Z</published>
-    <updated>2015-11-30T09:00:00.000Z</updated>
+    <updated>2015-11-30T09:10:00.000Z</updated>
     <content type="html"><![CDATA[<p>##sql注入</p>
 <p>##文件管理</p>
 <p>##业务逻辑</p>
@@ -28,7 +28,8 @@
 <p>###源码总体分析<br>基于thinkphp3.0开发，所以thinkphp在sql注入和文件包含上的坑都可能存在。典型的thinkphp应用。<br>由于绿麻雀是闭源系统，所以没有最新的源码</p>
 <p>###历史漏洞分析</p>
 <p><a href="http://www.wooyun.org/corps/%E7%BB%BF%E9%BA%BB%E9%9B%80" target="_blank" rel="external">wooyun</a>乌云上有多个sql注入漏洞，在先知上有个getshell的漏洞，但是看不到详情。分析乌云上5个sql注入漏洞目前公开的有3个均是由于thinkphp where条件为字符串，直接拼接到sql语句中导致。</p>
-<p>##sql注入</p>
+<p>##sql注入<br><a href="http://xdxd.love/2015/05/14/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E4%B9%8BSQL%E6%B3%A8%E5%85%A5/" target="_blank" rel="external">代码审计之SQL注入</a></p>
+<p>thinkphp作为一个php框架，在设计的时候是有考虑安全的。所以数据库层设计是有一些安全防御。寻找sql注入的重点就变成寻找thinkphp框架的特性和缺陷的问题。好在thinkphp的缺陷比较多。而3.0是一个老版本。比如历史漏洞中提到的where条件是字符串的时候，thinkphp会直接拼接到sql语句中。<br>thinkphp在sql注入方面的缺陷可以参考：<a href="http://xdxd.love/2015/05/29/thinkphp-SQL%E5%AD%A6%E4%B9%A0/" target="_blank" rel="external">thinkphp SQL注入风险分析</a></p>
 ]]></content>
     <summary type="html">
     <![CDATA[<p>##sql注入</p>
