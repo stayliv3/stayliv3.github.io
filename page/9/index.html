@@ -4,38 +4,22 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>逆向路由器固件之四 qemu仿真环境运行固件应用 | xd_xd&#39;s blog</title>
+    <title>xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description" content="#qemu安装
-mac编译安装遇到错误。
-➜  qemu git:(master) ./configure --static
-C++ compiler c++ does not work with C compiler cc
-Disabling C++ specific optional code
-ERROR: Your compiler does not support the __thread">
-<meta property="og:type" content="article">
-<meta property="og:title" content="逆向路由器固件之四 qemu仿真环境运行固件应用">
-<meta property="og:url" content="http://stayliv3.github.io/2015/09/01/逆向路由器固件之四-qemu仿真环境运行固件应用/index.html">
+    <meta name="description">
+<meta property="og:type" content="website">
+<meta property="og:title" content="xd_xd's blog">
+<meta property="og:url" content="http://stayliv3.github.io/page/9/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="#qemu安装
-mac编译安装遇到错误。
-➜  qemu git:(master) ./configure --static
-C++ compiler c++ does not work with C compiler cc
-Disabling C++ specific optional code
-ERROR: Your compiler does not support the __thread">
-<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+<meta property="og:description">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="逆向路由器固件之四 qemu仿真环境运行固件应用">
-<meta name="twitter:description" content="#qemu安装
-mac编译安装遇到错误。
-➜  qemu git:(master) ./configure --static
-C++ compiler c++ does not work with C compiler cc
-Disabling C++ specific optional code
-ERROR: Your compiler does not support the __thread">
+<meta name="twitter:title" content="xd_xd's blog">
+<meta name="twitter:description">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -89,114 +73,38 @@ ERROR: Your compiler does not support the __thread">
 </div>
     </header>
     <div id="container">
-      <div id="main" class="post" itemscope itemprop="blogPost">
+      <div id="main">
+
   
-	<article itemprop="articleBody"> 
-		<header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2015/09/01/逆向路由器固件之四-qemu仿真环境运行固件应用/" title="逆向路由器固件之四 qemu仿真环境运行固件应用" itemprop="url">逆向路由器固件之四 qemu仿真环境运行固件应用</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
-		
-  <p class="article-time">
-    <time datetime="2015-09-01T02:43:28.000Z" itemprop="datePublished"> 发表于 Sep 1 2015</time>
-    
-  </p>
-</header>
-	<div class="article-content">
-		
-		<div id="toc" class="toc-article">
-			<strong class="toc-title">文章目录</strong>
-		
-			
-		
-		</div>
-		
-		<p>#qemu安装</p>
-<p>mac编译安装遇到错误。</p>
-<pre><code>➜  qemu git:(master) ./configure <span class="comment">--static</span>
-C++ compiler c++ <span class="keyword">does</span> <span class="keyword">not</span> work <span class="keyword">with</span> C compiler cc
-Disabling C++ specific optional code
-ERROR: Your compiler <span class="keyword">does</span> <span class="keyword">not</span> support <span class="keyword">the</span> __thread specifier <span class="keyword">for</span>
-       Thread-Local Storage (TLS). Please upgrade <span class="keyword">to</span> a <span class="property">version</span> <span class="keyword">that</span> <span class="keyword">does</span>.
-</code></pre><p>Google说是gcc版本低的原因。需要gcc 4.3以上。看了一下自己的版本。</p>
-<pre><code>➜  blog  gcc --version
-Configured with: --prefix=/Applications/Xcode.app/Contents/Developer/usr --with-gxx-include-dir=/usr/include/c++/<span class="number">4.2</span><span class="number">.1</span>
-Apple LLVM version <span class="number">6.1</span><span class="number">.0</span> (clang-<span class="number">602.0</span><span class="number">.53</span>) (based on LLVM <span class="number">3.6</span><span class="number">.0</span>svn)
-Target: x86_64-apple-darwin14<span class="number">.1</span><span class="number">.0</span>
-Thread model: posix
-</code></pre>  
-	</div>
-		<footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/万物互联/">万物互联</a>
-</div>
-
-
-  <div class="article-tags">
+<section class="post" itemscope itemprop="blogitem">
   
-  <span></span> <a href="/tags/qemu/">qemu</a>
-  </div>
-
-</div>
-
-
-
-	<div class="article-share" id="share">
-	
-	  <div data-url="http://stayliv3.github.io/2015/09/01/逆向路由器固件之四-qemu仿真环境运行固件应用/" data-title="逆向路由器固件之四 qemu仿真环境运行固件应用 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
-	  </div>
-	
-	</div>
-
-
-</footer>
-
-   	       
-	</article>
-	
-<nav class="article-nav clearfix">
- 
- <div class="prev" >
- <a href="/2015/09/06/part5-通过qemu和ida远程调试设备固件/" title="part5 通过qemu和ida远程调试设备固件">
-  <strong>上一篇：</strong><br/>
-  <span>
-  part5 通过qemu和ida远程调试设备固件</span>
-</a>
-</div>
-
-
-<div class="next">
-<a href="/2015/08/24/逆向路由器固件之二/"  title="逆向路由器固件之二">
- <strong>下一篇：</strong><br/> 
- <span>逆向路由器固件之二
-</span>
-</a>
-</div>
-
-</nav>
-
-	
-<section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/09/01/逆向路由器固件之四-qemu仿真环境运行固件应用/" data-title="逆向路由器固件之四 qemu仿真环境运行固件应用" data-url="http://stayliv3.github.io/2015/09/01/逆向路由器固件之四-qemu仿真环境运行固件应用/"></div>
+    <a href="/2014/10/21/yxcms/" title="yxcms1.2.6任意文件删除漏洞分析" itemprop="url">
+  
+    <h1 itemprop="name">yxcms1.2.6任意文件删除漏洞分析</h1>
+    
+     
+           <p itemprop="description" >测试版本:1.2.6
+YXcms的在使用unlink函数删除文件的时候没有考虑到对该参数做一个限制，导致存在很多个任意文件删除的漏洞。漏洞代码也比较直接，比如：
+if(!empty($_POST[&#39;oldheadpic&#39;])){
+    $picpath=$this-&amp;gt;up</p>
+        
+    
+    <time datetime="2014-10-20T20:07:34.000Z" itemprop="datePublished">Oct 21 2014</time>
+  </a>
 </section>
 
 
-</div>  
-      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
 
-  <div id="toc" class="toc-aside">
-  <strong class="toc-title">文章目录</strong>
- 
- 
- 
-  </div>
+
+
+
+
+  <nav id="page-nav" class="clearfix unexpand">
+    <a class="extend prev" rel="prev" href="/page/8/"><span></span>Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span>
+  </nav>
+
+</div>
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
 
 <div id="asidepart">
 <div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
@@ -449,11 +357,6 @@ $(document).ready(function(){
     o.css("top",Math.max(80,260-$(this).scrollTop()));
   });
   
-        getSize();
-        if (myWidth >= 1024) {
-          c.click();
-        }
-  
   $(window).resize(function(){
     getSize(); 
     if (myWidth >= 1024) {
@@ -462,69 +365,12 @@ $(document).ready(function(){
       m.removeClass('moveMain');
       a.css('display', 'block').removeClass('fadeOut');
       o.css('display', 'none');
-      
-      $('#toc.toc-aside').css('display', 'none');
         
     }
   });
 });
 </script>
 
-<script type="text/javascript">
-$(document).ready(function(){ 
-  var ai = $('.article-content>iframe'),
-      ae = $('.article-content>embed'),
-      t  = $('#toc'),
-      ta = $('#toc.toc-aside'),
-      o  = $('.openaside'),
-      c  = $('.closeaside');
-  if(ai.length>0){
-    ai.wrap('<div class="video-container" />');
-  };
-  if(ae.length>0){
-   ae.wrap('<div class="video-container" />');
-  };
-  c.click(function(){
-    ta.css('display', 'block').addClass('fadeIn');
-  });
-  o.click(function(){
-    ta.css('display', 'none');
-  });
-  $(window).scroll(function(){
-    ta.css("top",Math.max(140,320-$(this).scrollTop()));
-  });
-});
-</script>
-
-
-<script type="text/javascript">
-$(document).ready(function(){ 
-  var $this = $('.share'),
-      url = $this.attr('data-url'),
-      encodedUrl = encodeURIComponent(url),
-      title = $this.attr('data-title'),
-      tsina = $this.attr('data-tsina'),
-      description = $this.attr('description');
-  var html = [
-  '<a href="#" class="overlay" id="qrcode"></a>',
-  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
-  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
-  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
-  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
-  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
-  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
-  '<span title="Share to"></span>'
-  ].join('');
-  $this.append(html);
-  $('.article-share-qrcode').click(function(){
-    var imgSrc = $('#qrcode-pic').attr('data-src');
-    $('#qrcode-pic').attr('src', imgSrc);
-    $('#qrcode-pic').load(function(){
-        $('.qrcode strong').text(' ');
-    });
-  });
-});     
-</script>
 
 
 
@@ -599,4 +445,4 @@ $(document).ready(function(){
 <!-- Tiny_search End -->
 
   </body>
-</html>
+ </html>
