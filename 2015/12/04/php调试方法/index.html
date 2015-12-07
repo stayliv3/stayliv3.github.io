@@ -4,44 +4,23 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>绿麻雀网贷系统安全审计 | xd_xd&#39;s blog</title>
+    <title>php调试方法 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description" content="##sql注入
-##文件管理
-##业务逻辑
-##文件包含
-##命令执行
-###源码总体分析基于thinkphp3.0开发，所以thinkphp在sql注入和文件包含上的坑都可能存在。典型的thinkphp应用。由于绿麻雀是闭源系统，所以没有最新的源码
-###历史漏洞分析
-wooyun乌云上有多个sql注入漏洞，在先知上有个getshell的漏洞，但是看不到详情。分析乌云上5个sql注入漏洞目前公开">
+    <meta name="description" content="开启错误信息ini_set(‘display_errors’, ‘1’);">
 <meta property="og:type" content="article">
-<meta property="og:title" content="绿麻雀网贷系统安全审计">
-<meta property="og:url" content="http://stayliv3.github.io/2015/11/30/绿麻雀网贷系统安全审计/index.html">
+<meta property="og:title" content="php调试方法">
+<meta property="og:url" content="http://stayliv3.github.io/2015/12/04/php调试方法/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="##sql注入
-##文件管理
-##业务逻辑
-##文件包含
-##命令执行
-###源码总体分析基于thinkphp3.0开发，所以thinkphp在sql注入和文件包含上的坑都可能存在。典型的thinkphp应用。由于绿麻雀是闭源系统，所以没有最新的源码
-###历史漏洞分析
-wooyun乌云上有多个sql注入漏洞，在先知上有个getshell的漏洞，但是看不到详情。分析乌云上5个sql注入漏洞目前公开">
-<meta property="og:updated_time" content="2015-11-30T09:10:00.000Z">
+<meta property="og:description" content="开启错误信息ini_set(‘display_errors’, ‘1’);">
+<meta property="og:updated_time" content="2015-12-04T09:00:39.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="绿麻雀网贷系统安全审计">
-<meta name="twitter:description" content="##sql注入
-##文件管理
-##业务逻辑
-##文件包含
-##命令执行
-###源码总体分析基于thinkphp3.0开发，所以thinkphp在sql注入和文件包含上的坑都可能存在。典型的thinkphp应用。由于绿麻雀是闭源系统，所以没有最新的源码
-###历史漏洞分析
-wooyun乌云上有多个sql注入漏洞，在先知上有个getshell的漏洞，但是看不到详情。分析乌云上5个sql注入漏洞目前公开">
+<meta name="twitter:title" content="php调试方法">
+<meta name="twitter:description" content="开启错误信息ini_set(‘display_errors’, ‘1’);">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -101,14 +80,14 @@ wooyun乌云上有多个sql注入漏洞，在先知上有个getshell的漏洞，
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/11/30/绿麻雀网贷系统安全审计/" title="绿麻雀网贷系统安全审计" itemprop="url">绿麻雀网贷系统安全审计</a>
+      <a href="/2015/12/04/php调试方法/" title="php调试方法" itemprop="url">php调试方法</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2015-11-30T08:37:24.000Z" itemprop="datePublished"> 发表于 Nov 30 2015</time>
+    <time datetime="2015-12-04T08:59:42.000Z" itemprop="datePublished"> 发表于 Dec 4 2015</time>
     
   </p>
 </header>
@@ -117,20 +96,11 @@ wooyun乌云上有多个sql注入漏洞，在先知上有个getshell的漏洞，
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#开启错误信息"><span class="toc-number">1.</span> <span class="toc-text">开启错误信息</span></a></li></ol>
 		
 		</div>
 		
-		<p>##sql注入</p>
-<p>##文件管理</p>
-<p>##业务逻辑</p>
-<p>##文件包含</p>
-<p>##命令执行</p>
-<p>###源码总体分析<br>基于thinkphp3.0开发，所以thinkphp在sql注入和文件包含上的坑都可能存在。典型的thinkphp应用。<br>由于绿麻雀是闭源系统，所以没有最新的源码</p>
-<p>###历史漏洞分析</p>
-<p><a href="http://www.wooyun.org/corps/%E7%BB%BF%E9%BA%BB%E9%9B%80" target="_blank" rel="external">wooyun</a>乌云上有多个sql注入漏洞，在先知上有个getshell的漏洞，但是看不到详情。分析乌云上5个sql注入漏洞目前公开的有3个均是由于thinkphp where条件为字符串，直接拼接到sql语句中导致。</p>
-<p>##sql注入<br><a href="http://xdxd.love/2015/05/14/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E4%B9%8BSQL%E6%B3%A8%E5%85%A5/" target="_blank" rel="external">代码审计之SQL注入</a></p>
-<p>thinkphp作为一个php框架，在设计的时候是有考虑安全的。所以数据库层设计是有一些安全防御。寻找sql注入的重点就变成寻找thinkphp框架的特性和缺陷的问题。好在thinkphp的缺陷比较多。而3.0是一个老版本。比如历史漏洞中提到的where条件是字符串的时候，thinkphp会直接拼接到sql语句中。<br>thinkphp在sql注入方面的缺陷可以参考：<a href="http://xdxd.love/2015/05/29/thinkphp-SQL%E5%AD%A6%E4%B9%A0/" target="_blank" rel="external">thinkphp SQL注入风险分析</a></p>
+		<h1 id="开启错误信息">开启错误信息</h1><p>ini_set(‘display_errors’, ‘1’);</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -153,7 +123,7 @@ wooyun乌云上有多个sql注入漏洞，在先知上有个getshell的漏洞，
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://stayliv3.github.io/2015/11/30/绿麻雀网贷系统安全审计/" data-title="绿麻雀网贷系统安全审计 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
+	  <div data-url="http://stayliv3.github.io/2015/12/04/php调试方法/" data-title="php调试方法 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -166,19 +136,11 @@ wooyun乌云上有多个sql注入漏洞，在先知上有个getshell的漏洞，
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2015/12/02/支付漏洞总结/" title="支付漏洞总结">
-  <strong>上一篇：</strong><br/>
-  <span>
-  支付漏洞总结</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2015/11/27/mysql执行语句监控/"  title="mysql执行语句监控">
+<a href="/2015/12/03/php比较操作符的安全问题/"  title="php比较操作符的安全问题">
  <strong>下一篇：</strong><br/> 
- <span>mysql执行语句监控
+ <span>php比较操作符的安全问题
 </span>
 </a>
 </div>
@@ -187,7 +149,7 @@ wooyun乌云上有多个sql注入漏洞，在先知上有个getshell的漏洞，
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/11/30/绿麻雀网贷系统安全审计/" data-title="绿麻雀网贷系统安全审计" data-url="http://stayliv3.github.io/2015/11/30/绿麻雀网贷系统安全审计/"></div>
+	<div class="ds-thread" data-thread-key="2015/12/04/php调试方法/" data-title="php调试方法" data-url="http://stayliv3.github.io/2015/12/04/php调试方法/"></div>
 </section>
 
 
@@ -197,7 +159,7 @@ wooyun乌云上有多个sql注入漏洞，在先知上有个getshell的漏洞，
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#开启错误信息"><span class="toc-number">1.</span> <span class="toc-text">开启错误信息</span></a></li></ol>
  
   </div>
 
@@ -278,15 +240,11 @@ wooyun乌云上有多个sql注入漏洞，在先知上有个getshell的漏洞，
 			
 		
 			
-				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/折腾/" title="折腾">折腾<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
+				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
 			
 		
 			
@@ -303,6 +261,10 @@ wooyun乌云上有多个sql注入漏洞，在先知上有个getshell的漏洞，
 		
 			
 				<li><a href="/tags/docker/" title="docker">docker<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
 			
 		
 			

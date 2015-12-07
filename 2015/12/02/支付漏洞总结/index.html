@@ -22,7 +22,7 @@
 支付宝/在线支付流程支付宝即时到账接口开发流程
 在线支付从功能上来说是通过支付宝的支付渠道，付款者直接汇款给另一个拥有支付宝账号的收款者。整个流程说明">
 <meta property="og:image" content="http://stayliv3.github.io/images/zaixianzhifu1.png">
-<meta property="og:updated_time" content="2015-12-03T01:52:02.000Z">
+<meta property="og:updated_time" content="2015-12-04T07:58:14.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="支付漏洞总结">
 <meta name="twitter:description" content="前言大家对支付漏洞的理解通常都是篡改价格，已有的对支付漏洞的总结也是对现有的一些案例的经验式归类，没有上升到对在线支付流程深入分析的一个层面。这里尝试从分析在线支付流程，在线支付厂商的接入方式开始，深入业务分析整个在线交易流程中容易出现的安全问题。
@@ -103,7 +103,7 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#支付宝/在线支付流程"><span class="toc-number">2.</span> <span class="toc-text">支付宝/在线支付流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#业务思考"><span class="toc-number">3.</span> <span class="toc-text">业务思考</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#风险分析"><span class="toc-number">4.</span> <span class="toc-text">风险分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安全的设计方案："><span class="toc-number">5.</span> <span class="toc-text">安全的设计方案：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">6.</span> <span class="toc-text">参考资料</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#支付宝/在线支付流程"><span class="toc-number">2.</span> <span class="toc-text">支付宝/在线支付流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#业务思考"><span class="toc-number">3.</span> <span class="toc-text">业务思考</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#风险分析"><span class="toc-number">4.</span> <span class="toc-text">风险分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安全的设计方案："><span class="toc-number">5.</span> <span class="toc-text">安全的设计方案：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#支付宝提供的验证方式"><span class="toc-number">6.</span> <span class="toc-text">支付宝提供的验证方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">7.</span> <span class="toc-text">参考资料</span></a></li></ol>
 		
 		</div>
 		
@@ -127,8 +127,9 @@
 <p>对于交易这一业务功能来讲，应用只需要用户提供商品id和商品数量就可以满足支付所需要的所有数据了。这个地方容易出现的问题主要有以下几种：</p>
 <p>1，直接把订单的总金额从客户端获取，放在了构造的请求交易数据中。<br>2，虽然只传递商品id和数量，但是数量没有做白名单限制，造成可以输入负数或者大数造成计算溢出，导致最终计算的订单金额出现错误。<br>3，除了商品数量和商品id，还有其他参与订单金额计算的参数从客户端获取，比如运费等</p>
 <p>第三步和第四步是支付宝进行的处理，所以也不存在问题。第五步，支付宝通知应用用户付款成功，这里支付宝设计了notify_id供应用来验证通知信息是否是有效的。但是一般很少见人用，因为这一步数据也是有签名的。只要应用对支付宝的通知信息进行签名验证就可以。但是这个验证是应用自己来控制的，并不像第二步是支付宝控制的进行签名验证，所以一旦应用没有对支付宝通知信息进行签名验证就会导致伪造支付宝的通知信息，欺骗应用支付成功的漏洞。这种类型的问题看到的案例比较少。比如<a href="http://wooyun.org/bugs/wooyun-2010-0146510" target="_blank" rel="external">我是如何1元再购特斯拉的</a>。这种类型的问题应该也比较常见，可能是对这个逻辑的测试还不够关注。</p>
-<p>所以通过分析整个在线支付的流程可以看到，容易出现支付漏洞的有两个点，一个是构造支付请求的阶段，一个是对返回的结果数据进行处理的阶段。这里分析的是一个典型的支付流程，此外还有一些比较复杂的交易设计，比如设计了可以修改订单的功能等，随着功能的增加也会引入一些安全问题。</p>
+<p>所以通过分析整个在线支付的流程可以看到，容易出现支付漏洞的有两个点，一个是构造支付请求的阶段，一个是对返回的结果数据进行处理的阶段。没有对签名进行验证，会存在请求伪造和重放攻击。这里分析的是一个典型的支付流程，此外还有一些比较复杂的交易设计，比如设计了可以修改订单的功能等，随着功能的增加也会引入一些安全问题。</p>
 <h2 id="安全的设计方案：">安全的设计方案：</h2><p>只从客户端获取商品id和数量，对数量范围进行限制。对接受支付宝通知的接口对通知信息进行签名验证，对支付金额和订单金额进行对比以及验证支付订单号避免重放攻击。只要考虑到这几个问题，就可以设计一个比较安全的支付流程。</p>
+<h2 id="支付宝提供的验证方式">支付宝提供的验证方式</h2><p>notifyid<br>total_fee<br>sign<br>order_no 防重放</p>
 <h2 id="参考资料">参考资料</h2><p><a href="http://drops.wooyun.org/papers/345" target="_blank" rel="external">乌云drops</a></p>
   
 	</div>
@@ -175,9 +176,9 @@
 
 
 <div class="next">
-<a href="/2015/11/30/绿麻雀网贷系统安全审计/"  title="绿麻雀网贷系统安全审计">
+<a href="/2015/11/27/mysql执行语句监控/"  title="mysql执行语句监控">
  <strong>下一篇：</strong><br/> 
- <span>绿麻雀网贷系统安全审计
+ <span>mysql执行语句监控
 </span>
 </a>
 </div>
@@ -196,7 +197,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#支付宝/在线支付流程"><span class="toc-number">2.</span> <span class="toc-text">支付宝/在线支付流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#业务思考"><span class="toc-number">3.</span> <span class="toc-text">业务思考</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#风险分析"><span class="toc-number">4.</span> <span class="toc-text">风险分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安全的设计方案："><span class="toc-number">5.</span> <span class="toc-text">安全的设计方案：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">6.</span> <span class="toc-text">参考资料</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#支付宝/在线支付流程"><span class="toc-number">2.</span> <span class="toc-text">支付宝/在线支付流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#业务思考"><span class="toc-number">3.</span> <span class="toc-text">业务思考</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#风险分析"><span class="toc-number">4.</span> <span class="toc-text">风险分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安全的设计方案："><span class="toc-number">5.</span> <span class="toc-text">安全的设计方案：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#支付宝提供的验证方式"><span class="toc-number">6.</span> <span class="toc-text">支付宝提供的验证方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">7.</span> <span class="toc-text">参考资料</span></a></li></ol>
  
   </div>
 
@@ -277,15 +278,11 @@
 			
 		
 			
-				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/折腾/" title="折腾">折腾<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
+				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
 			
 		
 			
@@ -302,6 +299,10 @@
 		
 			
 				<li><a href="/tags/docker/" title="docker">docker<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
 			
 		
 			

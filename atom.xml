@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://stayliv3.github.io/"/>
-  <updated>2015-12-03T01:50:15.000Z</updated>
+  <updated>2015-12-04T09:00:39.000Z</updated>
   <id>http://stayliv3.github.io/</id>
   
   <author>
@@ -13,6 +13,25 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[php调试方法]]></title>
+    <link href="http://stayliv3.github.io/2015/12/04/php%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95/"/>
+    <id>http://stayliv3.github.io/2015/12/04/php调试方法/</id>
+    <published>2015-12-04T08:59:42.000Z</published>
+    <updated>2015-12-04T09:00:39.000Z</updated>
+    <content type="html"><![CDATA[<h1 id="开启错误信息">开启错误信息</h1><p>ini_set(‘display_errors’, ‘1’);</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h1 id="开启错误信息">开启错误信息</h1><p>ini_set(‘display_errors’, ‘1’);</p>
+]]>
+    </summary>
+    
+      <category term="php" scheme="http://stayliv3.github.io/tags/php/"/>
+    
+      <category term="代码审计" scheme="http://stayliv3.github.io/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[php比较操作符的安全问题]]></title>
@@ -121,7 +140,7 @@ Welcome!
     <link href="http://stayliv3.github.io/2015/12/02/%E6%94%AF%E4%BB%98%E6%BC%8F%E6%B4%9E%E6%80%BB%E7%BB%93/"/>
     <id>http://stayliv3.github.io/2015/12/02/支付漏洞总结/</id>
     <published>2015-12-02T05:47:07.000Z</published>
-    <updated>2015-12-03T01:52:02.000Z</updated>
+    <updated>2015-12-04T07:58:14.000Z</updated>
     <content type="html"><![CDATA[<h2 id="前言">前言</h2><p>大家对支付漏洞的理解通常都是篡改价格，已有的对支付漏洞的总结也是对现有的一些案例的经验式归类，没有上升到对在线支付流程深入分析的一个层面。这里尝试从分析在线支付流程，在线支付厂商的接入方式开始，深入业务分析整个在线交易流程中容易出现的安全问题。</p>
 <h2 id="支付宝/在线支付流程">支付宝/在线支付流程</h2><p><a href="https://cshall.alipay.com/support/help_detail.htm?help_id=476935" target="_blank" rel="external">支付宝即时到账接口开发流程</a></p>
 <p>在线支付从功能上来说是通过支付宝的支付渠道，付款者直接汇款给另一个拥有支付宝账号的收款者。整个流程说明如下：引用自支付宝文档。<br><img src="/images/zaixianzhifu1.png" alt=""></p>
@@ -142,8 +161,9 @@ Welcome!
 <p>对于交易这一业务功能来讲，应用只需要用户提供商品id和商品数量就可以满足支付所需要的所有数据了。这个地方容易出现的问题主要有以下几种：</p>
 <p>1，直接把订单的总金额从客户端获取，放在了构造的请求交易数据中。<br>2，虽然只传递商品id和数量，但是数量没有做白名单限制，造成可以输入负数或者大数造成计算溢出，导致最终计算的订单金额出现错误。<br>3，除了商品数量和商品id，还有其他参与订单金额计算的参数从客户端获取，比如运费等</p>
 <p>第三步和第四步是支付宝进行的处理，所以也不存在问题。第五步，支付宝通知应用用户付款成功，这里支付宝设计了notify_id供应用来验证通知信息是否是有效的。但是一般很少见人用，因为这一步数据也是有签名的。只要应用对支付宝的通知信息进行签名验证就可以。但是这个验证是应用自己来控制的，并不像第二步是支付宝控制的进行签名验证，所以一旦应用没有对支付宝通知信息进行签名验证就会导致伪造支付宝的通知信息，欺骗应用支付成功的漏洞。这种类型的问题看到的案例比较少。比如<a href="http://wooyun.org/bugs/wooyun-2010-0146510" target="_blank" rel="external">我是如何1元再购特斯拉的</a>。这种类型的问题应该也比较常见，可能是对这个逻辑的测试还不够关注。</p>
-<p>所以通过分析整个在线支付的流程可以看到，容易出现支付漏洞的有两个点，一个是构造支付请求的阶段，一个是对返回的结果数据进行处理的阶段。这里分析的是一个典型的支付流程，此外还有一些比较复杂的交易设计，比如设计了可以修改订单的功能等，随着功能的增加也会引入一些安全问题。</p>
+<p>所以通过分析整个在线支付的流程可以看到，容易出现支付漏洞的有两个点，一个是构造支付请求的阶段，一个是对返回的结果数据进行处理的阶段。没有对签名进行验证，会存在请求伪造和重放攻击。这里分析的是一个典型的支付流程，此外还有一些比较复杂的交易设计，比如设计了可以修改订单的功能等，随着功能的增加也会引入一些安全问题。</p>
 <h2 id="安全的设计方案：">安全的设计方案：</h2><p>只从客户端获取商品id和数量，对数量范围进行限制。对接受支付宝通知的接口对通知信息进行签名验证，对支付金额和订单金额进行对比以及验证支付订单号避免重放攻击。只要考虑到这几个问题，就可以设计一个比较安全的支付流程。</p>
+<h2 id="支付宝提供的验证方式">支付宝提供的验证方式</h2><p>notifyid<br>total_fee<br>sign<br>order_no 防重放</p>
 <h2 id="参考资料">参考资料</h2><p><a href="http://drops.wooyun.org/papers/345" target="_blank" rel="external">乌云drops</a></p>
 ]]></content>
     <summary type="html">
@@ -153,38 +173,6 @@ Welcome!
       <category term="支付漏洞" scheme="http://stayliv3.github.io/tags/%E6%94%AF%E4%BB%98%E6%BC%8F%E6%B4%9E/"/>
     
       <category term="黑盒测试" scheme="http://stayliv3.github.io/categories/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[绿麻雀网贷系统安全审计]]></title>
-    <link href="http://stayliv3.github.io/2015/11/30/%E7%BB%BF%E9%BA%BB%E9%9B%80%E7%BD%91%E8%B4%B7%E7%B3%BB%E7%BB%9F%E5%AE%89%E5%85%A8%E5%AE%A1%E8%AE%A1/"/>
-    <id>http://stayliv3.github.io/2015/11/30/绿麻雀网贷系统安全审计/</id>
-    <published>2015-11-30T08:37:24.000Z</published>
-    <updated>2015-11-30T09:10:00.000Z</updated>
-    <content type="html"><![CDATA[<p>##sql注入</p>
-<p>##文件管理</p>
-<p>##业务逻辑</p>
-<p>##文件包含</p>
-<p>##命令执行</p>
-<p>###源码总体分析<br>基于thinkphp3.0开发，所以thinkphp在sql注入和文件包含上的坑都可能存在。典型的thinkphp应用。<br>由于绿麻雀是闭源系统，所以没有最新的源码</p>
-<p>###历史漏洞分析</p>
-<p><a href="http://www.wooyun.org/corps/%E7%BB%BF%E9%BA%BB%E9%9B%80" target="_blank" rel="external">wooyun</a>乌云上有多个sql注入漏洞，在先知上有个getshell的漏洞，但是看不到详情。分析乌云上5个sql注入漏洞目前公开的有3个均是由于thinkphp where条件为字符串，直接拼接到sql语句中导致。</p>
-<p>##sql注入<br><a href="http://xdxd.love/2015/05/14/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E4%B9%8BSQL%E6%B3%A8%E5%85%A5/" target="_blank" rel="external">代码审计之SQL注入</a></p>
-<p>thinkphp作为一个php框架，在设计的时候是有考虑安全的。所以数据库层设计是有一些安全防御。寻找sql注入的重点就变成寻找thinkphp框架的特性和缺陷的问题。好在thinkphp的缺陷比较多。而3.0是一个老版本。比如历史漏洞中提到的where条件是字符串的时候，thinkphp会直接拼接到sql语句中。<br>thinkphp在sql注入方面的缺陷可以参考：<a href="http://xdxd.love/2015/05/29/thinkphp-SQL%E5%AD%A6%E4%B9%A0/" target="_blank" rel="external">thinkphp SQL注入风险分析</a></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>##sql注入</p>
-<p>##文件管理</p>
-<p>##业务逻辑</p>
-<p>##文件包含</p>
-<p>##命令执行</p>
-<p>###源码总体分析<br>基于thinkphp3.0开发，所以thinkphp在sql注入和文件包含上的坑都可能存在。典型的thin]]>
-    </summary>
-    
-      <category term="php" scheme="http://stayliv3.github.io/tags/php/"/>
-    
-      <category term="代码审计" scheme="http://stayliv3.github.io/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
     
   </entry>
   
