@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://stayliv3.github.io/"/>
-  <updated>2015-12-08T03:43:12.000Z</updated>
+  <updated>2015-12-03T01:50:15.000Z</updated>
   <id>http://stayliv3.github.io/</id>
   
   <author>
@@ -13,27 +13,6 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
-  
-  <entry>
-    <title><![CDATA[php调试方法]]></title>
-    <link href="http://stayliv3.github.io/2015/12/04/php%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95/"/>
-    <id>http://stayliv3.github.io/2015/12/04/php调试方法/</id>
-    <published>2015-12-04T08:59:42.000Z</published>
-    <updated>2015-12-08T03:43:12.000Z</updated>
-    <content type="html"><![CDATA[<h1 id="开启错误信息">开启错误信息</h1><p>ini_set(‘display_errors’, ‘1’);</p>
-<h1 id="thinkphp">thinkphp</h1><p>页面Trace功能无论是调试模式还是部署模式都有效，要开启页面Trace功能，需要在项目配置文件中设置：</p>
-<pre><code><span class="string">'SHOW_PAGE_TRACE'</span> =&gt;<span class="keyword">true</span>, <span class="comment">// 显示页面Trace信息</span>
-</code></pre>]]></content>
-    <summary type="html">
-    <![CDATA[<h1 id="开启错误信息">开启错误信息</h1><p>ini_set(‘display_errors’, ‘1’);</p>
-<h1 id="thinkphp">thinkphp</h1><p>页面Trace功能无论是调试模式还是部署模式都有效，要开启页面Trace功能，需]]>
-    </summary>
-    
-      <category term="php" scheme="http://stayliv3.github.io/tags/php/"/>
-    
-      <category term="代码审计" scheme="http://stayliv3.github.io/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
-    
-  </entry>
   
   <entry>
     <title><![CDATA[php比较操作符的安全问题]]></title>
@@ -1029,6 +1008,30 @@ Usage:
     </summary>
     
       <category term="hackrf" scheme="http://stayliv3.github.io/tags/hackrf/"/>
+    
+      <category term="万物互联" scheme="http://stayliv3.github.io/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[mac上安装及使用binwalk]]></title>
+    <link href="http://stayliv3.github.io/2015/08/05/mac%E4%B8%8A%E5%AE%89%E8%A3%85%E5%8F%8A%E4%BD%BF%E7%94%A8binwalk/"/>
+    <id>http://stayliv3.github.io/2015/08/05/mac上安装及使用binwalk/</id>
+    <published>2015-08-05T08:55:25.000Z</published>
+    <updated>2015-11-24T03:27:38.000Z</updated>
+    <content type="html"><![CDATA[<p>#安装</p>
+<p>直接从github下clone之后，使用setup.py安装。分析固件的时候报错：</p>
+<pre><code><span class="label">WARNING: </span>Extractor.execute failed to run external extrator <span class="emphasis">'unsquashfs -d '</span>%%squashfs-root%%' <span class="emphasis">'%e'</span><span class="emphasis">':</span>
+</code></pre><p>原因是没有安装unsquashfs组件。</p>
+<p>然后尝试使用brew install binwalk 安装</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>#安装</p>
+<p>直接从github下clone之后，使用setup.py安装。分析固件的时候报错：</p>
+<pre><code><span class="label">WARNING: </span>Extractor.execute failed to run e]]>
+    </summary>
+    
+      <category term="binwalk" scheme="http://stayliv3.github.io/tags/binwalk/"/>
     
       <category term="万物互联" scheme="http://stayliv3.github.io/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
     
