@@ -17,10 +17,11 @@ ThinkPHP框架架构上存在SQL注入 by phith0n
 thinkphp作为一个框架，在底层上是有做了一些安全工作的。所以寻找SQL的思路就变成了寻找框架上漏掉过滤的点和框架特性上可以直接执行SQL语句的地方。
 ##特性1：exp表达式
 
-这里从filter_exp函数可以看出，开发者是有考虑到用户如果输入exp，导致sql注入的问题。所以进行了一次过滤。但是过滤的">
+http://www.kancloud.cn/manual/thinkphp/1768
+exp特性可以用于数据查询和数据更新。s">
 <meta property="og:type" content="article">
 <meta property="og:title" content="thinkphp SQL注入风险分析">
-<meta property="og:url" content="http://stayliv3.github.io/2015/05/29/thinkphp-SQL学习/index.html">
+<meta property="og:url" content="http://stayliv3.github.io/2015/05/29/thinkphp-SQL注入风险分析/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
 <meta property="og:description" content="#参考资料
 ThinkPHP框架架构上存在SQL注入 by phith0n
@@ -28,9 +29,10 @@ ThinkPHP框架架构上存在SQL注入 by phith0n
 thinkphp作为一个框架，在底层上是有做了一些安全工作的。所以寻找SQL的思路就变成了寻找框架上漏掉过滤的点和框架特性上可以直接执行SQL语句的地方。
 ##特性1：exp表达式
 
-这里从filter_exp函数可以看出，开发者是有考虑到用户如果输入exp，导致sql注入的问题。所以进行了一次过滤。但是过滤的">
+http://www.kancloud.cn/manual/thinkphp/1768
+exp特性可以用于数据查询和数据更新。s">
 <meta property="og:image" content="http://stayliv3.github.io/images/thinkphp1.png">
-<meta property="og:updated_time" content="2015-11-26T10:22:13.000Z">
+<meta property="og:updated_time" content="2015-12-07T02:53:33.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="thinkphp SQL注入风险分析">
 <meta name="twitter:description" content="#参考资料
@@ -39,7 +41,8 @@ ThinkPHP框架架构上存在SQL注入 by phith0n
 thinkphp作为一个框架，在底层上是有做了一些安全工作的。所以寻找SQL的思路就变成了寻找框架上漏掉过滤的点和框架特性上可以直接执行SQL语句的地方。
 ##特性1：exp表达式
 
-这里从filter_exp函数可以看出，开发者是有考虑到用户如果输入exp，导致sql注入的问题。所以进行了一次过滤。但是过滤的">
+http://www.kancloud.cn/manual/thinkphp/1768
+exp特性可以用于数据查询和数据更新。s">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -99,7 +102,7 @@ thinkphp作为一个框架，在底层上是有做了一些安全工作的。所
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/05/29/thinkphp-SQL学习/" title="thinkphp SQL注入风险分析" itemprop="url">thinkphp SQL注入风险分析</a>
+      <a href="/2015/05/29/thinkphp-SQL注入风险分析/" title="thinkphp SQL注入风险分析" itemprop="url">thinkphp SQL注入风险分析</a>
   </h1>
   <p class="article-author">By
        
@@ -125,6 +128,8 @@ thinkphp作为一个框架，在底层上是有做了一些安全工作的。所
 <p>thinkphp作为一个框架，在底层上是有做了一些安全工作的。所以寻找SQL的思路就变成了寻找框架上漏掉过滤的点和框架特性上可以直接执行SQL语句的地方。</p>
 <p>##特性1：exp表达式</p>
 <p><img src="/images/thinkphp1.png" alt=""></p>
+<p><a href="http://www.kancloud.cn/manual/thinkphp/1768" target="_blank" rel="external">http://www.kancloud.cn/manual/thinkphp/1768</a></p>
+<p>exp特性可以用于数据查询和数据更新。save()方法。</p>
 <p>这里从filter_exp函数可以看出，开发者是有考虑到用户如果输入exp，导致sql注入的问题。所以进行了一次过滤。但是过滤的方式过于随意。只是在后面加了个空格。而且全局过滤存在问题。通过<a href="http://serverName/index.php?c=Blog&amp;a=archive&amp;year=2013&amp;month[0]=exp&amp;month[1]=sqli" target="_blank" rel="external">http://serverName/index.php?c=Blog&amp;a=archive&amp;year=2013&amp;month[0]=exp&amp;month[1]=sqli</a> 这种方式调用方法不会通过I函数过滤。</p>
 <pre><code><span class="keyword">function</span> filter_exp(&amp;<span class="variable">$value</span>){
 
@@ -151,7 +156,7 @@ thinkphp作为一个框架，在底层上是有做了一些安全工作的。所
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://stayliv3.github.io/2015/05/29/thinkphp-SQL学习/" data-title="thinkphp SQL注入风险分析 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
+	  <div data-url="http://stayliv3.github.io/2015/05/29/thinkphp-SQL注入风险分析/" data-title="thinkphp SQL注入风险分析 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -185,7 +190,7 @@ thinkphp作为一个框架，在底层上是有做了一些安全工作的。所
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/05/29/thinkphp-SQL学习/" data-title="thinkphp SQL注入风险分析" data-url="http://stayliv3.github.io/2015/05/29/thinkphp-SQL学习/"></div>
+	<div class="ds-thread" data-thread-key="2015/05/29/thinkphp-SQL注入风险分析/" data-title="thinkphp SQL注入风险分析" data-url="http://stayliv3.github.io/2015/05/29/thinkphp-SQL注入风险分析/"></div>
 </section>
 
 
@@ -230,6 +235,8 @@ thinkphp作为一个框架，在底层上是有做了一些安全工作的。所
 		
 		  
 			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>1</sup></a></li>
+		  
+		
 		  
 		
 		  

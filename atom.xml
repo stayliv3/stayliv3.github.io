@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://stayliv3.github.io/"/>
-  <updated>2015-12-04T09:00:39.000Z</updated>
+  <updated>2015-12-08T03:43:12.000Z</updated>
   <id>http://stayliv3.github.io/</id>
   
   <author>
@@ -19,12 +19,14 @@
     <link href="http://stayliv3.github.io/2015/12/04/php%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95/"/>
     <id>http://stayliv3.github.io/2015/12/04/php调试方法/</id>
     <published>2015-12-04T08:59:42.000Z</published>
-    <updated>2015-12-04T09:00:39.000Z</updated>
+    <updated>2015-12-08T03:43:12.000Z</updated>
     <content type="html"><![CDATA[<h1 id="开启错误信息">开启错误信息</h1><p>ini_set(‘display_errors’, ‘1’);</p>
-]]></content>
+<h1 id="thinkphp">thinkphp</h1><p>页面Trace功能无论是调试模式还是部署模式都有效，要开启页面Trace功能，需要在项目配置文件中设置：</p>
+<pre><code><span class="string">'SHOW_PAGE_TRACE'</span> =&gt;<span class="keyword">true</span>, <span class="comment">// 显示页面Trace信息</span>
+</code></pre>]]></content>
     <summary type="html">
     <![CDATA[<h1 id="开启错误信息">开启错误信息</h1><p>ini_set(‘display_errors’, ‘1’);</p>
-]]>
+<h1 id="thinkphp">thinkphp</h1><p>页面Trace功能无论是调试模式还是部署模式都有效，要开启页面Trace功能，需]]>
     </summary>
     
       <category term="php" scheme="http://stayliv3.github.io/tags/php/"/>
