@@ -238,23 +238,6 @@ retdata['<span class="literal">result</span>'],retdata['error'] = ret
   </entry>
   
   <entry>
-    <title><![CDATA[使用docker搭建测试环境]]></title>
-    <link href="http://stayliv3.github.io/2015/11/11/%E4%BD%BF%E7%94%A8docker%E6%90%AD%E5%BB%BA%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83/"/>
-    <id>http://stayliv3.github.io/2015/11/11/使用docker搭建测试环境/</id>
-    <published>2015-11-11T08:52:09.000Z</published>
-    <updated>2015-11-24T03:27:38.000Z</updated>
-    <content type="html"></content>
-    <summary type="html">
-    
-    </summary>
-    
-      <category term="docker" scheme="http://stayliv3.github.io/tags/docker/"/>
-    
-      <category term="系统运维" scheme="http://stayliv3.github.io/categories/%E7%B3%BB%E7%BB%9F%E8%BF%90%E7%BB%B4/"/>
-    
-  </entry>
-  
-  <entry>
     <title><![CDATA[sqlmap risk 参数]]></title>
     <link href="http://stayliv3.github.io/2015/11/10/sqlmap-risk-%E5%8F%82%E6%95%B0/"/>
     <id>http://stayliv3.github.io/2015/11/10/sqlmap-risk-参数/</id>
@@ -1034,6 +1017,82 @@ Usage:
       <category term="binwalk" scheme="http://stayliv3.github.io/tags/binwalk/"/>
     
       <category term="万物互联" scheme="http://stayliv3.github.io/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[古典密码的误用之ESPCMS加密函数]]></title>
+    <link href="http://stayliv3.github.io/2015/07/13/%E5%8F%A4%E5%85%B8%E5%AF%86%E7%A0%81%E7%9A%84%E8%AF%AF%E7%94%A8%E4%B9%8BESPCMS%E5%8A%A0%E5%AF%86%E5%87%BD%E6%95%B0/"/>
+    <id>http://stayliv3.github.io/2015/07/13/古典密码的误用之ESPCMS加密函数/</id>
+    <published>2015-07-13T09:15:49.000Z</published>
+    <updated>2015-12-03T01:39:13.000Z</updated>
+    <content type="html"><![CDATA[<p>#古典密码知识<br>参考资料《图解密码学》</p>
+<p>凯撒密码：csesar cipher</p>
+<p>#经典案例值ESPCMS</p>
+<p><a href="http://www.wooyun.org/bugs/wooyun-2010-062528" target="_blank" rel="external">ESPCMS最新 V5.8.14.03.03 UTF8 正式版暴力注入</a><br><a href="http://www.wooyun.org/bugs/wooyun-2014-053577" target="_blank" rel="external">EspCMS最新版可伪造任意帐户登陆（简单利用代码）</a></p>
+<p>旧版本加解密函数如下：</p>
+<pre><code><span class="keyword">function</span> eccode(<span class="variable">$string</span>, <span class="variable">$operation</span> = <span class="string">'DECODE'</span>, <span class="variable">$key</span> = <span class="string">'@LFK24s224%@safS3s%1f%'</span>, <span class="variable">$mcrype</span> = <span class="literal">true</span>) {
+
+    <span class="variable">$result</span> = null;
+
+    if (<span class="variable">$operation</span> == <span class="string">'ENCODE'</span>) {
+
+        for (<span class="variable">$i</span> = <span class="number">0</span>; <span class="variable">$i</span> &lt; strlen(<span class="variable">$string</span>); <span class="variable">$i</span>++) {
+
+            <span class="variable">$char</span> = substr(<span class="variable">$string</span>, <span class="variable">$i</span>, <span class="number">1</span>);
+
+            <span class="variable">$keychar</span> = substr(<span class="variable">$key</span>, (<span class="variable">$i</span> % strlen(<span class="variable">$key</span>)) - <span class="number">1</span>, <span class="number">1</span>);
+
+            <span class="variable">$char</span> = chr(ord(<span class="variable">$char</span>) + ord(<span class="variable">$keychar</span>)); //看到这应该懂了
+
+            <span class="variable">$result</span>.=<span class="variable">$char</span>;
+
+        }
+
+        <span class="variable">$result</span> = base64_encode(<span class="variable">$result</span>);
+
+        <span class="variable">$result</span> = str_replace(array(<span class="string">'+'</span>, <span class="string">'/'</span>, <span class="string">'='</span>), array(<span class="string">'-'</span>, <span class="string">'_'</span>, <span class="string">''</span>), <span class="variable">$result</span>);
+
+    } elseif (<span class="variable">$operation</span> == <span class="string">'DECODE'</span>) {
+
+        <span class="variable">$data</span> = str_replace(array(<span class="string">'-'</span>, <span class="string">'_'</span>), array(<span class="string">'+'</span>, <span class="string">'/'</span>), <span class="variable">$string</span>);
+
+        <span class="variable">$mod4</span> = strlen(<span class="variable">$data</span>) % <span class="number">4</span>;
+
+        if (<span class="variable">$mod4</span>) {
+
+            <span class="variable">$data</span> .= substr(<span class="string">'===='</span>, <span class="variable">$mod4</span>);
+
+        }
+
+        <span class="variable">$string</span> = base64_decode(<span class="variable">$data</span>);
+
+        for (<span class="variable">$i</span> = <span class="number">0</span>; <span class="variable">$i</span> &lt; strlen(<span class="variable">$string</span>); <span class="variable">$i</span>++) {
+
+            <span class="variable">$char</span> = substr(<span class="variable">$string</span>, <span class="variable">$i</span>, <span class="number">1</span>);
+
+            <span class="variable">$keychar</span> = substr(<span class="variable">$key</span>, (<span class="variable">$i</span> % strlen(<span class="variable">$key</span>)) - <span class="number">1</span>, <span class="number">1</span>);
+
+            <span class="variable">$char</span> = chr(ord(<span class="variable">$char</span>) - ord(<span class="variable">$keychar</span>));
+
+            <span class="variable">$result</span>.=<span class="variable">$char</span>;
+
+        }
+
+    }
+
+    return <span class="variable">$result</span>;
+
+}
+</code></pre>]]></content>
+    <summary type="html">
+    <![CDATA[<p>#古典密码知识<br>参考资料《图解密码学》</p>
+<p>凯撒密码：csesar cipher</p>
+<p>#经典案例值ESPCMS</p>
+<p><a href="http://www.wooyun.org/bugs/wooyun-2010-062528" targe]]>
+    </summary>
+    
+      <category term="加密解密" scheme="http://stayliv3.github.io/categories/%E5%8A%A0%E5%AF%86%E8%A7%A3%E5%AF%86/"/>
     
   </entry>
   
