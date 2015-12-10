@@ -25,10 +25,10 @@ YXcms的在使用unlink函数删除文件的时候没有考虑到对该参数做
 if(!empty($_POST[&apos;oldheadpic&apos;])){
     $picpath=$this-&amp;gt;uploadpath.$_POST[&apos;oldheadpic&apos;];
     if(file_exists($picpath))">
-<meta property="og:image" content="http://stayliv3.github.io/!--￼0-->/images/13204650360976da2b9e451f6d5366cfcf0e79aa.jpg">
-<meta property="og:image" content="http://stayliv3.github.io/!--￼1-->/images/140937252a1e26c50d80fe821969db4056338236.jpg">
-<meta property="og:image" content="http://stayliv3.github.io/!--￼2-->/images/14093754b38d5b50b578927334c7942f150bf3fd.jpg">
-<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+<meta property="og:image" content="http://stayliv3.github.io/images/13204650360976da2b9e451f6d5366cfcf0e79aa.jpg">
+<meta property="og:image" content="http://stayliv3.github.io/images/140937252a1e26c50d80fe821969db4056338236.jpg">
+<meta property="og:image" content="http://stayliv3.github.io/images/14093754b38d5b50b578927334c7942f150bf3fd.jpg">
+<meta property="og:updated_time" content="2015-12-10T03:30:16.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="yxcms1.2.6任意文件删除漏洞分析">
 <meta name="twitter:description" content="测试版本:1.2.6
@@ -156,16 +156,26 @@ if(!empty($_POST[&apos;oldheadpic&apos;])){
 <span class="variable">$this-</span>&gt;success(<span class="string">'图集添加成功~'</span>,url(<span class="string">'photo/index'</span>));
 <span class="keyword">else</span> <span class="variable">$this-</span>&gt;error(<span class="string">'图集添加失败'</span>);
 </code></pre><p>从$_POST[‘photolist’]中取了数据，插入到了photo表中。所以添加图集的时候，修改post数据中photolist%5B%5D=../../protected/apps/install/install.lock 就可控制目标数据。</p>
-<p><img src="!--￼0--&gt;/images/13204650360976da2b9e451f6d5366cfcf0e79aa.jpg" alt="data"></p>
+<p><img src="/images/13204650360976da2b9e451f6d5366cfcf0e79aa.jpg" alt="data"></p>
 <p>删除图集的时候就可以看到数据被带入unlink函数中，安装锁定文件被删除。</p>
-<p><img src="!--￼1--&gt;/images/140937252a1e26c50d80fe821969db4056338236.jpg" alt=""></p>
+<p><img src="/images/140937252a1e26c50d80fe821969db4056338236.jpg" alt=""></p>
 <p>访问任意页面就会跳到安装页了。</p>
-<p><img src="!--￼2--&gt;/images/14093754b38d5b50b578927334c7942f150bf3fd.jpg" alt="data"></p>
+<p><img src="/images/14093754b38d5b50b578927334c7942f150bf3fd.jpg" alt="data"></p>
   
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
 
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/漏洞挖掘/">漏洞挖掘</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/任意文件删除/">任意文件删除</a>
+  </div>
 
 </div>
 
@@ -249,6 +259,8 @@ if(!empty($_POST[&apos;oldheadpic&apos;])){
 		  
 		
 		  
+			<li><a href="/categories/漏洞挖掘/" title="漏洞挖掘">漏洞挖掘<sup>1</sup></a></li>
+		  
 		
 		  
 			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>1</sup></a></li>
@@ -284,7 +296,7 @@ if(!empty($_POST[&apos;oldheadpic&apos;])){
 			
 		
 			
-				<li><a href="/tags/sqlmap/" title="sqlmap">sqlmap<sup>1</sup></a></li>
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>1</sup></a></li>
 			
 		
 			
@@ -320,11 +332,11 @@ if(!empty($_POST[&apos;oldheadpic&apos;])){
 			
 		
 			
-				<li><a href="/tags/解包/" title="解包">解包<sup>1</sup></a></li>
+				<li><a href="/tags/sqlmap/" title="sqlmap">sqlmap<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/mysql/" title="mysql">mysql<sup>1</sup></a></li>
+				<li><a href="/tags/解包/" title="解包">解包<sup>1</sup></a></li>
 			
 		
 			
