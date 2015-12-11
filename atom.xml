@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://stayliv3.github.io/"/>
-  <updated>2015-12-10T03:18:48.000Z</updated>
+  <updated>2015-12-11T09:01:58.000Z</updated>
   <id>http://stayliv3.github.io/</id>
   
   <author>
@@ -13,6 +13,27 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[同时使用gitcafe和github做博客]]></title>
+    <link href="http://stayliv3.github.io/2015/12/11/%E5%90%8C%E6%97%B6%E4%BD%BF%E7%94%A8gitcafe%E5%92%8Cgithub%E5%81%9A%E5%8D%9A%E5%AE%A2/"/>
+    <id>http://stayliv3.github.io/2015/12/11/同时使用gitcafe和github做博客/</id>
+    <published>2015-12-11T08:54:54.000Z</published>
+    <updated>2015-12-11T09:01:58.000Z</updated>
+    <content type="html"><![CDATA[<p>使用github做博客一直感觉不错。只是网络环境问题，萌生了在gitcafe做一个备份的想法。其实方便也比较成熟了。搜索gitcafe github 博客有不少文章详细分析了如果处理。hexo支持同时部署到多个地方，所以对使用来说也没有什么困难。</p>
+<p><img src="/images/gitcafe1.png" alt=""><br>这里记录一下遇到的一个问题。就是gitcafe 文档里说明不支持A记录域名解析，只能cname。可是之前博客一直用的<a href="http://xdxd.love，也不准备加上www。所以参考[segmentfalt](http://segmentfault.com/q/1010000004130246?_ea=501447)这里完全可以绑定A记录。" target="_blank" rel="external">http://xdxd.love，也不准备加上www。所以参考[segmentfalt](http://segmentfault.com/q/1010000004130246?_ea=501447)这里完全可以绑定A记录。</a></p>
+<p>看来gitcafe还是很给力的嘛。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>使用github做博客一直感觉不错。只是网络环境问题，萌生了在gitcafe做一个备份的想法。其实方便也比较成熟了。搜索gitcafe github 博客有不少文章详细分析了如果处理。hexo支持同时部署到多个地方，所以对使用来说也没有什么困难。</p>
+<p><img s]]>
+    </summary>
+    
+      <category term="github" scheme="http://stayliv3.github.io/tags/github/"/>
+    
+      <category term="折腾不止" scheme="http://stayliv3.github.io/categories/%E6%8A%98%E8%85%BE%E4%B8%8D%E6%AD%A2/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[ssi漏洞介绍]]></title>
@@ -1023,82 +1044,6 @@ Usage:
       <category term="hackrf" scheme="http://stayliv3.github.io/tags/hackrf/"/>
     
       <category term="万物互联" scheme="http://stayliv3.github.io/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[古典密码的误用之ESPCMS加密函数]]></title>
-    <link href="http://stayliv3.github.io/2015/07/13/%E5%8F%A4%E5%85%B8%E5%AF%86%E7%A0%81%E7%9A%84%E8%AF%AF%E7%94%A8%E4%B9%8BESPCMS%E5%8A%A0%E5%AF%86%E5%87%BD%E6%95%B0/"/>
-    <id>http://stayliv3.github.io/2015/07/13/古典密码的误用之ESPCMS加密函数/</id>
-    <published>2015-07-13T09:15:49.000Z</published>
-    <updated>2015-12-03T01:39:13.000Z</updated>
-    <content type="html"><![CDATA[<p>#古典密码知识<br>参考资料《图解密码学》</p>
-<p>凯撒密码：csesar cipher</p>
-<p>#经典案例值ESPCMS</p>
-<p><a href="http://www.wooyun.org/bugs/wooyun-2010-062528" target="_blank" rel="external">ESPCMS最新 V5.8.14.03.03 UTF8 正式版暴力注入</a><br><a href="http://www.wooyun.org/bugs/wooyun-2014-053577" target="_blank" rel="external">EspCMS最新版可伪造任意帐户登陆（简单利用代码）</a></p>
-<p>旧版本加解密函数如下：</p>
-<pre><code><span class="keyword">function</span> eccode(<span class="variable">$string</span>, <span class="variable">$operation</span> = <span class="string">'DECODE'</span>, <span class="variable">$key</span> = <span class="string">'@LFK24s224%@safS3s%1f%'</span>, <span class="variable">$mcrype</span> = <span class="literal">true</span>) {
-
-    <span class="variable">$result</span> = null;
-
-    if (<span class="variable">$operation</span> == <span class="string">'ENCODE'</span>) {
-
-        for (<span class="variable">$i</span> = <span class="number">0</span>; <span class="variable">$i</span> &lt; strlen(<span class="variable">$string</span>); <span class="variable">$i</span>++) {
-
-            <span class="variable">$char</span> = substr(<span class="variable">$string</span>, <span class="variable">$i</span>, <span class="number">1</span>);
-
-            <span class="variable">$keychar</span> = substr(<span class="variable">$key</span>, (<span class="variable">$i</span> % strlen(<span class="variable">$key</span>)) - <span class="number">1</span>, <span class="number">1</span>);
-
-            <span class="variable">$char</span> = chr(ord(<span class="variable">$char</span>) + ord(<span class="variable">$keychar</span>)); //看到这应该懂了
-
-            <span class="variable">$result</span>.=<span class="variable">$char</span>;
-
-        }
-
-        <span class="variable">$result</span> = base64_encode(<span class="variable">$result</span>);
-
-        <span class="variable">$result</span> = str_replace(array(<span class="string">'+'</span>, <span class="string">'/'</span>, <span class="string">'='</span>), array(<span class="string">'-'</span>, <span class="string">'_'</span>, <span class="string">''</span>), <span class="variable">$result</span>);
-
-    } elseif (<span class="variable">$operation</span> == <span class="string">'DECODE'</span>) {
-
-        <span class="variable">$data</span> = str_replace(array(<span class="string">'-'</span>, <span class="string">'_'</span>), array(<span class="string">'+'</span>, <span class="string">'/'</span>), <span class="variable">$string</span>);
-
-        <span class="variable">$mod4</span> = strlen(<span class="variable">$data</span>) % <span class="number">4</span>;
-
-        if (<span class="variable">$mod4</span>) {
-
-            <span class="variable">$data</span> .= substr(<span class="string">'===='</span>, <span class="variable">$mod4</span>);
-
-        }
-
-        <span class="variable">$string</span> = base64_decode(<span class="variable">$data</span>);
-
-        for (<span class="variable">$i</span> = <span class="number">0</span>; <span class="variable">$i</span> &lt; strlen(<span class="variable">$string</span>); <span class="variable">$i</span>++) {
-
-            <span class="variable">$char</span> = substr(<span class="variable">$string</span>, <span class="variable">$i</span>, <span class="number">1</span>);
-
-            <span class="variable">$keychar</span> = substr(<span class="variable">$key</span>, (<span class="variable">$i</span> % strlen(<span class="variable">$key</span>)) - <span class="number">1</span>, <span class="number">1</span>);
-
-            <span class="variable">$char</span> = chr(ord(<span class="variable">$char</span>) - ord(<span class="variable">$keychar</span>));
-
-            <span class="variable">$result</span>.=<span class="variable">$char</span>;
-
-        }
-
-    }
-
-    return <span class="variable">$result</span>;
-
-}
-</code></pre>]]></content>
-    <summary type="html">
-    <![CDATA[<p>#古典密码知识<br>参考资料《图解密码学》</p>
-<p>凯撒密码：csesar cipher</p>
-<p>#经典案例值ESPCMS</p>
-<p><a href="http://www.wooyun.org/bugs/wooyun-2010-062528" targe]]>
-    </summary>
-    
-      <category term="加密解密" scheme="http://stayliv3.github.io/categories/%E5%8A%A0%E5%AF%86%E8%A7%A3%E5%AF%86/"/>
     
   </entry>
   

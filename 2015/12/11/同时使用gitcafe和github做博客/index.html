@@ -4,27 +4,27 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>xctf web150 | xd_xd&#39;s blog</title>
+    <title>同时使用gitcafe和github做博客 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description" content="只只做出来第一题~，说一下第一题。访问给出的url，返回doggy!php!。由于经验不足一开始不知道这是什么意思。根据题目的内容说登录验证有问题，就猜测登录的入口。login.php admin.php都不对。然后尝试Doggy.php也是不存在，根据返回信息说是ubuntu服务器，所以区分大小写。访问doggy.php返回登陆界面。这时候才想到doggy!php!的提示是指doggy.php。">
+    <meta name="description" content="使用github做博客一直感觉不错。只是网络环境问题，萌生了在gitcafe做一个备份的想法。其实方便也比较成熟了。搜索gitcafe github 博客有不少文章详细分析了如果处理。hexo支持同时部署到多个地方，所以对使用来说也没有什么困难。
+这里记录一下遇到的一个问题。就是gitcafe 文档里说明不支持A记录域名解析，只能cname。可是之前博客一直用的http://xdxd.love，也">
 <meta property="og:type" content="article">
-<meta property="og:title" content="xctf web150">
-<meta property="og:url" content="http://stayliv3.github.io/2014/10/27/xctf1/index.html">
+<meta property="og:title" content="同时使用gitcafe和github做博客">
+<meta property="og:url" content="http://stayliv3.github.io/2015/12/11/同时使用gitcafe和github做博客/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="只只做出来第一题~，说一下第一题。访问给出的url，返回doggy!php!。由于经验不足一开始不知道这是什么意思。根据题目的内容说登录验证有问题，就猜测登录的入口。login.php admin.php都不对。然后尝试Doggy.php也是不存在，根据返回信息说是ubuntu服务器，所以区分大小写。访问doggy.php返回登陆界面。这时候才想到doggy!php!的提示是指doggy.php。">
-<meta property="og:image" content="http://stayliv3.github.io/images/xctf1.jpg">
-<meta property="og:image" content="http://stayliv3.github.io/images/xctf2.jpg">
-<meta property="og:image" content="http://stayliv3.github.io/images/xctf3.jpg">
-<meta property="og:image" content="http://stayliv3.github.io/images/xctf4.jpg">
-<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+<meta property="og:description" content="使用github做博客一直感觉不错。只是网络环境问题，萌生了在gitcafe做一个备份的想法。其实方便也比较成熟了。搜索gitcafe github 博客有不少文章详细分析了如果处理。hexo支持同时部署到多个地方，所以对使用来说也没有什么困难。
+这里记录一下遇到的一个问题。就是gitcafe 文档里说明不支持A记录域名解析，只能cname。可是之前博客一直用的http://xdxd.love，也">
+<meta property="og:image" content="http://stayliv3.github.io/images/gitcafe1.png">
+<meta property="og:updated_time" content="2015-12-11T09:01:58.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="xctf web150">
-<meta name="twitter:description" content="只只做出来第一题~，说一下第一题。访问给出的url，返回doggy!php!。由于经验不足一开始不知道这是什么意思。根据题目的内容说登录验证有问题，就猜测登录的入口。login.php admin.php都不对。然后尝试Doggy.php也是不存在，根据返回信息说是ubuntu服务器，所以区分大小写。访问doggy.php返回登陆界面。这时候才想到doggy!php!的提示是指doggy.php。">
+<meta name="twitter:title" content="同时使用gitcafe和github做博客">
+<meta name="twitter:description" content="使用github做博客一直感觉不错。只是网络环境问题，萌生了在gitcafe做一个备份的想法。其实方便也比较成熟了。搜索gitcafe github 博客有不少文章详细分析了如果处理。hexo支持同时部署到多个地方，所以对使用来说也没有什么困难。
+这里记录一下遇到的一个问题。就是gitcafe 文档里说明不支持A记录域名解析，只能cname。可是之前博客一直用的http://xdxd.love，也">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -84,14 +84,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2014/10/27/xctf1/" title="xctf web150" itemprop="url">xctf web150</a>
+      <a href="/2015/12/11/同时使用gitcafe和github做博客/" title="同时使用gitcafe和github做博客" itemprop="url">同时使用gitcafe和github做博客</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2014-10-26T21:01:09.000Z" itemprop="datePublished"> 发表于 Oct 27 2014</time>
+    <time datetime="2015-12-11T08:54:54.000Z" itemprop="datePublished"> 发表于 Dec 11 2015</time>
     
   </p>
 </header>
@@ -104,96 +104,24 @@
 		
 		</div>
 		
-		<p>只只做出来第一题~，说一下第一题。访问给出的url，返回doggy!php!。由于经验不足一开始不知道这是什么意思。根据题目的内容说登录验证有问题，就猜测登录的入口。login.php admin.php都不对。然后尝试Doggy.php也是不存在，根据返回信息说是ubuntu服务器，所以区分大小写。访问doggy.php返回登陆界面。这时候才想到doggy!php!的提示是指doggy.php。毕竟是web的题目，第一步得有web的url或者接口才能继续。</p>
-<p>登陆接口查看源码：</p>
-<pre><code><span class="doctype">&lt;!DOCTYPE html&gt;</span>
-<span class="tag">&lt;<span class="title">style</span>&gt;</span><span class="css">
- * <span class="rules">{<span class="rule"><span class="attribute">margin</span>:<span class="value"><span class="number">0</span></span></span>; <span class="rule"><span class="attribute">padding</span>:<span class="value"><span class="number">0</span></span></span>;}</span>
- <span class="tag">body</span> <span class="rules">{<span class="rule"><span class="attribute">background-color</span>:<span class="value"><span class="hexcolor">#ddd</span></span></span>;}</span>
- <span class="id">#mdiv</span> <span class="rules">{<span class="rule"><span class="attribute">width</span>:<span class="value"><span class="number">200px</span></span></span>; <span class="rule"><span class="attribute">text-align</span>:<span class="value">center</span></span>; <span class="rule"><span class="attribute">margin</span>:<span class="value"><span class="number">50px</span> auto</span></span>;}</span>
- <span class="tag">input</span><span class="attr_selector">[type=text]</span>,<span class="tag">input</span><span class="attr_selector">[type=[password]</span> <span class="rules">{<span class="rule"><span class="attribute">width</span>:<span class="value"><span class="number">100px</span></span></span>;}</span>
- <span class="tag">td</span> <span class="rules">{<span class="rule"><span class="attribute">text-align</span>:<span class="value">center</span></span>;}</span>
-</span><span class="tag">&lt;/<span class="title">style</span>&gt;</span>
-<span class="tag">&lt;<span class="title">body</span>&gt;</span>
-AN EASY ONE FROM DOGGY...
-<span class="tag">&lt;<span class="title">form</span> <span class="attribute">method</span>=<span class="value">"post"</span> <span class="attribute">action</span>=<span class="value">"./doggy.php"</span>&gt;</span>
-<span class="tag">&lt;<span class="title">div</span> <span class="attribute">id</span>=<span class="value">"mdiv"</span>&gt;</span>
-<span class="tag">&lt;<span class="title">table</span>&gt;</span>
-<span class="tag">&lt;<span class="title">tr</span>&gt;</span><span class="tag">&lt;<span class="title">td</span>&gt;</span>ID<span class="tag">&lt;/<span class="title">td</span>&gt;</span><span class="tag">&lt;<span class="title">td</span>&gt;</span><span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"text"</span> <span class="attribute">name</span>=<span class="value">"id"</span> /&gt;</span><span class="tag">&lt;/<span class="title">td</span>&gt;</span><span class="tag">&lt;/<span class="title">tr</span>&gt;</span>
-<span class="tag">&lt;<span class="title">tr</span>&gt;</span><span class="tag">&lt;<span class="title">td</span>&gt;</span>PW<span class="tag">&lt;/<span class="title">td</span>&gt;</span><span class="tag">&lt;<span class="title">td</span>&gt;</span><span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"password"</span> <span class="attribute">name</span>=<span class="value">"ps"</span> /&gt;</span><span class="tag">&lt;/<span class="title">td</span>&gt;</span><span class="tag">&lt;/<span class="title">tr</span>&gt;</span>
-<span class="tag">&lt;<span class="title">tr</span>&gt;</span><span class="tag">&lt;<span class="title">td</span> <span class="attribute">colspan</span>=<span class="value">"2"</span>&gt;</span><span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"submit"</span> <span class="attribute">value</span>=<span class="value">"login"</span> /&gt;</span><span class="tag">&lt;/<span class="title">td</span>&gt;</span><span class="tag">&lt;/<span class="title">tr</span>&gt;</span>
-<span class="tag">&lt;/<span class="title">table</span>&gt;</span>
- <span class="comment">&lt;!-- &lt;div&gt;ni kan bu jian wo&lt;a href='?view-source'&gt;get source&lt;/a&gt;&lt;/div&gt; --&gt;</span>
-<span class="tag">&lt;/<span class="title">form</span>&gt;</span>
-<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
-<span class="tag">&lt;/<span class="title">body</span>&gt;</span>
-<span class="comment">&lt;!--
-you have blocked accounts.
-adog / gougou
---&gt;</span>
-</code></pre><p>有两个有价值的注释</p>
-<pre><code><span class="comment">&lt;!-- &lt;div&gt;ni kan bu jian wo&lt;a href='?view-source'&gt;get source&lt;/a&gt;&lt;/div&gt; --&gt;</span>
-    you have blocked accounts.
-adog / gougou
-</code></pre><p>一个a标签，指向?view-source的路径。访问返回了当前文件的源码。</p>
-<pre><code>&lt;?php
-
-<span class="keyword">if</span> (isset($_GET[<span class="string">'view-source'</span>])) {
-    show_source(__FILE_<span class="number">_</span>);
-    exit();
-}
-
-
-
- <span class="keyword">if</span>(isset($_POST[<span class="string">'id'</span>]) &amp;&amp; isset($_POST[<span class="string">'ps'</span>])){
-  include(<span class="string">"flag.php"</span>);
-
-  mysql_connect(<span class="string">"localhost"</span>,<span class="string">"adog"</span>,<span class="string">"adog123"</span>);
-  mysql_select_db (<span class="string">"adog"</span>);
-  mysql_query(<span class="string">"set names utf8"</span>);
-
-  <span class="variable">$key</span> = flag();
-
-  <span class="variable">$id</span> = mysql_real_escape_string(trim($_POST[<span class="string">'id'</span>]));
-  <span class="variable">$ps</span> = mysql_real_escape_string(trim($_POST[<span class="string">'ps'</span>]));
-
-  <span class="variable">$row</span>=mysql_fetch_array(mysql_query(<span class="string">"select * from users where id='$id' and ps=md5('$ps')"</span>));
-
-  if(isset(<span class="variable">$row</span>[<span class="string">'id'</span>])){
-   if(<span class="variable">$id</span>==<span class="string">'adog'</span>){
-    echo <span class="string">"your account is blocked"</span>;
-   }else{
-    echo <span class="string">"login ok"</span>.<span class="string">"&lt;br /&gt;"</span>;
-    echo <span class="string">"Password : "</span>.<span class="variable">$key</span>;
-   }
-  }else{
-   echo <span class="string">"wrong.."</span>;
-  }
- }
-?&gt;
-</code></pre><p>查看源码，发现进行了转义，所以第一猜想的注入就不存在了。根据给出的已经blocked的帐号，猜测要点应该是绕过if($id==’adog’)的判断，进入login ok的逻辑。注意这里判断采用的是$id而不是数据库取出的$row[‘id’]。进行一个简单的测试.</p>
-<p><img src="/images/xctf1.jpg" alt="1"></p>
-<p>发现当字符串后面有空格的时候，mysql查询的时候是忽略这些空格的。所以这种情况下，$id和$row[‘id’]就不想等了。一个是’admin\s\s\s\s\s\s’一个是’admin’。但是$id在获取的时候进行了trim处理。$id = mysql_real_escape_string(trim($_POST[‘id’]))。所以空格肯定不可以用了。这个方向也比较明确，可以尝试fuzz看看是否有其他的字符会想空格一样被mysql忽略同时不会被trim函数过滤掉。</p>
-<pre><code>trim(PHP <span class="number">4</span>, PHP <span class="number">5</span>)
-
-trim — 去除字符串首尾处的空白字符（或者其他字符）
-
-说明¶string trim ( string <span class="variable">$str</span> [, string <span class="variable">$charlist</span> = <span class="string">" \t\n\r\0\x0B"</span> ] )
-此函数返回字符串 str 去除首尾空白字符后的结果。如果不指定第二个参数，trim() 将去除这些字符： 
-
-<span class="string">" "</span> (ASCII <span class="number">32</span> (<span class="number">0x20</span>))，普通空格符。 
-<span class="string">"\t"</span> (ASCII <span class="number">9</span> (<span class="number">0x09</span>))，制表符。 
-<span class="string">"\n"</span> (ASCII <span class="number">10</span> (<span class="number">0x0A</span>))，换行符。 
-<span class="string">"\r"</span> (ASCII <span class="number">13</span> (<span class="number">0x0D</span>))，回车符。 
-<span class="string">"\0"</span> (ASCII <span class="number">0</span> (<span class="number">0x00</span>))，空字节符。 
-<span class="string">"\x0B"</span> (ASCII <span class="number">11</span> (<span class="number">0x0B</span>))，垂直制表符。 
-</code></pre><p>直接fuzz的结果如下，有6个字符会被trim过滤掉。跟php文档的说明一直。从0xc2-0xef的字符的字符会被过滤掉。php中指定了mysql使用的字符集是uft-8，mysql_query(“set names utf8”)。utf-8是兼容us-ASCII的字符集。从0x80-0xFF在utf-8中都没有指定对应的字符，所以这个段内的字符都是非法字符。<a href="http://www.leavesongs.com/PENETRATION/Mini-XCTF-Writeup.html" target="_blank" rel="external">XCTF两道web题目的writeup</a>这里fuzz显示了的字符应该是浏览器设置了8859系列字符集的原因。</p>
-<p><img src="/images/xctf2.jpg" alt="1"><br><img src="/images/xctf3.jpg" alt="1"><br><img src="/images/xctf4.jpg" alt="1"></p>
+		<p>使用github做博客一直感觉不错。只是网络环境问题，萌生了在gitcafe做一个备份的想法。其实方便也比较成熟了。搜索gitcafe github 博客有不少文章详细分析了如果处理。hexo支持同时部署到多个地方，所以对使用来说也没有什么困难。</p>
+<p><img src="/images/gitcafe1.png" alt=""><br>这里记录一下遇到的一个问题。就是gitcafe 文档里说明不支持A记录域名解析，只能cname。可是之前博客一直用的<a href="http://xdxd.love，也不准备加上www。所以参考[segmentfalt](http://segmentfault.com/q/1010000004130246?_ea=501447)这里完全可以绑定A记录。" target="_blank" rel="external">http://xdxd.love，也不准备加上www。所以参考[segmentfalt](http://segmentfault.com/q/1010000004130246?_ea=501447)这里完全可以绑定A记录。</a></p>
+<p>看来gitcafe还是很给力的嘛。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
 
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/折腾不止/">折腾不止</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/github/">github</a>
+  </div>
 
 </div>
 
@@ -201,7 +129,7 @@ trim — 去除字符串首尾处的空白字符（或者其他字符）
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://stayliv3.github.io/2014/10/27/xctf1/" data-title="xctf web150 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
+	  <div data-url="http://stayliv3.github.io/2015/12/11/同时使用gitcafe和github做博客/" data-title="同时使用gitcafe和github做博客 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -214,19 +142,11 @@ trim — 去除字符串首尾处的空白字符（或者其他字符）
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2014/10/27/mysql布尔类型和php布尔类型的区别/" title="关于mysql中字符串转换成布尔类型数据">
-  <strong>上一篇：</strong><br/>
-  <span>
-  关于mysql中字符串转换成布尔类型数据</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2014/10/23/yxcmssql/"  title="yxcms一个二次注入分析">
+<a href="/2015/12/09/ssi漏洞介绍/"  title="ssi漏洞介绍">
  <strong>下一篇：</strong><br/> 
- <span>yxcms一个二次注入分析
+ <span>ssi漏洞介绍
 </span>
 </a>
 </div>
@@ -235,7 +155,7 @@ trim — 去除字符串首尾处的空白字符（或者其他字符）
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2014/10/27/xctf1/" data-title="xctf web150" data-url="http://stayliv3.github.io/2014/10/27/xctf1/"></div>
+	<div class="ds-thread" data-thread-key="2015/12/11/同时使用gitcafe和github做博客/" data-title="同时使用gitcafe和github做博客" data-url="http://stayliv3.github.io/2015/12/11/同时使用gitcafe和github做博客/"></div>
 </section>
 
 
