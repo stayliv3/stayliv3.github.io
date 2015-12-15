@@ -21,7 +21,7 @@ Date: Sat, 11 Apr 2015 03:12:27 GMT
 Content">
 <meta property="og:type" content="article">
 <meta property="og:title" content="HTTP响应的X-头部">
-<meta property="og:url" content="http://stayliv3.github.io/2015/04/11/HTTP响应的X-头部/index.html">
+<meta property="og:url" content="http://xdxd.love/2015/04/11/HTTP响应的X-头部/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
 <meta property="og:description" content="读《web前段黑客技术揭秘》第十章笔记。
 #X-Frame-Options
@@ -31,9 +31,9 @@ HTTP/1.1 200 OK
 Server: GitHub.com
 Date: Sat, 11 Apr 2015 03:12:27 GMT
 Content">
-<meta property="og:image" content="http://stayliv3.github.io/images/iframe1.png">
-<meta property="og:image" content="http://stayliv3.github.io/images/iframe2.png">
-<meta property="og:image" content="http://stayliv3.github.io/images/iframe3.png">
+<meta property="og:image" content="http://xdxd.love/images/iframe1.png">
+<meta property="og:image" content="http://xdxd.love/images/iframe2.png">
+<meta property="og:image" content="http://xdxd.love/images/iframe3.png">
 <meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HTTP响应的X-头部">
@@ -89,7 +89,7 @@ Content">
 					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
 						<label>Search</label>
 						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
-						<input type="hidden" name="q" value="site:stayliv3.github.io">
+						<input type="hidden" name="q" value="site:xdxd.love">
 					</form>
 					
 					</li>
@@ -127,7 +127,7 @@ Content">
 		<p>读《web前段黑客技术揭秘》第十章笔记。</p>
 <p>#X-Frame-Options</p>
 <p>可以有两个值，deny和sameorigin</p>
-<p>之前在<a href="http://stayliv3.github.io/2015/04/10/CSP%E9%81%90%E6%83%B3/">CSP案例分析</a>文章里，分析知乎的响应头的时候看到有X-Frame-Options。下面看一下github的响应头。</p>
+<p>之前在<a href="http://stayliv3.github.io/2015/04/10/CSP%E9%81%90%E6%83%B3/" target="_blank" rel="external">CSP案例分析</a>文章里，分析知乎的响应头的时候看到有X-Frame-Options。下面看一下github的响应头。</p>
 <pre><code><span class="status">HTTP/1.1 <span class="number">200</span> OK</span>
 <span class="attribute">Server</span>: <span class="string">GitHub.com</span>
 <span class="attribute">Date</span>: <span class="string">Sat, 11 Apr 2015 03:12:27 GMT</span>
@@ -154,7 +154,7 @@ Content">
 <p>写个html包含github尝试一下：<br><img src="/images/iframe1.png" alt="iframe"><br>console中可以看到：</p>
 <pre><code>Refused <span class="built_in">to</span> display <span class="string">'https://github.com/search?q=java+csrf+midware&amp;type=Code&amp;utf8=%E2%9C%93'</span> <span class="operator">in</span> <span class="operator">a</span> frame because <span class="keyword">it</span> <span class="built_in">set</span> <span class="string">'X-Frame-Options'</span> <span class="built_in">to</span> <span class="string">'deny'</span>.
 </code></pre><p>#X-XSS-Protection</p>
-<p>这个默认是启用的。而且利用浏览器的XSS Filter可以做一些比较有技巧的事情，比如<a href="http://stayliv3.github.io/2015/04/01/ali-ctf-xss/">alictf xss</a>这里，利用xss filter干掉原本网页中的内联脚本。但是github使用了    X-XSS-Protection: 1; mode=block block模式。</p>
+<p>这个默认是启用的。而且利用浏览器的XSS Filter可以做一些比较有技巧的事情，比如<a href="http://stayliv3.github.io/2015/04/01/ali-ctf-xss/" target="_blank" rel="external">alictf xss</a>这里，利用xss filter干掉原本网页中的内联脚本。但是github使用了    X-XSS-Protection: 1; mode=block block模式。</p>
 <p>block模式是强制不渲染，chrome下直接跳转空白页，IE下返回#符号。这样的话，就不会存在利用xss filter干掉内联脚本的事情了。这样子在设计原则上应该是最好的。</p>
 <p>##检测到攻击之后应该是停止执行，退出程序，这是最安全的设计方式。而很多设计里都是检测到攻击，对攻击做一个处理，继续执行。这样就可能处理不当，没有成功防御攻击。但是浏览器默认选择了后一种，可能是为了避免误报导致的用户体验不好。仔细想了一下，浏览器这个默认策略是很合理的。毕竟每个应用的场景的不一样。浏览器是要兼容所有的web应用。如果企业认为自己的应用场景需要更强大的保护可以自己开启block模式来增强防御。</p>
 <p>测试代码：</p>
@@ -191,7 +191,7 @@ header(<span class="string">'X-XSS-Protection: 1; mode=block'</span>);
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://stayliv3.github.io/2015/04/11/HTTP响应的X-头部/" data-title="HTTP响应的X-头部 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
+	  <div data-url="http://xdxd.love/2015/04/11/HTTP响应的X-头部/" data-title="HTTP响应的X-头部 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -225,7 +225,7 @@ header(<span class="string">'X-XSS-Protection: 1; mode=block'</span>);
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/04/11/HTTP响应的X-头部/" data-title="HTTP响应的X-头部" data-url="http://stayliv3.github.io/2015/04/11/HTTP响应的X-头部/"></div>
+	<div class="ds-thread" data-thread-key="2015/04/11/HTTP响应的X-头部/" data-title="HTTP响应的X-头部" data-url="http://xdxd.love/2015/04/11/HTTP响应的X-头部/"></div>
 </section>
 
 

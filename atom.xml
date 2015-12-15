@@ -3,9 +3,9 @@
   <title><![CDATA[xd_xd's blog]]></title>
   
   <link href="/atom.xml" rel="self"/>
-  <link href="http://stayliv3.github.io/"/>
+  <link href="http://xdxd.love/"/>
   <updated>2015-12-11T09:52:14.000Z</updated>
-  <id>http://stayliv3.github.io/</id>
+  <id>http://xdxd.love/</id>
   
   <author>
     <name><![CDATA[xd_xd]]></name>
@@ -16,28 +16,28 @@
   
   <entry>
     <title><![CDATA[同时使用gitcafe和github做博客]]></title>
-    <link href="http://stayliv3.github.io/2015/12/11/%E5%90%8C%E6%97%B6%E4%BD%BF%E7%94%A8gitcafe%E5%92%8Cgithub%E5%81%9A%E5%8D%9A%E5%AE%A2/"/>
-    <id>http://stayliv3.github.io/2015/12/11/同时使用gitcafe和github做博客/</id>
+    <link href="http://xdxd.love/2015/12/11/%E5%90%8C%E6%97%B6%E4%BD%BF%E7%94%A8gitcafe%E5%92%8Cgithub%E5%81%9A%E5%8D%9A%E5%AE%A2/"/>
+    <id>http://xdxd.love/2015/12/11/同时使用gitcafe和github做博客/</id>
     <published>2015-12-11T08:54:54.000Z</published>
     <updated>2015-12-11T09:52:14.000Z</updated>
     <content type="html"><![CDATA[<p>使用github做博客一直感觉不错。只是网络环境问题，萌生了在gitcafe做一个备份的想法。其实方案也比较成熟了。搜索gitcafe github有不少文章详细介绍了如何实现。使用hexo实现起来也很简单。hexo支持同时部署到多个地方，修改一下配置文件就可以。平时使用起来也不会增加操作。</p>
-<p><img src="/images/gitcafe1.png" alt=""><br>这里记录一下遇到的一个问题。就是gitcafe 文档里说明不支持A记录域名解析，只能cname。可是之前博客一直用的<a href="http://xdxd.love" target="_blank" rel="external">xdxd.love</a>，也不准备加上www。所以参考<a href="http://segmentfault.com/q/1010000004130246?_ea=501447" target="_blank" rel="external">segmentfalt</a>这里完全可以绑定A记录。</p>
+<p><img src="/images/gitcafe1.png" alt=""><br>这里记录一下遇到的一个问题。就是gitcafe 文档里说明不支持A记录域名解析，只能cname。可是之前博客一直用的<a href="http://xdxd.love">xdxd.love</a>，也不准备加上www。所以参考<a href="http://segmentfault.com/q/1010000004130246?_ea=501447" target="_blank" rel="external">segmentfalt</a>这里完全可以绑定A记录。</p>
 <p>看来gitcafe还是很给力的嘛。看来文档也不能完全相信，如果事情都是按照预想设计的那样，就不需要咋们做安全的了嘛。</p>
 ]]></content>
     <summary type="html">
     <![CDATA[<p>使用github做博客一直感觉不错。只是网络环境问题，萌生了在gitcafe做一个备份的想法。其实方案也比较成熟了。搜索gitcafe github有不少文章详细介绍了如何实现。使用hexo实现起来也很简单。hexo支持同时部署到多个地方，修改一下配置文件就可以。平时使用起]]>
     </summary>
     
-      <category term="github" scheme="http://stayliv3.github.io/tags/github/"/>
+      <category term="github" scheme="http://xdxd.love/tags/github/"/>
     
-      <category term="折腾不止" scheme="http://stayliv3.github.io/categories/%E6%8A%98%E8%85%BE%E4%B8%8D%E6%AD%A2/"/>
+      <category term="折腾不止" scheme="http://xdxd.love/categories/%E6%8A%98%E8%85%BE%E4%B8%8D%E6%AD%A2/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[ssi漏洞介绍]]></title>
-    <link href="http://stayliv3.github.io/2015/12/09/ssi%E6%BC%8F%E6%B4%9E%E4%BB%8B%E7%BB%8D/"/>
-    <id>http://stayliv3.github.io/2015/12/09/ssi漏洞介绍/</id>
+    <link href="http://xdxd.love/2015/12/09/ssi%E6%BC%8F%E6%B4%9E%E4%BB%8B%E7%BB%8D/"/>
+    <id>http://xdxd.love/2015/12/09/ssi漏洞介绍/</id>
     <published>2015-12-09T08:47:30.000Z</published>
     <updated>2015-12-10T03:18:48.000Z</updated>
     <content type="html"><![CDATA[<h1 id="SSI">SSI</h1><p>SSI Injection <a href="https://en.wikipedia.org/wiki/Server_Side_Includes" target="_blank" rel="external">(Server-side Include)</a>服务器端包含提供了一种对现有HTML文档增加动态内容的方法。根据查资料的理解这是http服务器提供支持的一个特性。apache和iis都可以通过配置支持SSI。<a href="http://man.chinaunix.net/newsoft/ApacheManual/howto/ssi.html" target="_blank" rel="external">apache关于SSI的文档</a></p>
@@ -58,16 +58,16 @@
     <![CDATA[<h1 id="SSI">SSI</h1><p>SSI Injection <a href="https://en.wikipedia.org/wiki/Server_Side_Includes" target="_blank" rel="external">(Server-si]]>
     </summary>
     
-      <category term="ssi" scheme="http://stayliv3.github.io/tags/ssi/"/>
+      <category term="ssi" scheme="http://xdxd.love/tags/ssi/"/>
     
-      <category term="黑盒测试" scheme="http://stayliv3.github.io/categories/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95/"/>
+      <category term="黑盒测试" scheme="http://xdxd.love/categories/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[php比较操作符的安全问题]]></title>
-    <link href="http://stayliv3.github.io/2015/12/03/php%E6%AF%94%E8%BE%83%E6%93%8D%E4%BD%9C%E7%AC%A6%E7%9A%84%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/"/>
-    <id>http://stayliv3.github.io/2015/12/03/php比较操作符的安全问题/</id>
+    <link href="http://xdxd.love/2015/12/03/php%E6%AF%94%E8%BE%83%E6%93%8D%E4%BD%9C%E7%AC%A6%E7%9A%84%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/"/>
+    <id>http://xdxd.love/2015/12/03/php比较操作符的安全问题/</id>
     <published>2015-12-03T01:32:15.000Z</published>
     <updated>2015-12-03T01:50:15.000Z</updated>
     <content type="html"><![CDATA[<p>地址：<a href="http://drops.wooyun.org/tips/7679" target="_blank" rel="external">http://drops.wooyun.org/tips/7679</a><br>0x00 比较操作符</p>
@@ -160,16 +160,16 @@ Welcome!
 <p>]]>
     </summary>
     
-      <category term="php" scheme="http://stayliv3.github.io/tags/php/"/>
+      <category term="php" scheme="http://xdxd.love/tags/php/"/>
     
-      <category term="转载收藏" scheme="http://stayliv3.github.io/categories/%E8%BD%AC%E8%BD%BD%E6%94%B6%E8%97%8F/"/>
+      <category term="转载收藏" scheme="http://xdxd.love/categories/%E8%BD%AC%E8%BD%BD%E6%94%B6%E8%97%8F/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[支付漏洞总结]]></title>
-    <link href="http://stayliv3.github.io/2015/12/02/%E6%94%AF%E4%BB%98%E6%BC%8F%E6%B4%9E%E6%80%BB%E7%BB%93/"/>
-    <id>http://stayliv3.github.io/2015/12/02/支付漏洞总结/</id>
+    <link href="http://xdxd.love/2015/12/02/%E6%94%AF%E4%BB%98%E6%BC%8F%E6%B4%9E%E6%80%BB%E7%BB%93/"/>
+    <id>http://xdxd.love/2015/12/02/支付漏洞总结/</id>
     <published>2015-12-02T05:47:07.000Z</published>
     <updated>2015-12-04T07:58:14.000Z</updated>
     <content type="html"><![CDATA[<h2 id="前言">前言</h2><p>大家对支付漏洞的理解通常都是篡改价格，已有的对支付漏洞的总结也是对现有的一些案例的经验式归类，没有上升到对在线支付流程深入分析的一个层面。这里尝试从分析在线支付流程，在线支付厂商的接入方式开始，深入业务分析整个在线交易流程中容易出现的安全问题。</p>
@@ -201,16 +201,16 @@ Welcome!
     <![CDATA[<h2 id="前言">前言</h2><p>大家对支付漏洞的理解通常都是篡改价格，已有的对支付漏洞的总结也是对现有的一些案例的经验式归类，没有上升到对在线支付流程深入分析的一个层面。这里尝试从分析在线支付流程，在线支付厂商的接入方式开始，深入业务分析整个在线交易流程中容易出现的安]]>
     </summary>
     
-      <category term="支付漏洞" scheme="http://stayliv3.github.io/tags/%E6%94%AF%E4%BB%98%E6%BC%8F%E6%B4%9E/"/>
+      <category term="支付漏洞" scheme="http://xdxd.love/tags/%E6%94%AF%E4%BB%98%E6%BC%8F%E6%B4%9E/"/>
     
-      <category term="黑盒测试" scheme="http://stayliv3.github.io/categories/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95/"/>
+      <category term="黑盒测试" scheme="http://xdxd.love/categories/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[mysql执行语句监控]]></title>
-    <link href="http://stayliv3.github.io/2015/11/27/mysql%E6%89%A7%E8%A1%8C%E8%AF%AD%E5%8F%A5%E7%9B%91%E6%8E%A7/"/>
-    <id>http://stayliv3.github.io/2015/11/27/mysql执行语句监控/</id>
+    <link href="http://xdxd.love/2015/11/27/mysql%E6%89%A7%E8%A1%8C%E8%AF%AD%E5%8F%A5%E7%9B%91%E6%8E%A7/"/>
+    <id>http://xdxd.love/2015/11/27/mysql执行语句监控/</id>
     <published>2015-11-27T08:19:13.000Z</published>
     <updated>2015-11-27T08:19:13.000Z</updated>
     <content type="html"></content>
@@ -222,8 +222,8 @@ Welcome!
   
   <entry>
     <title><![CDATA[华山杯CTF做过的几道题]]></title>
-    <link href="http://stayliv3.github.io/2015/11/23/%E5%8D%8E%E5%B1%B1%E6%9D%AFCTF%E5%81%9A%E8%BF%87%E7%9A%84%E5%87%A0%E9%81%93%E9%A2%98/"/>
-    <id>http://stayliv3.github.io/2015/11/23/华山杯CTF做过的几道题/</id>
+    <link href="http://xdxd.love/2015/11/23/%E5%8D%8E%E5%B1%B1%E6%9D%AFCTF%E5%81%9A%E8%BF%87%E7%9A%84%E5%87%A0%E9%81%93%E9%A2%98/"/>
+    <id>http://xdxd.love/2015/11/23/华山杯CTF做过的几道题/</id>
     <published>2015-11-23T08:04:35.000Z</published>
     <updated>2015-11-24T03:27:38.000Z</updated>
     <content type="html"><![CDATA[<p>花时间做了几道题，感觉还是有收获的。虽然死亡之ping这些知识点不熟悉，web的python题还是学到了不少知识。</p>
@@ -250,16 +250,16 @@ retdata['<span class="literal">result</span>'],retdata['error'] = ret
 <p><img src="/images/huashanctf1.png]]>
     </summary>
     
-      <category term="ctf" scheme="http://stayliv3.github.io/tags/ctf/"/>
+      <category term="ctf" scheme="http://xdxd.love/tags/ctf/"/>
     
-      <category term="黑盒测试" scheme="http://stayliv3.github.io/categories/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95/"/>
+      <category term="黑盒测试" scheme="http://xdxd.love/categories/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[瞎折腾之sublime插件导入第三方库]]></title>
-    <link href="http://stayliv3.github.io/2015/11/16/%E7%9E%8E%E6%8A%98%E8%85%BE%E4%B9%8Bsublime%E6%8F%92%E4%BB%B6%E5%AF%BC%E5%85%A5%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93/"/>
-    <id>http://stayliv3.github.io/2015/11/16/瞎折腾之sublime插件导入第三方库/</id>
+    <link href="http://xdxd.love/2015/11/16/%E7%9E%8E%E6%8A%98%E8%85%BE%E4%B9%8Bsublime%E6%8F%92%E4%BB%B6%E5%AF%BC%E5%85%A5%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93/"/>
+    <id>http://xdxd.love/2015/11/16/瞎折腾之sublime插件导入第三方库/</id>
     <published>2015-11-16T08:47:47.000Z</published>
     <updated>2015-11-24T03:27:38.000Z</updated>
     <content type="html"><![CDATA[<p>花了好几个小时解决了一个问题，走了不少弯路，需要总结分析一下。</p>
@@ -281,16 +281,16 @@ retdata['<span class="literal">result</span>'],retdata['error'] = ret
 <p>需求只是想用写一个sublime插件来完成一些sql操作。python操作sql，很自然的想用MySQLdb库。但是sublime使用的是自己的python环境，跟系统是隔离的。通过stackov]]>
     </summary>
     
-      <category term="折腾" scheme="http://stayliv3.github.io/tags/%E6%8A%98%E8%85%BE/"/>
+      <category term="折腾" scheme="http://xdxd.love/tags/%E6%8A%98%E8%85%BE/"/>
     
-      <category term="折腾不止" scheme="http://stayliv3.github.io/categories/%E6%8A%98%E8%85%BE%E4%B8%8D%E6%AD%A2/"/>
+      <category term="折腾不止" scheme="http://xdxd.love/categories/%E6%8A%98%E8%85%BE%E4%B8%8D%E6%AD%A2/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[sqlmap risk 参数]]></title>
-    <link href="http://stayliv3.github.io/2015/11/10/sqlmap-risk-%E5%8F%82%E6%95%B0/"/>
-    <id>http://stayliv3.github.io/2015/11/10/sqlmap-risk-参数/</id>
+    <link href="http://xdxd.love/2015/11/10/sqlmap-risk-%E5%8F%82%E6%95%B0/"/>
+    <id>http://xdxd.love/2015/11/10/sqlmap-risk-参数/</id>
     <published>2015-11-10T10:26:33.000Z</published>
     <updated>2015-11-24T03:27:38.000Z</updated>
     <content type="html"><![CDATA[<p>测试一个注入点，手工测试验证应该存在注入但是用sqlmap没跑出来。测试发现需要指定risk 3，sqlmap才会使用or语句进行测试，才可以识别出这个注入点。</p>
@@ -304,16 +304,16 @@ retdata['<span class="literal">result</span>'],retdata['error'] = ret
 <pre><code>python sqlmap<span class="class">.py</spa]]>
     </summary>
     
-      <category term="sqlmap" scheme="http://stayliv3.github.io/tags/sqlmap/"/>
+      <category term="sqlmap" scheme="http://xdxd.love/tags/sqlmap/"/>
     
-      <category term="奇技淫巧" scheme="http://stayliv3.github.io/categories/%E5%A5%87%E6%8A%80%E6%B7%AB%E5%B7%A7/"/>
+      <category term="奇技淫巧" scheme="http://xdxd.love/categories/%E5%A5%87%E6%8A%80%E6%B7%AB%E5%B7%A7/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[几个DOM XSS案例分析]]></title>
-    <link href="http://stayliv3.github.io/2015/11/03/%E5%87%A0%E4%B8%AADOM-XSS%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90/"/>
-    <id>http://stayliv3.github.io/2015/11/03/几个DOM-XSS案例分析/</id>
+    <link href="http://xdxd.love/2015/11/03/%E5%87%A0%E4%B8%AADOM-XSS%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90/"/>
+    <id>http://xdxd.love/2015/11/03/几个DOM-XSS案例分析/</id>
     <published>2015-11-03T07:03:31.000Z</published>
     <updated>2015-11-24T03:27:38.000Z</updated>
     <content type="html"><![CDATA[<p>案例一：</p>
@@ -353,14 +353,14 @@ retdata['<span class="literal">result</span>'],retdata['error'] = ret
 <p>在输]]>
     </summary>
     
-      <category term="前端安全" scheme="http://stayliv3.github.io/categories/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8/"/>
+      <category term="前端安全" scheme="http://xdxd.love/categories/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[Java JMX Server 代码执行漏洞利用及防御]]></title>
-    <link href="http://stayliv3.github.io/2015/10/27/Java-JMX-Server-%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8%E5%8F%8A%E9%98%B2%E5%BE%A1/"/>
-    <id>http://stayliv3.github.io/2015/10/27/Java-JMX-Server-代码执行漏洞利用及防御/</id>
+    <link href="http://xdxd.love/2015/10/27/Java-JMX-Server-%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8%E5%8F%8A%E9%98%B2%E5%BE%A1/"/>
+    <id>http://xdxd.love/2015/10/27/Java-JMX-Server-代码执行漏洞利用及防御/</id>
     <published>2015-10-27T07:03:44.000Z</published>
     <updated>2015-11-24T03:27:38.000Z</updated>
     <content type="html"><![CDATA[<p>#jmx基本概念<br>官方说法：<br>JMX（Java Management Extensions，即Java管理扩展）是一个为应用程序、设备、系统等植入管理功能的框架。JMX可以跨越一系列异构操作系统平台、系统体系结构和网络传输协议，灵活的开发无缝集成的系统、网络和服务管理应用<br>通常用来监控jvm会使用这个服务。对外开放一个端口提供服务。使用官方jconsole连上可以查看jvm应用的各种信息。<br><img src="/images/jmx4.png" alt=""><br><a href="http://www.oracle.com/technetwork/articles/java/javamanagement-140525.html" target="_blank" rel="external">Java Management Extensions (JMX) Technology</a></p>
@@ -417,16 +417,16 @@ Firewall your JMX RMI port
     <![CDATA[<p>#jmx基本概念<br>官方说法：<br>JMX（Java Management Extensions，即Java管理扩展）是一个为应用程序、设备、系统等植入管理功能的框架。JMX可以跨越一系列异构操作系统平台、系统体系结构和网络传输协议，灵活的开发无缝集成的系统、网络和服]]>
     </summary>
     
-      <category term="java" scheme="http://stayliv3.github.io/tags/java/"/>
+      <category term="java" scheme="http://xdxd.love/tags/java/"/>
     
-      <category term="黑盒测试" scheme="http://stayliv3.github.io/categories/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95/"/>
+      <category term="黑盒测试" scheme="http://xdxd.love/categories/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[Yii应用一个SQL注入分析]]></title>
-    <link href="http://stayliv3.github.io/2015/10/22/YII%E5%BA%94%E7%94%A8%E4%B8%80%E4%B8%AASQL%E6%B3%A8%E5%85%A5%E5%88%86%E6%9E%90/"/>
-    <id>http://stayliv3.github.io/2015/10/22/YII应用一个SQL注入分析/</id>
+    <link href="http://xdxd.love/2015/10/22/YII%E5%BA%94%E7%94%A8%E4%B8%80%E4%B8%AASQL%E6%B3%A8%E5%85%A5%E5%88%86%E6%9E%90/"/>
+    <id>http://xdxd.love/2015/10/22/YII应用一个SQL注入分析/</id>
     <published>2015-10-22T06:29:03.000Z</published>
     <updated>2015-11-24T03:27:38.000Z</updated>
     <content type="html"><![CDATA[<p>#漏洞发现过程<br>黑盒测试发现。使用工具burpsuite。当在购物车中删除商品时，发送数据包如下：</p>
@@ -552,16 +552,16 @@ operator format: [operator, operand1, operand2, ...]
 id=<span]]>
     </summary>
     
-      <category term="Yii" scheme="http://stayliv3.github.io/tags/Yii/"/>
+      <category term="Yii" scheme="http://xdxd.love/tags/Yii/"/>
     
-      <category term="代码审计" scheme="http://stayliv3.github.io/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[xss工具sleep puppy手册]]></title>
-    <link href="http://stayliv3.github.io/2015/10/20/xss%E5%B7%A5%E5%85%B7sleep-puppy%E6%89%8B%E5%86%8C/"/>
-    <id>http://stayliv3.github.io/2015/10/20/xss工具sleep-puppy手册/</id>
+    <link href="http://xdxd.love/2015/10/20/xss%E5%B7%A5%E5%85%B7sleep-puppy%E6%89%8B%E5%86%8C/"/>
+    <id>http://xdxd.love/2015/10/20/xss工具sleep-puppy手册/</id>
     <published>2015-10-20T08:07:54.000Z</published>
     <updated>2015-11-24T03:27:38.000Z</updated>
     <content type="html"><![CDATA[<p><a href="https://github.com/Netflix/sleepy-puppy" target="_blank" rel="external">sleep puppy</a>是owasp出品的一个XSS工具，官方描述是Sleep Puppy是一个XSS payload管理框架，可以长期的管理，跟踪XSS的传播。</p>
@@ -577,14 +577,14 @@ id=<span]]>
     <![CDATA[<p><a href="https://github.com/Netflix/sleepy-puppy" target="_blank" rel="external">sleep puppy</a>是owasp出品的一个XSS工具，官方描述是Sleep Puppy是一个XSS p]]>
     </summary>
     
-      <category term="黑盒测试" scheme="http://stayliv3.github.io/categories/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95/"/>
+      <category term="黑盒测试" scheme="http://xdxd.love/categories/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[part5 通过qemu和ida远程调试设备固件]]></title>
-    <link href="http://stayliv3.github.io/2015/09/06/part5-%E9%80%9A%E8%BF%87qemu%E5%92%8Cida%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95%E8%AE%BE%E5%A4%87%E5%9B%BA%E4%BB%B6/"/>
-    <id>http://stayliv3.github.io/2015/09/06/part5-通过qemu和ida远程调试设备固件/</id>
+    <link href="http://xdxd.love/2015/09/06/part5-%E9%80%9A%E8%BF%87qemu%E5%92%8Cida%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95%E8%AE%BE%E5%A4%87%E5%9B%BA%E4%BB%B6/"/>
+    <id>http://xdxd.love/2015/09/06/part5-通过qemu和ida远程调试设备固件/</id>
     <published>2015-09-06T07:18:15.000Z</published>
     <updated>2015-11-24T03:27:38.000Z</updated>
     <content type="html"><![CDATA[<p>上一篇讲到通过静态分析发现SQL注入漏洞。很多情况下动态分析会方便调试复杂的应用。所以这一篇中会讨论使用qemu和ida搭建动态调试环境的内容。</p>
@@ -595,16 +595,16 @@ id=<span]]>
 <p>我们的目标程序TEW-654TR是小端的MIPS程序，所以要想在我们的主机上执行这个二进制程序的话需要使用模拟器。]]>
     </summary>
     
-      <category term="qemu" scheme="http://stayliv3.github.io/tags/qemu/"/>
+      <category term="qemu" scheme="http://xdxd.love/tags/qemu/"/>
     
-      <category term="万物互联" scheme="http://stayliv3.github.io/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+      <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[逆向路由器固件之四 qemu仿真环境运行固件应用]]></title>
-    <link href="http://stayliv3.github.io/2015/09/01/%E9%80%86%E5%90%91%E8%B7%AF%E7%94%B1%E5%99%A8%E5%9B%BA%E4%BB%B6%E4%B9%8B%E5%9B%9B-qemu%E4%BB%BF%E7%9C%9F%E7%8E%AF%E5%A2%83%E8%BF%90%E8%A1%8C%E5%9B%BA%E4%BB%B6%E5%BA%94%E7%94%A8/"/>
-    <id>http://stayliv3.github.io/2015/09/01/逆向路由器固件之四-qemu仿真环境运行固件应用/</id>
+    <link href="http://xdxd.love/2015/09/01/%E9%80%86%E5%90%91%E8%B7%AF%E7%94%B1%E5%99%A8%E5%9B%BA%E4%BB%B6%E4%B9%8B%E5%9B%9B-qemu%E4%BB%BF%E7%9C%9F%E7%8E%AF%E5%A2%83%E8%BF%90%E8%A1%8C%E5%9B%BA%E4%BB%B6%E5%BA%94%E7%94%A8/"/>
+    <id>http://xdxd.love/2015/09/01/逆向路由器固件之四-qemu仿真环境运行固件应用/</id>
     <published>2015-09-01T02:43:28.000Z</published>
     <updated>2015-11-24T03:27:38.000Z</updated>
     <content type="html"><![CDATA[<p>#qemu安装</p>
@@ -628,16 +628,16 @@ Thread model: posix
 C++ compiler c++ <span ]]>
     </summary>
     
-      <category term="qemu" scheme="http://stayliv3.github.io/tags/qemu/"/>
+      <category term="qemu" scheme="http://xdxd.love/tags/qemu/"/>
     
-      <category term="万物互联" scheme="http://stayliv3.github.io/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+      <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[逆向路由器固件之二]]></title>
-    <link href="http://stayliv3.github.io/2015/08/24/%E9%80%86%E5%90%91%E8%B7%AF%E7%94%B1%E5%99%A8%E5%9B%BA%E4%BB%B6%E4%B9%8B%E4%BA%8C/"/>
-    <id>http://stayliv3.github.io/2015/08/24/逆向路由器固件之二/</id>
+    <link href="http://xdxd.love/2015/08/24/%E9%80%86%E5%90%91%E8%B7%AF%E7%94%B1%E5%99%A8%E5%9B%BA%E4%BB%B6%E4%B9%8B%E4%BA%8C/"/>
+    <id>http://xdxd.love/2015/08/24/逆向路由器固件之二/</id>
     <published>2015-08-24T12:11:13.000Z</published>
     <updated>2015-11-24T03:27:38.000Z</updated>
     <content type="html"><![CDATA[<p><a href="http://localhost:4000/2015/08/24/%E9%80%86%E5%90%91%E8%B7%AF%E7%94%B1%E5%99%A8%E5%9B%BA%E4%BB%B6%E4%B9%8B%E8%A7%A3%E5%8C%85/" target="_blank" rel="external">之前的文章中</a>详细介绍了各种解包路由器固件的工具。解包之后就获得了固件中的文件。下一步就是分析文件寻找漏洞了。这次分析的目标是Trendnet路由器，分析的漏洞是一个远程获取路由器权限的漏洞。<br><img src="/images/trendnet1.png" alt=""></p>
@@ -797,16 +797,16 @@ insmod /<span class="class"><span class="keyword">lib</span>/<span class="title"
     <![CDATA[<p><a href="http://localhost:4000/2015/08/24/%E9%80%86%E5%90%91%E8%B7%AF%E7%94%B1%E5%99%A8%E5%9B%BA%E4%BB%B6%E4%B9%8B%E8%A7%A3%E5%8C%85/" ta]]>
     </summary>
     
-      <category term="固件" scheme="http://stayliv3.github.io/tags/%E5%9B%BA%E4%BB%B6/"/>
+      <category term="固件" scheme="http://xdxd.love/tags/%E5%9B%BA%E4%BB%B6/"/>
     
-      <category term="万物互联" scheme="http://stayliv3.github.io/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+      <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[逆向路由器固件之解包]]></title>
-    <link href="http://stayliv3.github.io/2015/08/24/%E9%80%86%E5%90%91%E8%B7%AF%E7%94%B1%E5%99%A8%E5%9B%BA%E4%BB%B6%E4%B9%8B%E8%A7%A3%E5%8C%85/"/>
-    <id>http://stayliv3.github.io/2015/08/24/逆向路由器固件之解包/</id>
+    <link href="http://xdxd.love/2015/08/24/%E9%80%86%E5%90%91%E8%B7%AF%E7%94%B1%E5%99%A8%E5%9B%BA%E4%BB%B6%E4%B9%8B%E8%A7%A3%E5%8C%85/"/>
+    <id>http://xdxd.love/2015/08/24/逆向路由器固件之解包/</id>
     <published>2015-08-24T03:31:54.000Z</published>
     <updated>2015-11-24T03:27:38.000Z</updated>
     <content type="html"><![CDATA[<p>这个系列的文章以逆向路由器固件的方式来挖掘路由器中存在的漏洞。本篇文章主要以介绍解包固件工具为主。文中演示用的固件可以在这里<a href="http://www.tp-link.com/resources/software/TL-WR841N_V8_130506.zip" target="_blank" rel="external">下载</a>。由于针对设备的攻击越来越多，很多厂商把不提供固件下载作为一种安全策略。所有有些时候只能通过物理的方式从设备中导出固件。后续的文章中会介绍相关技术。</p>
@@ -839,16 +839,16 @@ insmod /<span class="class"><span class="keyword">lib</span>/<span class="title"
     <![CDATA[<p>这个系列的文章以逆向路由器固件的方式来挖掘路由器中存在的漏洞。本篇文章主要以介绍解包固件工具为主。文中演示用的固件可以在这里<a href="http://www.tp-link.com/resources/software/TL-WR841N_V8_130506.zip"]]>
     </summary>
     
-      <category term="解包" scheme="http://stayliv3.github.io/tags/%E8%A7%A3%E5%8C%85/"/>
+      <category term="解包" scheme="http://xdxd.love/tags/%E8%A7%A3%E5%8C%85/"/>
     
-      <category term="万物互联" scheme="http://stayliv3.github.io/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+      <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[MVC框架中路由模块容易出现的安全问题]]></title>
-    <link href="http://stayliv3.github.io/2015/08/14/MVC%E6%A1%86%E6%9E%B6%E4%B8%AD%E8%B7%AF%E7%94%B1%E6%A8%A1%E5%9D%97%E5%AE%B9%E6%98%93%E5%87%BA%E7%8E%B0%E7%9A%84%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/"/>
-    <id>http://stayliv3.github.io/2015/08/14/MVC框架中路由模块容易出现的安全问题/</id>
+    <link href="http://xdxd.love/2015/08/14/MVC%E6%A1%86%E6%9E%B6%E4%B8%AD%E8%B7%AF%E7%94%B1%E6%A8%A1%E5%9D%97%E5%AE%B9%E6%98%93%E5%87%BA%E7%8E%B0%E7%9A%84%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/"/>
+    <id>http://xdxd.love/2015/08/14/MVC框架中路由模块容易出现的安全问题/</id>
     <published>2015-08-14T09:46:00.000Z</published>
     <updated>2015-11-24T03:27:38.000Z</updated>
     <content type="html"><![CDATA[<p>#MVC中的路由模块</p>
@@ -873,16 +873,16 @@ parameters: param1 <span class="keyword">and</span> param2
 <pre><code><span class="symbol">http:</span>/<span]]>
     </summary>
     
-      <category term="php" scheme="http://stayliv3.github.io/tags/php/"/>
+      <category term="php" scheme="http://xdxd.love/tags/php/"/>
     
-      <category term="代码审计" scheme="http://stayliv3.github.io/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[host header attack 之tinyshop重置密码漏洞]]></title>
-    <link href="http://stayliv3.github.io/2015/08/11/host-header-attack-%E4%B9%8Btinyshop%E9%87%8D%E7%BD%AE%E5%AF%86%E7%A0%81%E6%BC%8F%E6%B4%9E/"/>
-    <id>http://stayliv3.github.io/2015/08/11/host-header-attack-之tinyshop重置密码漏洞/</id>
+    <link href="http://xdxd.love/2015/08/11/host-header-attack-%E4%B9%8Btinyshop%E9%87%8D%E7%BD%AE%E5%AF%86%E7%A0%81%E6%BC%8F%E6%B4%9E/"/>
+    <id>http://xdxd.love/2015/08/11/host-header-attack-之tinyshop重置密码漏洞/</id>
     <published>2015-08-11T11:04:08.000Z</published>
     <updated>2015-11-24T03:27:37.000Z</updated>
     <content type="html"><![CDATA[<p>host header attack这个词也是从老外那里学来的。<a href="http://drops.wooyun.org/papers/1383" target="_blank" rel="external">利用HTTP host头攻击的技术
@@ -938,16 +938,16 @@ parameters: param1 <span class="keyword">and</span> param2
 </a>这里翻译不是]]>
     </summary>
     
-      <category term="php" scheme="http://stayliv3.github.io/tags/php/"/>
+      <category term="php" scheme="http://xdxd.love/tags/php/"/>
     
-      <category term="代码审计" scheme="http://stayliv3.github.io/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[tinyshop商城系统支付漏洞]]></title>
-    <link href="http://stayliv3.github.io/2015/08/11/tinyshop%E5%95%86%E5%9F%8E%E7%B3%BB%E7%BB%9F%E6%94%AF%E4%BB%98%E6%BC%8F%E6%B4%9E/"/>
-    <id>http://stayliv3.github.io/2015/08/11/tinyshop商城系统支付漏洞/</id>
+    <link href="http://xdxd.love/2015/08/11/tinyshop%E5%95%86%E5%9F%8E%E7%B3%BB%E7%BB%9F%E6%94%AF%E4%BB%98%E6%BC%8F%E6%B4%9E/"/>
+    <id>http://xdxd.love/2015/08/11/tinyshop商城系统支付漏洞/</id>
     <published>2015-08-11T07:58:03.000Z</published>
     <updated>2015-12-02T09:01:57.000Z</updated>
     <content type="html"><![CDATA[<p>tinyshop商城使用余额支付的时候，签名机制存在问题。导致签名失效。可以篡改订单金额，从而实现一分钱支付任意金额的订单。</p>
@@ -972,16 +972,16 @@ parameters: param1 <span class="keyword">and</span> param2
 <pre><code>public <spa]]>
     </summary>
     
-      <category term="支付漏洞" scheme="http://stayliv3.github.io/tags/%E6%94%AF%E4%BB%98%E6%BC%8F%E6%B4%9E/"/>
+      <category term="支付漏洞" scheme="http://xdxd.love/tags/%E6%94%AF%E4%BB%98%E6%BC%8F%E6%B4%9E/"/>
     
-      <category term="代码审计" scheme="http://stayliv3.github.io/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[hackrf 初探]]></title>
-    <link href="http://stayliv3.github.io/2015/08/06/hackrf-%E5%88%9D%E6%8E%A2/"/>
-    <id>http://stayliv3.github.io/2015/08/06/hackrf-初探/</id>
+    <link href="http://xdxd.love/2015/08/06/hackrf-%E5%88%9D%E6%8E%A2/"/>
+    <id>http://xdxd.love/2015/08/06/hackrf-初探/</id>
     <published>2015-08-06T08:22:58.000Z</published>
     <updated>2015-11-24T03:27:37.000Z</updated>
     <content type="html"><![CDATA[<p>#环境搭建</p>
@@ -1040,9 +1040,9 @@ Usage:
 <p>mac上搭建hackrf实验环境，参考了<a href="http://www.hackrf.net/2014/04/mac-install-hackrf/" target="_blank" rel="external">hackrf.net</a]]>
     </summary>
     
-      <category term="hackrf" scheme="http://stayliv3.github.io/tags/hackrf/"/>
+      <category term="hackrf" scheme="http://xdxd.love/tags/hackrf/"/>
     
-      <category term="万物互联" scheme="http://stayliv3.github.io/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+      <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
     
   </entry>
   
