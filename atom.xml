@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2015-12-11T09:52:14.000Z</updated>
+  <updated>2015-12-18T11:02:11.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -13,6 +13,30 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[通过multipart/form-data绕过waf]]></title>
+    <link href="http://xdxd.love/2015/12/18/%E9%80%9A%E8%BF%87multipart-form-data%E7%BB%95%E8%BF%87waf/"/>
+    <id>http://xdxd.love/2015/12/18/通过multipart-form-data绕过waf/</id>
+    <published>2015-12-18T09:07:37.000Z</published>
+    <updated>2015-12-18T11:02:11.000Z</updated>
+    <content type="html"><![CDATA[<p><a href="http://www.freebuf.com/vuls/88271.html" target="_blank" rel="external">LuManager 高危SQL注入0day分析</a>中提到监控到利用payload如下：</p>
+<p><img src="/images/postwaf1.png" alt="/images/postwaf1.png"></p>
+<p>可以看到攻击者使用了<code>multipart/form-data</code>格式发送payload。对于应用来说，和使用<code>application/x-www-form-urlencoded</code>获取到的数据是一致的。关于<code>multipart/form-data</code>和<code>application/x-www-form-urlencode</code>的区别，可以参考<a href="http://stackoverflow.com/questions/4007969/application-x-www-form-urlencoded-or-multipart-form-data" target="_blank" rel="external">stackoverflow</a>。<br><a href="https://gist.github.com/joyrexus/524c7e811e4abf9afe56" target="_blank" rel="external">github</a>。</p>
+<p>简单总结，通常文件上传的时候用的是<code>multipart/form-data</code>,传递普通参数用的<code>x-www-form-urlencoded</code>。文件上传包含大量二进制数据，非字符数字组成的数据，如果使用urlencode，需要全部采用url编码。使得需要传输的数据膨胀。</p>
+<p>关于使用<code>multipart/form-data</code>绕过waf也有比较多的讨论了。<a href="https://javaweb.org/?p=1842" target="_blank" rel="external">multipart/form-data PHP和Java通用的WAF绕过方法</a>,<a href="http://wooyun.org/bugs/wooyun-2010-044349" target="_blank" rel="external">360网站宝/安全宝/加速乐及其他类似产品防护绕过缺陷之一</a>。</p>
+<p>之所以能绕过waf，应该是<code>multipart/form-data</code>通常用来传输二进制，如果waf对大文件解析可能性能有影响。所以写扫描器的时候如果用<code>form-data</code>来发送payload也许会有惊喜，参考<a href="http://www.wooyun.org/bugs/wooyun-2015-0147301" target="_blank" rel="external">百度某站st2命令执行(独特执行姿势)</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p><a href="http://www.freebuf.com/vuls/88271.html" target="_blank" rel="external">LuManager 高危SQL注入0day分析</a>中提到监控到利用payload如下：</p>
+<p><img]]>
+    </summary>
+    
+      <category term="waf" scheme="http://xdxd.love/tags/waf/"/>
+    
+      <category term="奇技淫巧" scheme="http://xdxd.love/categories/%E5%A5%87%E6%8A%80%E6%B7%AB%E5%B7%A7/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[同时使用gitcafe和github做博客]]></title>
@@ -975,74 +999,6 @@ parameters: param1 <span class="keyword">and</span> param2
       <category term="支付漏洞" scheme="http://xdxd.love/tags/%E6%94%AF%E4%BB%98%E6%BC%8F%E6%B4%9E/"/>
     
       <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[hackrf 初探]]></title>
-    <link href="http://xdxd.love/2015/08/06/hackrf-%E5%88%9D%E6%8E%A2/"/>
-    <id>http://xdxd.love/2015/08/06/hackrf-初探/</id>
-    <published>2015-08-06T08:22:58.000Z</published>
-    <updated>2015-11-24T03:27:37.000Z</updated>
-    <content type="html"><![CDATA[<p>#环境搭建</p>
-<p>mac上搭建hackrf实验环境，参考了<a href="http://www.hackrf.net/2014/04/mac-install-hackrf/" target="_blank" rel="external">hackrf.net</a>的文章。总体来说使用port安装还是比较简单的。主要就是时间真的很长很长。。。</p>
-<p>#驱动测试</p>
-<p>运行hackrf_info查看有如下输出信息，说明hackrf驱动正常</p>
-<pre><code>Found HackRF board <span class="number">0</span>:
-Board ID Number: <span class="number">2</span> (HackRF One)
-Firmware Version: git-<span class="number">815</span>d1f6
-Part ID Number: <span class="number">0xa000dddd</span> <span class="number">0x00ddddda</span>
-Serial Number: <span class="number">0x00000000</span> <span class="number">0x00000000</span> <span class="number">0x5a</span>sdfasdc0 <span class="number">0x2a</span>sdfs4b
-</code></pre><p>#抓包重放</p>
-<p>一开始看了一些文章不得要领。其实基本的重放攻击很简单。只要使用hackrf_transfer命令就可以。</p>
-<p>hackrf_transfer命令参数如下：</p>
-<pre><code>➜  ~  hackrf_transfer
-receive -r and receive_wav -w options are mutually exclusive
-Usage:
-    [-d serial_number] <span class="preprocessor"># Serial number of desired HackRF.</span>
-    -r &lt;filename&gt; <span class="preprocessor"># Receive data into file.</span>
-    -t &lt;filename&gt; <span class="preprocessor"># Transmit data from file.</span>
-    -w <span class="preprocessor"># Receive data into file with WAV header and automatic name.</span>
-       <span class="preprocessor"># This is for SDR# compatibility and may not work with other software.</span>
-    [-f freq_hz] <span class="preprocessor"># Frequency in Hz [<span class="number">0</span>MHz to <span class="number">7250</span>MHz].</span>
-    [-i if_freq_hz] <span class="preprocessor"># Intermediate Frequency (IF) in Hz [<span class="number">2150</span>MHz to <span class="number">2750</span>MHz].</span>
-    [-o lo_freq_hz] <span class="preprocessor"># Front-end Local Oscillator (LO) frequency in Hz [<span class="number">84</span>MHz to <span class="number">5400</span>MHz].</span>
-    [-m image_reject] <span class="preprocessor"># Image rejection filter selection, <span class="number">0</span>=bypass, <span class="number">1</span>=low pass, <span class="number">2</span>=high pass.</span>
-    [-a amp_enable] <span class="preprocessor"># RX/TX RF amplifier <span class="number">1</span>=Enable, <span class="number">0</span>=Disable.</span>
-    [-p antenna_enable] <span class="preprocessor"># Antenna port power, <span class="number">1</span>=Enable, <span class="number">0</span>=Disable.</span>
-    [-l gain_db] <span class="preprocessor"># RX LNA (IF) gain, <span class="number">0</span>-<span class="number">40</span>dB, <span class="number">8</span>dB steps</span>
-    [-g gain_db] <span class="preprocessor"># RX VGA (baseband) gain, <span class="number">0</span>-<span class="number">62</span>dB, <span class="number">2</span>dB steps</span>
-    [-x gain_db] <span class="preprocessor"># TX VGA (IF) gain, <span class="number">0</span>-<span class="number">47</span>dB, <span class="number">1</span>dB steps</span>
-    [-s sample_rate_hz] <span class="preprocessor"># Sample rate in Hz (<span class="number">8</span>/<span class="number">10</span>/<span class="number">12.5</span>/<span class="number">16</span>/<span class="number">20</span>MHz, default <span class="number">10</span>MHz).</span>
-    [-n num_samples] <span class="preprocessor"># Number of samples to transfer (default is unlimited).</span>
-    [-c amplitude] <span class="preprocessor"># CW signal source mode, amplitude <span class="number">0</span>-<span class="number">127</span> (DC value to DAC).</span>
-    [-R] <span class="preprocessor"># Repeat TX mode (default is off)</span>
-    [-b baseband_filter_bw_hz] <span class="preprocessor"># Set baseband filter bandwidth in MHz.</span>
-    Possible values: <span class="number">1.75</span>/<span class="number">2.5</span>/<span class="number">3.5</span>/<span class="number">5</span>/<span class="number">5.5</span>/<span class="number">6</span>/<span class="number">7</span>/<span class="number">8</span>/<span class="number">9</span>/<span class="number">10</span>/<span class="number">12</span>/<span class="number">14</span>/<span class="number">15</span>/<span class="number">20</span>/<span class="number">24</span>/<span class="number">28</span>MHz, <span class="keyword">default</span> &lt; sample_rate_hz.
-</code></pre><p><a href="https://www.youtube.com/watch?v=vHHRGOxcc-0" target="_blank" rel="external">youtube视频教程</a></p>
-<p>常用参数解释：</p>
-<pre><code>-<span class="ruby">r 接受数据写入文件
-</span>-<span class="ruby">f 监听的频率 单位是<span class="constant">Hz</span>，所以<span class="number">443</span>Mhz 应该监听-f <span class="number">44300000000</span>
-</span>-<span class="ruby">s 取样比率，单位是<span class="constant">Hz</span>，默认是<span class="number">10</span>Mhz
-</span>-<span class="ruby">n 取样数量，默认不限制
-</span>-<span class="ruby"><span class="constant">R</span> 循环发射模式。默认关
-</span>-<span class="ruby">x <span class="constant">TX</span> <span class="constant">VGA</span> (<span class="constant">IF</span>) 增益，范围<span class="number">0</span>-<span class="number">47</span>dB，必须是<span class="number">1</span>的倍数。
-</span>-<span class="ruby">a amp-enable</span>
-</code></pre><p>所以最常见的无线门铃的重放使用以下两个命令即可。</p>
-<pre><code>hackrf_transfer -r door2<span class="class">.iq</span> -f <span class="number">433920000</span> 
-</code></pre><p>过滤433920000hz频率的通信，写入到文件door2.iq</p>
-<p>重放命令：</p>
-<pre><code>hackrf_transfer -t door2.iq -f <span class="number">433920000</span> -a <span class="number">1</span> -l <span class="number">30</span> -x <span class="number">40</span>
-</code></pre><p>经过测试发现，有时候抓的包重放会失败。不知道是硬件问题还是这种粗犷的重放方式本身有可能出错。</p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>#环境搭建</p>
-<p>mac上搭建hackrf实验环境，参考了<a href="http://www.hackrf.net/2014/04/mac-install-hackrf/" target="_blank" rel="external">hackrf.net</a]]>
-    </summary>
-    
-      <category term="hackrf" scheme="http://xdxd.love/tags/hackrf/"/>
-    
-      <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
     
   </entry>
   
