@@ -1,0 +1,756 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>docker cheat sheet | xd_xd&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="xd_xd">
+    
+
+    
+    <meta name="description" content="github
+Docker Cheat SheetNOTE: This used to be a gist that continually expanded.  It’s now a GitHub project because it’s considerably easier for other people to edit, fix and expand on Docker using Gi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="docker cheat sheet">
+<meta property="og:url" content="http://xdxd.love/2015/12/23/docker-cheat-sheet/index.html">
+<meta property="og:site_name" content="xd_xd's blog">
+<meta property="og:description" content="github
+Docker Cheat SheetNOTE: This used to be a gist that continually expanded.  It’s now a GitHub project because it’s considerably easier for other people to edit, fix and expand on Docker using Gi">
+<meta property="og:updated_time" content="2015-12-23T01:51:45.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="docker cheat sheet">
+<meta name="twitter:description" content="github
+Docker Cheat SheetNOTE: This used to be a gist that continually expanded.  It’s now a GitHub project because it’s considerably easier for other people to edit, fix and expand on Docker using Gi">
+
+    
+    <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="xd_xd&#39;s blog" title="xd_xd&#39;s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="xd_xd&#39;s blog">xd_xd&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:xdxd.love">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/12/23/docker-cheat-sheet/" title="docker cheat sheet" itemprop="url">docker cheat sheet</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
+		
+  <p class="article-time">
+    <time datetime="2015-12-23T01:50:53.000Z" itemprop="datePublished"> 发表于 Dec 23 2015</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Docker_Cheat_Sheet"><span class="toc-number">1.</span> <span class="toc-text">Docker Cheat Sheet</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Why"><span class="toc-number">1.1.</span> <span class="toc-text">Why</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Prerequisites"><span class="toc-number">1.2.</span> <span class="toc-text">Prerequisites</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Linux"><span class="toc-number">1.2.1.</span> <span class="toc-text">Linux</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MacOS"><span class="toc-number">1.2.2.</span> <span class="toc-text">MacOS</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Installation"><span class="toc-number">1.3.</span> <span class="toc-text">Installation</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Linux-1"><span class="toc-number">1.3.1.</span> <span class="toc-text">Linux</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Mac_OS_X"><span class="toc-number">1.3.2.</span> <span class="toc-text">Mac OS X</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Containers"><span class="toc-number">1.4.</span> <span class="toc-text">Containers</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Lifecycle"><span class="toc-number">1.4.1.</span> <span class="toc-text">Lifecycle</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Info"><span class="toc-number">1.4.2.</span> <span class="toc-text">Info</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Import_/_Export"><span class="toc-number">1.4.3.</span> <span class="toc-text">Import / Export</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Executing_Commands"><span class="toc-number">1.4.4.</span> <span class="toc-text">Executing Commands</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Images"><span class="toc-number">1.5.</span> <span class="toc-text">Images</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Lifecycle-1"><span class="toc-number">1.5.1.</span> <span class="toc-text">Lifecycle</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Info-1"><span class="toc-number">1.5.2.</span> <span class="toc-text">Info</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Registry_&_Repository"><span class="toc-number">1.6.</span> <span class="toc-text">Registry & Repository</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Run_local_registry"><span class="toc-number">1.6.1.</span> <span class="toc-text">Run local registry</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Dockerfile"><span class="toc-number">1.7.</span> <span class="toc-text">Dockerfile</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Instructions"><span class="toc-number">1.7.1.</span> <span class="toc-text">Instructions</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Tutorial"><span class="toc-number">1.7.2.</span> <span class="toc-text">Tutorial</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Layers"><span class="toc-number">1.8.</span> <span class="toc-text">Layers</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Links"><span class="toc-number">1.9.</span> <span class="toc-text">Links</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Volumes"><span class="toc-number">1.10.</span> <span class="toc-text">Volumes</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Exposing_ports"><span class="toc-number">1.11.</span> <span class="toc-text">Exposing ports</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Examples"><span class="toc-number">1.11.1.</span> <span class="toc-text">Examples</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Best_Practices"><span class="toc-number">1.12.</span> <span class="toc-text">Best Practices</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Security"><span class="toc-number">1.13.</span> <span class="toc-text">Security</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Tips"><span class="toc-number">1.14.</span> <span class="toc-text">Tips</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Last_Ids"><span class="toc-number">1.14.1.</span> <span class="toc-text">Last Ids</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Commit_with_command_(needs_Dockerfile)"><span class="toc-number">1.14.2.</span> <span class="toc-text">Commit with command (needs Dockerfile)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Get_IP_address"><span class="toc-number">1.14.3.</span> <span class="toc-text">Get IP address</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Get_port_mapping"><span class="toc-number">1.14.4.</span> <span class="toc-text">Get port mapping</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Find_containers_by_regular_expression"><span class="toc-number">1.14.5.</span> <span class="toc-text">Find containers by regular expression</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Get_Environment_Settings"><span class="toc-number">1.14.6.</span> <span class="toc-text">Get Environment Settings</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Kill_running_containers"><span class="toc-number">1.14.7.</span> <span class="toc-text">Kill running containers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Delete_old_containers"><span class="toc-number">1.14.8.</span> <span class="toc-text">Delete old containers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Delete_stopped_containers"><span class="toc-number">1.14.9.</span> <span class="toc-text">Delete stopped containers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Delete_dangling_images"><span class="toc-number">1.14.10.</span> <span class="toc-text">Delete dangling images</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Delete_all_images"><span class="toc-number">1.14.11.</span> <span class="toc-text">Delete all images</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Show_image_dependencies"><span class="toc-number">1.14.12.</span> <span class="toc-text">Show image dependencies</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Slimming_down_Docker_containers_Intercity_Blog"><span class="toc-number">1.14.13.</span> <span class="toc-text">Slimming down Docker containers  Intercity Blog</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Monitor_system_resource_utilization_for_running_containers"><span class="toc-number">1.14.14.</span> <span class="toc-text">Monitor system resource utilization for running containers</span></a></li></ol></li></ol></li></ol>
+		
+		</div>
+		
+		<p><a href="https://github.com/wsargent/docker-cheat-sheet" target="_blank" rel="external">github</a></p>
+<h1 id="Docker_Cheat_Sheet">Docker Cheat Sheet</h1><p>NOTE: This used to be a gist that continually expanded.  It’s now a GitHub project because it’s considerably easier for other people to edit, fix and expand on Docker using Github.  Just click  <a href="https://github.com/wsargent/docker-cheat-sheet/blob/master/README.md" target="_blank" rel="external">README.md</a>, and then on the “writing pen” icon on the right to edit.</p>
+<ul>
+<li><a href="#why">Why</a></li>
+<li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#containers">Containers</a></li>
+<li><a href="#images">Images</a></li>
+<li><a href="#registry--repository">Registry and Repository</a></li>
+<li><a href="#dockerfile">Dockerfile</a></li>
+<li><a href="#layers">Layers</a></li>
+<li><a href="#links">Links</a></li>
+<li><a href="#volumes">Volumes</a></li>
+<li><a href="#exposing-ports">Exposing Ports</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+<li><a href="#security">Security</a></li>
+<li><a href="#tips">Tips</a></li>
+</ul>
+<h2 id="Why">Why</h2><p>“With Docker, developers can build any app in any language using any toolchain. “Dockerized” apps are completely portable and can run anywhere - colleagues’ OS X and Windows laptops, QA servers running Ubuntu in the cloud, and production data center VMs running Red Hat.</p>
+<p>Developers can get going quickly by starting with one of the 13,000+ apps available on Docker Hub. Docker manages and tracks changes and dependencies, making it easier for sysadmins to understand how the apps that developers build work. And with Docker Hub, developers can automate their build pipeline and share artifacts with collaborators through public or private repositories.</p>
+<p>Docker helps developers build and ship higher-quality applications, faster.” – <a href="https://www.docker.com/whatisdocker/#copy1" target="_blank" rel="external">What is Docker</a></p>
+<h2 id="Prerequisites">Prerequisites</h2><p>I use <a href="https://github.com/robbyrussell/oh-my-zsh" target="_blank" rel="external">Oh My Zsh</a> with the <a href="https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#docker" target="_blank" rel="external">Docker plugin</a> for autocompletion of docker commands.  YMMV.</p>
+<h3 id="Linux">Linux</h3><p>The 3.10.x kernel is <a href="https://docs.docker.com/installation/binaries/#check-kernel-dependencies" target="_blank" rel="external">the minimum requirement</a> for Docker.</p>
+<h3 id="MacOS">MacOS</h3><p> 10.8 “Mountain Lion” or newer is required.</p>
+<h2 id="Installation">Installation</h2><h3 id="Linux-1">Linux</h3><p>Quick and easy install script provided by Docker:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -sSL https://get.docker.com/ | sh</span><br></pre></td></tr></table></figure>
+<p>If you’re not willing to run a random shell script, please see the <a href="https://docs.docker.com/installation/" target="_blank" rel="external">installation</a> instructions for your distribution.  </p>
+<p>If you are a complete Docker newbie, you should follow the <a href="https://docs.docker.com/linux/started/" target="_blank" rel="external">series of tutorials</a> now.</p>
+<h3 id="Mac_OS_X">Mac OS X</h3><p>Download and install <a href="https://www.docker.com/toolbox" target="_blank" rel="external">Docker Toolbox</a>.  If that doesn’t work, see the <a href="https://docs.docker.com/installation/mac/" target="_blank" rel="external">installation instructions</a>.</p>
+<p>Docker used to use boot2docker, but you should be using docker machine now. The Docker website has instructions on <a href="https://docs.docker.com/installation/mac/#migrate-from-boot2docker" target="_blank" rel="external">how to upgrade</a>.  If you have an existing docker instance, you can also install the <a href="https://docs.docker.com/machine/install-machine/" target="_blank" rel="external">Docker Machine</a> binaries directly.</p>
+<p>Once you’ve installed Docker Toolbox, install a VM with Docker Machine using the VirtualBox provider:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-machine create --driver=virtualbox default&#10;docker-machine ls&#10;eval &#34;$(docker-machine env default)&#34;</span><br></pre></td></tr></table></figure>
+<p>Then start up a container:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run hello-world</span><br></pre></td></tr></table></figure>
+<p>That’s it, you have a running Docker container. </p>
+<p>If you are a complete Docker newbie, you should probably follow the <a href="https://docs.docker.com/mac/started/" target="_blank" rel="external">series of tutorials</a> now.</p>
+<h2 id="Containers">Containers</h2><p><a href="http://etherealmind.com/basics-docker-containers-hypervisors-coreos/" target="_blank" rel="external">Your basic isolated Docker process</a>.  Containers are to Virtual Machines as threads are to processes.  Or you can think of them as chroots on steroids.</p>
+<h3 id="Lifecycle">Lifecycle</h3><ul>
+<li><a href="https://docs.docker.com/reference/commandline/create" target="_blank" rel="external"><code>docker create</code></a> creates a container but does not start it.</li>
+<li><a href="https://docs.docker.com/reference/commandline/run" target="_blank" rel="external"><code>docker run</code></a> creates and starts a container in one operation.</li>
+<li><a href="https://docs.docker.com/reference/commandline/stop" target="_blank" rel="external"><code>docker stop</code></a> stops it.</li>
+<li><a href="https://docs.docker.com/reference/commandline/start" target="_blank" rel="external"><code>docker start</code></a> will start it again.</li>
+<li><a href="https://docs.docker.com/reference/commandline/restart" target="_blank" rel="external"><code>docker restart</code></a> restarts a container.</li>
+<li><a href="https://docs.docker.com/reference/commandline/rm" target="_blank" rel="external"><code>docker rm</code></a> deletes a container.</li>
+<li><a href="https://docs.docker.com/reference/commandline/kill" target="_blank" rel="external"><code>docker kill</code></a> sends a SIGKILL to a container.</li>
+<li><a href="https://docs.docker.com/reference/commandline/attach" target="_blank" rel="external"><code>docker attach</code></a> will connect to a running container.</li>
+<li><a href="https://docs.docker.com/reference/commandline/wait" target="_blank" rel="external"><code>docker wait</code></a> blocks until container stops.</li>
+</ul>
+<p>If you want to run and then interact with a container, <code>docker start</code>, then spawn a shell as described in <a href="https://github.com/wsargent/docker-cheat-sheet/#executing-commands" target="_blank" rel="external">Executing Commands</a>.</p>
+<p>If you want a transient container, <code>docker run --rm</code> will remove the container after it stops.</p>
+<p>If you want to remove also the volumes associated with the container, the deletion of the container must include the -v switch like in <code>docker rm -v</code>.</p>
+<p>If you want to poke around in an image, <code>docker run -t -i &lt;myimage&gt; &lt;myshell&gt;</code> to open a tty.</p>
+<p>If you want to poke around in a running container, <code>docker exec -t -i &lt;mycontainer&gt; &lt;myshell&gt;</code> to open a tty.</p>
+<p>If you want to map a directory on the host to a docker container, <code>docker run -v $HOSTDIR:$DOCKERDIR</code>.  Also see <a href="https://github.com/wsargent/docker-cheat-sheet/#volumes" target="_blank" rel="external">Volumes</a>.</p>
+<p>If you want to integrate a container with a <a href="https://docs.docker.com/articles/host_integration/" target="_blank" rel="external">host process manager</a>, start the daemon with <code>-r=false</code> then use <code>docker start -a</code>.</p>
+<p>If you want to expose container ports through the host, see the <a href="#exposing-ports">exposing ports</a> section.</p>
+<p>Restart policies on crashed docker instances are <a href="http://container42.com/2014/09/30/docker-restart-policies/" target="_blank" rel="external">covered here</a>.</p>
+<h3 id="Info">Info</h3><ul>
+<li><a href="https://docs.docker.com/reference/commandline/ps" target="_blank" rel="external"><code>docker ps</code></a> shows running containers.</li>
+<li><a href="https://docs.docker.com/reference/commandline/logs" target="_blank" rel="external"><code>docker logs</code></a> gets logs from container.</li>
+<li><a href="https://docs.docker.com/reference/commandline/inspect" target="_blank" rel="external"><code>docker inspect</code></a> looks at all the info on a container (including IP address).</li>
+<li><a href="https://docs.docker.com/reference/commandline/events" target="_blank" rel="external"><code>docker events</code></a> gets events from container.</li>
+<li><a href="https://docs.docker.com/reference/commandline/port" target="_blank" rel="external"><code>docker port</code></a> shows public facing port of container.</li>
+<li><a href="https://docs.docker.com/reference/commandline/top" target="_blank" rel="external"><code>docker top</code></a> shows running processes in container.</li>
+<li><a href="https://docs.docker.com/reference/commandline/stats" target="_blank" rel="external"><code>docker stats</code></a> shows containers’ resource usage statistics.</li>
+<li><a href="https://docs.docker.com/reference/commandline/diff" target="_blank" rel="external"><code>docker diff</code></a> shows changed files in the container’s FS.</li>
+</ul>
+<p><code>docker ps -a</code> shows running and stopped containers.</p>
+<h3 id="Import_/_Export">Import / Export</h3><ul>
+<li><a href="https://docs.docker.com/reference/commandline/cp" target="_blank" rel="external"><code>docker cp</code></a> copies files or folders between a container and the local filesystem..</li>
+<li><a href="https://docs.docker.com/reference/commandline/export" target="_blank" rel="external"><code>docker export</code></a> turns container filesystem into tarball archive stream to STDOUT.</li>
+</ul>
+<h3 id="Executing_Commands">Executing Commands</h3><ul>
+<li><a href="https://docs.docker.com/reference/commandline/exec" target="_blank" rel="external"><code>docker exec</code></a> to execute a command in container.</li>
+</ul>
+<p>To enter a running container, attach a new shell process to a running container called foo, use: <code>docker exec -it foo /bin/bash</code>.</p>
+<h2 id="Images">Images</h2><p>Images are just <a href="https://docs.docker.com/introduction/understanding-docker/#how-does-a-docker-image-work" target="_blank" rel="external">templates for docker containers</a>.</p>
+<h3 id="Lifecycle-1">Lifecycle</h3><ul>
+<li><a href="https://docs.docker.com/reference/commandline/images" target="_blank" rel="external"><code>docker images</code></a> shows all images.</li>
+<li><a href="https://docs.docker.com/reference/commandline/import" target="_blank" rel="external"><code>docker import</code></a> creates an image from a tarball.</li>
+<li><a href="https://docs.docker.com/reference/commandline/build" target="_blank" rel="external"><code>docker build</code></a> creates image from Dockerfile.</li>
+<li><a href="https://docs.docker.com/reference/commandline/commit" target="_blank" rel="external"><code>docker commit</code></a> creates image from a container.</li>
+<li><a href="https://docs.docker.com/reference/commandline/rmi" target="_blank" rel="external"><code>docker rmi</code></a> removes an image.</li>
+<li><a href="https://docs.docker.com/reference/commandline/load" target="_blank" rel="external"><code>docker load</code></a> loads an image from a tar archive as STDIN, including images and tags (as of 0.7).</li>
+<li><a href="https://docs.docker.com/reference/commandline/save" target="_blank" rel="external"><code>docker save</code></a> saves an image to a tar archive stream to STDOUT with all parent layers, tags &amp; versions (as of 0.7).</li>
+</ul>
+<h3 id="Info-1">Info</h3><ul>
+<li><a href="https://docs.docker.com/reference/commandline/history" target="_blank" rel="external"><code>docker history</code></a> shows history of image.</li>
+<li><a href="https://docs.docker.com/reference/commandline/tag" target="_blank" rel="external"><code>docker tag</code></a> tags an image to a name (local or registry).</li>
+</ul>
+<h2 id="Registry_&amp;_Repository">Registry &amp; Repository</h2><p>A repository is a <em>hosted</em> collection of tagged images that together create the file system for a container.</p>
+<p>A registry is a <em>host</em> – a server that stores repositories and provides an HTTP API for <a href="https://docs.docker.com/userguide/dockerrepos/" target="_blank" rel="external">managing the uploading and downloading of repositories</a>.</p>
+<p>Docker.com hosts its own <a href="https://registry.hub.docker.com/" target="_blank" rel="external">index</a> to a central registry which contains a large number of repositories.  Having said that, the central docker registry <a href="https://titanous.com/posts/docker-insecurity" target="_blank" rel="external">does not do a good job of verifying images</a> and should be avoided if you’re worried about security.</p>
+<ul>
+<li><a href="https://docs.docker.com/reference/commandline/login" target="_blank" rel="external"><code>docker login</code></a> to login to a registry.</li>
+<li><a href="https://docs.docker.com/reference/commandline/search" target="_blank" rel="external"><code>docker search</code></a> searches registry for image.</li>
+<li><a href="https://docs.docker.com/reference/commandline/pull" target="_blank" rel="external"><code>docker pull</code></a> pulls an image from registry to local machine.</li>
+<li><a href="https://docs.docker.com/reference/commandline/push" target="_blank" rel="external"><code>docker push</code></a> pushes an image to the registry from local machine.</li>
+</ul>
+<h3 id="Run_local_registry">Run local registry</h3><p><a href="https://github.com/docker/docker-registry" target="_blank" rel="external">Registry implementation</a> has an official image for basic setup that can be launched with<br><a href="https://github.com/docker/docker-registry#quick-start" target="_blank" rel="external"><code>docker run -p 5000:5000 registry</code></a><br>Note that this installation does not have any authorization controls. You may use option <code>-P -p 127.0.0.1:5000:5000</code> to limit connections to localhost only.<br>In order to push to this repository tag image with <code>repositoryHostName:5000/imageName</code> then push this tag.</p>
+<h2 id="Dockerfile">Dockerfile</h2><p><a href="https://docs.docker.com/reference/builder/" target="_blank" rel="external">The configuration file</a>. Sets up a Docker container when you run <code>docker build</code> on it.  Vastly preferable to <code>docker commit</code>.  If you use <a href="http://jedit.org" target="_blank" rel="external">jEdit</a>, I’ve put up a syntax highlighting module for <a href="https://github.com/wsargent/jedit-docker-mode" target="_blank" rel="external">Dockerfile</a> you can use.  You may also like to try the <a href="#tools">tools section</a>.</p>
+<h3 id="Instructions">Instructions</h3><ul>
+<li><a href="https://docs.docker.com/reference/builder/#the-dockerignore-file" target="_blank" rel="external">.dockerignore</a></li>
+<li><a href="https://docs.docker.com/reference/builder/#from" target="_blank" rel="external">FROM</a></li>
+<li><a href="https://docs.docker.com/reference/builder/#maintainer" target="_blank" rel="external">MAINTAINER</a></li>
+<li><a href="https://docs.docker.com/reference/builder/#run" target="_blank" rel="external">RUN</a></li>
+<li><a href="https://docs.docker.com/reference/builder/#cmd" target="_blank" rel="external">CMD</a></li>
+<li><a href="https://docs.docker.com/reference/builder/#expose" target="_blank" rel="external">EXPOSE</a></li>
+<li><a href="https://docs.docker.com/reference/builder/#env" target="_blank" rel="external">ENV</a></li>
+<li><a href="https://docs.docker.com/reference/builder/#add" target="_blank" rel="external">ADD</a></li>
+<li><a href="https://docs.docker.com/reference/builder/#copy" target="_blank" rel="external">COPY</a></li>
+<li><a href="https://docs.docker.com/reference/builder/#entrypoint" target="_blank" rel="external">ENTRYPOINT</a></li>
+<li><a href="https://docs.docker.com/reference/builder/#volume" target="_blank" rel="external">VOLUME</a></li>
+<li><a href="https://docs.docker.com/reference/builder/#user" target="_blank" rel="external">USER</a></li>
+<li><a href="https://docs.docker.com/reference/builder/#workdir" target="_blank" rel="external">WORKDIR</a></li>
+<li><a href="https://docs.docker.com/reference/builder/#onbuild" target="_blank" rel="external">ONBUILD</a></li>
+</ul>
+<h3 id="Tutorial">Tutorial</h3><ul>
+<li><a href="http://flux7.com/blogs/docker/docker-tutorial-series-part-3-automation-is-the-word-using-dockerfile/" target="_blank" rel="external">Flux7’s Dockerfile Tutorial</a></li>
+</ul>
+<h2 id="Layers">Layers</h2><p>The versioned filesystem in Docker is based on layers.  They’re like <a href="https://docs.docker.com/terms/layer/" target="_blank" rel="external">git commits or changesets for filesystems</a>.</p>
+<p>Note that if you’re using <a href="https://en.wikipedia.org/wiki/Aufs" target="_blank" rel="external">aufs</a> as your filesystem, Docker does not always remove data volumes containers layers when you delete a container!  See <a href="https://github.com/docker/docker/pull/8484" target="_blank" rel="external">PR 8484</a> for more details.</p>
+<h2 id="Links">Links</h2><p>Links are how Docker containers talk to each other <a href="https://docs.docker.com/userguide/dockerlinks/" target="_blank" rel="external">through TCP/IP ports</a>.  <a href="https://docs.docker.com/examples/running_redis_service/" target="_blank" rel="external">Linking into Redis</a> and <a href="https://blogs.atlassian.com/2013/11/docker-all-the-things-at-atlassian-automation-and-wiring/" target="_blank" rel="external">Atlassian</a> show worked examples.  You can also (in 0.11) resolve <a href="https://docs.docker.com/userguide/dockerlinks/#updating-the-etchosts-file" target="_blank" rel="external">links by hostname</a>.</p>
+<p>NOTE: If you want containers to ONLY communicate with each other through links, start the docker daemon with <code>-icc=false</code> to disable inter process communication.</p>
+<p>If you have a container with the name CONTAINER (specified by <code>docker run --name CONTAINER</code>) and in the Dockerfile, it has an exposed port:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">EXPOSE 1337</span><br></pre></td></tr></table></figure>
+<p>Then if we create another container called LINKED like so:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --link CONTAINER:ALIAS --name LINKED user/wordpress</span><br></pre></td></tr></table></figure>
+<p>Then the exposed ports and aliases of CONTAINER will show up in LINKED with the following environment variables:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ALIAS_PORT_1337_TCP_PORT&#10;$ALIAS_PORT_1337_TCP_ADDR</span><br></pre></td></tr></table></figure>
+<p>And you can connect to it that way.</p>
+<p>To delete links, use <code>docker rm --link</code>.</p>
+<p>If you want to link across docker hosts then you should look at <a href="https://docs.docker.com/swarm/" target="_blank" rel="external">Swarm</a>. This <a href="https://stackoverflow.com/questions/21283517/how-to-link-docker-services-across-hosts" target="_blank" rel="external">link on stackoverflow</a> provides some good information on different patterns for linking containers across docker hosts.</p>
+<h2 id="Volumes">Volumes</h2><p>Docker volumes are <a href="https://docs.docker.com/userguide/dockervolumes/" target="_blank" rel="external">free-floating filesystems</a>.  They don’t have to be connected to a particular container.  You should use volumes mounted from <a href="https://medium.com/@ramangupta/why-docker-data-containers-are-good-589b3c6c749e" target="_blank" rel="external">data-only containers</a> for portability.</p>
+<p>Volumes are useful in situations where you can’t use links (which are TCP/IP only).  For instance, if you need to have two docker instances communicate by leaving stuff on the filesystem.</p>
+<p>You can mount them in several docker containers at once, using <code>docker run --volumes-from</code>.</p>
+<p>Because volumes are isolated filesystems, they are often used to store state from computations between transient containers.  That is, you can have a stateless and transient container run from a recipe, blow it away, and then have a second instance of the transient container pick up from where the last one left off.</p>
+<p>See <a href="http://crosbymichael.com/advanced-docker-volumes.html" target="_blank" rel="external">advanced volumes</a> for more details.  Container42 is <a href="http://container42.com/2014/11/03/docker-indepth-volumes/" target="_blank" rel="external">also helpful</a>.</p>
+<p>For an easy way to clean abandoned volumes, see <a href="https://github.com/chadoe/docker-cleanup-volumes" target="_blank" rel="external">docker-cleanup-volumes</a></p>
+<p>As of 1.3, you can <a href="https://docs.docker.com/userguide/dockervolumes/#mount-a-host-directory-as-a-data-volume" target="_blank" rel="external">map MacOS host directories as docker volumes</a> through boot2docker:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -v /Users/wsargent/myapp/src:/src</span><br></pre></td></tr></table></figure>
+<p>You can also use remote NFS volumes if you’re <a href="http://www.tech-d.net/2014/03/29/docker-quicktip-4-remote-volumes/" target="_blank" rel="external">feeling brave</a>.</p>
+<p>You may also consider running data-only containers as described <a href="http://container42.com/2013/12/16/persistent-volumes-with-docker-container-as-volume-pattern/" target="_blank" rel="external">here</a> to provide some data portability.</p>
+<h2 id="Exposing_ports">Exposing ports</h2><p>Exposing incoming ports through the host container is <a href="https://docs.docker.com/reference/run/#expose-incoming-ports" target="_blank" rel="external">fiddly but doable</a>.</p>
+<p>The fastest way is to map the container port to the host port (only using localhost interface) using <code>-p</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -p 127.0.0.1:$HOSTPORT:$CONTAINERPORT --name CONTAINER -t someimage</span><br></pre></td></tr></table></figure>
+<p>If you don’t want to use the <code>-p</code> option on the command line, you can persist port forwarding by using <a href="https://docs.docker.com/reference/builder/#expose" target="_blank" rel="external">EXPOSE</a>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">EXPOSE &#60;CONTAINERPORT&#62;</span><br></pre></td></tr></table></figure>
+<p>If you’re running Docker in Virtualbox, you then need to forward the port there as well, using <a href="https://docs.vagrantup.com/v2/networking/forwarded_ports.html" target="_blank" rel="external">forwarded_port</a>.  It can be useful to define something in Vagrantfile to expose a range of ports so that you can dynamically map them:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|&#10;  ...&#10;&#10;  (49000..49900).each do |port|&#10;    config.vm.network :forwarded_port, :host =&#62; port, :guest =&#62; port&#10;  end&#10;&#10;  ...&#10;end</span><br></pre></td></tr></table></figure>
+<p>If you forget what you mapped the port to on the host container, use <code>docker port</code> to show it:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker port CONTAINER $CONTAINERPORT</span><br></pre></td></tr></table></figure>
+<h3 id="Examples">Examples</h3><ul>
+<li><a href="https://docs.docker.com/reference/builder/#dockerfile-examples" target="_blank" rel="external">Examples</a></li>
+<li><a href="https://docs.docker.com/articles/dockerfile_best-practices/" target="_blank" rel="external">Best practices for writing Dockerfiles</a></li>
+<li><a href="http://crosbymichael.com/" target="_blank" rel="external">Michael Crosby</a> has some more <a href="http://crosbymichael.com/dockerfile-best-practices.html" target="_blank" rel="external">Dockerfiles best practices</a> / <a href="http://crosbymichael.com/dockerfile-best-practices-take-2.html" target="_blank" rel="external">take 2</a>.</li>
+</ul>
+<h2 id="Best_Practices">Best Practices</h2><p>This is where general Docker best practices and war stories go:</p>
+<ul>
+<li><a href="http://gregoryszorc.com/blog/2014/10/16/the-rabbit-hole-of-using-docker-in-automated-tests/" target="_blank" rel="external">The Rabbit Hole of Using Docker in Automated Tests</a></li>
+<li><a href="https://twitter.com/bridgetkromhout" target="_blank" rel="external">Bridget Kromhout</a> has a useful blog post on <a href="http://sysadvent.blogspot.co.uk/2014/12/day-1-docker-in-production-reality-not.html" target="_blank" rel="external">running Docker in production</a> at Dramafever.  </li>
+<li>There’s also a best practices <a href="http://developers.lyst.com/devops/2014/12/08/docker/" target="_blank" rel="external">blog post</a> from Lyst.</li>
+<li><a href="http://blog.relateiq.com/a-docker-dev-environment-in-24-hours-part-2-of-2/" target="_blank" rel="external">A Docker Dev Environment in 24 Hours!</a></li>
+<li><a href="http://tersesystems.com/2013/11/20/building-a-development-environment-with-docker/" target="_blank" rel="external">Building a Development Environment With Docker</a></li>
+<li><a href="http://samsaffron.com/archive/2013/11/07/discourse-in-a-docker-container" target="_blank" rel="external">Discourse in a Docker Container</a></li>
+</ul>
+<h2 id="Security">Security</h2><p>This is where security tips about Docker go.</p>
+<p>If you are in the <code>docker</code> group, you effectively <a href="http://reventlov.com/advisories/using-the-docker-command-to-root-the-host" target="_blank" rel="external">have root access</a>.</p>
+<p>Likewise, if you expose the docker unix socket to a container, you are giving the container <a href="https://www.lvh.io/posts/dont-expose-the-docker-socket-not-even-to-a-container.html" target="_blank" rel="external">root access to the host</a>.</p>
+<p>Docker image ids are <a href="https://medium.com/@quayio/your-docker-image-ids-are-secrets-and-its-time-you-treated-them-that-way-f55e9f14c1a4" target="_blank" rel="external">sensitive information</a> and should not be exposed to the outside world.  Treat them like passwords.</p>
+<p>See the <a href="https://github.com/konstruktoid/Docker/blob/master/Security/CheatSheet.md" target="_blank" rel="external">Docker Security Cheat Sheet</a> by <a href="https://github.com/konstruktoid" target="_blank" rel="external">Thomas Sjögren</a>.</p>
+<p>From the <a href="http://container-solutions.com/content/uploads/2015/06/15.06.15_DockerCheatSheet_A2.pdf" target="_blank" rel="external">Docker Security Cheat Sheet</a> (it’s in PDF which makes it hard to use, so copying below) by <a href="http://container-solutions.com/is-docker-safe-for-production/" target="_blank" rel="external">Container Solutions</a>:</p>
+<p>Turn off interprocess communication with:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker -d --icc=false --iptables</span><br></pre></td></tr></table></figure>
+<p>Set the container to be read-only:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --read-only</span><br></pre></td></tr></table></figure>
+<p>Verify images with a hashsum:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull debian@sha256:a25306f3850e1bd44541976aa7b5fd0a29be</span><br></pre></td></tr></table></figure>
+<p>Set volumes to be read only:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -v $(pwd)/secrets:/secrets:ro debian</span><br></pre></td></tr></table></figure>
+<p>Set memory and CPU sharing:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker -c 512 -mem 512m</span><br></pre></td></tr></table></figure>
+<p>Define and run a user in your Dockerfile so you don’t run as root inside the container:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">RUN groupadd -r user &#38;&#38; useradd -r -g user user&#10;USER user</span><br></pre></td></tr></table></figure>
+<h2 id="Tips">Tips</h2><p>Sources:</p>
+<ul>
+<li><a href="http://sssslide.com/speakerdeck.com/bmorearty/15-docker-tips-in-5-minutes" target="_blank" rel="external">15 Docker Tips in 5 minutes</a></li>
+</ul>
+<h3 id="Last_Ids">Last Ids</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alias dl=&#39;docker ps -l -q&#39;&#10;docker run ubuntu echo hello world&#10;docker commit `dl` helloworld</span><br></pre></td></tr></table></figure>
+<h3 id="Commit_with_command_(needs_Dockerfile)">Commit with command (needs Dockerfile)</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker commit -run=&#39;&#123;&#34;Cmd&#34;:[&#34;postgres&#34;, &#34;-too -many -opts&#34;]&#125;&#39; `dl` postgres</span><br></pre></td></tr></table></figure>
+<h3 id="Get_IP_address">Get IP address</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker inspect `dl` | grep IPAddress | cut -d &#39;&#34;&#39; -f 4</span><br></pre></td></tr></table></figure>
+<p>or</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget http://stedolan.github.io/jq/download/source/jq-1.3.tar.gz&#10;tar xzvf jq-1.3.tar.gz&#10;cd jq-1.3&#10;./configure &#38;&#38; make &#38;&#38; sudo make install&#10;docker inspect `dl` | jq -r &#39;.[0].NetworkSettings.IPAddress&#39;</span><br></pre></td></tr></table></figure>
+<p>or using a <a href="https://docs.docker.com/reference/commandline/inspect" target="_blank" rel="external">go template</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker inspect -f &#39;&#123;&#123; .NetworkSettings.IPAddress &#125;&#125;&#39; &#60;container_name&#62;</span><br></pre></td></tr></table></figure>
+<h3 id="Get_port_mapping">Get port mapping</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker inspect -f &#39;&#123;&#123;range $p, $conf := .NetworkSettings.Ports&#125;&#125; &#123;&#123;$p&#125;&#125; -&#62; &#123;&#123;(index $conf 0).HostPort&#125;&#125; &#123;&#123;end&#125;&#125;&#39; &#60;containername&#62;</span><br></pre></td></tr></table></figure>
+<h3 id="Find_containers_by_regular_expression">Find containers by regular expression</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">for i in $(docker ps -a | grep &#34;REGEXP_PATTERN&#34; | cut -f1 -d&#34; &#34;); do echo $i; done`</span><br></pre></td></tr></table></figure>
+<h3 id="Get_Environment_Settings">Get Environment Settings</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --rm ubuntu env</span><br></pre></td></tr></table></figure>
+<h3 id="Kill_running_containers">Kill running containers</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker kill $(docker ps -q)</span><br></pre></td></tr></table></figure>
+<h3 id="Delete_old_containers">Delete old containers</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker ps -a | grep &#39;weeks ago&#39; | awk &#39;&#123;print $1&#125;&#39; | xargs docker rm</span><br></pre></td></tr></table></figure>
+<h3 id="Delete_stopped_containers">Delete stopped containers</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker rm -v `docker ps -a -q -f status=exited`</span><br></pre></td></tr></table></figure>
+<h3 id="Delete_dangling_images">Delete dangling images</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker rmi $(docker images -q -f dangling=true)</span><br></pre></td></tr></table></figure>
+<h3 id="Delete_all_images">Delete all images</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker rmi $(docker images -q)</span><br></pre></td></tr></table></figure>
+<h3 id="Show_image_dependencies">Show image dependencies</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker images -viz | dot -Tpng -o docker.png</span><br></pre></td></tr></table></figure>
+<h3 id="Slimming_down_Docker_containers_Intercity_Blog">Slimming down Docker containers  <a href="http://bit.ly/1Wwo61N" target="_blank" rel="external">Intercity Blog</a></h3><ul>
+<li><p>Cleaning APT</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">RUN apt-get clean&#10;RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Flatten an image</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ID=$(docker run -d image-name /bin/bash)&#10;docker export $ID | docker import &#8211; flat-image-name</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>For backup</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ID=$(docker run -d image-name /bin/bash)&#10;(docker export $ID | gzip -c &#62; image.tgz)&#10;gzip -dc image.tgz | docker import - flat-image-name</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="Monitor_system_resource_utilization_for_running_containers">Monitor system resource utilization for running containers</h3><p>To check the CPU, memory and network i/o usage, you can use:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker stats &#60;container&#62;&#10;``` &#10;&#10;for a single container or</span><br></pre></td></tr></table></figure>
+<p>docker stats $(docker ps -q)<br>```</p>
+<p>to monitor all containers on the docker host.</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/转载收藏/">转载收藏</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/docker/">docker</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://xdxd.love/2015/12/23/docker-cheat-sheet/" data-title="docker cheat sheet | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2015/12/22/mybatis使用不当导致的sql注入/"  title="mybatis使用不当导致的sql注入">
+ <strong>下一篇：</strong><br/> 
+ <span>mybatis使用不当导致的sql注入
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2015/12/23/docker-cheat-sheet/" data-title="docker cheat sheet" data-url="http://xdxd.love/2015/12/23/docker-cheat-sheet/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Docker_Cheat_Sheet"><span class="toc-number">1.</span> <span class="toc-text">Docker Cheat Sheet</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Why"><span class="toc-number">1.1.</span> <span class="toc-text">Why</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Prerequisites"><span class="toc-number">1.2.</span> <span class="toc-text">Prerequisites</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Linux"><span class="toc-number">1.2.1.</span> <span class="toc-text">Linux</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MacOS"><span class="toc-number">1.2.2.</span> <span class="toc-text">MacOS</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Installation"><span class="toc-number">1.3.</span> <span class="toc-text">Installation</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Linux-1"><span class="toc-number">1.3.1.</span> <span class="toc-text">Linux</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Mac_OS_X"><span class="toc-number">1.3.2.</span> <span class="toc-text">Mac OS X</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Containers"><span class="toc-number">1.4.</span> <span class="toc-text">Containers</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Lifecycle"><span class="toc-number">1.4.1.</span> <span class="toc-text">Lifecycle</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Info"><span class="toc-number">1.4.2.</span> <span class="toc-text">Info</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Import_/_Export"><span class="toc-number">1.4.3.</span> <span class="toc-text">Import / Export</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Executing_Commands"><span class="toc-number">1.4.4.</span> <span class="toc-text">Executing Commands</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Images"><span class="toc-number">1.5.</span> <span class="toc-text">Images</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Lifecycle-1"><span class="toc-number">1.5.1.</span> <span class="toc-text">Lifecycle</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Info-1"><span class="toc-number">1.5.2.</span> <span class="toc-text">Info</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Registry_&_Repository"><span class="toc-number">1.6.</span> <span class="toc-text">Registry & Repository</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Run_local_registry"><span class="toc-number">1.6.1.</span> <span class="toc-text">Run local registry</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Dockerfile"><span class="toc-number">1.7.</span> <span class="toc-text">Dockerfile</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Instructions"><span class="toc-number">1.7.1.</span> <span class="toc-text">Instructions</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Tutorial"><span class="toc-number">1.7.2.</span> <span class="toc-text">Tutorial</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Layers"><span class="toc-number">1.8.</span> <span class="toc-text">Layers</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Links"><span class="toc-number">1.9.</span> <span class="toc-text">Links</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Volumes"><span class="toc-number">1.10.</span> <span class="toc-text">Volumes</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Exposing_ports"><span class="toc-number">1.11.</span> <span class="toc-text">Exposing ports</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Examples"><span class="toc-number">1.11.1.</span> <span class="toc-text">Examples</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Best_Practices"><span class="toc-number">1.12.</span> <span class="toc-text">Best Practices</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Security"><span class="toc-number">1.13.</span> <span class="toc-text">Security</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Tips"><span class="toc-number">1.14.</span> <span class="toc-text">Tips</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Last_Ids"><span class="toc-number">1.14.1.</span> <span class="toc-text">Last Ids</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Commit_with_command_(needs_Dockerfile)"><span class="toc-number">1.14.2.</span> <span class="toc-text">Commit with command (needs Dockerfile)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Get_IP_address"><span class="toc-number">1.14.3.</span> <span class="toc-text">Get IP address</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Get_port_mapping"><span class="toc-number">1.14.4.</span> <span class="toc-text">Get port mapping</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Find_containers_by_regular_expression"><span class="toc-number">1.14.5.</span> <span class="toc-text">Find containers by regular expression</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Get_Environment_Settings"><span class="toc-number">1.14.6.</span> <span class="toc-text">Get Environment Settings</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Kill_running_containers"><span class="toc-number">1.14.7.</span> <span class="toc-text">Kill running containers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Delete_old_containers"><span class="toc-number">1.14.8.</span> <span class="toc-text">Delete old containers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Delete_stopped_containers"><span class="toc-number">1.14.9.</span> <span class="toc-text">Delete stopped containers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Delete_dangling_images"><span class="toc-number">1.14.10.</span> <span class="toc-text">Delete dangling images</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Delete_all_images"><span class="toc-number">1.14.11.</span> <span class="toc-text">Delete all images</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Show_image_dependencies"><span class="toc-number">1.14.12.</span> <span class="toc-text">Show image dependencies</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Slimming_down_Docker_containers_Intercity_Blog"><span class="toc-number">1.14.13.</span> <span class="toc-text">Slimming down Docker containers  Intercity Blog</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Monitor_system_resource_utilization_for_running_containers"><span class="toc-number">1.14.14.</span> <span class="toc-text">Monitor system resource utilization for running containers</span></a></li></ol></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>12</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/前段安全/" title="前段安全">前段安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/前端安全/" title="前端安全">前端安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/加密解密/" title="加密解密">加密解密<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/奇技淫巧/" title="奇技淫巧">奇技淫巧<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>2</sup></a></li>
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/漏洞挖掘/" title="漏洞挖掘">漏洞挖掘<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/转载收藏/" title="转载收藏">转载收藏<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/黑盒测试/" title="黑盒测试">黑盒测试<sup>7</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/php/" title="php">php<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/qemu/" title="qemu">qemu<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/支付漏洞/" title="支付漏洞">支付漏洞<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ssi/" title="ssi">ssi<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/折腾/" title="折腾">折腾<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/解包/" title="解包">解包<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcpdump/" title="tcpdump">tcpdump<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/密码学/" title="密码学">密码学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/github/" title="github">github<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ctf/" title="ctf">ctf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/php-wdcp/" title="php,wdcp">php,wdcp<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/任意文件删除/" title="任意文件删除">任意文件删除<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/waf/" title="waf">waf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/sqlmap/" title="sqlmap">sqlmap<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/hackrf/" title="hackrf">hackrf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/docker/" title="docker">docker<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://sco4x0.com" target="_blank" title="sco4x0&#39;s blog">sco4x0&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://virusdefender.net" target="_blank" title="virusdefender&#39;s blog">virusdefender&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackersb.cn/" target="_blank" title="Striker&#39;s blog">Striker&#39;s blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer></footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"xdxd"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253479891'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1253479891' type='text/javascript'%3E%3C/script%3E"));</script>
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
