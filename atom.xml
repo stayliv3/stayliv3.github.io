@@ -127,7 +127,7 @@ document.getElementById(<span class="string">"form2"</span>).submit();
     <link href="http://xdxd.love/2015/12/23/mybatis%E4%B8%8Esql%E6%B3%A8%E5%85%A5/"/>
     <id>http://xdxd.love/2015/12/23/mybatis与sql注入/</id>
     <published>2015-12-23T06:38:51.000Z</published>
-    <updated>2015-12-23T07:22:54.000Z</updated>
+    <updated>2015-12-25T07:10:58.000Z</updated>
     <content type="html"><![CDATA[<p>MyBatis 是支持定制化 SQL、存储过程以及高级映射的优秀的持久层框架。MyBatis 避免了几乎所有的 JDBC 代码和手动设置参数以及获取结果集。MyBatis 可以对配置和原生Map使用简单的 XML 或注解，将接口和 Java 的 POJOs(Plain Old Java Objects,普通的 Java对象)映射成数据库中的记录。通常来说ORM的框架应该是可以避免SQL注入的，但是如果mybatis使用不当也会造成sql注入。</p>
 <p>The MyBatis data mapper framework makes it easier to use a relational database with object-oriented applications. Unlike traditional ORM solutions, MyBatis maps objects with SQL statements or stored procedures using a XML descriptor, rather than mapping objects to tables in a database; thus providing complete control over SQL, therefore susceptible to SQL injection if used incorrectly.</p>
 <p>MyBatis has 2 substitution methods. The <code>${}</code> method does direct string replacement (i.e. property substitution) so it’s vulnerable to SQL injection. The <code>#{}</code> method does parameter substitution on a PreparedStatement so it is not vulnerable.</p>
@@ -159,7 +159,7 @@ document.getElementById(<span class="string">"form2"</span>).submit();
     
       <category term="java" scheme="http://xdxd.love/tags/java/"/>
     
-      <category term="安全开发" scheme="http://xdxd.love/categories/%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91/"/>
+      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
     
   </entry>
   
