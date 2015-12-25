@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2015-12-25T01:56:19.000Z</updated>
+  <updated>2015-12-25T02:00:31.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -19,7 +19,7 @@
     <link href="http://xdxd.love/2015/12/24/%E5%A4%9A%E6%AD%A5csrf%E6%BC%8F%E6%B4%9E%E5%9C%BA%E6%99%AF%E5%8F%8A%E5%85%B6%E5%88%A9%E7%94%A8/"/>
     <id>http://xdxd.love/2015/12/24/多步csrf漏洞场景及其利用/</id>
     <published>2015-12-24T09:05:22.000Z</published>
-    <updated>2015-12-25T01:56:19.000Z</updated>
+    <updated>2015-12-25T02:00:31.000Z</updated>
     <content type="html"><![CDATA[<p>发布在了<a href="http://www.freebuf.com/articles/web/58387.html" target="_blank" rel="external">Freebuf</a>上，有删改。</p>
 <p>CSRF的漏洞原理和利用方式这里就不多赘述了。平时大家讨论的CSRF利用多是发送一次请求。比如CSRF刷粉丝，CSRF发微博。这里主要讨论一个稍微复杂点的利用场景。</p>
 <p>最近在众测的时候遇到一个案例，用户绑定邮箱的请求没有防御CSRF。但是大家都知道绑定邮箱这个操作不是一步完成了。这次遇到的这个案例是这样的。用户发送一个申请绑定邮箱的请求，服务器给该邮箱发送一个验证码，然后用户在页面中输入验证码完成绑定。</p>
@@ -43,7 +43,7 @@
 <span class="tag">&lt;/<span class="title">body</span>&gt;</span>
 <span class="tag">&lt;/<span class="title">html</span>&gt;</span>
 </code></pre><p>测试发现这想法太天真了。第一个表单提交之后，就会跳转到返回的结果页面了。第二个表单不会提交了。而且这里遇到的这个场景比较特殊，并不是仅仅是先后提交两个表单就可以了。第二个表单里的值(验证码)是需要第一个表单提交之后，从邮箱里读出来再放到第二个表单里。<br>测试结果见下图：只会发送第一个表单的请求。</p>
-<p><img src="/images/mulcsrf1.gif" alt=""></p>
+<p><img src="/images/mulcsrf2.gif" alt=""></p>
 <p>经过查找资料。找到几个解决方案。</p>
 <p>解决方案1：<br>使用form的target属性。target 属性规定在何处打开 action URL。</p>
 <p><img src="/images/mulcsrf3.jpg!small" alt=""></p>
