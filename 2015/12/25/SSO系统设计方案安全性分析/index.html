@@ -4,30 +4,26 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>ssi漏洞介绍 | xd_xd&#39;s blog</title>
+    <title>SSO系统设计方案安全性分析 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description" content="SSISSI Injection (Server-side Include)服务器端包含提供了一种对现有HTML文档增加动态内容的方法。根据查资料的理解这是http服务器提供支持的一个特性。apache和iis都可以通过配置支持SSI。apache关于SSI的文档
-在网页内容被返回给用户之前，服务器会执行网页内容中的SSI标签。在很多场景中，用户输入的内容可以显示在页面中，比如一个存在反射XSS漏">
+    <meta name="description" content="参考资料http://atlantisplus.net/articles/570.htmlhttps://auth0.com/blog/2015/09/23/what-is-and-how-does-single-sign-on-work/
+What is SSOSSO (Single Sign On) means that when a user logs in to one applicati">
 <meta property="og:type" content="article">
-<meta property="og:title" content="ssi漏洞介绍">
-<meta property="og:url" content="http://xdxd.love/2015/12/09/ssi漏洞介绍/index.html">
+<meta property="og:title" content="SSO系统设计方案安全性分析">
+<meta property="og:url" content="http://xdxd.love/2015/12/25/SSO系统设计方案安全性分析/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="SSISSI Injection (Server-side Include)服务器端包含提供了一种对现有HTML文档增加动态内容的方法。根据查资料的理解这是http服务器提供支持的一个特性。apache和iis都可以通过配置支持SSI。apache关于SSI的文档
-在网页内容被返回给用户之前，服务器会执行网页内容中的SSI标签。在很多场景中，用户输入的内容可以显示在页面中，比如一个存在反射XSS漏">
-<meta property="og:image" content="http://xdxd.love/images/ssi1.png">
-<meta property="og:image" content="http://xdxd.love/images/ssi2.png">
-<meta property="og:image" content="http://xdxd.love/images/ssi3.png">
-<meta property="og:image" content="http://xdxd.love/images/ssi4.png">
-<meta property="og:updated_time" content="2015-12-10T03:18:48.000Z">
+<meta property="og:description" content="参考资料http://atlantisplus.net/articles/570.htmlhttps://auth0.com/blog/2015/09/23/what-is-and-how-does-single-sign-on-work/
+What is SSOSSO (Single Sign On) means that when a user logs in to one applicati">
+<meta property="og:updated_time" content="2015-12-28T03:21:42.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="ssi漏洞介绍">
-<meta name="twitter:description" content="SSISSI Injection (Server-side Include)服务器端包含提供了一种对现有HTML文档增加动态内容的方法。根据查资料的理解这是http服务器提供支持的一个特性。apache和iis都可以通过配置支持SSI。apache关于SSI的文档
-在网页内容被返回给用户之前，服务器会执行网页内容中的SSI标签。在很多场景中，用户输入的内容可以显示在页面中，比如一个存在反射XSS漏">
+<meta name="twitter:title" content="SSO系统设计方案安全性分析">
+<meta name="twitter:description" content="参考资料http://atlantisplus.net/articles/570.htmlhttps://auth0.com/blog/2015/09/23/what-is-and-how-does-single-sign-on-work/
+What is SSOSSO (Single Sign On) means that when a user logs in to one applicati">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -87,14 +83,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/12/09/ssi漏洞介绍/" title="ssi漏洞介绍" itemprop="url">ssi漏洞介绍</a>
+      <a href="/2015/12/25/SSO系统设计方案安全性分析/" title="SSO系统设计方案安全性分析" itemprop="url">SSO系统设计方案安全性分析</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2015-12-09T08:47:30.000Z" itemprop="datePublished"> 发表于 Dec 9 2015</time>
+    <time datetime="2015-12-25T08:39:52.000Z" itemprop="datePublished"> 发表于 Dec 25 2015</time>
     
   </p>
 </header>
@@ -103,23 +99,16 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#SSI"><span class="toc-number">1.</span> <span class="toc-text">SSI</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#实例演示"><span class="toc-number">2.</span> <span class="toc-text">实例演示</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#修复方案"><span class="toc-number">3.</span> <span class="toc-text">修复方案</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">4.</span> <span class="toc-text">参考资料</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#What_is_SSO"><span class="toc-number">2.</span> <span class="toc-text">What is SSO</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#登录是如何实现的"><span class="toc-number">3.</span> <span class="toc-text">登录是如何实现的</span></a></li></ol>
 		
 		</div>
 		
-		<h1 id="SSI">SSI</h1><p>SSI Injection <a href="https://en.wikipedia.org/wiki/Server_Side_Includes" target="_blank" rel="external">(Server-side Include)</a>服务器端包含提供了一种对现有HTML文档增加动态内容的方法。根据查资料的理解这是http服务器提供支持的一个特性。apache和iis都可以通过配置支持SSI。<a href="http://man.chinaunix.net/newsoft/ApacheManual/howto/ssi.html" target="_blank" rel="external">apache关于SSI的文档</a></p>
-<p>在网页内容被返回给用户之前，服务器会执行网页内容中的SSI标签。在很多场景中，用户输入的内容可以显示在页面中，比如一个存在反射XSS漏洞的页面，如果输入的payload不是xss代码而是ssi的标签，服务器又开启了ssi支持的话就会存在SSI漏洞</p>
-<h1 id="实例演示">实例演示</h1><p>使用bwapp测试：</p>
-<p>输入ssi支持的标签语法，查看返回是否执行</p>
-<pre><code><span class="comment">&lt;!--#echo var="DATE_LOCAL" --&gt;</span>
-</code></pre><p><img src="/images/ssi1.png" alt=""></p>
-<p><img src="/images/ssi2.png" alt=""></p>
-<pre><code><span class="comment">&lt;!--#exec cmd="whoami" --&gt;</span>
-</code></pre><p><img src="/images/ssi3.png" alt=""></p>
-<p><img src="/images/ssi4.png" alt=""></p>
-<p>默认情况下，ssi不支持cmd执行，所以ssi这种漏洞会慢慢退出历史舞台。</p>
-<h1 id="修复方案">修复方案</h1><p>ssi这种技术已经比较少用了。如果应用没有使用到ssi，关闭服务器对ssi的支持即可。</p>
-<h1 id="参考资料">参考资料</h1><p><a href="http://zone.wooyun.org/content/23128" target="_blank" rel="external">http://zone.wooyun.org/content/23128</a></p>
+		<h1 id="参考资料">参考资料</h1><p><a href="http://atlantisplus.net/articles/570.html" target="_blank" rel="external">http://atlantisplus.net/articles/570.html</a><br><a href="https://auth0.com/blog/2015/09/23/what-is-and-how-does-single-sign-on-work/" target="_blank" rel="external">https://auth0.com/blog/2015/09/23/what-is-and-how-does-single-sign-on-work/</a></p>
+<h1 id="What_is_SSO">What is SSO</h1><p>SSO (Single Sign On) means that when a user logs in to one application he will be “automatically” signed in to every other application, regardless of the platform, technology and domain.</p>
+<p>For example, Google implements SSO for their products: Gmail, YouTube, Analytics, etc. When you turn on your computer and access Gmail, you login for the first time. Then, if you go to YouTube you won’t be prompted for credentials again.</p>
+<p>The way this works is by means of a “central service” (in the case of Google this is <a href="https://accounts.google.com" target="_blank" rel="external">https://accounts.google.com</a>). When you login for the first time a cookie gets created on this central service. Then, when you try to access the second application, you get redirected to the central service, but since you already have a cookie, you get redirected to the app directly with a token, which means you’re already logged in.</p>
+<p>谷歌是使用认证中心的设计方案。</p>
+<h1 id="登录是如何实现的">登录是如何实现的</h1><p>sessionid<br>cookie加密用户信息</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -127,13 +116,13 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/黑盒测试/">黑盒测试</a>
+  <a class="article-category-link" href="/categories/代码审计/">代码审计</a>
 </div>
 
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/ssi/">ssi</a>
+  <span></span> <a href="/tags/方案设计/">方案设计</a>
   </div>
 
 </div>
@@ -142,7 +131,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2015/12/09/ssi漏洞介绍/" data-title="ssi漏洞介绍 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
+	  <div data-url="http://xdxd.love/2015/12/25/SSO系统设计方案安全性分析/" data-title="SSO系统设计方案安全性分析 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -155,19 +144,11 @@
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2015/12/11/同时使用gitcafe和github做博客/" title="同时使用gitcafe和github做博客">
-  <strong>上一篇：</strong><br/>
-  <span>
-  同时使用gitcafe和github做博客</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2015/12/03/php比较操作符的安全问题/"  title="php比较操作符的安全问题">
+<a href="/2015/12/24/多步csrf漏洞场景及其利用/"  title="多步csrf漏洞场景及其利用">
  <strong>下一篇：</strong><br/> 
- <span>php比较操作符的安全问题
+ <span>多步csrf漏洞场景及其利用
 </span>
 </a>
 </div>
@@ -176,7 +157,7 @@
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/12/09/ssi漏洞介绍/" data-title="ssi漏洞介绍" data-url="http://xdxd.love/2015/12/09/ssi漏洞介绍/"></div>
+	<div class="ds-thread" data-thread-key="2015/12/25/SSO系统设计方案安全性分析/" data-title="SSO系统设计方案安全性分析" data-url="http://xdxd.love/2015/12/25/SSO系统设计方案安全性分析/"></div>
 </section>
 
 
@@ -186,7 +167,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#SSI"><span class="toc-number">1.</span> <span class="toc-text">SSI</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#实例演示"><span class="toc-number">2.</span> <span class="toc-text">实例演示</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#修复方案"><span class="toc-number">3.</span> <span class="toc-text">修复方案</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">4.</span> <span class="toc-text">参考资料</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#What_is_SSO"><span class="toc-number">2.</span> <span class="toc-text">What is SSO</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#登录是如何实现的"><span class="toc-number">3.</span> <span class="toc-text">登录是如何实现的</span></a></li></ol>
  
   </div>
 

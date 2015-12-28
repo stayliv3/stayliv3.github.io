@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2015-12-25T02:00:31.000Z</updated>
+  <updated>2015-12-28T03:21:42.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -13,6 +13,29 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[SSO系统设计方案安全性分析]]></title>
+    <link href="http://xdxd.love/2015/12/25/SSO%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1%E6%96%B9%E6%A1%88%E5%AE%89%E5%85%A8%E6%80%A7%E5%88%86%E6%9E%90/"/>
+    <id>http://xdxd.love/2015/12/25/SSO系统设计方案安全性分析/</id>
+    <published>2015-12-25T08:39:52.000Z</published>
+    <updated>2015-12-28T03:21:42.000Z</updated>
+    <content type="html"><![CDATA[<h1 id="参考资料">参考资料</h1><p><a href="http://atlantisplus.net/articles/570.html" target="_blank" rel="external">http://atlantisplus.net/articles/570.html</a><br><a href="https://auth0.com/blog/2015/09/23/what-is-and-how-does-single-sign-on-work/" target="_blank" rel="external">https://auth0.com/blog/2015/09/23/what-is-and-how-does-single-sign-on-work/</a></p>
+<h1 id="What_is_SSO">What is SSO</h1><p>SSO (Single Sign On) means that when a user logs in to one application he will be “automatically” signed in to every other application, regardless of the platform, technology and domain.</p>
+<p>For example, Google implements SSO for their products: Gmail, YouTube, Analytics, etc. When you turn on your computer and access Gmail, you login for the first time. Then, if you go to YouTube you won’t be prompted for credentials again.</p>
+<p>The way this works is by means of a “central service” (in the case of Google this is <a href="https://accounts.google.com" target="_blank" rel="external">https://accounts.google.com</a>). When you login for the first time a cookie gets created on this central service. Then, when you try to access the second application, you get redirected to the central service, but since you already have a cookie, you get redirected to the app directly with a token, which means you’re already logged in.</p>
+<p>谷歌是使用认证中心的设计方案。</p>
+<h1 id="登录是如何实现的">登录是如何实现的</h1><p>sessionid<br>cookie加密用户信息</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h1 id="参考资料">参考资料</h1><p><a href="http://atlantisplus.net/articles/570.html" target="_blank" rel="external">http://atlantisplus.net/article]]>
+    </summary>
+    
+      <category term="方案设计" scheme="http://xdxd.love/tags/%E6%96%B9%E6%A1%88%E8%AE%BE%E8%AE%A1/"/>
+    
+      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[多步csrf漏洞场景及其利用]]></title>
@@ -1208,48 +1231,6 @@ insmod /<span class="class"><span class="keyword">lib</span>/<span class="title"
     </summary>
     
       <category term="固件" scheme="http://xdxd.love/tags/%E5%9B%BA%E4%BB%B6/"/>
-    
-      <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[逆向路由器固件之解包]]></title>
-    <link href="http://xdxd.love/2015/08/24/%E9%80%86%E5%90%91%E8%B7%AF%E7%94%B1%E5%99%A8%E5%9B%BA%E4%BB%B6%E4%B9%8B%E8%A7%A3%E5%8C%85/"/>
-    <id>http://xdxd.love/2015/08/24/逆向路由器固件之解包/</id>
-    <published>2015-08-24T03:31:54.000Z</published>
-    <updated>2015-11-24T03:27:38.000Z</updated>
-    <content type="html"><![CDATA[<p>这个系列的文章以逆向路由器固件的方式来挖掘路由器中存在的漏洞。本篇文章主要以介绍解包固件工具为主。文中演示用的固件可以在这里<a href="http://www.tp-link.com/resources/software/TL-WR841N_V8_130506.zip" target="_blank" rel="external">下载</a>。由于针对设备的攻击越来越多，很多厂商把不提供固件下载作为一种安全策略。所有有些时候只能通过物理的方式从设备中导出固件。后续的文章中会介绍相关技术。</p>
-<p>##通用的linux RE工具</p>
-<p><a href="http://linux.die.net/man/1/file" target="_blank" rel="external">file</a> — 用来检测是否是有效的文件和文件类型<br><a href="http://www.freebsd.org/cgi/man.cgi?query=hexdump&amp;sektion=1" target="_blank" rel="external">hexdump</a> —16进制导出工具<br><a href="http://unixhelp.ed.ac.uk/CGI/man-cgi?strings" target="_blank" rel="external">strings</a> 跟hexdump类似但是可以以可读的形式展示<br><a href="http://linux.die.net/man/1/dd" target="_blank" rel="external">dd</a> — 从二进制文件中挖掘数据<br><a href="http://www.manpagez.com/man/1/lzma/" target="_blank" rel="external">lzma</a> — 解压LZMA文件</p>
-<p>##第三方工具</p>
-<p><a href="http://binwalk.org/" target="_blank" rel="external">binwalk</a> — 通过固件文件头来分析文件和文件系统<br><a href="https://code.google.com/p/firmware-mod-kit/" target="_blank" rel="external">Fireware Mod Kit</a> — 自动化分析固件文件的一系列脚本<br><a href="http://www.tldp.org/HOWTO/SquashFS-HOWTO/mksqoverview.html" target="_blank" rel="external">squashfs-tools</a> — 可以通过apt-get squashfs-tools 来安装。用来处理squashfs的一系列工具</p>
-<p>##初步分析</p>
-<p>通常来说逆向工程的第一步就是使用上面列出的通用linux工具从要分析的文件中挖掘出尽量多的信息。通过这些信息来决定下一步进行的分析。比如使用hexdump发现sqsh意味着文件中有一个squashfs文件系统或者识别出了固件包中常用的boot loader U-Boot。</p>
-<p>#File Tool</p>
-<p>文件工具通常只是告诉我们这个文件是否是已知的文件类型，某些情况下可以识别出文件的种类，比如数据文件。</p>
-<p>使用file分析路由器固件如下：<br><img src="/images/Filetool.png" alt=""><br>file分析的结果可以告诉我们该文件是否是已知的类型，是否需要进一步分析。这里的结果我们可以看到仅仅是显示数据文件。</p>
-<p>#hexdump</p>
-<p>hexdump 工具可以让你分析文件中的每一个字节，这是非常有价值的。使用hexdump分析固件如下：</p>
-<p>上面的命令会把hexdump的结果写入到文件hexTP.txt中做进一步分析。-C选项是设置hexdump输出为hex+ASCII的方式，更便于阅读。输出的文件十分巨大，这个例子中我们可以从文件头的地方看到这个固件是属于TP-Link的，但是这个信息我们已经知道了。所以下一步就是尝试strings命令，看看是否可以获得更多的信息。<br><img src="/images/Hexdump.png" alt=""></p>
-<p>#strings</p>
-<p>作为初始的信息收集，strings可能是最常用和做好用的工具之一，因为它可以显示文件中所有可打印的数据。跟使用hexdump一样，最好把strings的结果写入文件分析，以免下次想要分析的时候还需要重复一遍strings命令。<br><img src="/images/stringsuboot.png" alt=""><br>从strings的结果中，我们发现了一些有趣的信息。</p>
-<p>这个信息就在strings结果文件开始的地方，稍微往后翻一下或者搜索一下文件系统常用的boot loader名字比如U-boot，就可以找到这些信息。现在我们已经知道这个嵌入式系统使用U-boot作为boot loader，而且知道了它的版本信息。</p>
-<p>#Binwalk</p>
-<p>binwalk会分析二进制文件中可能的固件头或者文件系统，然后输出识别出的每个部分以及对应的偏移量。使用binwalk分析固件如下：<br><img src="/images/Binwalkresults.png" alt=""><br>binwalk给出了大量有用的信息。从这些信息中可以得知这个固件是运行在MIPS架构上的一个linux系统。使用了squashfs文件系统。同时也再次确认boot loader是U-boot。关于binwalk的更详细的用法可以参考<a href="http://www.freebuf.com/tools/15266.html" target="_blank" rel="external">Binwalk：后门（固件）分析利器</a>。</p>
-<p>##提取文件系统</p>
-<p>终于到了最关键的一步，我们要从固件镜像中分离出文件系统的内容。因为是linux系统，可以预见一些标准的linux文件比如passwd和shadow可能会有一些敏感信息。</p>
-<p>很多人使用dd来分离文件系统的内容。使用binwalk和Firmware Modification Kit来解包最简单方便。</p>
-<p>使用binwalk的-e参数可以自动把固件镜像中的所有文件都解出来。</p>
-<pre><code>binwalk -<span class="keyword">e</span> &lt;<span class="keyword">input</span> <span class="keyword">file</span>&gt;
-</code></pre><p>使用Firmware Modification Kit中的extract-firmware.sh脚本会更加高效。如果你想重打包修改之后的固件的话可以使用build-firmware.sh来打包固件。这样可以节省大量时间自己解包和管理所有的偏移。</p>
-<p><a href="http://www.freebuf.com/articles/terminal/75524.html" target="_blank" rel="external">极路由安全设计架构分析</a>这里分析的极路由的那个固件包，使用FMK就可以一键解包。<br><img src="/images/fmk1.png" alt=""></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>这个系列的文章以逆向路由器固件的方式来挖掘路由器中存在的漏洞。本篇文章主要以介绍解包固件工具为主。文中演示用的固件可以在这里<a href="http://www.tp-link.com/resources/software/TL-WR841N_V8_130506.zip"]]>
-    </summary>
-    
-      <category term="解包" scheme="http://xdxd.love/tags/%E8%A7%A3%E5%8C%85/"/>
     
       <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
     
