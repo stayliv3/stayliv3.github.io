@@ -36,7 +36,7 @@ function getSearchKeys() {
 <meta property="og:image" content="http://xdxd.love/images/domxss3.png">
 <meta property="og:image" content="http://xdxd.love/images/dom2.jpg">
 <meta property="og:image" content="http://xdxd.love/images/dom3.jpg">
-<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+<meta property="og:updated_time" content="2015-12-29T09:07:37.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="几个DOM XSS案例分析">
 <meta name="twitter:description" content="案例一：
@@ -149,7 +149,28 @@ function getSearchKeys() {
 </code></pre><p>导致js执行。</p>
 <p><img src="/images/domxss3.png" alt=""></p>
 <p>调试js，异常时断点。可以观察keys的值，以及eval执行的字符串。</p>
-<p>案例二：</p>
+<p>修复代码：去掉了eval函数</p>
+<pre><code><span class="function"><span class="keyword">function</span> <span class="title">goPage</span>(<span class="params">keys</span>) </span>{
+        <span class="keyword">var</span> sk = combineKeys(keys);
+        <span class="built_in">window</span>.location.href = <span class="built_in">window</span>.location.protocol + <span class="string">"//"</span> + <span class="built_in">window</span>.location.host + <span class="built_in">window</span>.location.pathname + <span class="string">"?"</span> + sk
+    }
+    <span class="function"><span class="keyword">function</span> <span class="title">combineKeys</span>(<span class="params">keys</span>) </span>{
+        <span class="keyword">var</span> currSearch = <span class="built_in">window</span>.location.search;
+        <span class="keyword">if</span> (currSearch) {
+            currSearch = currSearch.slice(<span class="number">1</span>) + <span class="string">"&amp;"</span>;
+            <span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> keys)
+                <span class="keyword">if</span> (currSearch.indexOf(key + <span class="string">"="</span>) &gt;= <span class="number">0</span>) {
+                    <span class="keyword">var</span> reg = <span class="keyword">new</span> <span class="built_in">RegExp</span>(key + <span class="string">"=(.|\n)*?&amp;"</span>);
+                    currSearch = currSearch.replace(reg, key + <span class="string">"="</span> + keys[key] + <span class="string">"&amp;"</span>)
+                } <span class="keyword">else</span>
+                    currSearch = currSearch + key + <span class="string">"="</span> + keys[key] + <span class="string">"&amp;"</span>;
+            currSearch = currSearch.slice(<span class="number">0</span>, -<span class="number">1</span>)
+        } <span class="keyword">else</span>
+            <span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> keys)
+                currSearch = currSearch + key + <span class="string">"="</span> + keys[key];
+        <span class="keyword">return</span> currSearch
+    }
+</code></pre><p>案例二：</p>
 <p><a href="https://url?fileName=111jpg&amp;cameraName=%3C/span%3E%3Cscript%3Ealert(1)%3C/script%3E%3C/span%3E" target="_blank" rel="external">https://url?fileName=111jpg&amp;cameraName=%3C/span%3E%3Cscript%3Ealert(1)%3C/script%3E%3C/span%3E</a>  触发。</p>
 <p>形式看起来像反射xss，但是搜索源码没有发现alert关键词。在script标签中，输入alert(1);111111这样执行到这里的时候会触发异常，使用chrome的调试工具的异常断点。</p>
 <p><img src="/images/dom2.jpg" alt=""></p>
