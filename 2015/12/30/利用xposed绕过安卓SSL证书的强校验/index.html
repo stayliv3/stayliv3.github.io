@@ -4,44 +4,24 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>腾达路由器登录绕过漏洞 | xd_xd&#39;s blog</title>
+    <title>利用xposed绕过安卓SSL证书的强校验 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description" content="#相关资料
-Tenda腾达某无线路由登陆密码绕过Tenda腾达某无线路由登陆密码绕过再续腾达路由命令执行获取ADSL账号密码
-#记录
-去某咖啡馆坐坐。连上wifi，习惯性的看一下ip，访问一下路由器。直接跳到了。配置页面。
-
-扫了一下目录发现，是有login页面的。查了一下漏洞，也没发现本地有cookie。就这么直接绕过了。好坑爹。
-进一步发现密码虽然是星号了。但是把input属性改成text直接">
+    <meta name="description" content="什么是SSL pinninghttps协议验证服务器身份的方式通常有三种，一是根据浏览器或者说操作系统（Android）自带的证书链；二是使用自签名证书；三是自签名证书加上SSL Pinning特性。第一种需要到知名证书机构购买证书，需要一定预算。第二种多见于内网使用。第三种在是安全性最高的，但是需要浏览器插件或客户端使用了SSL Pinning特性。Android应用程序在使用https协议时也">
 <meta property="og:type" content="article">
-<meta property="og:title" content="腾达路由器登录绕过漏洞">
-<meta property="og:url" content="http://xdxd.love/2015/05/25/腾达路由器登录绕过漏洞/index.html">
+<meta property="og:title" content="利用xposed绕过安卓SSL证书的强校验">
+<meta property="og:url" content="http://xdxd.love/2015/12/30/利用xposed绕过安卓SSL证书的强校验/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="#相关资料
-Tenda腾达某无线路由登陆密码绕过Tenda腾达某无线路由登陆密码绕过再续腾达路由命令执行获取ADSL账号密码
-#记录
-去某咖啡馆坐坐。连上wifi，习惯性的看一下ip，访问一下路由器。直接跳到了。配置页面。
-
-扫了一下目录发现，是有login页面的。查了一下漏洞，也没发现本地有cookie。就这么直接绕过了。好坑爹。
-进一步发现密码虽然是星号了。但是把input属性改成text直接">
-<meta property="og:image" content="http://xdxd.love/images/tengda1.png">
-<meta property="og:image" content="http://xdxd.love/images/tengda2.png">
-<meta property="og:image" content="http://xdxd.love/images/tengda3.png">
-<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+<meta property="og:description" content="什么是SSL pinninghttps协议验证服务器身份的方式通常有三种，一是根据浏览器或者说操作系统（Android）自带的证书链；二是使用自签名证书；三是自签名证书加上SSL Pinning特性。第一种需要到知名证书机构购买证书，需要一定预算。第二种多见于内网使用。第三种在是安全性最高的，但是需要浏览器插件或客户端使用了SSL Pinning特性。Android应用程序在使用https协议时也">
+<meta property="og:image" content="http://xdxd.love/images/xposed1.png">
+<meta property="og:updated_time" content="2015-12-30T03:03:50.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="腾达路由器登录绕过漏洞">
-<meta name="twitter:description" content="#相关资料
-Tenda腾达某无线路由登陆密码绕过Tenda腾达某无线路由登陆密码绕过再续腾达路由命令执行获取ADSL账号密码
-#记录
-去某咖啡馆坐坐。连上wifi，习惯性的看一下ip，访问一下路由器。直接跳到了。配置页面。
-
-扫了一下目录发现，是有login页面的。查了一下漏洞，也没发现本地有cookie。就这么直接绕过了。好坑爹。
-进一步发现密码虽然是星号了。但是把input属性改成text直接">
+<meta name="twitter:title" content="利用xposed绕过安卓SSL证书的强校验">
+<meta name="twitter:description" content="什么是SSL pinninghttps协议验证服务器身份的方式通常有三种，一是根据浏览器或者说操作系统（Android）自带的证书链；二是使用自签名证书；三是自签名证书加上SSL Pinning特性。第一种需要到知名证书机构购买证书，需要一定预算。第二种多见于内网使用。第三种在是安全性最高的，但是需要浏览器插件或客户端使用了SSL Pinning特性。Android应用程序在使用https协议时也">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -101,14 +81,14 @@ Tenda腾达某无线路由登陆密码绕过Tenda腾达某无线路由登陆密�
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/05/25/腾达路由器登录绕过漏洞/" title="腾达路由器登录绕过漏洞" itemprop="url">腾达路由器登录绕过漏洞</a>
+      <a href="/2015/12/30/利用xposed绕过安卓SSL证书的强校验/" title="利用xposed绕过安卓SSL证书的强校验" itemprop="url">利用xposed绕过安卓SSL证书的强校验</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2015-05-25T07:49:37.000Z" itemprop="datePublished"> 发表于 May 25 2015</time>
+    <time datetime="2015-12-30T02:51:31.000Z" itemprop="datePublished"> 发表于 Dec 30 2015</time>
     
   </p>
 </header>
@@ -117,24 +97,35 @@ Tenda腾达某无线路由登陆密码绕过Tenda腾达某无线路由登陆密�
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#什么是SSL_pinning"><span class="toc-number">1.</span> <span class="toc-text">什么是SSL pinning</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JustTrustMe"><span class="toc-number">2.</span> <span class="toc-text">JustTrustMe</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">3.</span> <span class="toc-text">参考资料</span></a></li></ol>
 		
 		</div>
 		
-		<p>#相关资料</p>
-<p><a href="http://wooyun.org/bugs/wooyun-2010-017767" target="_blank" rel="external">Tenda腾达某无线路由登陆密码绕过</a><br><a href="http://wooyun.org/bugs/wooyun-2010-018029" target="_blank" rel="external">Tenda腾达某无线路由登陆密码绕过再续</a><br><a href="http://wooyun.org/bugs/wooyun-2010-016771" target="_blank" rel="external">腾达路由命令执行获取ADSL账号密码</a></p>
-<p>#记录</p>
-<p>去某咖啡馆坐坐。连上wifi，习惯性的看一下ip，访问一下路由器。直接跳到了。配置页面。</p>
-<p><img src="/images/tengda1.png" alt=""></p>
-<p>扫了一下目录发现，是有login页面的。查了一下漏洞，也没发现本地有cookie。就这么直接绕过了。好坑爹。</p>
-<p><img src="/images/tengda2.png" alt=""><br>进一步发现密码虽然是星号了。但是把input属性改成text直接就明文显示了。搜了一下，找到密码写在js里。</p>
-<p><img src="/images/tengda3.png" alt=""></p>
-<p>这样就可以完全的控制这个路由器了。</p>
+		<h1 id="什么是SSL_pinning">什么是SSL pinning</h1><p>https协议验证服务器身份的方式通常有三种，一是根据浏览器或者说操作系统（Android）自带的证书链；二是使用自签名证书；三是自签名证书加上SSL Pinning特性。第一种需要到知名证书机构购买证书，需要一定预算。第二种多见于内网使用。第三种在是安全性最高的，但是需要浏览器插件或客户端使用了SSL Pinning特性。<br>Android应用程序在使用https协议时也使用类似的3种方式验证服务器身份，分别是系统证书库、自带证书库、自带证书库 + SSL Pinning特性。<br>所以SSL Pinning，即SSL证书绑定，是验证服务器身份的一种方式，是在https协议建立通信时增加的代码逻辑，它通过自己的方式验证服务器身份，然后决定通信是否继续下去。它唯一指定了服务器的身份，所以安全性较高。</p>
+<p><img src="/images/xposed1.png" alt=""></p>
+<h1 id="JustTrustMe">JustTrustMe</h1><p>当客户端使用了SSL pinning的时候，手机导入burpsuite证书的方式也无法抓到通信包。除了修改apk验证证书逻辑重新打包的方式外，最简单的方法是使用xposed相关模块。</p>
+<p>xposed安装方法：</p>
+<p><a href="http://repo.xposed.info/module/de.robv.android.xposed.installer" target="_blank" rel="external">下载xposed安装包</a></p>
+<p>安装xposed框架到手机：</p>
+<pre><code>adb install <span class="tag">&lt;<span class="title">xposed-installer-you-just-downloaded</span>&gt;</span>.apk
+</code></pre><p>安装并启用<a href="https://github.com/Fuzion24/JustTrustMe" target="_blank" rel="external">justtrustme模块</a></p>
+<p>重启手机就可以抓到之前抓不到的https通信了。</p>
+<h1 id="参考资料">参考资料</h1><p><a href="http://www.nsfocus.com.cn/upload/contents/2015/07/2015_07241353337959.pdf" target="_blank" rel="external">http://www.nsfocus.com.cn/upload/contents/2015/07/2015_07241353337959.pdf</a></p>
   
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
 
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/移动安全/">移动安全</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/xposed/">xposed</a>
+  </div>
 
 </div>
 
@@ -142,7 +133,7 @@ Tenda腾达某无线路由登陆密码绕过Tenda腾达某无线路由登陆密�
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2015/05/25/腾达路由器登录绕过漏洞/" data-title="腾达路由器登录绕过漏洞 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
+	  <div data-url="http://xdxd.love/2015/12/30/利用xposed绕过安卓SSL证书的强校验/" data-title="利用xposed绕过安卓SSL证书的强校验 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -155,19 +146,11 @@ Tenda腾达某无线路由登陆密码绕过Tenda腾达某无线路由登陆密�
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2015/05/27/docker-kali/" title="mac使用kali Docker Images">
-  <strong>上一篇：</strong><br/>
-  <span>
-  mac使用kali Docker Images</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2015/05/20/java本地文件读取的小技巧/"  title="java本地文件读取的小技巧">
+<a href="/2015/12/24/多步csrf漏洞场景及其利用/"  title="多步csrf漏洞场景及其利用">
  <strong>下一篇：</strong><br/> 
- <span>java本地文件读取的小技巧
+ <span>多步csrf漏洞场景及其利用
 </span>
 </a>
 </div>
@@ -176,7 +159,7 @@ Tenda腾达某无线路由登陆密码绕过Tenda腾达某无线路由登陆密�
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/05/25/腾达路由器登录绕过漏洞/" data-title="腾达路由器登录绕过漏洞" data-url="http://xdxd.love/2015/05/25/腾达路由器登录绕过漏洞/"></div>
+	<div class="ds-thread" data-thread-key="2015/12/30/利用xposed绕过安卓SSL证书的强校验/" data-title="利用xposed绕过安卓SSL证书的强校验" data-url="http://xdxd.love/2015/12/30/利用xposed绕过安卓SSL证书的强校验/"></div>
 </section>
 
 
@@ -186,7 +169,7 @@ Tenda腾达某无线路由登陆密码绕过Tenda腾达某无线路由登陆密�
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#什么是SSL_pinning"><span class="toc-number">1.</span> <span class="toc-text">什么是SSL pinning</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JustTrustMe"><span class="toc-number">2.</span> <span class="toc-text">JustTrustMe</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">3.</span> <span class="toc-text">参考资料</span></a></li></ol>
  
   </div>
 
