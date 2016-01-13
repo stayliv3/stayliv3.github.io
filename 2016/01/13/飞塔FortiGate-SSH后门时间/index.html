@@ -4,38 +4,41 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>古典密码的误用之ESPCMS加密函数 | xd_xd&#39;s blog</title>
+    <title>飞塔FortiGate SSH后门时间 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description" content="#古典密码知识参考资料《图解密码学》
-凯撒密码：csesar cipher
-#经典案例值ESPCMS
-ESPCMS最新 V5.8.14.03.03 UTF8 正式版暴力注入EspCMS最新版可伪造任意帐户登陆（简单利用代码）
-旧版本加解密函数如下：
-function eccode($string, $operation = &apos;DECODE&apos;, $key = &apos;@LFK24s224%@safS3s%">
+    <meta name="description" content="参考资料飞塔系统存在SSH后门 影响版本 4.0 – 5.0.7！！
+飞塔SSH后门 进一步利用方法
+飞塔SSH后门 4900台机器样本测试报告
+SSH Backdoor for FortiGate OS Version 4.x up to 5.0.7
+zoomeye.org
+思考随着全网数据的平台越来越多，shodan，zoomeye，censys等。一旦有通用性的漏洞爆出来，很快就会对漏洞对全">
 <meta property="og:type" content="article">
-<meta property="og:title" content="古典密码的误用之ESPCMS加密函数">
-<meta property="og:url" content="http://xdxd.love/2015/07/13/古典密码的误用之ESPCMS加密函数/index.html">
+<meta property="og:title" content="飞塔FortiGate SSH后门时间">
+<meta property="og:url" content="http://xdxd.love/2016/01/13/飞塔FortiGate-SSH后门时间/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="#古典密码知识参考资料《图解密码学》
-凯撒密码：csesar cipher
-#经典案例值ESPCMS
-ESPCMS最新 V5.8.14.03.03 UTF8 正式版暴力注入EspCMS最新版可伪造任意帐户登陆（简单利用代码）
-旧版本加解密函数如下：
-function eccode($string, $operation = &apos;DECODE&apos;, $key = &apos;@LFK24s224%@safS3s%">
-<meta property="og:updated_time" content="2015-12-03T01:39:13.000Z">
+<meta property="og:description" content="参考资料飞塔系统存在SSH后门 影响版本 4.0 – 5.0.7！！
+飞塔SSH后门 进一步利用方法
+飞塔SSH后门 4900台机器样本测试报告
+SSH Backdoor for FortiGate OS Version 4.x up to 5.0.7
+zoomeye.org
+思考随着全网数据的平台越来越多，shodan，zoomeye，censys等。一旦有通用性的漏洞爆出来，很快就会对漏洞对全">
+<meta property="og:image" content="http://xdxd.love/images/fortygate1.png">
+<meta property="og:image" content="http://xdxd.love/images/fortygate2.png">
+<meta property="og:image" content="http://xdxd.love/images/fortygate3.png">
+<meta property="og:updated_time" content="2016-01-13T03:32:12.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="古典密码的误用之ESPCMS加密函数">
-<meta name="twitter:description" content="#古典密码知识参考资料《图解密码学》
-凯撒密码：csesar cipher
-#经典案例值ESPCMS
-ESPCMS最新 V5.8.14.03.03 UTF8 正式版暴力注入EspCMS最新版可伪造任意帐户登陆（简单利用代码）
-旧版本加解密函数如下：
-function eccode($string, $operation = &apos;DECODE&apos;, $key = &apos;@LFK24s224%@safS3s%">
+<meta name="twitter:title" content="飞塔FortiGate SSH后门时间">
+<meta name="twitter:description" content="参考资料飞塔系统存在SSH后门 影响版本 4.0 – 5.0.7！！
+飞塔SSH后门 进一步利用方法
+飞塔SSH后门 4900台机器样本测试报告
+SSH Backdoor for FortiGate OS Version 4.x up to 5.0.7
+zoomeye.org
+思考随着全网数据的平台越来越多，shodan，zoomeye，censys等。一旦有通用性的漏洞爆出来，很快就会对漏洞对全">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -95,14 +98,14 @@ function eccode($string, $operation = &apos;DECODE&apos;, $key = &apos;@LFK24s22
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/07/13/古典密码的误用之ESPCMS加密函数/" title="古典密码的误用之ESPCMS加密函数" itemprop="url">古典密码的误用之ESPCMS加密函数</a>
+      <a href="/2016/01/13/飞塔FortiGate-SSH后门时间/" title="飞塔FortiGate SSH后门时间" itemprop="url">飞塔FortiGate SSH后门时间</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2015-07-13T09:15:49.000Z" itemprop="datePublished"> 发表于 Jul 13 2015</time>
+    <time datetime="2016-01-13T02:35:51.000Z" itemprop="datePublished"> 发表于 Jan 13 2016</time>
     
   </p>
 </header>
@@ -111,76 +114,29 @@ function eccode($string, $operation = &apos;DECODE&apos;, $key = &apos;@LFK24s22
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#思考"><span class="toc-number">2.</span> <span class="toc-text">思考</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#测试"><span class="toc-number">3.</span> <span class="toc-text">测试</span></a></li></ol>
 		
 		</div>
 		
-		<p>#古典密码知识<br>参考资料《图解密码学》</p>
-<p>凯撒密码：csesar cipher</p>
-<p>#经典案例值ESPCMS</p>
-<p><a href="http://www.wooyun.org/bugs/wooyun-2010-062528" target="_blank" rel="external">ESPCMS最新 V5.8.14.03.03 UTF8 正式版暴力注入</a><br><a href="http://www.wooyun.org/bugs/wooyun-2014-053577" target="_blank" rel="external">EspCMS最新版可伪造任意帐户登陆（简单利用代码）</a></p>
-<p>旧版本加解密函数如下：</p>
-<pre><code><span class="keyword">function</span> eccode(<span class="variable">$string</span>, <span class="variable">$operation</span> = <span class="string">'DECODE'</span>, <span class="variable">$key</span> = <span class="string">'@LFK24s224%@safS3s%1f%'</span>, <span class="variable">$mcrype</span> = <span class="literal">true</span>) {
-
-    <span class="variable">$result</span> = null;
-
-    if (<span class="variable">$operation</span> == <span class="string">'ENCODE'</span>) {
-
-        for (<span class="variable">$i</span> = <span class="number">0</span>; <span class="variable">$i</span> &lt; strlen(<span class="variable">$string</span>); <span class="variable">$i</span>++) {
-
-            <span class="variable">$char</span> = substr(<span class="variable">$string</span>, <span class="variable">$i</span>, <span class="number">1</span>);
-
-            <span class="variable">$keychar</span> = substr(<span class="variable">$key</span>, (<span class="variable">$i</span> % strlen(<span class="variable">$key</span>)) - <span class="number">1</span>, <span class="number">1</span>);
-
-            <span class="variable">$char</span> = chr(ord(<span class="variable">$char</span>) + ord(<span class="variable">$keychar</span>)); //看到这应该懂了
-
-            <span class="variable">$result</span>.=<span class="variable">$char</span>;
-
-        }
-
-        <span class="variable">$result</span> = base64_encode(<span class="variable">$result</span>);
-
-        <span class="variable">$result</span> = str_replace(array(<span class="string">'+'</span>, <span class="string">'/'</span>, <span class="string">'='</span>), array(<span class="string">'-'</span>, <span class="string">'_'</span>, <span class="string">''</span>), <span class="variable">$result</span>);
-
-    } elseif (<span class="variable">$operation</span> == <span class="string">'DECODE'</span>) {
-
-        <span class="variable">$data</span> = str_replace(array(<span class="string">'-'</span>, <span class="string">'_'</span>), array(<span class="string">'+'</span>, <span class="string">'/'</span>), <span class="variable">$string</span>);
-
-        <span class="variable">$mod4</span> = strlen(<span class="variable">$data</span>) % <span class="number">4</span>;
-
-        if (<span class="variable">$mod4</span>) {
-
-            <span class="variable">$data</span> .= substr(<span class="string">'===='</span>, <span class="variable">$mod4</span>);
-
-        }
-
-        <span class="variable">$string</span> = base64_decode(<span class="variable">$data</span>);
-
-        for (<span class="variable">$i</span> = <span class="number">0</span>; <span class="variable">$i</span> &lt; strlen(<span class="variable">$string</span>); <span class="variable">$i</span>++) {
-
-            <span class="variable">$char</span> = substr(<span class="variable">$string</span>, <span class="variable">$i</span>, <span class="number">1</span>);
-
-            <span class="variable">$keychar</span> = substr(<span class="variable">$key</span>, (<span class="variable">$i</span> % strlen(<span class="variable">$key</span>)) - <span class="number">1</span>, <span class="number">1</span>);
-
-            <span class="variable">$char</span> = chr(ord(<span class="variable">$char</span>) - ord(<span class="variable">$keychar</span>));
-
-            <span class="variable">$result</span>.=<span class="variable">$char</span>;
-
-        }
-
-    }
-
-    return <span class="variable">$result</span>;
-
-}
-</code></pre>  
+		<h1 id="参考资料">参考资料</h1><p><a href="http://tools.pwn.ren/2016/01/12/ssh-backdoor-for-fortigate-os-version-4-up-to-5-0-7.html" target="_blank" rel="external">飞塔系统存在SSH后门 影响版本 4.0 – 5.0.7！！</a></p>
+<p><a href="http://tools.pwn.ren/2016/01/12/ssh-backdoor-for-fortigate-os-version-4-x-up-to-5-0-7%E8%BF%9B%E4%B8%80%E6%AD%A5%E5%88%A9%E7%94%A8-html.html" target="_blank" rel="external">飞塔SSH后门 进一步利用方法</a></p>
+<p><a href="http://tools.pwn.ren/2016/01/12/%E9%9A%8F%E6%9C%BA4900%E5%8F%B0%E6%9C%BA%E5%99%A8%E6%A0%B7%E6%9C%AC%E6%B5%8B%E8%AF%95%E6%8A%A5%E5%91%8A.html" target="_blank" rel="external">飞塔SSH后门 4900台机器样本测试报告</a></p>
+<p><a href="http://seclists.org/fulldisclosure/2016/Jan/26" target="_blank" rel="external">SSH Backdoor for FortiGate OS Version 4.x up to 5.0.7</a></p>
+<p><a href="https://www.zoomeye.org/search?q=FortiSSH%20country:Thailand&amp;t=host" target="_blank" rel="external">zoomeye.org</a></p>
+<h1 id="思考">思考</h1><p>随着全网数据的平台越来越多，shodan，zoomeye，censys等。一旦有通用性的漏洞爆出来，很快就会对漏洞对全球的影响有了一个评估。如果平时对数据分析全面，可以迅速利用这种漏洞渗透目标。过两天应该会有对该漏洞详细的技术分析出现。</p>
+<p>对于这种事总是细思极恐的感觉。比较有意思的是从安全事件中对安全防御的思考。余弦的微博：</p>
+<p><img src="/images/fortygate1.png" alt=""></p>
+<p>网路游侠微博：<br><img src="/images/fortygate2.png" alt=""></p>
+<p>从技术角度来说，一个漏洞就是一个漏洞，一个可能导致风险的问题。可是像防火墙后门这种漏洞，可以直接渗透内网，而且存在这么多年，会不会有人利用过，回答可能是肯定的。虽然做防御的时候肯定要考虑如果别人进来了怎么办，可是有时候进来可能很简单，人家是有核武器的。</p>
+<h1 id="测试">测试</h1><p><img src="/images/fortygate3.png" alt=""></p>
+  
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/加密解密/">加密解密</a>
+  <a class="article-category-link" href="/categories/黑盒测试/">黑盒测试</a>
 </div>
 
 
@@ -190,7 +146,7 @@ function eccode($string, $operation = &apos;DECODE&apos;, $key = &apos;@LFK24s22
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2015/07/13/古典密码的误用之ESPCMS加密函数/" data-title="古典密码的误用之ESPCMS加密函数 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
+	  <div data-url="http://xdxd.love/2016/01/13/飞塔FortiGate-SSH后门时间/" data-title="飞塔FortiGate SSH后门时间 | xd_xd&#39;s blog" data-tsina="null" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -203,19 +159,11 @@ function eccode($string, $operation = &apos;DECODE&apos;, $key = &apos;@LFK24s22
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2015/08/06/hackrf-初探/" title="hackrf 初探">
-  <strong>上一篇：</strong><br/>
-  <span>
-  hackrf 初探</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2015/07/08/AirLive摄像机命令注入漏洞/"  title="AirLive摄像机命令注入漏洞">
+<a href="/2016/01/13/保险箱安全分析/"  title="保险箱安全分析">
  <strong>下一篇：</strong><br/> 
- <span>AirLive摄像机命令注入漏洞
+ <span>保险箱安全分析
 </span>
 </a>
 </div>
@@ -224,7 +172,7 @@ function eccode($string, $operation = &apos;DECODE&apos;, $key = &apos;@LFK24s22
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/07/13/古典密码的误用之ESPCMS加密函数/" data-title="古典密码的误用之ESPCMS加密函数" data-url="http://xdxd.love/2015/07/13/古典密码的误用之ESPCMS加密函数/"></div>
+	<div class="ds-thread" data-thread-key="2016/01/13/飞塔FortiGate-SSH后门时间/" data-title="飞塔FortiGate SSH后门时间" data-url="http://xdxd.love/2016/01/13/飞塔FortiGate-SSH后门时间/"></div>
 </section>
 
 
@@ -234,7 +182,7 @@ function eccode($string, $operation = &apos;DECODE&apos;, $key = &apos;@LFK24s22
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#思考"><span class="toc-number">2.</span> <span class="toc-text">思考</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#测试"><span class="toc-number">3.</span> <span class="toc-text">测试</span></a></li></ol>
  
   </div>
 
