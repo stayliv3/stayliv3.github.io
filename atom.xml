@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-01-11T08:47:57.000Z</updated>
+  <updated>2016-01-13T01:59:05.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -15,11 +15,63 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title><![CDATA[保险箱安全分析]]></title>
+    <link href="http://xdxd.love/2016/01/13/%E4%BF%9D%E9%99%A9%E7%AE%B1%E5%AE%89%E5%85%A8%E5%88%86%E6%9E%90/"/>
+    <id>http://xdxd.love/2016/01/13/保险箱安全分析/</id>
+    <published>2016-01-13T01:50:05.000Z</published>
+    <updated>2016-01-13T01:59:05.000Z</updated>
+    <content type="html"><![CDATA[<p>参加freebuf的FIT大会，黑客叔叔演示了现场破解保险箱。他说道了有比较多的方法可以破解保险箱，比如可以设置多组密码，如果只设置了一组的话，其他组的默认密码还是123456.可以使用树莓派模拟信号秒开保险箱，备用钥匙安全性很低等。</p>
+<p>想起之前翻译的一篇国外的博客。Freebuf地址<a href="http://www.freebuf.com/news/special/38727.html" target="_blank" rel="external">走进科学：酒店保险箱真的保险么？</a></p>
+<p>本文是FreeBuf《走进科学》系列最新力作，翻译自国外安全组织G DATA SecurityLabs一篇针对酒店保险箱的分析报告。他们的研究对象是一款产自中国并且以很多不同的品牌出售的保险柜（made in China and is sold under many different brands）。相信读完本文之后大家会对酒店保险箱的安全性有一些新的认识。</p>
+<p>保险箱介绍</p>
+<p>下图中是一个标准的酒店保险箱。外壳是钢制的，自带电池，即使断电依然可以工作。通常打开保险箱的方式有两种，使用PIN码(4到10位的数字)或者刷信用卡。此外使用应急钥匙也可以打开保险箱。只是顾客是拿不到的，只有酒店的管理者才有这把钥匙。主要是当顾客忘记PIN码，电池没电又停电或者顾客离开酒店但是没有打开保险箱的情况下使用。</p>
+<p><img src="http://image.3001.net/images/20140721/1405934456300.png!small" alt=""><br>图中金色的铁片遮盖了钥匙孔。解开这两个螺丝，就可以看到插应急钥匙的地方。视频演示1（Youtube)：正常情况下打开和锁定保险柜。<br>保险箱工作原理</p>
+<p>保险箱由3个部分组成。钢制的箱体本身，前输入面板–包括PIN码输入和信用卡读卡器，位于门后的控制系统。<br><img src="http://image.3001.net/images/20140721/14059344754543.png!small" alt=""><br>为了更好的理解内部结构，我们把门拆开看一下。</p>
+<p><img src="http://image.3001.net/images/20140721/14059345065928.png!small" alt=""></p>
+<p><img src="http://image.3001.net/images/20140721/1405934503295.png!small" alt=""></p>
+<p>仔细看一下控制系统就会发现插应急钥匙的钥匙孔。还有用于开门的小马达和一块电路板。当用户输入PIN码的时候，电路板会检查PIN码是否正确。如果正确，则会启动马达。演示视频2（Youtube）。</p>
+<p>Hacking 1:打开保险箱</p>
+<p>超级管理密码：</p>
+<p>最简单的方法是使用超级管理密码。使用超级管理密码可以配置保险箱，查看保险箱使用记录，当然也能打开保险箱。默认的超级密码是一串简单的数字序列。启动超级密码输入的方式是快速按两次#号键。当然，超级密码是可以被修改的。但是在我们的测试过程中发现大量的保险箱都是默认的超级密码。</p>
+<p>开锁器</p>
+<p>应急钥匙是一种机械的开门方式。开起来钥匙还是挺复杂的。</p>
+<p><img src="http://image.3001.net/images/20140721/14059345965151.png!small" alt=""></p>
+<p><img src="http://image.3001.net/images/20140721/14059345972381.png!small" alt=""></p>
+<p>图中可以看到钥匙有4个部分。对于我们这种初学者，这种程度的钥匙还是挺复杂的。不过幸运的是制造商帮了我们一个忙。钥匙的四个面中，真正起作用的只有一个面。(这是吐槽中国特色的节奏么。。）</p>
+<p>演示视频3：不用钥匙，手动开锁。<br>人工短路，破坏保险箱逻辑</p>
+<p>第三种hack的方式是通过人工短路来模拟保险箱打开的信号。为了理解这种技术的原理，我们先看一下保险箱如何检测门是否打开的。</p>
+<p><img src="http://image.3001.net/images/20140721/1405934653165.png!small" alt=""></p>
+<p><img src="http://image.3001.net/images/20140721/14059346582376.png!small" alt=""></p>
+<p>通过上图可以看到，门开的时候会按压一个绿色的连接器，在电路板上形成一个短路信号。我们测试的攻击场景是这样的：</p>
+<p>1.关闭保险箱。<br>2.在保险箱的控制系统上引起一个短路，让保险箱认为自己的门打开了。(事实上门依然关闭的）<br>3.这时候，保险箱显示的不是等待打开保险箱的PIN码，而是变成等待输入一个新的PIN码用来关闭保险箱。<br>4.我们输入一个新的PIN码。<br>5.然后保险箱会尝试关闭门。(事实上门已经是关闭的了）<br>6.新输入的PIN码可以用来打开保险箱。<br>这种方式的难点在于如何从外部引起保险箱的短路。我们从固定保险箱logo的螺丝孔插入了一根铁丝。在我们的测试中，使用如此简单的工具，大概30分钟左右，可以成功引起保险箱短路。专业的窃贼的话，可以利用更加合适的工具，应该缩短这个时间。<br>Hacking 2:使用信用卡的风险<br>前面介绍过，保险箱也可以使用信用卡来锁定和打开。经过我们测试发现，这个场景中只能使用信用卡，其他的磁卡是不行的。系统会检查所用的磁卡是否是信用卡。<br><img src="http://image.3001.net/images/20140721/14059346854833.png!small" alt=""></p>
+<p>信用卡信息可以被窃取么</p>
+<p>我们经常看到有犯罪分子在ATM机上加装设备，获取银行卡信息。如下图所示就是常用来窃取银行卡信息的设备。</p>
+<p><img src="http://image.3001.net/images/20140721/14059347247265.jpg!small" alt=""></p>
+<p><img src="http://image.3001.net/images/20140721/14059347426365.jpg!small" alt=""></p>
+<p>在我们的例子中，实现窃取信用卡信息也不困难。我们使用Arduino Uno board来完成了这个任务。</p>
+<p><img src="http://image.3001.net/images/20140721/14059347629772.png!small" alt=""></p>
+<p>如图所示，并不需要多少空间就可以装下这个自制的设备。通过这个装置，可以读取到信用卡的号码，所有人的名字以及卡片的过期时间。下面是读取到的一张信用卡的截图。</p>
+<p><img src="http://image.3001.net/images/20140721/14059347747487.png!small" alt=""></p>
+<p>结论：</p>
+<p>经过以上的分析可以看出，我们分析的这一款保险箱安全级别并不是特别高。我们可以轻易的使用几种不同的方式来打开它。对于酒店的管理者，建议修改保险柜的默认超级密码。对于用户，我们建议不要过分依赖酒店的保险箱。而且尽量不要使用信用卡来开关保险箱，这样存在信用卡信息别盗的风险。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>参加freebuf的FIT大会，黑客叔叔演示了现场破解保险箱。他说道了有比较多的方法可以破解保险箱，比如可以设置多组密码，如果只设置了一组的话，其他组的默认密码还是123456.可以使用树莓派模拟信号秒开保险箱，备用钥匙安全性很低等。</p>
+<p>想起之前翻译的一篇国外的]]>
+    </summary>
+    
+      <category term="保险箱" scheme="http://xdxd.love/tags/%E4%BF%9D%E9%99%A9%E7%AE%B1/"/>
+    
+      <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+    
+  </entry>
+  
+  <entry>
     <title><![CDATA[无状态协议中认证状态保持方案的一些思考]]></title>
     <link href="http://xdxd.love/2016/01/07/%E6%97%A0%E7%8A%B6%E6%80%81%E5%8D%8F%E8%AE%AE%E4%B8%AD%E8%AE%A4%E8%AF%81%E7%8A%B6%E6%80%81%E4%BF%9D%E6%8C%81%E6%96%B9%E6%A1%88%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83/"/>
     <id>http://xdxd.love/2016/01/07/无状态协议中认证状态保持方案的一些思考/</id>
     <published>2016-01-07T03:12:42.000Z</published>
-    <updated>2016-01-11T08:47:57.000Z</updated>
+    <updated>2016-01-11T09:03:14.000Z</updated>
     <content type="html"><![CDATA[<p>给文章起了一个高大上的名字，主要是想写一下对于http协议中用户登陆之后，如何进行用户身份跟踪，以及不同的实现方案可能存在的安全问题。</p>
 <h1 id="何为登陆">何为登陆</h1><p><a href="https://en.wikipedia.org/wiki/Login" target="_blank" rel="external">login维基百科</a>上解释是一个用户通过认证获得一个系统的访问权限的过程。感觉更多的是一种业务上的描述，在讨论安全架构设计的时候都是使用identity,authentication等词语描述。</p>
 <h1 id="何为认证_authentication">何为认证 authentication</h1><h1 id="不同的认证方式">不同的认证方式</h1><p>认证有不少协议，参考<a href="https://en.wikipedia.org/wiki/Basic_access_authentication" target="_blank" rel="external">Basic access authentication</a></p>
@@ -1079,39 +1131,6 @@ id=<span]]>
     <summary type="html">
     <![CDATA[<p>上一篇讲到通过静态分析发现SQL注入漏洞。很多情况下动态分析会方便调试复杂的应用。所以这一篇中会讨论使用qemu和ida搭建动态调试环境的内容。</p>
 <p>我们的目标程序TEW-654TR是小端的MIPS程序，所以要想在我们的主机上执行这个二进制程序的话需要使用模拟器。]]>
-    </summary>
-    
-      <category term="qemu" scheme="http://xdxd.love/tags/qemu/"/>
-    
-      <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[逆向路由器固件之四 qemu仿真环境运行固件应用]]></title>
-    <link href="http://xdxd.love/2015/09/01/%E9%80%86%E5%90%91%E8%B7%AF%E7%94%B1%E5%99%A8%E5%9B%BA%E4%BB%B6%E4%B9%8B%E5%9B%9B-qemu%E4%BB%BF%E7%9C%9F%E7%8E%AF%E5%A2%83%E8%BF%90%E8%A1%8C%E5%9B%BA%E4%BB%B6%E5%BA%94%E7%94%A8/"/>
-    <id>http://xdxd.love/2015/09/01/逆向路由器固件之四-qemu仿真环境运行固件应用/</id>
-    <published>2015-09-01T02:43:28.000Z</published>
-    <updated>2015-11-24T03:27:38.000Z</updated>
-    <content type="html"><![CDATA[<p>#qemu安装</p>
-<p>mac编译安装遇到错误。</p>
-<pre><code>➜  qemu git:(master) ./configure <span class="comment">--static</span>
-C++ compiler c++ <span class="keyword">does</span> <span class="keyword">not</span> work <span class="keyword">with</span> C compiler cc
-Disabling C++ specific optional code
-ERROR: Your compiler <span class="keyword">does</span> <span class="keyword">not</span> support <span class="keyword">the</span> __thread specifier <span class="keyword">for</span>
-       Thread-Local Storage (TLS). Please upgrade <span class="keyword">to</span> a <span class="property">version</span> <span class="keyword">that</span> <span class="keyword">does</span>.
-</code></pre><p>Google说是gcc版本低的原因。需要gcc 4.3以上。看了一下自己的版本。</p>
-<pre><code>➜  blog  gcc --version
-Configured with: --prefix=/Applications/Xcode.app/Contents/Developer/usr --with-gxx-include-dir=/usr/include/c++/<span class="number">4.2</span><span class="number">.1</span>
-Apple LLVM version <span class="number">6.1</span><span class="number">.0</span> (clang-<span class="number">602.0</span><span class="number">.53</span>) (based on LLVM <span class="number">3.6</span><span class="number">.0</span>svn)
-Target: x86_64-apple-darwin14<span class="number">.1</span><span class="number">.0</span>
-Thread model: posix
-</code></pre>]]></content>
-    <summary type="html">
-    <![CDATA[<p>#qemu安装</p>
-<p>mac编译安装遇到错误。</p>
-<pre><code>➜  qemu git:(master) ./configure <span class="comment">--static</span>
-C++ compiler c++ <span ]]>
     </summary>
     
       <category term="qemu" scheme="http://xdxd.love/tags/qemu/"/>
