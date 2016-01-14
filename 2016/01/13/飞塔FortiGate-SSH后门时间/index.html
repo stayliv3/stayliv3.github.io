@@ -4,39 +4,41 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>代码审计之SQL注入 | xd_xd&#39;s blog</title>
+    <title>飞塔FortiGate SSH后门事件 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description" content="SQL的情况比较多，通常来说有两种防御的方式。在接受数据的时候进行防御和在数据进入SQL之前进行防御。好的设计应该是在数据进入SQL之前进行防御。国内各种CMS的层出不穷的SQL可以证明，在接收数据的时候进行防御不是一个好的方案。各种成熟的MVC架构也是在数据进入危险函数之前的最后一步进行防御
-
-#安全的设计
-#相关案例
-b2b-builder 多处SQL注入漏洞
-在接收数据时进行转移，但是忘记了">
+    <meta name="description" content="参考资料飞塔系统存在SSH后门 影响版本 4.0 – 5.0.7！！
+飞塔SSH后门 进一步利用方法
+飞塔SSH后门 4900台机器样本测试报告
+SSH Backdoor for FortiGate OS Version 4.x up to 5.0.7
+zoomeye.org
+思考随着全网数据的平台越来越多，shodan，zoomeye，censys等。一旦有通用性的漏洞爆出来，很快就会对漏洞对全">
 <meta property="og:type" content="article">
-<meta property="og:title" content="代码审计之SQL注入">
-<meta property="og:url" content="http://xdxd.love/2015/05/14/代码审计之SQL注入/index.html">
+<meta property="og:title" content="飞塔FortiGate SSH后门事件">
+<meta property="og:url" content="http://xdxd.love/2016/01/13/飞塔FortiGate-SSH后门时间/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="SQL的情况比较多，通常来说有两种防御的方式。在接受数据的时候进行防御和在数据进入SQL之前进行防御。好的设计应该是在数据进入SQL之前进行防御。国内各种CMS的层出不穷的SQL可以证明，在接收数据的时候进行防御不是一个好的方案。各种成熟的MVC架构也是在数据进入危险函数之前的最后一步进行防御
-
-#安全的设计
-#相关案例
-b2b-builder 多处SQL注入漏洞
-在接收数据时进行转移，但是忘记了">
-<meta property="og:image" content="http://xdxd.love/images/shenjisql1.png">
-<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+<meta property="og:description" content="参考资料飞塔系统存在SSH后门 影响版本 4.0 – 5.0.7！！
+飞塔SSH后门 进一步利用方法
+飞塔SSH后门 4900台机器样本测试报告
+SSH Backdoor for FortiGate OS Version 4.x up to 5.0.7
+zoomeye.org
+思考随着全网数据的平台越来越多，shodan，zoomeye，censys等。一旦有通用性的漏洞爆出来，很快就会对漏洞对全">
+<meta property="og:image" content="http://xdxd.love/images/fortygate1.png">
+<meta property="og:image" content="http://xdxd.love/images/fortygate2.png">
+<meta property="og:image" content="http://xdxd.love/images/fortygate3.png">
+<meta property="og:updated_time" content="2016-01-13T09:28:51.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="代码审计之SQL注入">
-<meta name="twitter:description" content="SQL的情况比较多，通常来说有两种防御的方式。在接受数据的时候进行防御和在数据进入SQL之前进行防御。好的设计应该是在数据进入SQL之前进行防御。国内各种CMS的层出不穷的SQL可以证明，在接收数据的时候进行防御不是一个好的方案。各种成熟的MVC架构也是在数据进入危险函数之前的最后一步进行防御
-
-#安全的设计
-#相关案例
-b2b-builder 多处SQL注入漏洞
-在接收数据时进行转移，但是忘记了">
+<meta name="twitter:title" content="飞塔FortiGate SSH后门事件">
+<meta name="twitter:description" content="参考资料飞塔系统存在SSH后门 影响版本 4.0 – 5.0.7！！
+飞塔SSH后门 进一步利用方法
+飞塔SSH后门 4900台机器样本测试报告
+SSH Backdoor for FortiGate OS Version 4.x up to 5.0.7
+zoomeye.org
+思考随着全网数据的平台越来越多，shodan，zoomeye，censys等。一旦有通用性的漏洞爆出来，很快就会对漏洞对全">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -96,14 +98,14 @@ b2b-builder 多处SQL注入漏洞
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/05/14/代码审计之SQL注入/" title="代码审计之SQL注入" itemprop="url">代码审计之SQL注入</a>
+      <a href="/2016/01/13/飞塔FortiGate-SSH后门时间/" title="飞塔FortiGate SSH后门事件" itemprop="url">飞塔FortiGate SSH后门事件</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2015-05-14T11:35:46.000Z" itemprop="datePublished"> 发表于 May 14 2015</time>
+    <time datetime="2016-01-13T02:35:51.000Z" itemprop="datePublished"> 发表于 Jan 13 2016</time>
     
   </p>
 </header>
@@ -112,16 +114,30 @@ b2b-builder 多处SQL注入漏洞
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#思考"><span class="toc-number">2.</span> <span class="toc-text">思考</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#测试"><span class="toc-number">3.</span> <span class="toc-text">测试</span></a></li></ol>
 		
 		</div>
 		
-		<p>SQL的情况比较多，通常来说有两种防御的方式。在接受数据的时候进行防御和在数据进入SQL之前进行防御。好的设计应该是在数据进入SQL之前进行防御。国内各种CMS的层出不穷的SQL可以证明，在接收数据的时候进行防御不是一个好的方案。各种成熟的MVC架构也是在数据进入危险函数之前的最后一步进行防御</p>
-<p><img src="/images/shenjisql1.png" alt=""></p>
-<p>#安全的设计</p>
-<p>#相关案例</p>
-<p><a href="http://stayliv3.github.io/2015/05/14/b2b-builderSQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E/" target="_blank" rel="external">b2b-builder 多处SQL注入漏洞</a></p>
-<p>在接收数据时进行转移，但是忘记了SERVER变量的转义。</p>
+		<h1 id="参考资料">参考资料</h1><p><a href="http://tools.pwn.ren/2016/01/12/ssh-backdoor-for-fortigate-os-version-4-up-to-5-0-7.html" target="_blank" rel="external">飞塔系统存在SSH后门 影响版本 4.0 – 5.0.7！！</a></p>
+<p><a href="http://tools.pwn.ren/2016/01/12/ssh-backdoor-for-fortigate-os-version-4-x-up-to-5-0-7%E8%BF%9B%E4%B8%80%E6%AD%A5%E5%88%A9%E7%94%A8-html.html" target="_blank" rel="external">飞塔SSH后门 进一步利用方法</a></p>
+<p><a href="http://tools.pwn.ren/2016/01/12/%E9%9A%8F%E6%9C%BA4900%E5%8F%B0%E6%9C%BA%E5%99%A8%E6%A0%B7%E6%9C%AC%E6%B5%8B%E8%AF%95%E6%8A%A5%E5%91%8A.html" target="_blank" rel="external">飞塔SSH后门 4900台机器样本测试报告</a></p>
+<p><a href="http://seclists.org/fulldisclosure/2016/Jan/26" target="_blank" rel="external">SSH Backdoor for FortiGate OS Version 4.x up to 5.0.7</a></p>
+<p><a href="https://www.zoomeye.org/search?q=FortiSSH%20country:Thailand&amp;t=host" target="_blank" rel="external">zoomeye.org</a></p>
+<h1 id="思考">思考</h1><p>随着全网数据的平台越来越多，shodan，zoomeye，censys等。一旦有通用性的漏洞爆出来，很快就会对漏洞对全球的影响有了一个评估。如果平时对数据分析全面，可以迅速利用这种漏洞渗透目标。过两天应该会有对该漏洞详细的技术分析出现。</p>
+<p>对于这种事总是细思极恐的感觉。比较有意思的是从安全事件中对安全防御的思考。余弦的微博：</p>
+<p><img src="/images/fortygate1.png" alt=""></p>
+<p>网路游侠微博：<br><img src="/images/fortygate2.png" alt=""></p>
+<p>从技术角度来说，一个漏洞就是一个漏洞，一个可能导致风险的问题。可是像防火墙后门这种漏洞，可以直接渗透内网，而且存在这么多年，会不会有人利用过，回答可能是肯定的。虽然做防御的时候肯定要考虑如果别人进来了怎么办，可是有时候进来可能很简单，人家是有核武器的。</p>
+<h1 id="测试">测试</h1><p><a href="http://tools.pwn.ren/2016/01/12/%E9%9A%8F%E6%9C%BA4900%E5%8F%B0%E6%9C%BA%E5%99%A8%E6%A0%B7%E6%9C%AC%E6%B5%8B%E8%AF%95%E6%8A%A5%E5%91%8A.html" target="_blank" rel="external">飞塔SSH后门 4900台机器样本测试报告</a></p>
+<p>这里使用的脚本需要稍微修改一下，</p>
+<pre><code><span class="keyword">for</span> <span class="tag">i</span> <span class="keyword">in</span> ips:
+    <span class="tag">q</span>.<span class="function"><span class="title">put</span><span class="params">(ips)</span></span>
+</code></pre><p>改成：</p>
+<pre><code><span class="keyword">for</span> <span class="tag">i</span> <span class="keyword">in</span> ips:
+    <span class="tag">q</span>.<span class="function"><span class="title">put</span><span class="params">(i)</span></span>
+</code></pre><p>不知道是不是故意的。。。</p>
+<p>这里测试的时候没有筛选开放22端口的主机，直接对4900机器进行测试，最后存在漏洞的机器为858台。相关的脚本和数据地址。<a href="https://github.com/stayliv3/blog_material/tree/master/fortigate" target="_blank" rel="external">https://github.com/stayliv3/blog_material/tree/master/fortigate</a></p>
+<p><img src="/images/fortygate3.png" alt=""></p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -129,14 +145,9 @@ b2b-builder 多处SQL注入漏洞
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/代码审计/">代码审计</a>
+  <a class="article-category-link" href="/categories/黑盒测试/">黑盒测试</a>
 </div>
 
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/php/">php</a>
-  </div>
 
 </div>
 
@@ -144,7 +155,7 @@ b2b-builder 多处SQL注入漏洞
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2015/05/14/代码审计之SQL注入/" data-title="代码审计之SQL注入 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  <div data-url="http://xdxd.love/2016/01/13/飞塔FortiGate-SSH后门时间/" data-title="飞塔FortiGate SSH后门事件 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -157,19 +168,11 @@ b2b-builder 多处SQL注入漏洞
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2015/05/19/php-multipartform-data-DOS漏洞/" title="php multipartform-data DOS漏洞">
-  <strong>上一篇：</strong><br/>
-  <span>
-  php multipartform-data DOS漏洞</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2015/05/14/b2b-builderSQL注入漏洞/"  title="b2b-builder 多处SQL注入漏洞">
+<a href="/2016/01/13/飞塔FortiGate-SSH后门事件/"  title="飞塔FortiGate SSH后门事件">
  <strong>下一篇：</strong><br/> 
- <span>b2b-builder 多处SQL注入漏洞
+ <span>飞塔FortiGate SSH后门事件
 </span>
 </a>
 </div>
@@ -178,7 +181,7 @@ b2b-builder 多处SQL注入漏洞
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/05/14/代码审计之SQL注入/" data-title="代码审计之SQL注入" data-url="http://xdxd.love/2015/05/14/代码审计之SQL注入/"></div>
+	<div class="ds-thread" data-thread-key="2016/01/13/飞塔FortiGate-SSH后门时间/" data-title="飞塔FortiGate SSH后门事件" data-url="http://xdxd.love/2016/01/13/飞塔FortiGate-SSH后门时间/"></div>
 </section>
 
 
@@ -188,7 +191,7 @@ b2b-builder 多处SQL注入漏洞
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#思考"><span class="toc-number">2.</span> <span class="toc-text">思考</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#测试"><span class="toc-number">3.</span> <span class="toc-text">测试</span></a></li></ol>
  
   </div>
 
