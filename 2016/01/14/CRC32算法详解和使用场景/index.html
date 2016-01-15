@@ -19,7 +19,7 @@
 <meta property="og:description" content="CRC32算法概述CRC全称Cyclic Redundancy Check，又叫循环冗余校验。CRC32跟md5，sha1一样都是哈希算法的一种。crc32的优势是速度快，它被设计的目的是用来检测数据在网络传输过程中可能出现的随机错误。它跟md5和sha1有本质的区别就是它不是一种加密hash算法或者叫not cryptographically secure或者not cryptographic">
 <meta property="og:image" content="http://xdxd.love/images/crc321.png">
 <meta property="og:image" content="http://xdxd.love/images/crc322.png">
-<meta property="og:updated_time" content="2016-01-15T02:18:13.000Z">
+<meta property="og:updated_time" content="2016-01-15T02:21:58.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CRC32算法碰撞测试">
 <meta name="twitter:description" content="CRC32算法概述CRC全称Cyclic Redundancy Check，又叫循环冗余校验。CRC32跟md5，sha1一样都是哈希算法的一种。crc32的优势是速度快，它被设计的目的是用来检测数据在网络传输过程中可能出现的随机错误。它跟md5和sha1有本质的区别就是它不是一种加密hash算法或者叫not cryptographically secure或者not cryptographic">
@@ -106,7 +106,7 @@
 <h1 id="CRC32算法原理">CRC32算法原理</h1><p>前面说到crc32的一些特性，这个要从crc32的原理开始分析。crc32的数学原理看起来还是有点复杂的,我也理解不透彻。简单一点理解就是把需要进行校验的数据选定一个除数进行一次除法运算，称为模2除法，跟通常二进制除法规则不同，得到的余数作为循环冗余码。数据接收端接收到数据之后进行同样的运算，即可判断数据在传输过程中是否出现了变化。当然具体的计算方式会复杂的多。这里说的不当的地方或者有更好的表达方式欢迎讨论。</p>
 <h1 id="CRC32算法碰撞和破解">CRC32算法碰撞和破解</h1><p>crc32碰撞的概率非常高，根据一些测试结果<a href="http://blog.csdn.net/yunhua_lee/article/details/42775039" target="_blank" rel="external">CRC32算法冲突概率测试和分析</a>,对于随机数据的碰撞概率测试1820W数据，冲突数量是38638个。根据crc32的算法可以直接逆向找到相同crc32的字符串。<a href="https://github.com/theonlypwner/crc32" target="_blank" rel="external">脚本地址</a></p>
 <p><img src="/images/crc321.png" alt=""></p>
-<p>对于给定的字符串进行padding暴力破解在短时间内是一定可以获得相同crc32结果的。测试脚本：<a href="https://github.com/stayliv3/blog_material/blob/master/crc-collision/crc-collision.py" target="_blank" rel="external">crc-collision</a><br>下面两个字符串是有相同的CRC32值得。</p>
+<p>对于给定的字符串进行padding暴力破解在短时间内是一定可以获得相同crc32结果的。测试脚本：<a href="https://github.com/stayliv3/blog_material/blob/master/crc-collision/crc-collision.py" target="_blank" rel="external">crc-collision</a><br>下面两个字符串是有相同的CRC32值。</p>
 <pre><code>import binascii
 print binascii.<span class="function"><span class="title">crc32</span><span class="params">(<span class="string">'{"auth_url": "https://www.evil.example"}'</span> + <span class="string">' '</span>*<span class="number">2303357834</span>)</span></span>
 print binascii.<span class="function"><span class="title">crc32</span><span class="params">(<span class="string">'{"auth_url": "https://www.google.com"}'</span>)</span></span>
