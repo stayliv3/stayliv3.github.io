@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-01-13T09:21:13.000Z</updated>
+  <updated>2016-01-15T02:13:01.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -13,6 +13,33 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[CRC32算法的使用场景]]></title>
+    <link href="http://xdxd.love/2016/01/14/CRC32%E7%AE%97%E6%B3%95%E8%AF%A6%E8%A7%A3%E5%92%8C%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/"/>
+    <id>http://xdxd.love/2016/01/14/CRC32算法详解和使用场景/</id>
+    <published>2016-01-14T06:52:35.000Z</published>
+    <updated>2016-01-15T02:13:01.000Z</updated>
+    <content type="html"><![CDATA[<h1 id="CRC32算法概述">CRC32算法概述</h1><p>CRC全称Cyclic Redundancy Check，又叫循环冗余校验。CRC32跟md5，sha1一样都是哈希算法的一种。crc32的优势是速度快，它被设计的目的是用来检测数据在网络传输过程中可能出现的随机错误。它跟md5和sha1有本质的区别就是它不是一种加密hash算法或者叫not cryptographically secure或者not cryptographic hashing。加密哈希算法的特征比如空间极大，碰撞概率极低，对于给定的哈希值难以找到另一个哈希值相同的字符串等crc32都不具备。</p>
+<h1 id="CRC32算法原理">CRC32算法原理</h1><p>前面说到crc32的一些特性，这个要从crc32的原理开始分析。crc32的数学原理看起来还是有点复杂的,我也理解不透彻。简单一点理解就是把需要进行校验的数据选定一个除数进行一次除法运算，称为模2除法，跟通常二进制除法规则不同，得到的余数作为循环冗余码。数据接收端接收到数据之后进行同样的运算，即可判断数据在传输过程中是否出现了变化。当然具体的计算方式会复杂的多。这里说的不当的地方或者有更好的表达方式欢迎讨论。</p>
+<h1 id="CRC32算法碰撞和破解">CRC32算法碰撞和破解</h1><p>crc32碰撞的概率非常高，根据一些测试结果<a href="http://blog.csdn.net/yunhua_lee/article/details/42775039" target="_blank" rel="external">CRC32算法冲突概率测试和分析</a>,对于随机数据的碰撞概率测试1820W数据，冲突数量是38638个。根据crc32的算法可以直接逆向找到相同crc32的字符串。<a href="https://github.com/theonlypwner/crc32" target="_blank" rel="external">脚本地址</a></p>
+<p><img src="/images/crc321.png" alt=""></p>
+<p>对于给定的字符串进行padding暴力破解在短时间内是一定可以获得相同crc32结果的。测试脚本：<a href="https://github.com/stayliv3/blog_material/blob/master/crc-collision/crc-collision.py" target="_blank" rel="external">crc-collision</a></p>
+<pre><code>import binascii
+print binascii.<span class="function"><span class="title">crc32</span><span class="params">(<span class="string">'{"auth_url": "https://www.evil.example"}'</span> + <span class="string">' '</span>*<span class="number">2303357834</span>)</span></span>
+print binascii.<span class="function"><span class="title">crc32</span><span class="params">(<span class="string">'{"auth_url": "https://www.google.com"}'</span>)</span></span>
+</code></pre><p><img src="/images/crc322.png" alt=""></p>
+<h1 id="CRC32算法的使用场景">CRC32算法的使用场景</h1><p>CRC32的设计初衷是用来检测底层网络传输数据时由于网络问题导致的数据出错。所以多用在底层网络设备中。应用层也有一些使用场景。但是不能用来做加密hash即sha256函数做的事情，比如用来做签名。crc32是无法保证数据完整性的。它只能用来检测异常不能用来对抗恶意的行为。最近在对一个认证系统做审计的时候发现使用了crc32做数据签名。所以有了对crc32碰撞的测试。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h1 id="CRC32算法概述">CRC32算法概述</h1><p>CRC全称Cyclic Redundancy Check，又叫循环冗余校验。CRC32跟md5，sha1一样都是哈希算法的一种。crc32的优势是速度快，它被设计的目的是用来检测数据在网络传输过程中可能出现的]]>
+    </summary>
+    
+      <category term="CRC" scheme="http://xdxd.love/tags/CRC/"/>
+    
+      <category term="加密解密" scheme="http://xdxd.love/categories/%E5%8A%A0%E5%AF%86%E8%A7%A3%E5%AF%86/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[飞塔FortiGate SSH后门事件]]></title>
@@ -1128,29 +1155,6 @@ id=<span]]>
       <category term="Yii" scheme="http://xdxd.love/tags/Yii/"/>
     
       <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[xss工具sleep puppy手册]]></title>
-    <link href="http://xdxd.love/2015/10/20/xss%E5%B7%A5%E5%85%B7sleep-puppy%E6%89%8B%E5%86%8C/"/>
-    <id>http://xdxd.love/2015/10/20/xss工具sleep-puppy手册/</id>
-    <published>2015-10-20T08:07:54.000Z</published>
-    <updated>2015-11-24T03:27:38.000Z</updated>
-    <content type="html"><![CDATA[<p><a href="https://github.com/Netflix/sleepy-puppy" target="_blank" rel="external">sleep puppy</a>是owasp出品的一个XSS工具，官方描述是Sleep Puppy是一个XSS payload管理框架，可以长期的管理，跟踪XSS的传播。</p>
-<p>跟国内的xssme一样，定位于xss的利用和盲打。老外特地提到了盲打这个场景，只是他们换了一个说法，貌似blind xss在英语中有歧义，所以他们使用了Delayed XSS Testing这个词。认为delayed xss是存储型XSS的一个变种，是说安全测试插入的XSS payload通过数据传递在另外一个不同的应用中触发。<br><img src="/images/sleeppuppy1.png" alt=""></p>
-<p>#安装<br>这里使用docker测试，优点是快速方便，缺点是不支持TLS，存在默认密码。按照<a href="https://github.com/netflix/sleepy-puppy/wiki/docker" target="_blank" rel="external">官方指南安装</a>。</p>
-<p>#主要功能模块</p>
-<p>assessments用来描述不同的测试会话，相当于xssme的项目。不同的项目可以分别设置不同的提醒邮件之类的。</p>
-<p>payload用来管理不同的XSS payload，默认有七个。<br><img src="/images/sleeppuppy2.png" alt=""></p>
-<p>PuppyScripts 管理victim上执行的js代码。默认的js脚本可以获取访问页面的dom树和页面截图，这个还是比较不错的。<br>当然也可以自定义收集的信息，使用generic collector。</p>
-<p>capture是payload被触发，接收到的数据的地方。<br><img src="/images/sleeppuppy3.png" alt=""></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p><a href="https://github.com/Netflix/sleepy-puppy" target="_blank" rel="external">sleep puppy</a>是owasp出品的一个XSS工具，官方描述是Sleep Puppy是一个XSS p]]>
-    </summary>
-    
-      <category term="黑盒测试" scheme="http://xdxd.love/categories/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95/"/>
     
   </entry>
   

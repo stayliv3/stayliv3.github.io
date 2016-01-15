@@ -4,35 +4,25 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>MS15-034/CVE-2015-1635 测试记录 | xd_xd&#39;s blog</title>
+    <title>CRC32算法的使用场景 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description" content="做协议测试的时候也发现不少溢出漏洞，没想iis还有这么经典的溢出案例。虽然不懂细节。记录一下测试过程。
-#相关资料
-http://drops.wooyun.org/papers/5669http://www.freebuf.com/articles/system/64185.htmlhttp://www.freebuf.com/vuls/64415.html
-#update
-参考了阿里发的分析文章">
+    <meta name="description" content="CRC32算法概述CRC全称Cyclic Redundancy Check，又叫循环冗余校验。CRC32跟md5，sha1一样都是哈希算法的一种。crc32的优势是速度快，它被设计的目的是用来检测数据在网络传输过程中可能出现的随机错误。它跟md5和sha1有本质的区别就是它不是一种加密hash算法或者叫not cryptographically secure或者not cryptographic">
 <meta property="og:type" content="article">
-<meta property="og:title" content="MS15-034/CVE-2015-1635 测试记录">
-<meta property="og:url" content="http://xdxd.love/2015/04/17/MS15-034-CVE-2015-1635-测试记录/index.html">
+<meta property="og:title" content="CRC32算法的使用场景">
+<meta property="og:url" content="http://xdxd.love/2016/01/14/CRC32算法详解和使用场景/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="做协议测试的时候也发现不少溢出漏洞，没想iis还有这么经典的溢出案例。虽然不懂细节。记录一下测试过程。
-#相关资料
-http://drops.wooyun.org/papers/5669http://www.freebuf.com/articles/system/64185.htmlhttp://www.freebuf.com/vuls/64415.html
-#update
-参考了阿里发的分析文章">
-<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+<meta property="og:description" content="CRC32算法概述CRC全称Cyclic Redundancy Check，又叫循环冗余校验。CRC32跟md5，sha1一样都是哈希算法的一种。crc32的优势是速度快，它被设计的目的是用来检测数据在网络传输过程中可能出现的随机错误。它跟md5和sha1有本质的区别就是它不是一种加密hash算法或者叫not cryptographically secure或者not cryptographic">
+<meta property="og:image" content="http://xdxd.love/images/crc321.png">
+<meta property="og:image" content="http://xdxd.love/images/crc322.png">
+<meta property="og:updated_time" content="2016-01-15T02:13:01.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="MS15-034/CVE-2015-1635 测试记录">
-<meta name="twitter:description" content="做协议测试的时候也发现不少溢出漏洞，没想iis还有这么经典的溢出案例。虽然不懂细节。记录一下测试过程。
-#相关资料
-http://drops.wooyun.org/papers/5669http://www.freebuf.com/articles/system/64185.htmlhttp://www.freebuf.com/vuls/64415.html
-#update
-参考了阿里发的分析文章">
+<meta name="twitter:title" content="CRC32算法的使用场景">
+<meta name="twitter:description" content="CRC32算法概述CRC全称Cyclic Redundancy Check，又叫循环冗余校验。CRC32跟md5，sha1一样都是哈希算法的一种。crc32的优势是速度快，它被设计的目的是用来检测数据在网络传输过程中可能出现的随机错误。它跟md5和sha1有本质的区别就是它不是一种加密hash算法或者叫not cryptographically secure或者not cryptographic">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -92,14 +82,14 @@ http://drops.wooyun.org/papers/5669http://www.freebuf.com/articles/system/64185.
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/04/17/MS15-034-CVE-2015-1635-测试记录/" title="MS15-034/CVE-2015-1635 测试记录" itemprop="url">MS15-034/CVE-2015-1635 测试记录</a>
+      <a href="/2016/01/14/CRC32算法详解和使用场景/" title="CRC32算法的使用场景" itemprop="url">CRC32算法的使用场景</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2015-04-17T03:40:26.000Z" itemprop="datePublished"> 发表于 Apr 17 2015</time>
+    <time datetime="2016-01-14T06:52:35.000Z" itemprop="datePublished"> 发表于 Jan 14 2016</time>
     
   </p>
 </header>
@@ -108,61 +98,35 @@ http://drops.wooyun.org/papers/5669http://www.freebuf.com/articles/system/64185.
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#CRC32算法概述"><span class="toc-number">1.</span> <span class="toc-text">CRC32算法概述</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CRC32算法原理"><span class="toc-number">2.</span> <span class="toc-text">CRC32算法原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CRC32算法碰撞和破解"><span class="toc-number">3.</span> <span class="toc-text">CRC32算法碰撞和破解</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CRC32算法的使用场景"><span class="toc-number">4.</span> <span class="toc-text">CRC32算法的使用场景</span></a></li></ol>
 		
 		</div>
 		
-		<p>做协议测试的时候也发现不少溢出漏洞，没想iis还有这么经典的溢出案例。虽然不懂细节。记录一下测试过程。</p>
-<p>#相关资料</p>
-<p><a href="http://drops.wooyun.org/papers/5669" target="_blank" rel="external">http://drops.wooyun.org/papers/5669</a><br><a href="http://www.freebuf.com/articles/system/64185.html" target="_blank" rel="external">http://www.freebuf.com/articles/system/64185.html</a><br><a href="http://www.freebuf.com/vuls/64415.html" target="_blank" rel="external">http://www.freebuf.com/vuls/64415.html</a></p>
-<p>#update</p>
-<p>参考了阿里发的分析文章，修改poc为访问welcome.png图片，range下限改为2.可以百分百触发蓝屏。虽然不能RCE，看到蓝屏感觉也萌萌的。不过1337有RCE的exp卖，不知道是不是有更猥琐的姿势。</p>
-<p>#测试记录</p>
-<p>没有出现蓝屏。但是不打补丁返回确实不一样。测试环境 win7 32bit iis 7.5 。一开始测试的时候发现返回正常，后来发现是qq电脑管家自动打补丁了。。。删除补丁测试：</p>
-<pre><code>[*] Audit Started
-HTTP/1.1 416 Requested Range Not Satisfiable
-Content-Type: text/html
-Last-Modified: Fri, 17 Apr 2015 03:07:09 GMT
-Accept-Ranges: bytes
-ETag: "499ee897bb78d01:0"
-Server: Microsoft-IIS/7.5
-Date: Fri, 17 Apr 2015 07:09:31 GMT
-Content-Length: 362
-Content-Range: bytes */689
-
-<span class="doctype">&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN""http://www.w3.org/TR/html4/strict.dtd"&gt;</span>
-<span class="tag">&lt;<span class="title">HTML</span>&gt;</span><span class="tag">&lt;<span class="title">HEAD</span>&gt;</span><span class="tag">&lt;<span class="title">TITLE</span>&gt;</span>Requested Range Not Satisfiable<span class="tag">&lt;/<span class="title">TITLE</span>&gt;</span>
-<span class="tag">&lt;<span class="title">META</span> <span class="attribute">HTTP-EQUIV</span>=<span class="value">"Content-Type"</span> <span class="attribute">Content</span>=<span class="value">"text/html; charset=us-ascii"</span>&gt;</span><span class="tag">&lt;/<span class="title">HEAD</span>&gt;</span>
-<span class="tag">&lt;<span class="title">BODY</span>&gt;</span><span class="tag">&lt;<span class="title">h2</span>&gt;</span>Requested Range Not Satisfiable<span class="tag">&lt;/<span class="title">h2</span>&gt;</span>
-<span class="tag">&lt;<span class="title">hr</span>&gt;</span><span class="tag">&lt;<span class="title">p</span>&gt;</span>HTTP Error 416. The requested range is not satisfiable.<span class="tag">&lt;/<span class="title">p</span>&gt;</span>
-<span class="tag">&lt;/<span class="title">BODY</span>&gt;</span><span class="tag">&lt;/<span class="title">HTML</span>&gt;</span>
-
-[!!] Looks VULN
-</code></pre><p>返回错误是The requested range is not satisfiable。</p>
-<p>修改range的lower的值，socket会出错。但是没有出现蓝屏。蓝屏呢~~</p>
-<p>打完补丁之后返回如下：</p>
-<pre><code>[*] Audit Started
-HTTP/1.1 400 Bad Request
-Content-Type: text/html; charset=us-ascii
-Server: Microsoft-HTTPAPI/2.0
-Date: Fri, 17 Apr 2015 07:15:33 GMT
-Connection: close
-Content-Length: 339
-
-<span class="doctype">&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN""http://www.w3.org/TR/html4/strict.dtd"&gt;</span>
-<span class="tag">&lt;<span class="title">HTML</span>&gt;</span><span class="tag">&lt;<span class="title">HEAD</span>&gt;</span><span class="tag">&lt;<span class="title">TITLE</span>&gt;</span>Bad Request<span class="tag">&lt;/<span class="title">TITLE</span>&gt;</span>
-<span class="tag">&lt;<span class="title">META</span> <span class="attribute">HTTP-EQUIV</span>=<span class="value">"Content-Type"</span> <span class="attribute">Content</span>=<span class="value">"text/html; charset=us-ascii"</span>&gt;</span><span class="tag">&lt;/<span class="title">HEAD</span>&gt;</span>
-<span class="tag">&lt;<span class="title">BODY</span>&gt;</span><span class="tag">&lt;<span class="title">h2</span>&gt;</span>Bad Request - Invalid Header<span class="tag">&lt;/<span class="title">h2</span>&gt;</span>
-<span class="tag">&lt;<span class="title">hr</span>&gt;</span><span class="tag">&lt;<span class="title">p</span>&gt;</span>HTTP Error 400. The request has an invalid header name.<span class="tag">&lt;/<span class="title">p</span>&gt;</span>
-<span class="tag">&lt;/<span class="title">BODY</span>&gt;</span><span class="tag">&lt;/<span class="title">HTML</span>&gt;</span>
-
-[*] Looks Patched
-</code></pre><p>相关<a href="https://github.com/stayliv3/blog_material/tree/master/ms15-034" target="_blank" rel="external">测试脚本</a>来自于网络。</p>
+		<h1 id="CRC32算法概述">CRC32算法概述</h1><p>CRC全称Cyclic Redundancy Check，又叫循环冗余校验。CRC32跟md5，sha1一样都是哈希算法的一种。crc32的优势是速度快，它被设计的目的是用来检测数据在网络传输过程中可能出现的随机错误。它跟md5和sha1有本质的区别就是它不是一种加密hash算法或者叫not cryptographically secure或者not cryptographic hashing。加密哈希算法的特征比如空间极大，碰撞概率极低，对于给定的哈希值难以找到另一个哈希值相同的字符串等crc32都不具备。</p>
+<h1 id="CRC32算法原理">CRC32算法原理</h1><p>前面说到crc32的一些特性，这个要从crc32的原理开始分析。crc32的数学原理看起来还是有点复杂的,我也理解不透彻。简单一点理解就是把需要进行校验的数据选定一个除数进行一次除法运算，称为模2除法，跟通常二进制除法规则不同，得到的余数作为循环冗余码。数据接收端接收到数据之后进行同样的运算，即可判断数据在传输过程中是否出现了变化。当然具体的计算方式会复杂的多。这里说的不当的地方或者有更好的表达方式欢迎讨论。</p>
+<h1 id="CRC32算法碰撞和破解">CRC32算法碰撞和破解</h1><p>crc32碰撞的概率非常高，根据一些测试结果<a href="http://blog.csdn.net/yunhua_lee/article/details/42775039" target="_blank" rel="external">CRC32算法冲突概率测试和分析</a>,对于随机数据的碰撞概率测试1820W数据，冲突数量是38638个。根据crc32的算法可以直接逆向找到相同crc32的字符串。<a href="https://github.com/theonlypwner/crc32" target="_blank" rel="external">脚本地址</a></p>
+<p><img src="/images/crc321.png" alt=""></p>
+<p>对于给定的字符串进行padding暴力破解在短时间内是一定可以获得相同crc32结果的。测试脚本：<a href="https://github.com/stayliv3/blog_material/blob/master/crc-collision/crc-collision.py" target="_blank" rel="external">crc-collision</a></p>
+<pre><code>import binascii
+print binascii.<span class="function"><span class="title">crc32</span><span class="params">(<span class="string">'{"auth_url": "https://www.evil.example"}'</span> + <span class="string">' '</span>*<span class="number">2303357834</span>)</span></span>
+print binascii.<span class="function"><span class="title">crc32</span><span class="params">(<span class="string">'{"auth_url": "https://www.google.com"}'</span>)</span></span>
+</code></pre><p><img src="/images/crc322.png" alt=""></p>
+<h1 id="CRC32算法的使用场景">CRC32算法的使用场景</h1><p>CRC32的设计初衷是用来检测底层网络传输数据时由于网络问题导致的数据出错。所以多用在底层网络设备中。应用层也有一些使用场景。但是不能用来做加密hash即sha256函数做的事情，比如用来做签名。crc32是无法保证数据完整性的。它只能用来检测异常不能用来对抗恶意的行为。最近在对一个认证系统做审计的时候发现使用了crc32做数据签名。所以有了对crc32碰撞的测试。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
 
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/加密解密/">加密解密</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/CRC/">CRC</a>
+  </div>
 
 </div>
 
@@ -170,7 +134,7 @@ Content-Length: 339
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2015/04/17/MS15-034-CVE-2015-1635-测试记录/" data-title="MS15-034/CVE-2015-1635 测试记录 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  <div data-url="http://xdxd.love/2016/01/14/CRC32算法详解和使用场景/" data-title="CRC32算法的使用场景 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -183,19 +147,11 @@ Content-Length: 339
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2015/04/17/失效的撞库防御策略之cookie/" title="失效的撞库防御策略之cookie">
-  <strong>上一篇：</strong><br/>
-  <span>
-  失效的撞库防御策略之cookie</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2015/04/15/撞库攻击防御方案/"  title="撞库攻击防御方案">
+<a href="/2016/01/13/飞塔FortiGate-SSH后门事件/"  title="飞塔FortiGate SSH后门事件">
  <strong>下一篇：</strong><br/> 
- <span>撞库攻击防御方案
+ <span>飞塔FortiGate SSH后门事件
 </span>
 </a>
 </div>
@@ -204,7 +160,7 @@ Content-Length: 339
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/04/17/MS15-034-CVE-2015-1635-测试记录/" data-title="MS15-034/CVE-2015-1635 测试记录" data-url="http://xdxd.love/2015/04/17/MS15-034-CVE-2015-1635-测试记录/"></div>
+	<div class="ds-thread" data-thread-key="2016/01/14/CRC32算法详解和使用场景/" data-title="CRC32算法的使用场景" data-url="http://xdxd.love/2016/01/14/CRC32算法详解和使用场景/"></div>
 </section>
 
 
@@ -214,7 +170,7 @@ Content-Length: 339
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#CRC32算法概述"><span class="toc-number">1.</span> <span class="toc-text">CRC32算法概述</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CRC32算法原理"><span class="toc-number">2.</span> <span class="toc-text">CRC32算法原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CRC32算法碰撞和破解"><span class="toc-number">3.</span> <span class="toc-text">CRC32算法碰撞和破解</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CRC32算法的使用场景"><span class="toc-number">4.</span> <span class="toc-text">CRC32算法的使用场景</span></a></li></ol>
  
   </div>
 
