@@ -11,16 +11,24 @@
     
 
     
-    <meta name="description">
+    <meta name="description" content="测试一个程序，提示找不到表。数据库看了一下表都存在的啊。貌似就大小写不对。抓执行的sql语句看了一下：
+发现同一个表既有使用大写也有使用小写，也是醉了。google: mysql table name case sensitive就可以找到解决方案。参考mysql的文档:9.2.2 Identifier Case Sensitivity
+windows上默认不区分大小写，但是linux上默认区分大">
 <meta property="og:type" content="article">
 <meta property="og:title" content="mysql表名大小写敏感问题">
 <meta property="og:url" content="http://xdxd.love/2016/01/18/mysql表名大小写敏感问题/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description">
-<meta property="og:updated_time" content="2016-01-18T08:39:34.000Z">
+<meta property="og:description" content="测试一个程序，提示找不到表。数据库看了一下表都存在的啊。貌似就大小写不对。抓执行的sql语句看了一下：
+发现同一个表既有使用大写也有使用小写，也是醉了。google: mysql table name case sensitive就可以找到解决方案。参考mysql的文档:9.2.2 Identifier Case Sensitivity
+windows上默认不区分大小写，但是linux上默认区分大">
+<meta property="og:image" content="http://xdxd.love/images/mysqltable1.png">
+<meta property="og:image" content="http://xdxd.love/images/mysqltable2.png">
+<meta property="og:updated_time" content="2016-01-18T08:52:47.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="mysql表名大小写敏感问题">
-<meta name="twitter:description">
+<meta name="twitter:description" content="测试一个程序，提示找不到表。数据库看了一下表都存在的啊。貌似就大小写不对。抓执行的sql语句看了一下：
+发现同一个表既有使用大写也有使用小写，也是醉了。google: mysql table name case sensitive就可以找到解决方案。参考mysql的文档:9.2.2 Identifier Case Sensitivity
+windows上默认不区分大小写，但是linux上默认区分大">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -100,7 +108,13 @@
 		
 		</div>
 		
-		  
+		<p>测试一个程序，提示找不到表。数据库看了一下表都存在的啊。貌似就大小写不对。抓执行的sql语句看了一下：</p>
+<p><img src="/images/mysqltable1.png" alt=""><br>发现同一个表既有使用大写也有使用小写，也是醉了。google: mysql table name case sensitive就可以找到解决方案。参考mysql的文档:<a href="http://dev.mysql.com/doc/refman/5.7/en/identifier-case-sensitivity.html" target="_blank" rel="external">9.2.2 Identifier Case Sensitivity</a></p>
+<p>windows上默认不区分大小写，但是linux上默认区分大小写。可以通过lower_case_table_names参数调整。设置lower_case_table_names=1可以不区分大小写。</p>
+<p><img src="/images/mysqltable2.png" alt=""></p>
+<p>我这里使用了官方的mysql docker镜像来做测试环境，只要添加一个启动参数就可以了。</p>
+<pre><code>docker <span class="keyword">run</span> -<span class="keyword">d</span> -p 3306:3306 --name=appmysql5 -<span class="keyword">e</span> MYSQL_PASS=<span class="string">"root"</span> -<span class="keyword">e</span> MYSQL_USER=<span class="string">"root"</span>  -<span class="keyword">e</span> EXTRA_OPTS=<span class="string">"--log-raw"</span> -<span class="keyword">e</span> EXTRA_OPTS=<span class="string">"--lower_case_table_names=1"</span>  xd/mysql5.6:v1
+</code></pre>  
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">

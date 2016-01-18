@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-01-18T08:39:34.000Z</updated>
+  <updated>2016-01-18T08:52:47.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -19,10 +19,17 @@
     <link href="http://xdxd.love/2016/01/18/mysql%E8%A1%A8%E5%90%8D%E5%A4%A7%E5%B0%8F%E5%86%99%E6%95%8F%E6%84%9F%E9%97%AE%E9%A2%98/"/>
     <id>http://xdxd.love/2016/01/18/mysql表名大小写敏感问题/</id>
     <published>2016-01-18T08:38:54.000Z</published>
-    <updated>2016-01-18T08:39:34.000Z</updated>
-    <content type="html"></content>
+    <updated>2016-01-18T08:52:47.000Z</updated>
+    <content type="html"><![CDATA[<p>测试一个程序，提示找不到表。数据库看了一下表都存在的啊。貌似就大小写不对。抓执行的sql语句看了一下：</p>
+<p><img src="/images/mysqltable1.png" alt=""><br>发现同一个表既有使用大写也有使用小写，也是醉了。google: mysql table name case sensitive就可以找到解决方案。参考mysql的文档:<a href="http://dev.mysql.com/doc/refman/5.7/en/identifier-case-sensitivity.html" target="_blank" rel="external">9.2.2 Identifier Case Sensitivity</a></p>
+<p>windows上默认不区分大小写，但是linux上默认区分大小写。可以通过lower_case_table_names参数调整。设置lower_case_table_names=1可以不区分大小写。</p>
+<p><img src="/images/mysqltable2.png" alt=""></p>
+<p>我这里使用了官方的mysql docker镜像来做测试环境，只要添加一个启动参数就可以了。</p>
+<pre><code>docker <span class="keyword">run</span> -<span class="keyword">d</span> -p 3306:3306 --name=appmysql5 -<span class="keyword">e</span> MYSQL_PASS=<span class="string">"root"</span> -<span class="keyword">e</span> MYSQL_USER=<span class="string">"root"</span>  -<span class="keyword">e</span> EXTRA_OPTS=<span class="string">"--log-raw"</span> -<span class="keyword">e</span> EXTRA_OPTS=<span class="string">"--lower_case_table_names=1"</span>  xd/mysql5.6:v1
+</code></pre>]]></content>
     <summary type="html">
-    
+    <![CDATA[<p>测试一个程序，提示找不到表。数据库看了一下表都存在的啊。貌似就大小写不对。抓执行的sql语句看了一下：</p>
+<p><img src="/images/mysqltable1.png" alt=""><br>发现同一个表既有使用大写也有使用小写，也是醉了。google: ]]>
     </summary>
     
       <category term="mysql" scheme="http://xdxd.love/tags/mysql/"/>
