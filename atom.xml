@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-01-15T02:21:58.000Z</updated>
+  <updated>2016-01-18T08:39:34.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -13,6 +13,23 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[mysql表名大小写敏感问题]]></title>
+    <link href="http://xdxd.love/2016/01/18/mysql%E8%A1%A8%E5%90%8D%E5%A4%A7%E5%B0%8F%E5%86%99%E6%95%8F%E6%84%9F%E9%97%AE%E9%A2%98/"/>
+    <id>http://xdxd.love/2016/01/18/mysql表名大小写敏感问题/</id>
+    <published>2016-01-18T08:38:54.000Z</published>
+    <updated>2016-01-18T08:39:34.000Z</updated>
+    <content type="html"></content>
+    <summary type="html">
+    
+    </summary>
+    
+      <category term="mysql" scheme="http://xdxd.love/tags/mysql/"/>
+    
+      <category term="奇技淫巧" scheme="http://xdxd.love/categories/%E5%A5%87%E6%8A%80%E6%B7%AB%E5%B7%A7/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[CRC32算法碰撞测试]]></title>
@@ -1020,141 +1037,6 @@ Firewall your JMX RMI port
       <category term="java" scheme="http://xdxd.love/tags/java/"/>
     
       <category term="黑盒测试" scheme="http://xdxd.love/categories/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[Yii应用一个SQL注入分析]]></title>
-    <link href="http://xdxd.love/2015/10/22/YII%E5%BA%94%E7%94%A8%E4%B8%80%E4%B8%AASQL%E6%B3%A8%E5%85%A5%E5%88%86%E6%9E%90/"/>
-    <id>http://xdxd.love/2015/10/22/YII应用一个SQL注入分析/</id>
-    <published>2015-10-22T06:29:03.000Z</published>
-    <updated>2015-11-24T03:27:38.000Z</updated>
-    <content type="html"><![CDATA[<p>#漏洞发现过程<br>黑盒测试发现。使用工具burpsuite。当在购物车中删除商品时，发送数据包如下：</p>
-<pre><code>POST /cart/miniDel.html HTTP/<span class="number">1.1</span>
-id=<span class="number">219</span>'
-</code></pre><p>报sql语法错误，经过手工确认可以注入sql语句。</p>
-<pre><code>Exception (Database Exception) &amp;<span class="string">#039</span>;yii\db\Exception&amp;<span class="string">#039</span>; <span class="keyword">with</span> <span class="keyword">message</span> &amp;<span class="string">#039</span>;SQLSTATE[<span class="number">42000</span>]: Syntax error <span class="keyword">or</span> access violation: <span class="number">1064</span> You have an error <span class="keyword">in</span> your SQL syntax; check the manual that corresponds <span class="keyword">to</span> your MySQL server version <span class="keyword">for</span> the right syntax <span class="keyword">to</span> use <span class="keyword">near</span> &amp;<span class="string">#039</span>;&amp;<span class="string">#039</span>;)&amp;<span class="string">#039</span>; at line <span class="number">1</span>
-</code></pre><p>SQL注入是高危漏洞。这里利用这个漏洞可能导致数据库所有信息泄漏。</p>
-<p>#代码分析跟踪<br>跟踪分析代码从controller跟到model，到Yii框架的api就可以清晰的获知整个数据在应用内的流向和进入的函数。<br>url/cart/miniDel.html路由到/mall/apps/main/controllers/CartController.php中的actionMiniDel方法：</p>
-<pre><code>/**
- * MINI层删除交互
- */
-public <span class="keyword">function</span> actionMiniDel()
-{
-    <span class="variable">$product</span>_ids = Yii::<span class="variable">$app-</span>&gt;request-&gt;post(<span class="string">'id'</span>);
-    <span class="variable">$res</span> = CartApi::model()-&gt;getDeltCartList(<span class="variable">$this-</span>&gt;uid, <span class="variable">$product</span>_ids);
-
-    <span class="variable">$data</span> = <span class="variable">$this-</span>&gt;getMiniData(<span class="variable">$this-</span>&gt;uid, <span class="variable">$res</span>);
-    common\helpers\Helper::ajaxReturn([<span class="string">'status'</span>=&gt;true,<span class="string">'msg'</span>=&gt;<span class="string">'success'</span>,<span class="string">'data'</span>=&gt;<span class="variable">$data</span>]);
-}
-</code></pre><p>用户提交的id参数赋值给了$product_ids，然后进入了getDeltCartList方法。跟进该方法：</p>
-<pre><code>/**
- * 删除--前端交互的购物车列表信息
- */
-public <span class="keyword">function</span> getDeltCartList(<span class="variable">$uid</span>, <span class="variable">$product</span>_ids, <span class="variable">$allDel</span>=<span class="literal">false</span>)
-{
-    \common\cookie_cart\Cart::initCookieCartNum(<span class="variable">$uid</span>,true);
-    if (!isset(<span class="variable">$uid</span>) || empty(<span class="variable">$uid</span>) || !(int) <span class="variable">$uid</span>&gt;<span class="number">0</span>)
-
-        return \common\cookie_cart\Cart::delCartByGuest(<span class="variable">$product</span>_ids, <span class="variable">$allDel</span>);
-
-    return CartService::getDeltCartList(<span class="variable">$uid</span>, <span class="variable">$product</span>_ids);
-}
-</code></pre><p>getDelCartList方法判断用户是否登录，登录的话调用CartService的静态方法getDeltCartList方法操作用户购物车。进入CartService::getDeltCartList:</p>
-<pre><code>/**
- * 删除--前端交互的购物车列表信息
- */
-public static <span class="keyword">function</span> getDeltCartList(<span class="variable">$user</span>_id, <span class="variable">$product</span>_ids)
-{
-    if(intval(<span class="variable">$user</span>_id)&gt;<span class="number">0</span> &amp;&amp; !empty(<span class="variable">$product</span>_ids))
-    {
-        <span class="variable">$res</span> = self::delCart(<span class="variable">$user</span>_id, <span class="variable">$product</span>_ids);
-        if(<span class="variable">$res</span>===false) return false;
-        return self::getInitCartList(<span class="variable">$user</span>_id, <span class="variable">$mini</span>=false, <span class="variable">$checkd</span>=false);
-    }
-    return self::getInitCartList(<span class="variable">$user</span>_id, <span class="variable">$mini</span>=false, <span class="variable">$checkd</span>=false);;
-}
-</code></pre><p>跟进delCart：</p>
-<pre><code>public static <span class="keyword">function</span> delCart(<span class="variable">$user</span>_id, <span class="variable">$product</span>_ids)
-{
-    if(!isset(<span class="variable">$user</span>_id) || !intval(<span class="variable">$user</span>_id)&gt;<span class="number">0</span> || !<span class="variable">$product</span>_ids) return false;
-    <span class="variable">$transaction</span> = \Yii::<span class="variable">$app-</span>&gt;db-&gt;beginTransaction();
-    try {
-
-        <span class="variable">$cartData</span> = Carts::find()
-                    -&gt;where([<span class="string">"and"</span>,[<span class="string">"="</span>,<span class="string">"user_id"</span>,<span class="variable">$user</span>_id],
-                            [<span class="string">"="</span>,<span class="string">"market_type"</span>,<span class="number">4</span>],
-                            [<span class="string">"&gt;"</span>,<span class="string">"market_id"</span>,<span class="number">0</span>]])
-                    -&gt;all();
-
-        if (!empty(<span class="variable">$cartData</span>)) {
-            foreach (<span class="variable">$cartData</span> as <span class="variable">$v</span>) {
-
-                if (in_array(<span class="variable">$v-</span>&gt;product_id, <span class="variable">$product</span>_ids)) {
-                    <span class="variable">$param</span> = [
-                            <span class="string">'user_id'</span>=&gt;<span class="variable">$user</span>_id,
-                            <span class="string">'goods_id'</span>=&gt;<span class="variable">$v-</span>&gt;goods_id,
-                            <span class="string">'product_id'</span>=&gt;<span class="variable">$v-</span>&gt;product_id,
-                            <span class="string">'num'</span> =&gt;<span class="number">0</span>
-                    ];
-                    \api\MarketApi::model()-&gt;addUserBuyNum(<span class="variable">$param</span>);
-                }
-            }
-        }
-        Carts::deleteAll(<span class="string">"user_id={$user_id} and product_id in({$product_ids})"</span>);
-</code></pre><p>这里可以看到用户输入的数据拼接到了字符串user_id={$user_id} and product_id in({$product_ids})进入了deleteAll方法。这个字符串看起来是一个查询条件。继续跟进deleteAll方法：</p>
-<pre><code>/**
- * Deletes rows <span class="keyword">in</span> the table using the provided conditions.
- * WARNING: If you do not specify any condition, this method will <span class="keyword">delete</span> ALL rows <span class="keyword">in</span> the table.
- *
- * For example, <span class="keyword">to</span> <span class="keyword">delete</span> all customers whose status is <span class="number">3</span>:
- *
- * &lt;!--￼<span class="number">0</span>--&gt;
-
- *
- * @param string|<span class="keyword">array</span> <span class="variable">$condition</span> the conditions that will be put <span class="keyword">in</span> the WHERE part <span class="keyword">of</span> the DELETE SQL.
- * Please refer <span class="keyword">to</span> [[Query::where()]] on how <span class="keyword">to</span> specify this parameter.
- * @param <span class="keyword">array</span> <span class="variable">$params</span> the parameters (name =&gt; <span class="keyword">value</span>) <span class="keyword">to</span> be bound <span class="keyword">to</span> the query.
- * @<span class="keyword">return</span> integer the number <span class="keyword">of</span> rows deleted
- */
-public static <span class="keyword">function</span> deleteAll(<span class="variable">$condition</span> = <span class="string">''</span>, <span class="variable">$params</span> = [])
-{
-    <span class="variable">$command</span> = static::getDb()-&gt;createCommand();
-    <span class="variable">$command-</span>&gt;delete(static::tableName(), <span class="variable">$condition</span>, <span class="variable">$params</span>);
-    //表更新成功时，记录表最后更新时间
-    if(<span class="variable">$command-</span>&gt;execute()){
-        \Yii::<span class="variable">$app-</span>&gt;cache-&gt;set(static::tableName(), time());
-        return true;
-    }
-    return false;
-}
-</code></pre><p>从deleteAll的英文注释看起来，这应该是一个通用的方法。用来删除数据库中的数据。下一步就是确认deleteAll方法是否有做防SQL注入的转义。deleteAll使用了createCommand()。查询Yii 2.0 api文档得知。<a href="http://www.yiiframework.com/doc-2.0/yii-db-command.html" target="_blank" rel="external">Class yii\db\Command</a>可以直接数据库中执行任意SQL语句。比如：</p>
-<pre><code><span class="variable">$users</span> = <span class="variable">$connection-</span>&gt;createCommand(<span class="string">'SELECT * FROM user'</span>)-&gt;queryAll();
-</code></pre><p>该类的delete方法接受3个参数：<br><img src="/images/yiisqli1.png" alt=""><br>可知，delete方法本身提供参数化的方法，可以避免SQL注入。示例为：</p>
-<pre><code>$user=<span class="attribute">Yii</span>::app<span class="function"><span class="params">()</span>-&gt;</span>db-&gt;createCommand<span class="function"><span class="params">()</span>
--&gt;</span><span class="keyword">delete</span>(<span class="string">'tbl_user'</span>, <span class="string">'user_id=:id'</span>, array(<span class="string">':id'</span>=&gt;<span class="number">2</span>));
-</code></pre><p>这里用户输入直接拼接到了$condition里，而condition是Where的条件。可以有两种类型，字符串或者数组。关于Yii如何处理$condition可以参考<a href="http://www.yiiframework.com/doc-2.0/yii-db-query.html#where(" target="_blank" rel="external">api手册</a>-detail).condition为字符串时，直接作为where的条件进入SQL语句。因为这里把用户输入放到了condition字符串中，所以导致了SQL注入。</p>
-<p>#代码修复方案<br>Yii处理$condition的<a href="http://www.yiiframework.com/doc-2.0/yii-db-query.html#where(" target="_blank" rel="external">api手册</a>-detail)中可以得知，conditon为数组的时候有两种形式：</p>
-<pre><code>The <span class="variable">$condition</span> parameter should be either a string (e.g. <span class="string">'id=1'</span>) or an <span class="keyword">array</span>.
-The <span class="variable">$condition</span> specified <span class="keyword">as</span> an <span class="keyword">array</span> can be <span class="keyword">in</span> one <span class="keyword">of</span> the following two formats:
-hash format: [<span class="string">'column1'</span> =&gt; value1, <span class="string">'column2'</span> =&gt; value2, ...]
-operator format: [operator, operand1, operand2, ...]
-</code></pre><p>而条件为in的时候：</p>
-<pre><code><span class="keyword">in</span>: operand <span class="number">1</span> should be a column <span class="keyword">or</span> DB expression, <span class="keyword">and</span> operand <span class="number">2</span> be an <span class="keyword">array</span> representing the range <span class="keyword">of</span> the values that the column <span class="keyword">or</span> DB expression should be <span class="keyword">in</span>. <span class="keyword">For</span> example, [<span class="string">'in'</span>, <span class="string">'id'</span>, [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]] will generate id <span class="keyword">IN</span> (<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>). The <span class="function"><span class="keyword">method</span> <span class="title">will</span> <span class="title">properly</span> <span class="title">quote</span> <span class="title">the</span> <span class="title">column</span> <span class="title">name</span> <span class="title">and</span> <span class="title">escape</span> <span class="title">values</span> <span class="title">in</span> <span class="title">the</span> <span class="title">range</span>.
-
-<span class="title">and</span>:</span> the operands should be concatenated together <span class="keyword">using</span> <span class="keyword">AND</span>. <span class="keyword">For</span> example, [<span class="string">'and'</span>, <span class="string">'id=1'</span>, <span class="string">'id=2'</span>] will generate id=<span class="number">1</span> <span class="keyword">AND</span> id=<span class="number">2</span>. <span class="keyword">If</span> an operand <span class="keyword">is</span> an <span class="keyword">array</span>, it will be converted <span class="keyword">into</span> a string <span class="keyword">using</span> the rules described here. <span class="keyword">For</span> example, [<span class="string">'and'</span>, <span class="string">'type=1'</span>, [<span class="string">'or'</span>, <span class="string">'id=1'</span>, <span class="string">'id=2'</span>]] will generate <span class="keyword">type</span>=<span class="number">1</span> <span class="keyword">AND</span> (id=<span class="number">1</span> <span class="keyword">OR</span> id=<span class="number">2</span>). The <span class="function"><span class="keyword">method</span> <span class="title">will</span> <span class="title">not</span> <span class="title">do</span> <span class="title">any</span> <span class="title">quoting</span> <span class="title">or</span> <span class="title">escaping</span>.</span>
-</code></pre><p>使用in的时候会自动转义，这样也就避免的SQL注入，所以这里使用数组形式就可以避免SQL注入。但是这里貌似也有个坑就是使用and的时候，手册写到The method will not do any quoting or escaping。这样的话使用and，即使使用数组传递参数，如果参数中拼接了用户输入，也可能存在SQL注入。这样的话如果需要使用command类是执行sql，如果and条件中有用户可控数据，就需要使用参数绑定来避免sql注入。</p>
-<p>查找代码中所有condition中使用了字符串方式，并且字符串中拼接了用户输入的代码，排查该类型编码缺陷导致的SQL注入漏洞。</p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>#漏洞发现过程<br>黑盒测试发现。使用工具burpsuite。当在购物车中删除商品时，发送数据包如下：</p>
-<pre><code>POST /cart/miniDel.html HTTP/<span class="number">1.1</span>
-id=<span]]>
-    </summary>
-    
-      <category term="Yii" scheme="http://xdxd.love/tags/Yii/"/>
-    
-      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
     
   </entry>
   

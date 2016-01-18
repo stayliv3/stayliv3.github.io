@@ -4,40 +4,23 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>stcmsV3.6任意重装导致代码执行 | xd_xd&#39;s blog</title>
+    <title>mysql表名大小写敏感问题 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description" content="#问题描述
-STCMS音乐系统V3.6免费版没有对用户重装进行限制。如果用户安装完成之后没有删除install文件夹就会导致应用被重装。通过写文件可以轻易获得shell。
-
-#代码分析
-查看install/index.php文件，没有对cms是否已经安装过做检测。可以直接访问install/index.php重装。
-require(dirname(__FILE__).&quot;/common.inc.ph">
+    <meta name="description">
 <meta property="og:type" content="article">
-<meta property="og:title" content="stcmsV3.6任意重装导致代码执行">
-<meta property="og:url" content="http://xdxd.love/2015/05/12/stcmsV3-6任意重装导致代码执行/index.html">
+<meta property="og:title" content="mysql表名大小写敏感问题">
+<meta property="og:url" content="http://xdxd.love/2016/01/18/mysql表名大小写敏感问题/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="#问题描述
-STCMS音乐系统V3.6免费版没有对用户重装进行限制。如果用户安装完成之后没有删除install文件夹就会导致应用被重装。通过写文件可以轻易获得shell。
-
-#代码分析
-查看install/index.php文件，没有对cms是否已经安装过做检测。可以直接访问install/index.php重装。
-require(dirname(__FILE__).&quot;/common.inc.ph">
-<meta property="og:image" content="http://xdxd.love/images/stcms1.png">
-<meta property="og:image" content="http://xdxd.love/images/stcms2.png">
-<meta property="og:updated_time" content="2015-11-24T07:05:39.000Z">
+<meta property="og:description">
+<meta property="og:updated_time" content="2016-01-18T08:39:34.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="stcmsV3.6任意重装导致代码执行">
-<meta name="twitter:description" content="#问题描述
-STCMS音乐系统V3.6免费版没有对用户重装进行限制。如果用户安装完成之后没有删除install文件夹就会导致应用被重装。通过写文件可以轻易获得shell。
-
-#代码分析
-查看install/index.php文件，没有对cms是否已经安装过做检测。可以直接访问install/index.php重装。
-require(dirname(__FILE__).&quot;/common.inc.ph">
+<meta name="twitter:title" content="mysql表名大小写敏感问题">
+<meta name="twitter:description">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -97,14 +80,14 @@ require(dirname(__FILE__).&quot;/common.inc.ph">
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/05/12/stcmsV3-6任意重装导致代码执行/" title="stcmsV3.6任意重装导致代码执行" itemprop="url">stcmsV3.6任意重装导致代码执行</a>
+      <a href="/2016/01/18/mysql表名大小写敏感问题/" title="mysql表名大小写敏感问题" itemprop="url">mysql表名大小写敏感问题</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2015-05-12T08:07:31.000Z" itemprop="datePublished"> 发表于 May 12 2015</time>
+    <time datetime="2016-01-18T08:38:54.000Z" itemprop="datePublished"> 发表于 Jan 18 2016</time>
     
   </p>
 </header>
@@ -117,103 +100,21 @@ require(dirname(__FILE__).&quot;/common.inc.ph">
 		
 		</div>
 		
-		<p>#问题描述</p>
-<p><a href="http://www.phpstcms.com/uploads/doc/201106/30/0226304850.zip" target="_blank" rel="external">STCMS音乐系统V3.6免费版</a>没有对用户重装进行限制。如果用户安装完成之后没有删除install文件夹就会导致应用被重装。通过写文件可以轻易获得shell。</p>
-<p><img src="/images/stcms1.png" alt=""></p>
-<p>#代码分析</p>
-<p>查看install/index.php文件，没有对cms是否已经安装过做检测。可以直接访问install/index.php重装。</p>
-<pre><code>require(dirname(__FILE_<span class="number">_</span>).<span class="string">"/common.inc.php"</span>);
-<span class="variable">$step</span> = <span class="variable">$step</span> ? <span class="variable">$step</span> : <span class="string">"1"</span>;
-<span class="keyword">if</span>(!in_array(<span class="variable">$step</span>,<span class="keyword">array</span>(<span class="string">"1"</span>,<span class="string">"2"</span>,<span class="string">"3"</span>,<span class="string">"4"</span>)))
-{
-    die(<span class="string">"参数错误！"</span>);exit;
-}
-<span class="variable">$smarty-</span>&gt;template_dir = STCMS_ROOT.<span class="string">"install/tpl"</span>;
-<span class="variable">$smarty-</span>&gt;compile_dir = STCMS_ROOT.<span class="string">"install/cpl"</span>;
-<span class="variable">$smarty-</span>&gt;force_compile = <span class="literal">true</span>;
-<span class="keyword">switch</span>(<span class="variable">$step</span>)
-{
-    case <span class="string">"1"</span>:
-        if(!@chmod(<span class="variable">$smarty-</span>&gt;template_dir, <span class="number">0777</span>) &amp;&amp; !is_writable(<span class="variable">$smarty-</span>&gt;template_dir)) {
-            die(<span class="string">'/install/tpl 文件夹没有读写权限，请设置后再试！'</span>);
-        }
-        if(!@chmod(<span class="variable">$smarty-</span>&gt;compile_dir, <span class="number">0777</span>) &amp;&amp; !is_writable(<span class="variable">$smarty-</span>&gt;compile_dir)) {
-            die(<span class="string">'/install/cpl 文件夹没有读写权限，请设置后再试！'</span>);
-        }
-        <span class="variable">$smarty-</span>&gt;display(<span class="string">"install.html"</span>);
-    break;
-    case <span class="string">"2"</span>:
-        <span class="variable">$webUrl</span> = str_replace(<span class="string">"\\"</span>,<span class="string">"/"</span>, dirname(dirname(<span class="variable">$STCMS</span>[<span class="string">'PHP_SELF'</span>]))).<span class="string">"/"</span>;
-        if(<span class="variable">$webUrl</span> == <span class="string">"//"</span>)
-        {
-            <span class="variable">$webUrl</span> = <span class="string">"/"</span>;
-        }
-        <span class="variable">$dirs</span> = array(<span class="string">'../cache/'</span>, <span class="string">'../data/'</span>, <span class="string">'../template/template_c/'</span>, <span class="string">'../uploads/'</span>, <span class="string">'../config.inc.php'</span>,
-                        <span class="string">'../template/default/'</span>, <span class="string">'../template/admin/'</span>,  <span class="string">'../template/template_admin_c/'</span>, <span class="string">'./data.sql'</span>, <span class="string">'./artist.sql'</span>
-                );
-        sort(<span class="variable">$dirs</span>);
-        foreach(<span class="variable">$dirs</span> as <span class="variable">$tmp</span>)
-        {
-            <span class="variable">$list</span>[<span class="string">'name'</span>] = <span class="variable">$tmp</span>;
-            if(@is_writable(<span class="variable">$tmp</span>) || @chmod(<span class="variable">$tmp</span>, <span class="number">0777</span>))
-            {
-                <span class="variable">$list</span>[<span class="string">'show'</span>] = <span class="string">'&lt;font color=green&gt;可写&lt;/font&gt;'</span>; <span class="variable">$list</span>[<span class="string">'result'</span>] = <span class="string">'&lt;font color=green&gt;√&lt;/font&gt;'</span>;
-            }
-            else
-            {
-                <span class="variable">$list</span>[<span class="string">'show'</span>] = <span class="string">'&lt;font color=red&gt;不可写&lt;/font&gt;'</span>; <span class="variable">$list</span>[<span class="string">'result'</span>] = <span class="string">'&lt;font color=red&gt;× 可能导致程序无法运行&lt;/font&gt;'</span>;
-            }
-            <span class="variable">$items</span>[] = <span class="variable">$list</span>;
-        }
-        <span class="variable">$smarty-</span>&gt;assign(<span class="string">"webUrl"</span>,<span class="variable">$webUrl</span>);
-        <span class="variable">$smarty-</span>&gt;assign(<span class="string">"items"</span>,<span class="variable">$items</span>);
-        <span class="variable">$smarty-</span>&gt;display(<span class="string">"config.html"</span>);
-    break;
-    case <span class="string">"3"</span>:
-        if(empty(<span class="variable">$dbHost</span>)) die(<span class="string">"数据库主机不能为空！"</span>);
-        if(empty(<span class="variable">$dbUser</span>)) die(<span class="string">"数据库用户名不能为空！"</span>);
-        if(empty(<span class="variable">$dbName</span>)) die(<span class="string">"数据库名称不能为空！"</span>);
-        if(empty(<span class="variable">$webUrl</span>)) die(<span class="string">"网站路径不能为空！"</span>);
-        if(!<span class="variable">$conn</span> = @mysql_connect(<span class="variable">$dbHost</span>,<span class="variable">$dbUser</span>,<span class="variable">$dbPwd</span>))
-        {
-            die(<span class="string">"对不起，不能连接数据库服务器，请确保该数据库地址、用户名、密码填写正确！"</span>);
-        }
-        if(!@mysql_select_db(<span class="variable">$dbName</span>,<span class="variable">$conn</span>))
-        {
-            if(<span class="variable">$isBuildDb</span>) {
-                @mysql_query(<span class="string">"CREATE DATABASE {$dbName}"</span>, <span class="variable">$conn</span>);
-            } else {
-                die(<span class="string">'你输入的数据库不存在，你可以选择自动建立数据库！'</span>);
-            }
-        }    
-        if(!@mysql_select_db(<span class="variable">$dbName</span>,<span class="variable">$conn</span>))
-        {
-            die(<span class="string">"系统无法建立上述数据库，请检查权限！"</span>);
-        }
-        <span class="variable">$content</span> = file_get_contents(STCMS_ROOT.<span class="string">"config.inc.php"</span>,<span class="string">"r"</span>);
-        <span class="variable">$content</span> = str_replace(<span class="string">"'dbHost' =&gt; \"</span>{<span class="variable">$CONFIG</span>[<span class="string">'dbHost'</span>]}\<span class="string">""</span>,<span class="string">"'dbHost' =&gt; \"</span>{<span class="variable">$dbHost</span>}\<span class="string">""</span>,<span class="variable">$content</span>);    
-        <span class="variable">$content</span> = str_replace(<span class="string">"'dbUser' =&gt; \"</span>{<span class="variable">$CONFIG</span>[<span class="string">'dbUser'</span>]}\<span class="string">""</span>,<span class="string">"'dbUser' =&gt; \"</span>{<span class="variable">$dbUser</span>}\<span class="string">""</span>,<span class="variable">$content</span>);
-        <span class="variable">$content</span> = str_replace(<span class="string">"'dbPwd' =&gt; \"</span>{<span class="variable">$CONFIG</span>[<span class="string">'dbPwd'</span>]}\<span class="string">""</span>,<span class="string">"'dbPwd' =&gt; \"</span>{<span class="variable">$dbPwd</span>}\<span class="string">""</span>,<span class="variable">$content</span>);
-        <span class="variable">$content</span> = str_replace(<span class="string">"'dbName' =&gt; \"</span>{<span class="variable">$CONFIG</span>[<span class="string">'dbName'</span>]}\<span class="string">""</span>,<span class="string">"'dbName' =&gt; \"</span>{<span class="variable">$dbName</span>}\<span class="string">""</span>,<span class="variable">$content</span>);
-        <span class="variable">$content</span> = str_replace(<span class="string">"'dbPrefix' =&gt; \"</span>{<span class="variable">$CONFIG</span>[<span class="string">'dbPrefix'</span>]}\<span class="string">""</span>,<span class="string">"'dbPrefix' =&gt; \"</span>{<span class="variable">$dbPrefix</span>}\<span class="string">""</span>,<span class="variable">$content</span>);
-        <span class="variable">$content</span> = str_replace(<span class="string">"'webUrl' =&gt; \"</span>{<span class="variable">$CONFIG</span>[<span class="string">'webUrl'</span>]}\<span class="string">""</span>,<span class="string">"'webUrl' =&gt; \"</span>{<span class="variable">$webUrl</span>}\<span class="string">""</span>,<span class="variable">$content</span>);
-        echo <span class="variable">$CONFIG</span>[<span class="string">'dbPrefix'</span>];
-        var_dump(<span class="variable">$content</span>);
-        file_put_contents(STCMS_ROOT.<span class="string">"config.inc.php"</span>,<span class="variable">$content</span>); unset(<span class="variable">$content</span>);
-        echo <span class="string">"数据库配置成功，正在安装数据库... &lt;br&gt;"</span>;
-</code></pre><p>##漏洞利用poc</p>
-<p>配置正确可以连接的数据库信息。数据库表前缀写<br>
-${ phpinfo()}
-，注意phpinfo前有空格。因为表前缀字段处于双引号中，而双引号会被转义，所以无法跳出双引号。采用可变变量的方式执行代码。访问首页可以看到代码执行。</p>
-<p><img src="/images/stcms2.png" alt=""></p>
-<p>##参考资料 </p>
-<p>关于php可变变量的安全性</p>
-<p><a href="http://bluereader.org/article/29859710" target="_blank" rel="external">浅谈PHP可变变量安全续续</a><br><a href="http://bluereader.org/article/31900822" target="_blank" rel="external">浅谈PHP可变变量安全续</a><br><a href="http://www.2cto.com/Article/201110/108389.html" target="_blank" rel="external">浅谈PHP可变变量安全</a></p>
-  
+		  
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
 
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/奇技淫巧/">奇技淫巧</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/mysql/">mysql</a>
+  </div>
 
 </div>
 
@@ -221,7 +122,7 @@ ${ phpinfo()}
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2015/05/12/stcmsV3-6任意重装导致代码执行/" data-title="stcmsV3.6任意重装导致代码执行 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  <div data-url="http://xdxd.love/2016/01/18/mysql表名大小写敏感问题/" data-title="mysql表名大小写敏感问题 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -234,19 +135,11 @@ ${ phpinfo()}
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2015/05/13/代码审计之文件操作/" title="代码审计之文件操作">
-  <strong>上一篇：</strong><br/>
-  <span>
-  代码审计之文件操作</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2015/05/12/代码审计-安装流程checklist/"  title="代码审计之安装流程">
+<a href="/2016/01/14/CRC32算法详解和使用场景/"  title="CRC32算法碰撞测试">
  <strong>下一篇：</strong><br/> 
- <span>代码审计之安装流程
+ <span>CRC32算法碰撞测试
 </span>
 </a>
 </div>
@@ -255,7 +148,7 @@ ${ phpinfo()}
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/05/12/stcmsV3-6任意重装导致代码执行/" data-title="stcmsV3.6任意重装导致代码执行" data-url="http://xdxd.love/2015/05/12/stcmsV3-6任意重装导致代码执行/"></div>
+	<div class="ds-thread" data-thread-key="2016/01/18/mysql表名大小写敏感问题/" data-title="mysql表名大小写敏感问题" data-url="http://xdxd.love/2016/01/18/mysql表名大小写敏感问题/"></div>
 </section>
 
 
