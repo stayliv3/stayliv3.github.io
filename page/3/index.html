@@ -78,31 +78,6 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2015/11/03/几个DOM-XSS案例分析/" title="几个DOM XSS案例分析" itemprop="url">
-  
-    <h1 itemprop="name">几个DOM XSS案例分析</h1>
-    
-     
-           <p itemprop="description" >案例一：
-搜索框输入payload，点击搜索的时候触发。利用起来比较鸡肋，一直对dom xss没有仔细分析过，记录一下dom xss的常规分析方法。
-
-在输入框中输入单引号，查看console报错。定位到goPage函数。
-定位到相关代码：
-function getSearchK</p>
-        
-    
-    <time datetime="2015-11-03T07:03:31.000Z" itemprop="datePublished">Nov 3 2015</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
     <a href="/2015/10/27/Java-JMX-Server-代码执行漏洞利用及防御/" title="Java JMX Server 代码执行漏洞利用及防御" itemprop="url">
   
     <h1 itemprop="name">Java JMX Server 代码执行漏洞利用及防御</h1>
@@ -299,6 +274,29 @@ public function forget_act(){
 
 
 
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2015/08/11/tinyshop商城系统支付漏洞/" title="tinyshop商城系统支付漏洞" itemprop="url">
+  
+    <h1 itemprop="name">tinyshop商城系统支付漏洞</h1>
+    
+     
+           <p itemprop="description" >tinyshop商城使用余额支付的时候，签名机制存在问题。导致签名失效。可以篡改订单金额，从而实现一分钱支付任意金额的订单。
+测试版本tinyshop最新版1.6
+sign字段的签名算法如下：
+public function buildSign($sort_para,$key,$</p>
+        
+    
+    <time datetime="2015-08-11T07:58:03.000Z" itemprop="datePublished">Aug 11 2015</time>
+  </a>
+</section>
+
+
+
+
+
+
 
   <nav id="page-nav" class="clearfix unexpand">
     <a class="extend prev" rel="prev" href="/page/2/"><span></span>Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/4/">Next<span></span></a>
@@ -349,7 +347,7 @@ public function forget_act(){
 		  
 		
 		  
-			<li><a href="/categories/漏洞挖掘/" title="漏洞挖掘">漏洞挖掘<sup>4</sup></a></li>
+			<li><a href="/categories/漏洞挖掘/" title="漏洞挖掘">漏洞挖掘<sup>3</sup></a></li>
 		  
 		
 		  
