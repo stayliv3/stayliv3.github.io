@@ -1,0 +1,635 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>sqlalchemy保存字典对象报语法错误 | xd_xd&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="xd_xd">
+    
+
+    
+    <meta name="description" content="问题分析使用sqlalchemy的过程中,遇到写数据库的时候报语法错误，相关代码如下：
+# 定义requests对象,存储HTTP请求的所有信息:
+class Requests(Base):
+    # 表的名字:
+    __tablename__ = &apos;requests&apos;
+    # 表的结构:
+    id = Column(Integer(), primary_key=True)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="sqlalchemy保存字典对象报语法错误">
+<meta property="og:url" content="http://xdxd.love/2016/01/28/sqlalchemy记录执行sql/index.html">
+<meta property="og:site_name" content="xd_xd's blog">
+<meta property="og:description" content="问题分析使用sqlalchemy的过程中,遇到写数据库的时候报语法错误，相关代码如下：
+# 定义requests对象,存储HTTP请求的所有信息:
+class Requests(Base):
+    # 表的名字:
+    __tablename__ = &apos;requests&apos;
+    # 表的结构:
+    id = Column(Integer(), primary_key=True)">
+<meta property="og:updated_time" content="2016-01-29T02:34:13.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="sqlalchemy保存字典对象报语法错误">
+<meta name="twitter:description" content="问题分析使用sqlalchemy的过程中,遇到写数据库的时候报语法错误，相关代码如下：
+# 定义requests对象,存储HTTP请求的所有信息:
+class Requests(Base):
+    # 表的名字:
+    __tablename__ = &apos;requests&apos;
+    # 表的结构:
+    id = Column(Integer(), primary_key=True)">
+
+    
+    <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="xd_xd&#39;s blog" title="xd_xd&#39;s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="xd_xd&#39;s blog">xd_xd&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:xdxd.love">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/01/28/sqlalchemy记录执行sql/" title="sqlalchemy保存字典对象报语法错误" itemprop="url">sqlalchemy保存字典对象报语法错误</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
+		
+  <p class="article-time">
+    <time datetime="2016-01-28T09:08:12.000Z" itemprop="datePublished"> 发表于 Jan 28 2016</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#问题分析"><span class="toc-number">1.</span> <span class="toc-text">问题分析</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="问题分析">问题分析</h1><p>使用sqlalchemy的过程中,遇到写数据库的时候报语法错误，相关代码如下：</p>
+<pre><code># 定义requests对象,存储HTTP请求的所有信息<span class="value">:
+class <span class="function">Requests</span>(Base):
+    # 表的名字:
+    __tablename__ = <span class="string">'requests'</span>
+    # 表的结构:
+    id = <span class="function">Column</span>(<span class="function">Integer</span>(), primary_key=True)
+    # scheme = <span class="function">Column</span>(<span class="function">String</span>(<span class="number">20</span>))
+    method = <span class="function">Column</span>(<span class="function">String</span>(<span class="number">200</span>))
+    url = <span class="function">Column</span>(<span class="function">String</span>(<span class="number">2000</span>))
+    headers = <span class="function">Column</span>(<span class="function">Text</span>(<span class="number">20000</span>))
+    # cookies = <span class="function">Column</span>(<span class="function">Text</span>(<span class="number">20000</span>))
+    content = <span class="function">Column</span>(<span class="function">Text</span>(<span class="number">20000</span>))
+    # query = <span class="function">Column</span>(<span class="function">Text</span>(<span class="number">20000</span>))
+    timestamp_start = <span class="function">Column</span>(<span class="function">String</span>(<span class="number">2000</span>))
+    urlencoded_form=<span class="function">Column</span>(<span class="function">Text</span>(<span class="number">20000</span>))
+    multipart_form=<span class="function">Column</span>(<span class="function">Text</span>(<span class="number">20000</span>))
+    sqlmap=<span class="function">Column</span>(<span class="function">String</span>(<span class="number">20</span>))
+    xss=<span class="function">Column</span>(<span class="function">String</span>(<span class="number">20</span>))
+
+# 将请求信息写入数据库
+def <span class="function">save_request</span>(flow):
+    newrequest = <span class="function">Requests</span>(
+            # scheme=flow.request.scheme,
+            method=flow.request.method,
+            url=flow.request.url,
+            headers=<span class="function">str</span>(flow.request.headers.__dict__),
+            # headers={<span class="string">'fields'</span>: [[<span class="string">'Host'</span>, <span class="string">'zone.wooyun.org'</span>], [<span class="string">'Proxy-Connection'</span>, <span class="string">'keep-alive'</span>], [<span class="string">'Cache-Control'</span>, <span class="string">'max-age=0'</span>], [<span class="string">'Accept'</span>, <span class="string">'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'</span>], [<span class="string">'Upgrade-Insecure-Requests'</span>, <span class="string">'1'</span>], [<span class="string">'User-Agent'</span>, <span class="string">'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.82 Safari/537.36'</span>], [<span class="string">'Referer'</span>, <span class="string">'http://zone.wooyun.org/content/24881'</span>], [<span class="string">'Accept-Encoding'</span>, <span class="string">'gzip, deflate, sdch'</span>], [<span class="string">'Accept-Language'</span>, <span class="string">'zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4,fr;q=0.2'</span>], [<span class="string">'Cookie'</span>, <span class="string">'__cfduid=dc40888efca4ab0ff91186dc39428d9451452910746; wy_uid=5216UsFxwcFbseAhJt2wKwW3D3TWpih1g71JAjeIlpCT; wy_pwd=8c96%2BGWnQmu1BRR1RePbtZrkAZ6bY8HvlPtgcggYQmaideN8%2F08EAzHsV1XKQ72ZwX7q%2BxN4FJgnfUHorw; wy_token=192c2fd47fa5d03123ced3320c7e580c; PHPSESSID=e0e6vqec509trlqu7tv1lfeu70; bdshare_firstime=1453095346906; login_type=d8d1the3gNwSvY8dSI2oIhzdLszQ8nsd2ne%2Fl6JY; __ads_session=xk9roUMxqgiiIx0CggA=; Hm_lvt_c12f88b5c1cd041a732dea597a5ec94c=1453453560; Hm_lpvt_c12f88b5c1cd041a732dea597a5ec94c=1453876852; Hm_lvt_3faf3a47435cc512f3b86dc12af100d0=1453682212; Hm_lpvt_3faf3a47435cc512f3b86dc12af100d0=1453882158'</span>], [<span class="string">'AlexaToolbar-ALX_NS_PH'</span>, <span class="string">'AlexaToolbar/alxg-3.3'</span>]]},
+            # cookies=flow.request.cookies,
+            content=flow.request.content,
+            # query=flow.request.query,
+            timestamp_start=flow.request.timestamp_start,
+            # id=<span class="function">get_md5_value</span>(flow.request.url+flow.request.content+<span class="function">str</span>(flow.request.timestamp_start))
+            urlencoded_form=flow.request.urlencoded_form,
+            multipart_form=flow.request.multipart_form,
+    )
+    session = <span class="function">DBSession</span>()
+    session.<span class="function">add</span>(newrequest)
+    session.<span class="function">commit</span>()
+    session.<span class="function">close</span>()</span>
+</code></pre><p>当写入的数据类型为字典时，报语法错误。</p>
+<pre><code><span class="name">ProgrammingError</span>: (<span class="name">_mysql_exceptions</span>.<span class="name">ProgrammingError</span>) (<span class="number">1064</span>, <span class="string">'You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near \'\'fields\': "((\'Host\',\'dongweiming.github.io\'),(\'Proxy-Connection\',\'keep-alive\'),(\' at line 1'</span>) [<span class="name">SQL</span>: <span class="atom">u</span><span class="string">'INSERT INTO requests (method, url, headers, content, timestamp_start, urlencoded_form, multipart_form, sqlmap, xss) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)'</span>] [<span class="atom">parameters</span>: (<span class="string">'GET'</span>, <span class="string">'http://dongweiming.github.io/blog/archives/how-to-use-celery/'</span>, {<span class="string">'fields'</span>: [[<span class="string">'Host'</span>, <span class="string">'dongweiming.github.io'</span>], [<span class="string">'Proxy-Connection'</span>, <span class="string">'keep-alive'</span>], [<span class="string">'Cache-Control'</span>, <span class="string">'max-age=0'</span>], [<span class="string">'Accept'</span>, <span class="string">'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'</span>], [<span class="string">'Upgrade-Insecure-Requests'</span>, <span class="string">'1'</span>], [<span class="string">'User-Agent'</span>, <span class="string">'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.82 Safari/537.36'</span>], [<span class="string">'Referer'</span>, <span class="string">'https://www.google.com/'</span>], [<span class="string">'Accept-Encoding'</span>, <span class="string">'gzip, deflate, sdch'</span>], [<span class="string">'Accept-Language'</span>, <span class="string">'zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4,fr;q=0.2'</span>], [<span class="string">'Cookie'</span>, <span class="string">'__utma=221486477.1712369208.1453863719.1453863719.1453972410.2; __utmc=221486477; __utmz=221486477.1453972410.2.2.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided)'</span>], [<span class="string">'AlexaToolbar-ALX_NS_PH'</span>, <span class="string">'AlexaToolbar/alxg-3.3'</span>], [<span class="string">'If-Modified-Since'</span>, <span class="string">'Tue, 26 Jan 2016 10:36:35 GMT'</span>]]}, <span class="string">''</span>, <span class="number">1454034516.300893</span>, <span class="name">None</span>, <span class="name">None</span>, <span class="name">None</span>, <span class="name">None</span>)]
+</code></pre><p>一开始看到语法错误，感觉有SQL注入啊。可是sqlalchemy应该是用预编译的方式，报错信息也显示了，确实是采用了预编译的方式。</p>
+<pre><code>u'<span class="type">INSERT</span> <span class="type">INTO</span> requests (<span class="keyword">method</span>, url, headers, content, timestamp_start, urlencoded_form, multipart_form, sqlmap, xss) <span class="type">VALUES</span> (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+</code></pre><p>使用如下python代码可以记录sqlalchemy执行的sql语句。</p>
+<pre><code># <span class="tag">logging</span><span class="class">.basicConfig</span>(filename=<span class="string">'db.log'</span>)
+# <span class="tag">logging</span><span class="class">.getLogger</span>(<span class="string">'sqlalchemy.engine'</span>)<span class="class">.setLevel</span>(logging.INFO)
+</code></pre><p>经过调试分析发现，如果传入类型为字典，就会导致</p>
+<pre><code>ProgrammingError: (_mysql_exceptions.ProgrammingError) (1064, 'You have <span class="keyword">an</span> <span class="keyword">error</span> <span class="keyword">in</span> your SQL <span class="keyword">syntax</span>; 
+</code></pre><p>错误。</p>
+<p>sqlalchemy的bug？是否有可能造成sql注入？</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/代码审计/">代码审计</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/python/">python</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://xdxd.love/2016/01/28/sqlalchemy记录执行sql/" data-title="sqlalchemy保存字典对象报语法错误 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2016/01/25/gourdscan-docker镜像/"  title="gourdscan docker镜像">
+ <strong>下一篇：</strong><br/> 
+ <span>gourdscan docker镜像
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/01/28/sqlalchemy记录执行sql/" data-title="sqlalchemy保存字典对象报语法错误" data-url="http://xdxd.love/2016/01/28/sqlalchemy记录执行sql/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#问题分析"><span class="toc-number">1.</span> <span class="toc-text">问题分析</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">新浪微博</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=5256150165&verifier=0935d97e&dpc=1"></iframe>
+</div>
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>13</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/前端安全/" title="前端安全">前端安全<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/加密解密/" title="加密解密">加密解密<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/奇技淫巧/" title="奇技淫巧">奇技淫巧<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>2</sup></a></li>
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/漏洞挖掘/" title="漏洞挖掘">漏洞挖掘<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/转载收藏/" title="转载收藏">转载收藏<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/黑盒测试/" title="黑盒测试">黑盒测试<sup>8</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/php/" title="php">php<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/qemu/" title="qemu">qemu<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/支付漏洞/" title="支付漏洞">支付漏洞<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/sqlmap/" title="sqlmap">sqlmap<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/sso/" title="sso">sso<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/解包/" title="解包">解包<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcpdump/" title="tcpdump">tcpdump<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/密码学/" title="密码学">密码学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/csrf/" title="csrf">csrf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/github/" title="github">github<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ctf/" title="ctf">ctf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/xposed/" title="xposed">xposed<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/保险箱/" title="保险箱">保险箱<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/php-wdcp/" title="php,wdcp">php,wdcp<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/任意文件删除/" title="任意文件删除">任意文件删除<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ssi/" title="ssi">ssi<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/waf/" title="waf">waf<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://sco4x0.com" target="_blank" title="sco4x0&#39;s blog">sco4x0&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://virusdefender.net" target="_blank" title="virusdefender&#39;s blog">virusdefender&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackersb.cn/" target="_blank" title="Striker&#39;s blog">Striker&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://www.leavesongs.com/" target="_blank" title="离别歌">离别歌</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.stardustsky.net/" target="_blank" title="Stardustsky博客">Stardustsky博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.waitalone.cn/" target="_blank" title="独自等待">独自等待</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.cnblogs.com/S4b0r/" target="_blank" title="S4b0r&#39; blog">S4b0r&#39; blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.leesec.com/" target="_blank" title="leesec">leesec</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+</aside>
+</div>
+    </div>
+    <footer></footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"xdxd"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253479891'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1253479891' type='text/javascript'%3E%3C/script%3E"));</script>
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

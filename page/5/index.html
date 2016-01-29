@@ -78,6 +78,51 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
+    <a href="/2015/06/09/代码审计之命令执行/" title="代码审计之命令执行" itemprop="url">
+  
+    <h1 itemprop="name">代码审计之命令执行</h1>
+    
+     
+           <p itemprop="description" >命令执行可以细分成系统命令执行和代码注入。漏洞成因都是因为用户输入进入了关键函数导致的。
+
+#代码注入
+assert
+bool assert ( mixed $assertion [, string $description ] )
+assert() 会检查指定的 asserti</p>
+        
+    
+    <time datetime="2015-06-09T06:43:22.000Z" itemprop="datePublished">Jun 9 2015</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2015/06/05/代码审计之ecshop低权限用户提权/" title="代码审计之ecshop低权限用户提权" itemprop="url">
+  
+    <h1 itemprop="name">代码审计之ecshop低权限用户提权</h1>
+    
+     
+           <p itemprop="description" ></p>
+        
+    
+    <time datetime="2015-06-05T06:28:00.000Z" itemprop="datePublished">Jun 5 2015</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
     <a href="/2015/06/05/代码审计之wdcp多处漏洞/" title="代码审计之wdcp多处漏洞" itemprop="url">
   
     <h1 itemprop="name">代码审计之wdcp多处漏洞</h1>
@@ -264,50 +309,6 @@ Content-Length</p>
 
 
 
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2015/05/14/代码审计之SQL注入/" title="代码审计之SQL注入" itemprop="url">
-  
-    <h1 itemprop="name">代码审计之SQL注入</h1>
-    
-     
-           <p itemprop="description" >SQL的情况比较多，通常来说有两种防御的方式。在接受数据的时候进行防御和在数据进入SQL之前进行防御。好的设计应该是在数据进入SQL之前进行防御。国内各种CMS的层出不穷的SQL可以证明，在接收数据的时候进行防御不是一个好的方案。各种成熟的MVC架构也是在数据进入危险函数之前的最</p>
-        
-    
-    <time datetime="2015-05-14T11:35:46.000Z" itemprop="datePublished">May 14 2015</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2015/05/14/b2b-builderSQL注入漏洞/" title="b2b-builder 多处SQL注入漏洞" itemprop="url">
-  
-    <h1 itemprop="name">b2b-builder 多处SQL注入漏洞</h1>
-    
-     
-           <p itemprop="description" >代码分析比较经典的xff sqli注入。b2bbuilder在有做addslash。但是获取ip的函数如下：
-function getip()
-{
-    if (isset($_SERVER)) {
-    if (isset($_SERVER[&#39;HTTP_X_FORWARDE</p>
-        
-    
-    <time datetime="2015-05-14T11:04:03.000Z" itemprop="datePublished">May 14 2015</time>
-  </a>
-</section>
-
-
-
-
-
-
 
   <nav id="page-nav" class="clearfix unexpand">
     <a class="extend prev" rel="prev" href="/page/4/"><span></span>Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/6/">Next<span></span></a>
@@ -340,7 +341,7 @@ function getip()
 		  
 		
 		  
-			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>12</sup></a></li>
+			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>13</sup></a></li>
 		  
 		
 		  
@@ -362,7 +363,7 @@ function getip()
 		  
 		
 		  
-			<li><a href="/categories/漏洞挖掘/" title="漏洞挖掘">漏洞挖掘<sup>3</sup></a></li>
+			<li><a href="/categories/漏洞挖掘/" title="漏洞挖掘">漏洞挖掘<sup>4</sup></a></li>
 		  
 		
 		  
@@ -407,7 +408,7 @@ function getip()
 			
 		
 			
-				<li><a href="/tags/ssi/" title="ssi">ssi<sup>1</sup></a></li>
+				<li><a href="/tags/sqlmap/" title="sqlmap">sqlmap<sup>1</sup></a></li>
 			
 		
 			
@@ -459,11 +460,11 @@ function getip()
 			
 		
 			
-				<li><a href="/tags/waf/" title="waf">waf<sup>1</sup></a></li>
+				<li><a href="/tags/ssi/" title="ssi">ssi<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/sqlmap/" title="sqlmap">sqlmap<sup>1</sup></a></li>
+				<li><a href="/tags/waf/" title="waf">waf<sup>1</sup></a></li>
 			
 		
 		</ul>
