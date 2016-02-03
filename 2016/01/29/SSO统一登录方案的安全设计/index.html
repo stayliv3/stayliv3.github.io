@@ -24,7 +24,7 @@
 <meta property="og:image" content="http://xdxd.love/images/sso1.png">
 <meta property="og:image" content="http://xdxd.love/images/sso2.png">
 <meta property="og:image" content="http://xdxd.love/images/sso3.png">
-<meta property="og:updated_time" content="2016-02-03T06:37:06.000Z">
+<meta property="og:updated_time" content="2016-02-03T06:48:27.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SSO统一登录方案的安全设计">
 <meta name="twitter:description" content="保持登录状态无状态协议中认证状态保持方案的一些思考这里对HTTP协议应用中如何保持用户的登录状态做了一些探讨。基本是两个思路一个保存在服务端，一个保存在客户端。
@@ -119,6 +119,12 @@
 <h1 id="设计方案">设计方案</h1><p>途牛首席架构师博客</p>
 <p><img src="/images/sso2.png" alt=""></p>
 <p>猎豹移动</p>
+<blockquote>
+<p>共享Cookie，这种是我们最先采取的方式。</p>
+<p>当我们的子系统都在一个父级域名下时，我们可以将Cookie种在父域下，这样浏览器同域名下的Cookie则可以共享，这样可以通过Cookie加解密的算法获取用户SessionID，从而实现SSO。<br>但是，后面我们发现这种方式有几种弊端：<br>a. 所有同域名的系统都能获取SessionID，易被修改且不安全；<br>b. 跨域无法使用。<br>所以到后面抛弃这种做法。</p>
+<p>Ticket验证，我们目前采取的是这种方式。</p>
+<p>这种实现的SSO有以下几个步骤：<br>a. 用户访问某个子系统，发现如果未登录，则引导用户跳转到SSO登录页面；<br>b. 判断SSO是否已经登录；<br>c. 如果已经登录，直接跳转到回调地址，并返回认证ticket；<br>d. 如果未登录，用户正确输入用户名/密码，认证通过跳转到回调地址，并返回认证ticket；<br>e. 子系统获取ticket，调用SSO获取用户uid等信息，成功后让用户登录。</p>
+</blockquote>
 <p><img src="/images/sso3.png" alt=""></p>
 <h1 id="设计方案分类">设计方案分类</h1><p>探讨SSO设计方案这个话题的时候，通常会看到多种方案，但鲜有从总结的角度进行分类的思考。曾尝试按照第一次自动登录实现的流程来分类，比如是否需要跳转中心应用来实现自动登录，后来觉得这样分类过于形式。以及维持登录状态的方式是server_side_session还是client_side_session来进行分类。server_side_session和client_side_session是一种可以使用的分类依据，但是这是登录状态维持的不同方式，在单点登录中，除了登录，更重要的是要单点这个特性。</p>
 <p>最后考虑到做这个分析的目的是安全架构和安全审计，所以可以使用SSO各子系统登录状态的隔离作为一个分类依据，来总结和分析各个单点登录方案的安全性。隔离的程度越高，系统越安全。</p>
