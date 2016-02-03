@@ -4,32 +4,31 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>Bar Mitzvah Attack | xd_xd&#39;s blog</title>
+    <title>SSO统一登录方案的安全设计 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description" content="漏洞危害：RC4 算法存在缺陷，它能够在某些情况下泄露SSL/TLS加密流量中的密文，从而将账户用户名密码，信用卡数据和其他敏感信息泄露给黑客。
-漏洞评级： 高
-修复建议：禁用RC4算法 2015-1-5 开始 github 已经停止支持RC4 算法了。禁用RC4会导致IE6无法访问
-检测方式：linux shell下执行： openssl s_client -connect ys7.com:44">
+    <meta name="description" content="保持登录状态无状态协议中认证状态保持方案的一些思考这里对HTTP协议应用中如何保持用户的登录状态做了一些探讨。基本是两个思路一个保存在服务端，一个保存在客户端。
+
+这些想法来自于对所见过的案例的总结。后来在重构Sec-News之路中发现了client-side-session和server-side-session的概念。原来对于这两种保存登录状态的方式都早就有了比较好的总结。见维基百科Clien">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Bar Mitzvah Attack">
-<meta property="og:url" content="http://xdxd.love/2015/03/30/Bar-Mitzvah-Attack/index.html">
+<meta property="og:title" content="SSO统一登录方案的安全设计">
+<meta property="og:url" content="http://xdxd.love/2016/01/29/SSO统一登录方案的安全设计/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="漏洞危害：RC4 算法存在缺陷，它能够在某些情况下泄露SSL/TLS加密流量中的密文，从而将账户用户名密码，信用卡数据和其他敏感信息泄露给黑客。
-漏洞评级： 高
-修复建议：禁用RC4算法 2015-1-5 开始 github 已经停止支持RC4 算法了。禁用RC4会导致IE6无法访问
-检测方式：linux shell下执行： openssl s_client -connect ys7.com:44">
-<meta property="og:updated_time" content="2015-11-24T03:27:37.000Z">
+<meta property="og:description" content="保持登录状态无状态协议中认证状态保持方案的一些思考这里对HTTP协议应用中如何保持用户的登录状态做了一些探讨。基本是两个思路一个保存在服务端，一个保存在客户端。
+
+这些想法来自于对所见过的案例的总结。后来在重构Sec-News之路中发现了client-side-session和server-side-session的概念。原来对于这两种保存登录状态的方式都早就有了比较好的总结。见维基百科Clien">
+<meta property="og:image" content="http://xdxd.love/images/sso1.png">
+<meta property="og:image" content="http://xdxd.love/images/sso2.png">
+<meta property="og:updated_time" content="2016-02-03T06:31:52.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Bar Mitzvah Attack">
-<meta name="twitter:description" content="漏洞危害：RC4 算法存在缺陷，它能够在某些情况下泄露SSL/TLS加密流量中的密文，从而将账户用户名密码，信用卡数据和其他敏感信息泄露给黑客。
-漏洞评级： 高
-修复建议：禁用RC4算法 2015-1-5 开始 github 已经停止支持RC4 算法了。禁用RC4会导致IE6无法访问
-检测方式：linux shell下执行： openssl s_client -connect ys7.com:44">
+<meta name="twitter:title" content="SSO统一登录方案的安全设计">
+<meta name="twitter:description" content="保持登录状态无状态协议中认证状态保持方案的一些思考这里对HTTP协议应用中如何保持用户的登录状态做了一些探讨。基本是两个思路一个保存在服务端，一个保存在客户端。
+
+这些想法来自于对所见过的案例的总结。后来在重构Sec-News之路中发现了client-side-session和server-side-session的概念。原来对于这两种保存登录状态的方式都早就有了比较好的总结。见维基百科Clien">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -89,14 +88,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/03/30/Bar-Mitzvah-Attack/" title="Bar Mitzvah Attack" itemprop="url">Bar Mitzvah Attack</a>
+      <a href="/2016/01/29/SSO统一登录方案的安全设计/" title="SSO统一登录方案的安全设计" itemprop="url">SSO统一登录方案的安全设计</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2015-03-30T02:28:08.000Z" itemprop="datePublished"> 发表于 Mar 30 2015</time>
+    <time datetime="2016-01-29T06:06:03.000Z" itemprop="datePublished"> 发表于 Jan 29 2016</time>
     
   </p>
 </header>
@@ -105,61 +104,39 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#保持登录状态"><span class="toc-number">1.</span> <span class="toc-text">保持登录状态</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#自定义术语"><span class="toc-number">2.</span> <span class="toc-text">自定义术语</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#设计方案"><span class="toc-number">3.</span> <span class="toc-text">设计方案</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#设计方案分类"><span class="toc-number">4.</span> <span class="toc-text">设计方案分类</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#信任凭据"><span class="toc-number">5.</span> <span class="toc-text">信任凭据</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#统一登出的问题"><span class="toc-number">6.</span> <span class="toc-text">统一登出的问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#UCenter架构分析"><span class="toc-number">7.</span> <span class="toc-text">UCenter架构分析</span></a></li></ol>
 		
 		</div>
 		
-		<p>漏洞危害：RC4 算法存在缺陷，它能够在某些情况下泄露SSL/TLS加密流量中的密文，从而将账户用户名密码，信用卡数据和其他敏感信息泄露给黑客。</p>
-<p>漏洞评级： 高</p>
-<p>修复建议：禁用RC4算法 2015-1-5 开始 github 已经停止支持RC4 算法了。禁用RC4会导致IE6无法访问</p>
-<p>检测方式：linux shell下执行： openssl s_client -connect ys7.com:443 -cipher RC4</p>
-<pre><code><span class="attr_selector">[root@localhost ~]</span># <span class="tag">openssl</span> <span class="tag">s_client</span> <span class="tag">-connect</span> <span class="tag">ys7</span><span class="class">.com</span><span class="pseudo">:443</span> <span class="tag">-cipher</span> <span class="tag">RC4</span>
-<span class="tag">CONNECTED</span>(<span class="number">00000003</span>)
-<span class="tag">140184490301256</span><span class="pseudo">:error</span><span class="pseudo">:14077410</span><span class="pseudo">:SSL</span> <span class="tag">routines</span><span class="pseudo">:SSL23_GET_SERVER_HELLO</span><span class="pseudo">:sslv3</span> <span class="tag">alert</span> <span class="tag">handshake</span> <span class="tag">failure</span><span class="pseudo">:s23_clnt</span><span class="class">.c</span><span class="pseudo">:741</span>:
-<span class="tag">---</span>
-<span class="tag">no</span> <span class="tag">peer</span> <span class="tag">certificate</span> <span class="tag">available</span>
-<span class="tag">---</span>
-<span class="tag">No</span> <span class="tag">client</span> <span class="tag">certificate</span> <span class="tag">CA</span> <span class="tag">names</span> <span class="tag">sent</span>
-<span class="tag">---</span>
-<span class="tag">SSL</span> <span class="tag">handshake</span> <span class="tag">has</span> <span class="tag">read</span> <span class="tag">7</span> <span class="tag">bytes</span> <span class="tag">and</span> <span class="tag">written</span> <span class="tag">82</span> <span class="tag">bytes</span>
-<span class="tag">---</span>
-<span class="tag">New</span>, (NONE), <span class="tag">Cipher</span> <span class="tag">is</span> (NONE)
-<span class="tag">Secure</span> <span class="tag">Renegotiation</span> <span class="tag">IS</span> <span class="tag">NOT</span> <span class="tag">supported</span>
-<span class="tag">Compression</span>: <span class="tag">NONE</span>
-<span class="tag">Expansion</span>: <span class="tag">NONE</span>
-<span class="tag">---</span>
-</code></pre><p>返回alert handshake failure: 说明不支持rc4算法。<br>返回证书相关信息说明支持RC4.如下：</p>
-<pre><code>[root@localhost ~]# openssl s_client -connect adobe.com:443 -cipher RC4
-CONNECTED(00000003)
-depth=3 C = <span class="keyword">US</span>, O = <span class="string">"VeriSign, Inc."</span>, <span class="keyword">OU</span> = <span class="keyword">Class</span> 3 Public Primary Certification Authority
-verify <span class="keyword">return</span>:1
-depth=2 C = <span class="keyword">US</span>, O = <span class="string">"VeriSign, Inc."</span>, <span class="keyword">OU</span> = VeriSign Trust Network, <span class="keyword">OU</span> = <span class="string">"(c) 2006 VeriSign, Inc. - For authorized use only"</span>, CN = VeriSign <span class="keyword">Class</span> 3 Public Primary Certification Authority - G5
-verify <span class="keyword">return</span>:1
-depth=1 C = <span class="keyword">US</span>, O = <span class="string">"VeriSign, Inc."</span>, <span class="keyword">OU</span> = VeriSign Trust Network, <span class="keyword">OU</span> = Terms of <span class="keyword">use</span> at https:<span class="comment">//www.verisign.com/rpa (c)10, CN = VeriSign Class 3 International Server CA - G3</span>
-verify <span class="keyword">return</span>:1
-depth=0 C = <span class="keyword">US</span>, <span class="keyword">ST</span> = California, <span class="keyword">L</span> = San Jose, O = Adobe Systems Incorporated, <span class="keyword">OU</span> = IT Load Balancer Service, CN = www.adobe.com
-verify <span class="keyword">return</span>:1
----
-Certificate chain
-0 s:/C=<span class="keyword">US</span>/<span class="keyword">ST</span>=California/<span class="keyword">L</span>=San Jose/O=Adobe Systems Incorporated/<span class="keyword">OU</span>=IT Load Balancer Service/CN=www.adobe.com
-i:/C=<span class="keyword">US</span>/O=VeriSign, Inc./<span class="keyword">OU</span>=VeriSign Trust Network/<span class="keyword">OU</span>=Terms of <span class="keyword">use</span> at https:<span class="comment">//www.verisign.com/rpa (c)10/CN=VeriSign Class 3 International Server CA - G3</span>
-1 s:/C=<span class="keyword">US</span>/O=VeriSign, Inc./<span class="keyword">OU</span>=VeriSign Trust Network/<span class="keyword">OU</span>=Terms of <span class="keyword">use</span> at https:<span class="comment">//www.verisign.com/rpa (c)10/CN=VeriSign Class 3 International Server CA - G3</span>
-i:/C=<span class="keyword">US</span>/O=VeriSign, Inc./<span class="keyword">OU</span>=VeriSign Trust Network/<span class="keyword">OU</span>=(c) 2006 VeriSign, Inc. - <span class="keyword">For</span> authorized <span class="keyword">use</span> only/CN=VeriSign <span class="keyword">Class</span> 3 Public Primary Certification Authority - G5
-2 s:/C=<span class="keyword">US</span>/O=VeriSign, Inc./<span class="keyword">OU</span>=VeriSign Trust Network/<span class="keyword">OU</span>=(c) 2006 VeriSign, Inc. - <span class="keyword">For</span> authorized <span class="keyword">use</span> only/CN=VeriSign <span class="keyword">Class</span> 3 Public Primary Certification Authority - G5
-i:/C=<span class="keyword">US</span>/O=VeriSign, Inc./<span class="keyword">OU</span>=<span class="keyword">Class</span> 3 Public Primary Certification Authority
----
-Server certificate
------BEGIN CERTIFICATE-----
-MIIFWzCCBEOgAwIBAgIQUpTiPwuMEg3M1gB/pbuYwDANBgkqhkiG9w0BAQUFADCB
-vDELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDlZlcmlTaWduLCBJbmMuMR8wHQYDVQQL
-ExZWZXJpU2lnbiBUcnVzdCBOZXR3b3JrMTswOQYDVQQLEzJUZXJtcyBvZiB1c2Ug
-YXQgaHR0cHM6Ly93d3cudmVyaXNpZ24uY29tL3JwYSAoYykxMDE2MDQGA1UEAxMt
-</code></pre><p>参考资料：<br><a href="http://www.freebuf.com/news/62301.html" target="_blank" rel="external">http://www.freebuf.com/news/62301.html</a><br><a href="https://sobug.com/article/detail/17" target="_blank" rel="external">https://sobug.com/article/detail/17</a></p>
-  
+		<h1 id="保持登录状态">保持登录状态</h1><p><a href="http://xdxd.love/2016/01/07/%E6%97%A0%E7%8A%B6%E6%80%81%E5%8D%8F%E8%AE%AE%E4%B8%AD%E8%AE%A4%E8%AF%81%E7%8A%B6%E6%80%81%E4%BF%9D%E6%8C%81%E6%96%B9%E6%A1%88%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83/">无状态协议中认证状态保持方案的一些思考</a>这里对HTTP协议应用中如何保持用户的登录状态做了一些探讨。基本是两个思路一个保存在服务端，一个保存在客户端。</p>
+<p><img src="/images/sso1.png" alt=""></p>
+<p>这些想法来自于对所见过的案例的总结。后来在<a href="https://www.leavesongs.com/PYTHON/rewrite-sec-news.html" target="_blank" rel="external">重构Sec-News之路</a>中发现了client-side-session和server-side-session的概念。原来对于这两种保存登录状态的方式都早就有了比较好的总结。见维基百科<a href="https://en.wikipedia.org/wiki/Session_(computer_science" target="_blank" rel="external">Client_side_web_sessions</a>#Client_side_web_sessions)。client-side-session的优势和弱点也都有比较好的总结。</p>
+<h1 id="自定义术语">自定义术语</h1><p>单点登录SSO（Single Sign On）说得简单点就是在一个多系统共存的环境下，用户在其中一个应用中登录之后，再访问其他应用不再需要重新登录。用户的登录状态可以在所有的应用中共享。</p>
+<p>中心应用： 提供统一登录入口的应用称为中心应用。中心应用也提供很多其他的服务接口，提供登录入口只是其中一个功能。</p>
+<p>子应用： SSO环境中的系统，除了中心应用，其他应用称为子应用。</p>
+<p>先看几个实践中曾使用的架构设计。</p>
+<h1 id="设计方案">设计方案</h1><p>途牛首席架构师</p>
+<p><img src="/images/sso2.png" alt=""></p>
+<h1 id="设计方案分类">设计方案分类</h1><p>探讨SSO设计方案这个话题的时候，通常会看到多种方案，但鲜有从总结的角度进行分类的思考。曾尝试按照第一次自动登录实现的流程来分类，比如是否需要跳转中心应用来实现自动登录，后来觉得这样分类过于形式。以及维持登录状态的方式是server_side_session还是client_side_session来进行分类。server_side_session和client_side_session是一种可以使用的分类依据，但是这是登录状态维持的不同方式，在单点登录中，除了登录，更重要的是要单点这个特性。</p>
+<p>最后考虑到做这个分析的目的是安全架构和安全审计，所以可以使用SSO各子系统登录状态的隔离作为一个分类依据，来总结和分析各个单点登录方案的安全性。隔离的程度越高，系统越安全。</p>
+<h1 id="信任凭据">信任凭据</h1><p>session，</p>
+<p>信任凭据，密码的角色</p>
+<p>信任的产生，信任的存储，信任的传输，信任的验证，信任的撤销</p>
+<h1 id="统一登出的问题">统一登出的问题</h1><h1 id="UCenter架构分析">UCenter架构分析</h1>  
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
 
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/安全设计/">安全设计</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/SSO/">SSO</a>
+  </div>
 
 </div>
 
@@ -167,7 +144,7 @@ YXQgaHR0cHM6Ly93d3cudmVyaXNpZ24uY29tL3JwYSAoYykxMDE2MDQGA1UEAxMt
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2015/03/30/Bar-Mitzvah-Attack/" data-title="Bar Mitzvah Attack | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  <div data-url="http://xdxd.love/2016/01/29/SSO统一登录方案的安全设计/" data-title="SSO统一登录方案的安全设计 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -180,19 +157,11 @@ YXQgaHR0cHM6Ly93d3cudmVyaXNpZ24uY29tL3JwYSAoYykxMDE2MDQGA1UEAxMt
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2015/03/30/安全体系建设/" title="安全体系建设的一点思考">
-  <strong>上一篇：</strong><br/>
-  <span>
-  安全体系建设的一点思考</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2015/03/25/maccms/"  title="maccms urldecode导致的注入">
+<a href="/2016/01/28/sqlalchemy记录执行sql/"  title="sqlalchemy保存字典对象报语法错误">
  <strong>下一篇：</strong><br/> 
- <span>maccms urldecode导致的注入
+ <span>sqlalchemy保存字典对象报语法错误
 </span>
 </a>
 </div>
@@ -201,7 +170,7 @@ YXQgaHR0cHM6Ly93d3cudmVyaXNpZ24uY29tL3JwYSAoYykxMDE2MDQGA1UEAxMt
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/03/30/Bar-Mitzvah-Attack/" data-title="Bar Mitzvah Attack" data-url="http://xdxd.love/2015/03/30/Bar-Mitzvah-Attack/"></div>
+	<div class="ds-thread" data-thread-key="2016/01/29/SSO统一登录方案的安全设计/" data-title="SSO统一登录方案的安全设计" data-url="http://xdxd.love/2016/01/29/SSO统一登录方案的安全设计/"></div>
 </section>
 
 
@@ -211,7 +180,7 @@ YXQgaHR0cHM6Ly93d3cudmVyaXNpZ24uY29tL3JwYSAoYykxMDE2MDQGA1UEAxMt
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#保持登录状态"><span class="toc-number">1.</span> <span class="toc-text">保持登录状态</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#自定义术语"><span class="toc-number">2.</span> <span class="toc-text">自定义术语</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#设计方案"><span class="toc-number">3.</span> <span class="toc-text">设计方案</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#设计方案分类"><span class="toc-number">4.</span> <span class="toc-text">设计方案分类</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#信任凭据"><span class="toc-number">5.</span> <span class="toc-text">信任凭据</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#统一登出的问题"><span class="toc-number">6.</span> <span class="toc-text">统一登出的问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#UCenter架构分析"><span class="toc-number">7.</span> <span class="toc-text">UCenter架构分析</span></a></li></ol>
  
   </div>
 
