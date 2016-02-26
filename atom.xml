@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-01-29T02:34:13.000Z</updated>
+  <updated>2016-02-26T07:29:31.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -13,6 +13,39 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[centos 6安装mitmproxy]]></title>
+    <link href="http://xdxd.love/2016/02/26/centos-6%E5%AE%89%E8%A3%85mitmproxy/"/>
+    <id>http://xdxd.love/2016/02/26/centos-6安装mitmproxy/</id>
+    <published>2016-02-26T07:18:01.000Z</published>
+    <updated>2016-02-26T07:29:31.000Z</updated>
+    <content type="html"><![CDATA[<p>mitmproxy官方没有在centos上的安装说明。在centos6.7上安装失败多次，最后按照<a href="http://pacess.blogspot.com/2014/11/install-mitmproxy-on-centos.html" target="_blank" rel="external">在 CentOS 下安裝 mitmproxy</a>的说明，安装成功。</p>
+<pre><code>試過幾次失敗後，最終都能成功安裝在 CentOS <span class="number">6</span>。問題是出在 Python <span class="number">2.6</span> 及 Python <span class="number">3.4</span>。原來「mitmproxy」在 Python <span class="number">2.7</span> 才能順利安裝。要是使用 CentOS <span class="number">7</span> 的話，隨機附送的就是 Python <span class="number">2.7</span>。安裝「mitmproxy」的步驟如下：
+<span class="number">1.</span> 下載 Python 的 PIP 工具
+    wget https:<span class="comment">//bootstrap.pypa.io/get-pip.py</span>
+<span class="number">2.</span> 安裝 Python <span class="number">2.7</span> 的 PIP
+    python get-pip.py
+<span class="number">3.</span> 下載 Python 的 EZ Setup
+    wget https:<span class="comment">//bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py</span>
+<span class="number">4.</span> 安裝 Python <span class="number">2.7</span> 的 EZ Setup
+    python ez_setup.py
+<span class="number">5.</span> 安裝需要的封包
+    yum -y install python-pyasn1 python-flask python-urwid readline-devel gdbm-devel bzip2-devel ncurses-devel sqlite-devel tk-devel gcc python-setuptools python-pip python27-pip newt-python python-devel python27-devel python-pyasn1 pyOpenSSL gcc libxml2-devel libxslt-devel libffi-devel openssl-devel
+<span class="number">6.</span> 安裝 pyOpenSSL <span class="number">0.14</span>
+    easy_install http:<span class="comment">//pypi.python.org/packages/source/p/pyOpenSSL/pyOpenSSL-0.12.tar.gz</span>
+</code></pre><p>最后 pip install mitmporxy 就好。</p>
+<p><img src="/images/mitmproxy1.JPG" alt=""></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>mitmproxy官方没有在centos上的安装说明。在centos6.7上安装失败多次，最后按照<a href="http://pacess.blogspot.com/2014/11/install-mitmproxy-on-centos.html" target="_b]]>
+    </summary>
+    
+      <category term="mitmproxy" scheme="http://xdxd.love/tags/mitmproxy/"/>
+    
+      <category term="折腾不止" scheme="http://xdxd.love/categories/%E6%8A%98%E8%85%BE%E4%B8%8D%E6%AD%A2/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[sqlalchemy保存字典对象报语法错误]]></title>
@@ -999,42 +1032,6 @@ Welcome!
     <summary type="html">
     
     </summary>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[华山杯CTF做过的几道题]]></title>
-    <link href="http://xdxd.love/2015/11/23/%E5%8D%8E%E5%B1%B1%E6%9D%AFCTF%E5%81%9A%E8%BF%87%E7%9A%84%E5%87%A0%E9%81%93%E9%A2%98/"/>
-    <id>http://xdxd.love/2015/11/23/华山杯CTF做过的几道题/</id>
-    <published>2015-11-23T08:04:35.000Z</published>
-    <updated>2015-11-24T03:27:38.000Z</updated>
-    <content type="html"><![CDATA[<p>花时间做了几道题，感觉还是有收获的。虽然死亡之ping这些知识点不熟悉，web的python题还是学到了不少知识。</p>
-<p>登录的时候会随机报错。查看返回django的调试模式泄露源码。</p>
-<p><img src="/images/huashanctf1.png" alt=""></p>
-<p>通过改变参数多次尝试报错，可以或得部分代码：</p>
-<pre><code>c = json.loads(request.body)
-<span class="keyword">method</span> = getattr(globals()[c['obj']],c['<span class="keyword">method</span>'])
-ret = <span class="keyword">method</span>(c['params'])
-retdata['<span class="literal">result</span>'],retdata['error'] = ret
-</code></pre><p>通过反射的方式来执行对象的函数，而ojb，method和params三个参数都是可控的，这样就可以导致代码执行。具体可以参考<a href="http://www.secpulse.com/archives/40012.html" target="_blank" rel="external">writeup</a></p>
-<p>python <a href="http://stackoverflow.com/questions/12693606/reason-for-globals-in-python" target="_blank" rel="external">globals()</a>返回一个map，这个map的key是全局范围内对象的名字，value是该对象的实例。</p>
-<p>利用php的反射写的后门如下：</p>
-<pre><code><span class="php"><span class="preprocessor">&lt;?php</span>
-    <span class="variable">$func</span> = <span class="keyword">new</span> ReflectionFunction(<span class="variable">$_GET</span>[m]);
-    <span class="keyword">echo</span> <span class="variable">$func</span>-&gt;invokeArgs(<span class="keyword">array</span>(<span class="variable">$_GET</span>[c]));
-<span class="preprocessor">?&gt;</span></span>
-</code></pre><p>可以参考<a href="https://github.com/tennc/webshell/tree/master/php/p2j" target="_blank" rel="external">php反射后门</a></p>
-<p>还有做的两个题就是分析流量。感觉还是比较有意思，在网络包种寻找信息，有点侦探的感觉。一个tips就是发现base64编码的密码，使用burpsuite的decode解码base64是乱码，以为不是base64，卡半天想不出来。其实是因为是中文做的base64编码，使用在线的base64解码工具可以直接解出中文。看来以前很多看起来像base64，但是decode是乱码，很可能是因为编码不对啊。<a href="http://sudalover.com/?p=155" target="_blank" rel="external">writeup</a></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>花时间做了几道题，感觉还是有收获的。虽然死亡之ping这些知识点不熟悉，web的python题还是学到了不少知识。</p>
-<p>登录的时候会随机报错。查看返回django的调试模式泄露源码。</p>
-<p><img src="/images/huashanctf1.png]]>
-    </summary>
-    
-      <category term="ctf" scheme="http://xdxd.love/tags/ctf/"/>
-    
-      <category term="黑盒测试" scheme="http://xdxd.love/categories/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95/"/>
     
   </entry>
   
