@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-02-26T07:29:31.000Z</updated>
+  <updated>2016-03-02T07:07:45.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -19,8 +19,14 @@
     <link href="http://xdxd.love/2016/02/26/centos-6%E5%AE%89%E8%A3%85mitmproxy/"/>
     <id>http://xdxd.love/2016/02/26/centos-6安装mitmproxy/</id>
     <published>2016-02-26T07:18:01.000Z</published>
-    <updated>2016-02-26T07:29:31.000Z</updated>
-    <content type="html"><![CDATA[<p>mitmproxy官方没有在centos上的安装说明。在centos6.7上安装失败多次，最后按照<a href="http://pacess.blogspot.com/2014/11/install-mitmproxy-on-centos.html" target="_blank" rel="external">在 CentOS 下安裝 mitmproxy</a>的说明，安装成功。</p>
+    <updated>2016-03-02T07:07:45.000Z</updated>
+    <content type="html"><![CDATA[<p><img src="/source/mitmproxy1.png" alt=""></p>
+<p>mitmproxy是一款支持HTTP(S)的中间人代理工具。不同于Fiddler2，burpsuite等类似功能工具，mitmproxy可在终端下运行。mitmproxy使用Python开发，是辅助web开发&amp;测试，移动端调试，渗透测试的工具。</p>
+<p>mitmproxy作为定制化工具开发比较方便。但是mitmproxy需要太多依赖了。在mac上使用编译好的执行程序还是比较方便，ubuntu按照官方说明也比较方便安装。</p>
+<p>ubuntu上安装命令如下：</p>
+<pre><code>$ sudo apt-<span class="built_in">get</span> install python-pip python-<span class="built_in">dev</span> libffi-<span class="built_in">dev</span> libssl-<span class="built_in">dev</span> libxml2-<span class="built_in">dev</span> libxslt1-<span class="built_in">dev</span>
+$ sudo pip install mitmproxy
+</code></pre><p>mitmproxy官方没有在centos上的安装说明。在centos6.7上安装失败多次，最后按照<a href="http://pacess.blogspot.com/2014/11/install-mitmproxy-on-centos.html" target="_blank" rel="external">在 CentOS 下安裝 mitmproxy</a>的说明，安装成功。</p>
 <pre><code>試過幾次失敗後，最終都能成功安裝在 CentOS <span class="number">6</span>。問題是出在 Python <span class="number">2.6</span> 及 Python <span class="number">3.4</span>。原來「mitmproxy」在 Python <span class="number">2.7</span> 才能順利安裝。要是使用 CentOS <span class="number">7</span> 的話，隨機附送的就是 Python <span class="number">2.7</span>。安裝「mitmproxy」的步驟如下：
 <span class="number">1.</span> 下載 Python 的 PIP 工具
     wget https:<span class="comment">//bootstrap.pypa.io/get-pip.py</span>
@@ -38,7 +44,8 @@
 <p><img src="/images/mitmproxy1.JPG" alt=""></p>
 ]]></content>
     <summary type="html">
-    <![CDATA[<p>mitmproxy官方没有在centos上的安装说明。在centos6.7上安装失败多次，最后按照<a href="http://pacess.blogspot.com/2014/11/install-mitmproxy-on-centos.html" target="_b]]>
+    <![CDATA[<p><img src="/source/mitmproxy1.png" alt=""></p>
+<p>mitmproxy是一款支持HTTP(S)的中间人代理工具。不同于Fiddler2，burpsuite等类似功能工具，mitmproxy可在终端下运行。mitmproxy使用P]]>
     </summary>
     
       <category term="mitmproxy" scheme="http://xdxd.love/tags/mitmproxy/"/>

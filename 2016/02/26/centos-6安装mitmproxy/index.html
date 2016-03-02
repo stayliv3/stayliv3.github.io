@@ -11,20 +11,21 @@
     
 
     
-    <meta name="description" content="mitmproxy官方没有在centos上的安装说明。在centos6.7上安装失败多次，最后按照在 CentOS 下安裝 mitmproxy的说明，安装成功。
-試過幾次失敗後，最終都能成功安裝在 CentOS 6。問題是出在 Python 2.6 及 Python 3.4。原來「mitmproxy」在 Python 2.7 才能順利安裝。要是使用 CentOS 7 的話，隨機附送的就是 Pyth">
+    <meta name="description" content="mitmproxy是一款支持HTTP(S)的中间人代理工具。不同于Fiddler2，burpsuite等类似功能工具，mitmproxy可在终端下运行。mitmproxy使用Python开发，是辅助web开发&amp;amp;测试，移动端调试，渗透测试的工具。
+mitmproxy作为定制化工具开发比较方便。但是mitmproxy需要太多依赖了。在mac上使用编译好的执行程序还是比较方便，ubuntu按照官">
 <meta property="og:type" content="article">
 <meta property="og:title" content="centos 6安装mitmproxy">
 <meta property="og:url" content="http://xdxd.love/2016/02/26/centos-6安装mitmproxy/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="mitmproxy官方没有在centos上的安装说明。在centos6.7上安装失败多次，最后按照在 CentOS 下安裝 mitmproxy的说明，安装成功。
-試過幾次失敗後，最終都能成功安裝在 CentOS 6。問題是出在 Python 2.6 及 Python 3.4。原來「mitmproxy」在 Python 2.7 才能順利安裝。要是使用 CentOS 7 的話，隨機附送的就是 Pyth">
+<meta property="og:description" content="mitmproxy是一款支持HTTP(S)的中间人代理工具。不同于Fiddler2，burpsuite等类似功能工具，mitmproxy可在终端下运行。mitmproxy使用Python开发，是辅助web开发&amp;amp;测试，移动端调试，渗透测试的工具。
+mitmproxy作为定制化工具开发比较方便。但是mitmproxy需要太多依赖了。在mac上使用编译好的执行程序还是比较方便，ubuntu按照官">
+<meta property="og:image" content="http://xdxd.love/source/mitmproxy1.png">
 <meta property="og:image" content="http://xdxd.love/images/mitmproxy1.JPG">
-<meta property="og:updated_time" content="2016-02-26T07:29:31.000Z">
+<meta property="og:updated_time" content="2016-03-02T07:07:45.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="centos 6安装mitmproxy">
-<meta name="twitter:description" content="mitmproxy官方没有在centos上的安装说明。在centos6.7上安装失败多次，最后按照在 CentOS 下安裝 mitmproxy的说明，安装成功。
-試過幾次失敗後，最終都能成功安裝在 CentOS 6。問題是出在 Python 2.6 及 Python 3.4。原來「mitmproxy」在 Python 2.7 才能順利安裝。要是使用 CentOS 7 的話，隨機附送的就是 Pyth">
+<meta name="twitter:description" content="mitmproxy是一款支持HTTP(S)的中间人代理工具。不同于Fiddler2，burpsuite等类似功能工具，mitmproxy可在终端下运行。mitmproxy使用Python开发，是辅助web开发&amp;amp;测试，移动端调试，渗透测试的工具。
+mitmproxy作为定制化工具开发比较方便。但是mitmproxy需要太多依赖了。在mac上使用编译好的执行程序还是比较方便，ubuntu按照官">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -104,7 +105,13 @@
 		
 		</div>
 		
-		<p>mitmproxy官方没有在centos上的安装说明。在centos6.7上安装失败多次，最后按照<a href="http://pacess.blogspot.com/2014/11/install-mitmproxy-on-centos.html" target="_blank" rel="external">在 CentOS 下安裝 mitmproxy</a>的说明，安装成功。</p>
+		<p><img src="/source/mitmproxy1.png" alt=""></p>
+<p>mitmproxy是一款支持HTTP(S)的中间人代理工具。不同于Fiddler2，burpsuite等类似功能工具，mitmproxy可在终端下运行。mitmproxy使用Python开发，是辅助web开发&amp;测试，移动端调试，渗透测试的工具。</p>
+<p>mitmproxy作为定制化工具开发比较方便。但是mitmproxy需要太多依赖了。在mac上使用编译好的执行程序还是比较方便，ubuntu按照官方说明也比较方便安装。</p>
+<p>ubuntu上安装命令如下：</p>
+<pre><code>$ sudo apt-<span class="built_in">get</span> install python-pip python-<span class="built_in">dev</span> libffi-<span class="built_in">dev</span> libssl-<span class="built_in">dev</span> libxml2-<span class="built_in">dev</span> libxslt1-<span class="built_in">dev</span>
+$ sudo pip install mitmproxy
+</code></pre><p>mitmproxy官方没有在centos上的安装说明。在centos6.7上安装失败多次，最后按照<a href="http://pacess.blogspot.com/2014/11/install-mitmproxy-on-centos.html" target="_blank" rel="external">在 CentOS 下安裝 mitmproxy</a>的说明，安装成功。</p>
 <pre><code>試過幾次失敗後，最終都能成功安裝在 CentOS <span class="number">6</span>。問題是出在 Python <span class="number">2.6</span> 及 Python <span class="number">3.4</span>。原來「mitmproxy」在 Python <span class="number">2.7</span> 才能順利安裝。要是使用 CentOS <span class="number">7</span> 的話，隨機附送的就是 Python <span class="number">2.7</span>。安裝「mitmproxy」的步驟如下：
 <span class="number">1.</span> 下載 Python 的 PIP 工具
     wget https:<span class="comment">//bootstrap.pypa.io/get-pip.py</span>
