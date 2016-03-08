@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-03-07T06:33:01.000Z</updated>
+  <updated>2016-03-07T08:32:11.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -15,30 +15,39 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title><![CDATA[order by注入点利用方式]]></title>
+    <title><![CDATA[sqli练级攻略]]></title>
+    <link href="http://xdxd.love/2016/03/07/sqli%E7%BB%83%E7%BA%A7%E6%94%BB%E7%95%A5/"/>
+    <id>http://xdxd.love/2016/03/07/sqli练级攻略/</id>
+    <published>2016-03-07T07:34:09.000Z</published>
+    <updated>2016-03-07T08:32:11.000Z</updated>
+    <content type="html"><![CDATA[<h1 id="初窥门径">初窥门径</h1><h1 id="勤学苦练">勤学苦练</h1><h1 id="上下求索">上下求索</h1><h1 id="融会贯通">融会贯通</h1>]]></content>
+    <summary type="html">
+    <![CDATA[<h1 id="初窥门径">初窥门径</h1><h1 id="勤学苦练">勤学苦练</h1><h1 id="上下求索">上下求索</h1><h1 id="融会贯通">融会贯通</h1>]]>
+    </summary>
+    
+      <category term="练级攻略" scheme="http://xdxd.love/categories/%E7%BB%83%E7%BA%A7%E6%94%BB%E7%95%A5/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[order by注入点利用方式分析]]></title>
     <link href="http://xdxd.love/2016/03/07/order-by%E6%B3%A8%E5%85%A5%E7%82%B9%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F/"/>
     <id>http://xdxd.love/2016/03/07/order-by注入点利用方式/</id>
     <published>2016-03-07T02:00:56.000Z</published>
-    <updated>2016-03-07T06:33:01.000Z</updated>
-    <content type="html"><![CDATA[<h1 id="简单测试">简单测试</h1><p>测试代码：</p>
-<pre><code> <span class="php"><span class="preprocessor">&lt;?php</span>
-error_reporting(<span class="number">0</span>);
-<span class="variable">$conn</span> = mysql_connect(<span class="string">'192.168.99.100'</span>, <span class="string">'root'</span>, <span class="string">'root'</span>) <span class="keyword">or</span> <span class="keyword">die</span>(<span class="string">'database\'s username or password error'</span>);
-mysql_select_db(<span class="string">'test'</span>, <span class="variable">$conn</span>) <span class="keyword">OR</span> <span class="keyword">die</span>(<span class="string">"连接数据库失败，未找到您填写的数据库"</span>);
-<span class="variable">$index</span> = <span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">'index'</span>]) ? <span class="variable">$_GET</span>[<span class="string">'index'</span>] : <span class="number">1</span>;
-<span class="variable">$sql</span> = <span class="string">"SELECT * FROM requests ORDER BY $index LIMIT 3"</span>; 
-<span class="comment">//$sql = "SELECT * FROM admin WHERE uid &lt; 10 ORDER BY uid LIMIT $index";</span>
-var_dump(<span class="variable">$sql</span>);
-<span class="variable">$result</span> = mysql_query(<span class="variable">$sql</span>, <span class="variable">$conn</span>) <span class="keyword">or</span> <span class="keyword">die</span>(mysql_error());
-<span class="keyword">while</span>(<span class="variable">$row</span> = mysql_fetch_array(<span class="variable">$result</span>))
-  {
-  <span class="keyword">echo</span> <span class="string">"&lt;tr&gt;"</span>;
-  <span class="keyword">echo</span> <span class="string">"&lt;td&gt;"</span> . <span class="variable">$row</span>[<span class="string">'id'</span>] . <span class="string">"&lt;/td&gt;"</span>;
-  <span class="keyword">echo</span> <span class="string">"&lt;td&gt;"</span> . <span class="variable">$row</span>[<span class="string">'url'</span>] . <span class="string">"&lt;/td&gt;"</span>;
-  <span class="keyword">echo</span> <span class="string">"&lt;/tr&gt;"</span>;
-  }
-<span class="keyword">echo</span> <span class="string">"&lt;/table&gt;"</span>;
-    <span class="preprocessor">?&gt;</span></span>
+    <updated>2016-03-07T08:49:32.000Z</updated>
+    <content type="html"><![CDATA[<h1 id="漏洞分析">漏洞分析</h1><p>使用<a href="https://github.com/Audi-1/sqli-labs" target="_blank" rel="external">sqli-lab</a>中的lesson-52作为测试目标。关键代码为：</p>
+<pre><code>error_reporting(<span class="number">0</span>);
+<span class="variable">$id</span>=$_GET[<span class="string">'sort'</span>];  
+<span class="keyword">if</span>(isset(<span class="variable">$id</span>))
+{
+    //logging the connection parameters to a file for analysis.
+    <span class="variable">$fp</span>=fopen(<span class="string">'result.txt'</span>,<span class="string">'a'</span>);
+    fwrite(<span class="variable">$fp</span>,<span class="string">'SORT:'</span>.<span class="variable">$id</span>.<span class="string">"\n"</span>);
+    fclose(<span class="variable">$fp</span>);
+    <span class="variable">$sql</span>=<span class="string">"SELECT * FROM users ORDER BY $id"</span>;
+    /* execute multi query */
+    if (mysqli_multi_query(<span class="variable">$con1</span>, <span class="variable">$sql</span>))
+    {
 </code></pre><p>可以通过asc 和desc查看返回数据是否相同来简单判断是否存在orderby注入。</p>
 <p><img src="/images/orderby1.png" alt=""></p>
 <p><img src="/images/orderby2.png" alt=""></p>
@@ -67,9 +76,7 @@ var_dump(<span class="variable">$sql</span>);
 <p>跟常规报错注入相同</p>
 <h1 id="思考">思考</h1>]]></content>
     <summary type="html">
-    <![CDATA[<h1 id="简单测试">简单测试</h1><p>测试代码：</p>
-<pre><code> <span class="php"><span class="preprocessor">&lt;?php</span>
-error_reporting(<span class="nu]]>
+    <![CDATA[<h1 id="漏洞分析">漏洞分析</h1><p>使用<a href="https://github.com/Audi-1/sqli-labs" target="_blank" rel="external">sqli-lab</a>中的lesson-52作为测试目标。关键代码为]]>
     </summary>
     
       <category term="渗透测试" scheme="http://xdxd.love/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
@@ -1090,47 +1097,6 @@ Welcome!
       <category term="php" scheme="http://xdxd.love/tags/php/"/>
     
       <category term="转载收藏" scheme="http://xdxd.love/categories/%E8%BD%AC%E8%BD%BD%E6%94%B6%E8%97%8F/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[支付漏洞总结]]></title>
-    <link href="http://xdxd.love/2015/12/02/%E6%94%AF%E4%BB%98%E6%BC%8F%E6%B4%9E%E6%80%BB%E7%BB%93/"/>
-    <id>http://xdxd.love/2015/12/02/支付漏洞总结/</id>
-    <published>2015-12-02T05:47:07.000Z</published>
-    <updated>2015-12-04T07:58:14.000Z</updated>
-    <content type="html"><![CDATA[<h2 id="前言">前言</h2><p>大家对支付漏洞的理解通常都是篡改价格，已有的对支付漏洞的总结也是对现有的一些案例的经验式归类，没有上升到对在线支付流程深入分析的一个层面。这里尝试从分析在线支付流程，在线支付厂商的接入方式开始，深入业务分析整个在线交易流程中容易出现的安全问题。</p>
-<h2 id="支付宝/在线支付流程">支付宝/在线支付流程</h2><p><a href="https://cshall.alipay.com/support/help_detail.htm?help_id=476935" target="_blank" rel="external">支付宝即时到账接口开发流程</a></p>
-<p>在线支付从功能上来说是通过支付宝的支付渠道，付款者直接汇款给另一个拥有支付宝账号的收款者。整个流程说明如下：引用自支付宝文档。<br><img src="/images/zaixianzhifu1.png" alt=""></p>
-<pre><code>(<span class="number">1</span>)构造请求数据
-商户根据支付宝提供的接口规则，通过程序生成得到签名结果及要传输给支付宝的数据集合。
-(<span class="number">2</span>)发送请求数据
-把构造完成的数据集合，通过页面链接跳转或表单提交的方式传递给支付宝。
-(<span class="number">3</span>)支付宝对请求数据进行处理
-支付宝得到这些集合后，会先进行安全校验等验证，一系列验证通过后便会处理这次发送过来的数据请求。
-(<span class="number">4</span>)返回处理的结果数据
-对于处理完成的交易，支付宝会以两种方式把数据反馈给商户网站。
-程序上自动进行重新构造URL地址链接，在用户当前页面上通过自动跳转的方式跳回商户在请求时设定好的页面路径地址（参数return_url，如果商户没有设定，则不会进行该操作）
-支付宝服务器主动发起通知，调用商户在请求时设定好的页面路径（参数notify_url，如果商户没有设定，则不会进行该操作）。
-(<span class="number">5</span>)对获取的返回结果数据进行处理
-商户在同步通知处理页面（参数return_url指定页面文件）或服务器异步通知页面（参数notify_url指定页面文件）获取支付宝返回的结果数据后，可以结合自身网站的业务逻辑进行数据处理（如：订单更新、自动充值到会员账号中等）。
-</code></pre><h2 id="业务思考">业务思考</h2><p>通过这个流程可以知道。应用端做的两个重要步骤，一个是拼接支付的请求，返回给用户浏览器，用户浏览器请求支付宝接口，进入支付流程，整个支付的环节是和支付宝端交互，支付完成之后，支付宝通过通知接口给应用发送支付成功的通知。应用通过支付宝的通知信息来判断支付是否成功。</p>
-<h2 id="风险分析">风险分析</h2><p>首先第二步，发送请求数据。这一步虽然是在用户的浏览器端完成的。但是支付接口都有强制的签名来保证完整性，所以这里数据是无法篡改的，在签名key不泄露的情况下。所以通常见到的支付漏洞都是第一步，应用构造请求数据的时候出现的缺陷。</p>
-<p>对于交易这一业务功能来讲，应用只需要用户提供商品id和商品数量就可以满足支付所需要的所有数据了。这个地方容易出现的问题主要有以下几种：</p>
-<p>1，直接把订单的总金额从客户端获取，放在了构造的请求交易数据中。<br>2，虽然只传递商品id和数量，但是数量没有做白名单限制，造成可以输入负数或者大数造成计算溢出，导致最终计算的订单金额出现错误。<br>3，除了商品数量和商品id，还有其他参与订单金额计算的参数从客户端获取，比如运费等</p>
-<p>第三步和第四步是支付宝进行的处理，所以也不存在问题。第五步，支付宝通知应用用户付款成功，这里支付宝设计了notify_id供应用来验证通知信息是否是有效的。但是一般很少见人用，因为这一步数据也是有签名的。只要应用对支付宝的通知信息进行签名验证就可以。但是这个验证是应用自己来控制的，并不像第二步是支付宝控制的进行签名验证，所以一旦应用没有对支付宝通知信息进行签名验证就会导致伪造支付宝的通知信息，欺骗应用支付成功的漏洞。这种类型的问题看到的案例比较少。比如<a href="http://wooyun.org/bugs/wooyun-2010-0146510" target="_blank" rel="external">我是如何1元再购特斯拉的</a>。这种类型的问题应该也比较常见，可能是对这个逻辑的测试还不够关注。</p>
-<p>所以通过分析整个在线支付的流程可以看到，容易出现支付漏洞的有两个点，一个是构造支付请求的阶段，一个是对返回的结果数据进行处理的阶段。没有对签名进行验证，会存在请求伪造和重放攻击。这里分析的是一个典型的支付流程，此外还有一些比较复杂的交易设计，比如设计了可以修改订单的功能等，随着功能的增加也会引入一些安全问题。</p>
-<h2 id="安全的设计方案：">安全的设计方案：</h2><p>只从客户端获取商品id和数量，对数量范围进行限制。对接受支付宝通知的接口对通知信息进行签名验证，对支付金额和订单金额进行对比以及验证支付订单号避免重放攻击。只要考虑到这几个问题，就可以设计一个比较安全的支付流程。</p>
-<h2 id="支付宝提供的验证方式">支付宝提供的验证方式</h2><p>notifyid<br>total_fee<br>sign<br>order_no 防重放</p>
-<h2 id="参考资料">参考资料</h2><p><a href="http://drops.wooyun.org/papers/345" target="_blank" rel="external">乌云drops</a></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<h2 id="前言">前言</h2><p>大家对支付漏洞的理解通常都是篡改价格，已有的对支付漏洞的总结也是对现有的一些案例的经验式归类，没有上升到对在线支付流程深入分析的一个层面。这里尝试从分析在线支付流程，在线支付厂商的接入方式开始，深入业务分析整个在线交易流程中容易出现的安]]>
-    </summary>
-    
-      <category term="支付漏洞" scheme="http://xdxd.love/tags/%E6%94%AF%E4%BB%98%E6%BC%8F%E6%B4%9E/"/>
-    
-      <category term="黑盒测试" scheme="http://xdxd.love/categories/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95/"/>
     
   </entry>
   

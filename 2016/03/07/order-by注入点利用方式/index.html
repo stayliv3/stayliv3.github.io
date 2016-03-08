@@ -4,37 +4,46 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>order by注入点利用方式 | xd_xd&#39;s blog</title>
+    <title>order by注入点利用方式分析 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description" content="简单测试测试代码：
- &amp;lt;?php
+    <meta name="description" content="漏洞分析使用sqli-lab中的lesson-52作为测试目标。关键代码为：
 error_reporting(0);
-$conn = mysql_connect(&apos;192.168.99.100&apos;, &apos;root&apos;, &apos;root&apos;) or die(&apos;database\&apos;s username or password error&apos;);
-mysql_select_db(&apos;test&apos;, $conn) OR die(&quot;连接数据库失败，未找到您填写的">
+$id=$_GET[&apos;sort&apos;];  
+if(isset($id))
+{
+    //logging the connection parameters to a file for analysis.
+    $fp=fopen(&apos;result.txt&apos;,&apos;a&apos;);
+    fw">
 <meta property="og:type" content="article">
-<meta property="og:title" content="order by注入点利用方式">
+<meta property="og:title" content="order by注入点利用方式分析">
 <meta property="og:url" content="http://xdxd.love/2016/03/07/order-by注入点利用方式/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="简单测试测试代码：
- &amp;lt;?php
+<meta property="og:description" content="漏洞分析使用sqli-lab中的lesson-52作为测试目标。关键代码为：
 error_reporting(0);
-$conn = mysql_connect(&apos;192.168.99.100&apos;, &apos;root&apos;, &apos;root&apos;) or die(&apos;database\&apos;s username or password error&apos;);
-mysql_select_db(&apos;test&apos;, $conn) OR die(&quot;连接数据库失败，未找到您填写的">
+$id=$_GET[&apos;sort&apos;];  
+if(isset($id))
+{
+    //logging the connection parameters to a file for analysis.
+    $fp=fopen(&apos;result.txt&apos;,&apos;a&apos;);
+    fw">
 <meta property="og:image" content="http://xdxd.love/images/orderby1.png">
 <meta property="og:image" content="http://xdxd.love/images/orderby2.png">
-<meta property="og:updated_time" content="2016-03-07T06:33:01.000Z">
+<meta property="og:updated_time" content="2016-03-07T08:49:32.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="order by注入点利用方式">
-<meta name="twitter:description" content="简单测试测试代码：
- &amp;lt;?php
+<meta name="twitter:title" content="order by注入点利用方式分析">
+<meta name="twitter:description" content="漏洞分析使用sqli-lab中的lesson-52作为测试目标。关键代码为：
 error_reporting(0);
-$conn = mysql_connect(&apos;192.168.99.100&apos;, &apos;root&apos;, &apos;root&apos;) or die(&apos;database\&apos;s username or password error&apos;);
-mysql_select_db(&apos;test&apos;, $conn) OR die(&quot;连接数据库失败，未找到您填写的">
+$id=$_GET[&apos;sort&apos;];  
+if(isset($id))
+{
+    //logging the connection parameters to a file for analysis.
+    $fp=fopen(&apos;result.txt&apos;,&apos;a&apos;);
+    fw">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -94,7 +103,7 @@ mysql_select_db(&apos;test&apos;, $conn) OR die(&quot;连接数据库失败，�
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2016/03/07/order-by注入点利用方式/" title="order by注入点利用方式" itemprop="url">order by注入点利用方式</a>
+      <a href="/2016/03/07/order-by注入点利用方式/" title="order by注入点利用方式分析" itemprop="url">order by注入点利用方式分析</a>
   </h1>
   <p class="article-author">By
        
@@ -110,29 +119,23 @@ mysql_select_db(&apos;test&apos;, $conn) OR die(&quot;连接数据库失败，�
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#简单测试"><span class="toc-number">1.</span> <span class="toc-text">简单测试</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#利用方式："><span class="toc-number">2.</span> <span class="toc-text">利用方式：</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#知道字段名"><span class="toc-number">2.1.</span> <span class="toc-text">知道字段名</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#不需要知道字段名"><span class="toc-number">2.2.</span> <span class="toc-text">不需要知道字段名</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#思考"><span class="toc-number">3.</span> <span class="toc-text">思考</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞分析"><span class="toc-number">1.</span> <span class="toc-text">漏洞分析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#利用方式："><span class="toc-number">2.</span> <span class="toc-text">利用方式：</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#知道字段名"><span class="toc-number">2.1.</span> <span class="toc-text">知道字段名</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#不需要知道字段名"><span class="toc-number">2.2.</span> <span class="toc-text">不需要知道字段名</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#思考"><span class="toc-number">3.</span> <span class="toc-text">思考</span></a></li></ol>
 		
 		</div>
 		
-		<h1 id="简单测试">简单测试</h1><p>测试代码：</p>
-<pre><code> <span class="php"><span class="preprocessor">&lt;?php</span>
-error_reporting(<span class="number">0</span>);
-<span class="variable">$conn</span> = mysql_connect(<span class="string">'192.168.99.100'</span>, <span class="string">'root'</span>, <span class="string">'root'</span>) <span class="keyword">or</span> <span class="keyword">die</span>(<span class="string">'database\'s username or password error'</span>);
-mysql_select_db(<span class="string">'test'</span>, <span class="variable">$conn</span>) <span class="keyword">OR</span> <span class="keyword">die</span>(<span class="string">"连接数据库失败，未找到您填写的数据库"</span>);
-<span class="variable">$index</span> = <span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">'index'</span>]) ? <span class="variable">$_GET</span>[<span class="string">'index'</span>] : <span class="number">1</span>;
-<span class="variable">$sql</span> = <span class="string">"SELECT * FROM requests ORDER BY $index LIMIT 3"</span>; 
-<span class="comment">//$sql = "SELECT * FROM admin WHERE uid &lt; 10 ORDER BY uid LIMIT $index";</span>
-var_dump(<span class="variable">$sql</span>);
-<span class="variable">$result</span> = mysql_query(<span class="variable">$sql</span>, <span class="variable">$conn</span>) <span class="keyword">or</span> <span class="keyword">die</span>(mysql_error());
-<span class="keyword">while</span>(<span class="variable">$row</span> = mysql_fetch_array(<span class="variable">$result</span>))
-  {
-  <span class="keyword">echo</span> <span class="string">"&lt;tr&gt;"</span>;
-  <span class="keyword">echo</span> <span class="string">"&lt;td&gt;"</span> . <span class="variable">$row</span>[<span class="string">'id'</span>] . <span class="string">"&lt;/td&gt;"</span>;
-  <span class="keyword">echo</span> <span class="string">"&lt;td&gt;"</span> . <span class="variable">$row</span>[<span class="string">'url'</span>] . <span class="string">"&lt;/td&gt;"</span>;
-  <span class="keyword">echo</span> <span class="string">"&lt;/tr&gt;"</span>;
-  }
-<span class="keyword">echo</span> <span class="string">"&lt;/table&gt;"</span>;
-    <span class="preprocessor">?&gt;</span></span>
+		<h1 id="漏洞分析">漏洞分析</h1><p>使用<a href="https://github.com/Audi-1/sqli-labs" target="_blank" rel="external">sqli-lab</a>中的lesson-52作为测试目标。关键代码为：</p>
+<pre><code>error_reporting(<span class="number">0</span>);
+<span class="variable">$id</span>=$_GET[<span class="string">'sort'</span>];  
+<span class="keyword">if</span>(isset(<span class="variable">$id</span>))
+{
+    //logging the connection parameters to a file for analysis.
+    <span class="variable">$fp</span>=fopen(<span class="string">'result.txt'</span>,<span class="string">'a'</span>);
+    fwrite(<span class="variable">$fp</span>,<span class="string">'SORT:'</span>.<span class="variable">$id</span>.<span class="string">"\n"</span>);
+    fclose(<span class="variable">$fp</span>);
+    <span class="variable">$sql</span>=<span class="string">"SELECT * FROM users ORDER BY $id"</span>;
+    /* execute multi query */
+    if (mysqli_multi_query(<span class="variable">$con1</span>, <span class="variable">$sql</span>))
+    {
 </code></pre><p>可以通过asc 和desc查看返回数据是否相同来简单判断是否存在orderby注入。</p>
 <p><img src="/images/orderby1.png" alt=""></p>
 <p><img src="/images/orderby2.png" alt=""></p>
@@ -176,7 +179,7 @@ var_dump(<span class="variable">$sql</span>);
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2016/03/07/order-by注入点利用方式/" data-title="order by注入点利用方式 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  <div data-url="http://xdxd.love/2016/03/07/order-by注入点利用方式/" data-title="order by注入点利用方式分析 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -189,6 +192,14 @@ var_dump(<span class="variable">$sql</span>);
 	
 <nav class="article-nav clearfix">
  
+ <div class="prev" >
+ <a href="/2016/03/07/sqli练级攻略/" title="sqli练级攻略">
+  <strong>上一篇：</strong><br/>
+  <span>
+  sqli练级攻略</span>
+</a>
+</div>
+
 
 <div class="next">
 <a href="/2016/03/03/finecms-2-3-0-任意用户密码修改/"  title="finecms &lt;= 2.3.0 任意用户密码修改">
@@ -202,7 +213,7 @@ var_dump(<span class="variable">$sql</span>);
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2016/03/07/order-by注入点利用方式/" data-title="order by注入点利用方式" data-url="http://xdxd.love/2016/03/07/order-by注入点利用方式/"></div>
+	<div class="ds-thread" data-thread-key="2016/03/07/order-by注入点利用方式/" data-title="order by注入点利用方式分析" data-url="http://xdxd.love/2016/03/07/order-by注入点利用方式/"></div>
 </section>
 
 
@@ -212,7 +223,7 @@ var_dump(<span class="variable">$sql</span>);
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#简单测试"><span class="toc-number">1.</span> <span class="toc-text">简单测试</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#利用方式："><span class="toc-number">2.</span> <span class="toc-text">利用方式：</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#知道字段名"><span class="toc-number">2.1.</span> <span class="toc-text">知道字段名</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#不需要知道字段名"><span class="toc-number">2.2.</span> <span class="toc-text">不需要知道字段名</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#思考"><span class="toc-number">3.</span> <span class="toc-text">思考</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞分析"><span class="toc-number">1.</span> <span class="toc-text">漏洞分析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#利用方式："><span class="toc-number">2.</span> <span class="toc-text">利用方式：</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#知道字段名"><span class="toc-number">2.1.</span> <span class="toc-text">知道字段名</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#不需要知道字段名"><span class="toc-number">2.2.</span> <span class="toc-text">不需要知道字段名</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#思考"><span class="toc-number">3.</span> <span class="toc-text">思考</span></a></li></ol>
  
   </div>
 
@@ -273,6 +284,10 @@ var_dump(<span class="variable">$sql</span>);
 		
 		  
 			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/练级攻略/" title="练级攻略">练级攻略<sup>1</sup></a></li>
 		  
 		
 		  
