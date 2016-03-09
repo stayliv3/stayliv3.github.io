@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-03-09T03:29:24.000Z</updated>
+  <updated>2016-03-09T08:26:02.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -13,6 +13,32 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[使用转义防御XSS]]></title>
+    <link href="http://xdxd.love/2016/03/09/%E4%BD%BF%E7%94%A8%E8%BD%AC%E4%B9%89%E9%98%B2%E5%BE%A1XSS/"/>
+    <id>http://xdxd.love/2016/03/09/使用转义防御XSS/</id>
+    <published>2016-03-09T07:53:57.000Z</published>
+    <updated>2016-03-09T08:26:02.000Z</updated>
+    <content type="html"><![CDATA[<p>在输出的时候防御XSS即对用户输入进行转义，XSS的问题本质上还是代码注入，HTML或者javascript的代码注入，即混淆了用户输入的数据和代码。而解决这个问题，就需要根据用户可控数据具体输出的环境进行恰当的转义。</p>
+<h1 id="在html标签中输出">在html标签中输出</h1><pre><code><span class="tag">&lt;<span class="title">HTML标签</span>&gt;</span>[输出]<span class="tag">&lt;/<span class="title">HTML标签</span>&gt;</span>
+</code></pre><p>只需要htmlencode即可。更具体是转义掉&lt; &gt; 就可以防止html注入。</p>
+<h1 id="输出在普通html属性中">输出在普通html属性中</h1><pre><code><span class="tag">&lt;<span class="title">div</span> <span class="attribute">attr</span>=<span class="value">不可信数据</span>&gt;</span>content<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+</code></pre><p>好的方案应该是把不可信数据用双引号包裹起来，然后对数据进行htmlencode。</p>
+<h1 id="在script标签中输出">在script标签中输出</h1><pre><code><span class="tag">&lt;<span class="title">script</span>&gt;</span><span class="actionscript"><span class="keyword">var</span> $a=<span class="string">"不可信数据"</span></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+</code></pre><p>确保输出变量在引号中，使用javascript编码输入数据。要防止<code>&lt;/script&gt;</code> 截断</p>
+<h1 id="输出在on事件中">输出在on事件中</h1><pre><code><span class="tag">&lt;<span class="title">a</span> <span class="attribute">href</span>=<span class="value">#</span> <span class="attribute">onlick</span>=<span class="value">"funcA('$var')"</span>&gt;</span> test<span class="tag">&lt;/<span class="title">a</span>&gt;</span>
+</code></pre><p>防御：先做javascript编码，再做html编码。因为输出数据位于html标签属性中，浏览器会进行html自解码。</p>
+<h1 id="在地址中输出">在地址中输出</h1><p>对协议进行白名单，http或者https，然后对其他部门进行url编码。避免javascript，data uri等伪协议攻击。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>在输出的时候防御XSS即对用户输入进行转义，XSS的问题本质上还是代码注入，HTML或者javascript的代码注入，即混淆了用户输入的数据和代码。而解决这个问题，就需要根据用户可控数据具体输出的环境进行恰当的转义。</p>
+<h1 id="在html标签中输出">在ht]]>
+    </summary>
+    
+      <category term="前端安全" scheme="http://xdxd.love/categories/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[php对象注入漏洞]]></title>
@@ -1043,36 +1069,6 @@ document.getElementById(<span class="string">"form2"</span>).submit();
       <category term="github" scheme="http://xdxd.love/tags/github/"/>
     
       <category term="折腾不止" scheme="http://xdxd.love/categories/%E6%8A%98%E8%85%BE%E4%B8%8D%E6%AD%A2/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[ssi漏洞介绍]]></title>
-    <link href="http://xdxd.love/2015/12/09/ssi%E6%BC%8F%E6%B4%9E%E4%BB%8B%E7%BB%8D/"/>
-    <id>http://xdxd.love/2015/12/09/ssi漏洞介绍/</id>
-    <published>2015-12-09T08:47:30.000Z</published>
-    <updated>2015-12-10T03:18:48.000Z</updated>
-    <content type="html"><![CDATA[<h1 id="SSI">SSI</h1><p>SSI Injection <a href="https://en.wikipedia.org/wiki/Server_Side_Includes" target="_blank" rel="external">(Server-side Include)</a>服务器端包含提供了一种对现有HTML文档增加动态内容的方法。根据查资料的理解这是http服务器提供支持的一个特性。apache和iis都可以通过配置支持SSI。<a href="http://man.chinaunix.net/newsoft/ApacheManual/howto/ssi.html" target="_blank" rel="external">apache关于SSI的文档</a></p>
-<p>在网页内容被返回给用户之前，服务器会执行网页内容中的SSI标签。在很多场景中，用户输入的内容可以显示在页面中，比如一个存在反射XSS漏洞的页面，如果输入的payload不是xss代码而是ssi的标签，服务器又开启了ssi支持的话就会存在SSI漏洞</p>
-<h1 id="实例演示">实例演示</h1><p>使用bwapp测试：</p>
-<p>输入ssi支持的标签语法，查看返回是否执行</p>
-<pre><code><span class="comment">&lt;!--#echo var="DATE_LOCAL" --&gt;</span>
-</code></pre><p><img src="/images/ssi1.png" alt=""></p>
-<p><img src="/images/ssi2.png" alt=""></p>
-<pre><code><span class="comment">&lt;!--#exec cmd="whoami" --&gt;</span>
-</code></pre><p><img src="/images/ssi3.png" alt=""></p>
-<p><img src="/images/ssi4.png" alt=""></p>
-<p>默认情况下，ssi不支持cmd执行，所以ssi这种漏洞会慢慢退出历史舞台。</p>
-<h1 id="修复方案">修复方案</h1><p>ssi这种技术已经比较少用了。如果应用没有使用到ssi，关闭服务器对ssi的支持即可。</p>
-<h1 id="参考资料">参考资料</h1><p><a href="http://zone.wooyun.org/content/23128" target="_blank" rel="external">http://zone.wooyun.org/content/23128</a></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<h1 id="SSI">SSI</h1><p>SSI Injection <a href="https://en.wikipedia.org/wiki/Server_Side_Includes" target="_blank" rel="external">(Server-si]]>
-    </summary>
-    
-      <category term="ssi" scheme="http://xdxd.love/tags/ssi/"/>
-    
-      <category term="黑盒测试" scheme="http://xdxd.love/categories/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95/"/>
     
   </entry>
   

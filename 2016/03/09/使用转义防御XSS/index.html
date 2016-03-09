@@ -4,35 +4,29 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>MS15-034/CVE-2015-1635 测试记录 | xd_xd&#39;s blog</title>
+    <title>使用转义防御XSS | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description" content="做协议测试的时候也发现不少溢出漏洞，没想iis还有这么经典的溢出案例。虽然不懂细节。记录一下测试过程。
-#相关资料
-http://drops.wooyun.org/papers/5669http://www.freebuf.com/articles/system/64185.htmlhttp://www.freebuf.com/vuls/64415.html
-#update
-参考了阿里发的分析文章">
+    <meta name="description" content="在输出的时候防御XSS即对用户输入进行转义，XSS的问题本质上还是代码注入，HTML或者javascript的代码注入，即混淆了用户输入的数据和代码。而解决这个问题，就需要根据用户可控数据具体输出的环境进行恰当的转义。
+在html标签中输出&amp;lt;HTML标签&amp;gt;[输出]&amp;lt;/HTML标签&amp;gt;
+只需要htmlencode即可。更具体是转义掉&amp;lt; &amp;gt; 就可以防止html注入。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="MS15-034/CVE-2015-1635 测试记录">
-<meta property="og:url" content="http://xdxd.love/2015/04/17/MS15-034-CVE-2015-1635-测试记录/index.html">
+<meta property="og:title" content="使用转义防御XSS">
+<meta property="og:url" content="http://xdxd.love/2016/03/09/使用转义防御XSS/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="做协议测试的时候也发现不少溢出漏洞，没想iis还有这么经典的溢出案例。虽然不懂细节。记录一下测试过程。
-#相关资料
-http://drops.wooyun.org/papers/5669http://www.freebuf.com/articles/system/64185.htmlhttp://www.freebuf.com/vuls/64415.html
-#update
-参考了阿里发的分析文章">
-<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+<meta property="og:description" content="在输出的时候防御XSS即对用户输入进行转义，XSS的问题本质上还是代码注入，HTML或者javascript的代码注入，即混淆了用户输入的数据和代码。而解决这个问题，就需要根据用户可控数据具体输出的环境进行恰当的转义。
+在html标签中输出&amp;lt;HTML标签&amp;gt;[输出]&amp;lt;/HTML标签&amp;gt;
+只需要htmlencode即可。更具体是转义掉&amp;lt; &amp;gt; 就可以防止html注入。">
+<meta property="og:updated_time" content="2016-03-09T08:26:02.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="MS15-034/CVE-2015-1635 测试记录">
-<meta name="twitter:description" content="做协议测试的时候也发现不少溢出漏洞，没想iis还有这么经典的溢出案例。虽然不懂细节。记录一下测试过程。
-#相关资料
-http://drops.wooyun.org/papers/5669http://www.freebuf.com/articles/system/64185.htmlhttp://www.freebuf.com/vuls/64415.html
-#update
-参考了阿里发的分析文章">
+<meta name="twitter:title" content="使用转义防御XSS">
+<meta name="twitter:description" content="在输出的时候防御XSS即对用户输入进行转义，XSS的问题本质上还是代码注入，HTML或者javascript的代码注入，即混淆了用户输入的数据和代码。而解决这个问题，就需要根据用户可控数据具体输出的环境进行恰当的转义。
+在html标签中输出&amp;lt;HTML标签&amp;gt;[输出]&amp;lt;/HTML标签&amp;gt;
+只需要htmlencode即可。更具体是转义掉&amp;lt; &amp;gt; 就可以防止html注入。">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -92,14 +86,14 @@ http://drops.wooyun.org/papers/5669http://www.freebuf.com/articles/system/64185.
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/04/17/MS15-034-CVE-2015-1635-测试记录/" title="MS15-034/CVE-2015-1635 测试记录" itemprop="url">MS15-034/CVE-2015-1635 测试记录</a>
+      <a href="/2016/03/09/使用转义防御XSS/" title="使用转义防御XSS" itemprop="url">使用转义防御XSS</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2015-04-17T03:40:26.000Z" itemprop="datePublished"> 发表于 Apr 17 2015</time>
+    <time datetime="2016-03-09T07:53:57.000Z" itemprop="datePublished"> 发表于 Mar 9 2016</time>
     
   </p>
 </header>
@@ -108,60 +102,29 @@ http://drops.wooyun.org/papers/5669http://www.freebuf.com/articles/system/64185.
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#在html标签中输出"><span class="toc-number">1.</span> <span class="toc-text">在html标签中输出</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#输出在普通html属性中"><span class="toc-number">2.</span> <span class="toc-text">输出在普通html属性中</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#在script标签中输出"><span class="toc-number">3.</span> <span class="toc-text">在script标签中输出</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#输出在on事件中"><span class="toc-number">4.</span> <span class="toc-text">输出在on事件中</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#在地址中输出"><span class="toc-number">5.</span> <span class="toc-text">在地址中输出</span></a></li></ol>
 		
 		</div>
 		
-		<p>做协议测试的时候也发现不少溢出漏洞，没想iis还有这么经典的溢出案例。虽然不懂细节。记录一下测试过程。</p>
-<p>#相关资料</p>
-<p><a href="http://drops.wooyun.org/papers/5669" target="_blank" rel="external">http://drops.wooyun.org/papers/5669</a><br><a href="http://www.freebuf.com/articles/system/64185.html" target="_blank" rel="external">http://www.freebuf.com/articles/system/64185.html</a><br><a href="http://www.freebuf.com/vuls/64415.html" target="_blank" rel="external">http://www.freebuf.com/vuls/64415.html</a></p>
-<p>#update</p>
-<p>参考了阿里发的分析文章，修改poc为访问welcome.png图片，range下限改为2.可以百分百触发蓝屏。虽然不能RCE，看到蓝屏感觉也萌萌的。不过1337有RCE的exp卖，不知道是不是有更猥琐的姿势。</p>
-<p>#测试记录</p>
-<p>没有出现蓝屏。但是不打补丁返回确实不一样。测试环境 win7 32bit iis 7.5 。一开始测试的时候发现返回正常，后来发现是qq电脑管家自动打补丁了。。。删除补丁测试：</p>
-<pre><code>[*] Audit Started
-HTTP/1.1 416 Requested Range Not Satisfiable
-Content-Type: text/html
-Last-Modified: Fri, 17 Apr 2015 03:07:09 GMT
-Accept-Ranges: bytes
-ETag: "499ee897bb78d01:0"
-Server: Microsoft-IIS/7.5
-Date: Fri, 17 Apr 2015 07:09:31 GMT
-Content-Length: 362
-Content-Range: bytes */689
-
-<span class="doctype">&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN""http://www.w3.org/TR/html4/strict.dtd"&gt;</span>
-<span class="tag">&lt;<span class="title">HTML</span>&gt;</span><span class="tag">&lt;<span class="title">HEAD</span>&gt;</span><span class="tag">&lt;<span class="title">TITLE</span>&gt;</span>Requested Range Not Satisfiable<span class="tag">&lt;/<span class="title">TITLE</span>&gt;</span>
-<span class="tag">&lt;<span class="title">META</span> <span class="attribute">HTTP-EQUIV</span>=<span class="value">"Content-Type"</span> <span class="attribute">Content</span>=<span class="value">"text/html; charset=us-ascii"</span>&gt;</span><span class="tag">&lt;/<span class="title">HEAD</span>&gt;</span>
-<span class="tag">&lt;<span class="title">BODY</span>&gt;</span><span class="tag">&lt;<span class="title">h2</span>&gt;</span>Requested Range Not Satisfiable<span class="tag">&lt;/<span class="title">h2</span>&gt;</span>
-<span class="tag">&lt;<span class="title">hr</span>&gt;</span><span class="tag">&lt;<span class="title">p</span>&gt;</span>HTTP Error 416. The requested range is not satisfiable.<span class="tag">&lt;/<span class="title">p</span>&gt;</span>
-<span class="tag">&lt;/<span class="title">BODY</span>&gt;</span><span class="tag">&lt;/<span class="title">HTML</span>&gt;</span>
-
-[!!] Looks VULN
-</code></pre><p>返回错误是The requested range is not satisfiable。</p>
-<p>修改range的lower的值，socket会出错。但是没有出现蓝屏。蓝屏呢~~</p>
-<p>打完补丁之后返回如下：</p>
-<pre><code>[*] Audit Started
-HTTP/1.1 400 Bad Request
-Content-Type: text/html; charset=us-ascii
-Server: Microsoft-HTTPAPI/2.0
-Date: Fri, 17 Apr 2015 07:15:33 GMT
-Connection: close
-Content-Length: 339
-
-<span class="doctype">&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN""http://www.w3.org/TR/html4/strict.dtd"&gt;</span>
-<span class="tag">&lt;<span class="title">HTML</span>&gt;</span><span class="tag">&lt;<span class="title">HEAD</span>&gt;</span><span class="tag">&lt;<span class="title">TITLE</span>&gt;</span>Bad Request<span class="tag">&lt;/<span class="title">TITLE</span>&gt;</span>
-<span class="tag">&lt;<span class="title">META</span> <span class="attribute">HTTP-EQUIV</span>=<span class="value">"Content-Type"</span> <span class="attribute">Content</span>=<span class="value">"text/html; charset=us-ascii"</span>&gt;</span><span class="tag">&lt;/<span class="title">HEAD</span>&gt;</span>
-<span class="tag">&lt;<span class="title">BODY</span>&gt;</span><span class="tag">&lt;<span class="title">h2</span>&gt;</span>Bad Request - Invalid Header<span class="tag">&lt;/<span class="title">h2</span>&gt;</span>
-<span class="tag">&lt;<span class="title">hr</span>&gt;</span><span class="tag">&lt;<span class="title">p</span>&gt;</span>HTTP Error 400. The request has an invalid header name.<span class="tag">&lt;/<span class="title">p</span>&gt;</span>
-<span class="tag">&lt;/<span class="title">BODY</span>&gt;</span><span class="tag">&lt;/<span class="title">HTML</span>&gt;</span>
-
-[*] Looks Patched
-</code></pre><p>相关<a href="https://github.com/stayliv3/blog_material/tree/master/ms15-034" target="_blank" rel="external">测试脚本</a>来自于网络。</p>
+		<p>在输出的时候防御XSS即对用户输入进行转义，XSS的问题本质上还是代码注入，HTML或者javascript的代码注入，即混淆了用户输入的数据和代码。而解决这个问题，就需要根据用户可控数据具体输出的环境进行恰当的转义。</p>
+<h1 id="在html标签中输出">在html标签中输出</h1><pre><code><span class="tag">&lt;<span class="title">HTML标签</span>&gt;</span>[输出]<span class="tag">&lt;/<span class="title">HTML标签</span>&gt;</span>
+</code></pre><p>只需要htmlencode即可。更具体是转义掉&lt; &gt; 就可以防止html注入。</p>
+<h1 id="输出在普通html属性中">输出在普通html属性中</h1><pre><code><span class="tag">&lt;<span class="title">div</span> <span class="attribute">attr</span>=<span class="value">不可信数据</span>&gt;</span>content<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+</code></pre><p>好的方案应该是把不可信数据用双引号包裹起来，然后对数据进行htmlencode。</p>
+<h1 id="在script标签中输出">在script标签中输出</h1><pre><code><span class="tag">&lt;<span class="title">script</span>&gt;</span><span class="actionscript"><span class="keyword">var</span> $a=<span class="string">"不可信数据"</span></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+</code></pre><p>确保输出变量在引号中，使用javascript编码输入数据。要防止<code>&lt;/script&gt;</code> 截断</p>
+<h1 id="输出在on事件中">输出在on事件中</h1><pre><code><span class="tag">&lt;<span class="title">a</span> <span class="attribute">href</span>=<span class="value">#</span> <span class="attribute">onlick</span>=<span class="value">"funcA('$var')"</span>&gt;</span> test<span class="tag">&lt;/<span class="title">a</span>&gt;</span>
+</code></pre><p>防御：先做javascript编码，再做html编码。因为输出数据位于html标签属性中，浏览器会进行html自解码。</p>
+<h1 id="在地址中输出">在地址中输出</h1><p>对协议进行白名单，http或者https，然后对其他部门进行url编码。避免javascript，data uri等伪协议攻击。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/前端安全/">前端安全</a>
+</div>
 
 
 </div>
@@ -170,7 +133,7 @@ Content-Length: 339
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2015/04/17/MS15-034-CVE-2015-1635-测试记录/" data-title="MS15-034/CVE-2015-1635 测试记录 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  <div data-url="http://xdxd.love/2016/03/09/使用转义防御XSS/" data-title="使用转义防御XSS | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -183,19 +146,11 @@ Content-Length: 339
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2015/04/17/失效的撞库防御策略之cookie/" title="失效的撞库防御策略之cookie">
-  <strong>上一篇：</strong><br/>
-  <span>
-  失效的撞库防御策略之cookie</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2015/04/15/撞库攻击防御方案/"  title="撞库攻击防御方案">
+<a href="/2016/03/08/php对象注入漏洞/"  title="php对象注入漏洞">
  <strong>下一篇：</strong><br/> 
- <span>撞库攻击防御方案
+ <span>php对象注入漏洞
 </span>
 </a>
 </div>
@@ -204,7 +159,7 @@ Content-Length: 339
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/04/17/MS15-034-CVE-2015-1635-测试记录/" data-title="MS15-034/CVE-2015-1635 测试记录" data-url="http://xdxd.love/2015/04/17/MS15-034-CVE-2015-1635-测试记录/"></div>
+	<div class="ds-thread" data-thread-key="2016/03/09/使用转义防御XSS/" data-title="使用转义防御XSS" data-url="http://xdxd.love/2016/03/09/使用转义防御XSS/"></div>
 </section>
 
 
@@ -214,7 +169,7 @@ Content-Length: 339
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#在html标签中输出"><span class="toc-number">1.</span> <span class="toc-text">在html标签中输出</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#输出在普通html属性中"><span class="toc-number">2.</span> <span class="toc-text">输出在普通html属性中</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#在script标签中输出"><span class="toc-number">3.</span> <span class="toc-text">在script标签中输出</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#输出在on事件中"><span class="toc-number">4.</span> <span class="toc-text">输出在on事件中</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#在地址中输出"><span class="toc-number">5.</span> <span class="toc-text">在地址中输出</span></a></li></ol>
  
   </div>
 
