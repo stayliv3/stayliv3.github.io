@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-03-08T07:58:41.000Z</updated>
+  <updated>2016-03-09T02:18:03.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -15,11 +15,27 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title><![CDATA[php对象注入漏洞]]></title>
+    <link href="http://xdxd.love/2016/03/08/php%E5%AF%B9%E8%B1%A1%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E/"/>
+    <id>http://xdxd.love/2016/03/08/php对象注入漏洞/</id>
+    <published>2016-03-08T10:29:59.000Z</published>
+    <updated>2016-03-09T02:18:03.000Z</updated>
+    <content type="html"><![CDATA[<h1 id="漏洞原理">漏洞原理</h1><p>理解php对象注入,需要了解基本的php面向对象编程的概念和php中的魔术方法。可以参考<a href="http://drops.wooyun.org/papers/4820" target="_blank" rel="external">理解php对象注入</a>,文中练习代码可以在<a href="">这里下载</a></p>
+<h1 id="利用方式">利用方式</h1><h1 id="修复方案">修复方案</h1>]]></content>
+    <summary type="html">
+    <![CDATA[<h1 id="漏洞原理">漏洞原理</h1><p>理解php对象注入,需要了解基本的php面向对象编程的概念和php中的魔术方法。可以参考<a href="http://drops.wooyun.org/papers/4820" target="_blank" rel="ext]]>
+    </summary>
+    
+      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+    
+  </entry>
+  
+  <entry>
     <title><![CDATA[sqli练级攻略]]></title>
     <link href="http://xdxd.love/2016/03/07/sqli%E7%BB%83%E7%BA%A7%E6%94%BB%E7%95%A5/"/>
     <id>http://xdxd.love/2016/03/07/sqli练级攻略/</id>
     <published>2016-03-07T07:34:09.000Z</published>
-    <updated>2016-03-08T07:58:41.000Z</updated>
+    <updated>2016-03-08T10:29:23.000Z</updated>
     <content type="html"><![CDATA[<h1 id="初窥门径">初窥门径</h1><h1 id="上下求索">上下求索</h1><h1 id="融会贯通">融会贯通</h1>]]></content>
     <summary type="html">
     <![CDATA[<h1 id="初窥门径">初窥门径</h1><h1 id="上下求索">上下求索</h1><h1 id="融会贯通">融会贯通</h1>]]>
@@ -1026,108 +1042,6 @@ document.getElementById(<span class="string">"form2"</span>).submit();
       <category term="ssi" scheme="http://xdxd.love/tags/ssi/"/>
     
       <category term="黑盒测试" scheme="http://xdxd.love/categories/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[php比较操作符的安全问题]]></title>
-    <link href="http://xdxd.love/2015/12/03/php%E6%AF%94%E8%BE%83%E6%93%8D%E4%BD%9C%E7%AC%A6%E7%9A%84%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/"/>
-    <id>http://xdxd.love/2015/12/03/php比较操作符的安全问题/</id>
-    <published>2015-12-03T01:32:15.000Z</published>
-    <updated>2015-12-03T01:50:15.000Z</updated>
-    <content type="html"><![CDATA[<p>地址：<a href="http://drops.wooyun.org/tips/7679" target="_blank" rel="external">http://drops.wooyun.org/tips/7679</a><br>0x00 比较操作符</p>
-<p>php的比较操作符有==（等于）松散比较，===（完全等于）严格比较，这里面就会引入很多有意思的问题。</p>
-<p>在松散比较的时候，php会将他们的类型统一，比如说字符到数字，非bool类型转换成bool类型，为了避免意想不到的运行效果，应该使用严格比较。如下是php manual上的比较运算符表：</p>
-<p>例子        名称         结果<br>$a == $b    等于      TRUE，如果类型转换后 $a 等于 $b。<br>$a === $b   全等      TRUE，如果 $a 等于 $b，并且它们的类型也相同。<br>$a != $b    不等      TRUE，如果类型转换后 $a 不等于 $b。<br>$a &lt;&gt; $b    不等      TRUE，如果类型转换后 $a 不等于 $b。<br>$a !== $b   不全等     TRUE，如果 $a 不等于 $b，或者它们的类型不同。<br>$a &lt; $b     小与      TRUE，如果 $a 严格小于 $b。<br>$a &gt; $b     大于      TRUE，如果 $a 严格大于 $b。<br>$a &lt;= $b    小于等于     TRUE，如果 $a 小于或者等于 $b。<br>$a &gt;= $b    大于等于     TRUE，如果 $a 大于或者等于 $b。<br>0x01 安全问题</p>
-<p>1 hash比较缺陷</p>
-<p>php在处理hash字符串的时候会用到!=,==来进行hash比较，如果hash值以0e开头，后边都是数字，再与数字比较，就会被解释成0*10^n还是为0，就会被判断相等，绕过登录环节。</p>
-<pre><code>root@kali:~/tool<span class="preprocessor"># php -r 'var_dump(<span class="title">"00e0345"</span> == <span class="title">"0"</span>);var_dump(<span class="title">"0e123456789"</span>==<span class="title">"0"</span>);var_dump(<span class="title">"0e1234abc"</span>==<span class="title">"0"</span>);'</span>
-<span class="keyword">bool</span>(<span class="literal">true</span>)
-<span class="keyword">bool</span>(<span class="literal">true</span>)
-<span class="keyword">bool</span>(<span class="literal">false</span>)
-</code></pre><p>当全是数字的时候，宽松的比较会执行尽力模式，如0e12345678会被解释成0*10^12345678,除了e不全是数字的时候就不会相等，这能从var_dump(“0e1234abc”==”0”)可以看出来。</p>
-<p>2 bool 欺骗</p>
-<p>当存在json_decode和unserialize的时候，部分结构会被解释成bool类型，也会造成欺骗。json_decode示例代码：</p>
-<pre><code><span class="variable">$json</span>_str = <span class="string">'{"user":true,"pass":true}'</span>;
-<span class="variable">$data</span> = json_decode(<span class="variable">$json</span>_str,<span class="literal">true</span>);
-<span class="keyword">if</span> (<span class="variable">$data</span>[<span class="string">'user'</span>] == <span class="string">'admin'</span> &amp;&amp; <span class="variable">$data</span>[<span class="string">'pass'</span>]==<span class="string">'secirity'</span>)
-{
-    print_r(<span class="string">'logined in as bool'</span>.<span class="string">"\n"</span>);
-}
-</code></pre><p>运行结果：</p>
-<pre><code>root<span class="variable">@kali</span><span class="symbol">:/var/www</span><span class="comment"># php /root/php/hash.php</span>
-logined <span class="keyword">in</span> as bool
-</code></pre><p>unserialize示例代码：</p>
-<pre><code><span class="variable">$unserialize</span>_str = <span class="string">'a:2:{s:4:"user";b:1;s:4:"pass";b:1;}'</span>;
-<span class="variable">$data</span>_unserialize = unserialize(<span class="variable">$unserialize</span>_str);
-<span class="keyword">if</span> (<span class="variable">$data</span>_unserialize[<span class="string">'user'</span>] == <span class="string">'admin'</span> &amp;&amp; <span class="variable">$data</span>_unserialize[<span class="string">'pass'</span>]==<span class="string">'secirity'</span>)
-{
-    print_r(<span class="string">'logined in unserialize'</span>.<span class="string">"\n"</span>);
-}
-</code></pre><p>运行结果如下：</p>
-<pre><code>root<span class="variable">@kali</span><span class="symbol">:/var/www</span><span class="comment"># php /root/php/hash.php</span>
-logined <span class="keyword">in</span> unserialize
-</code></pre><p>3 数字转换欺骗</p>
-<pre><code><span class="variable">$user</span>_id = ($_POST[<span class="string">'user_id'</span>]);
-<span class="keyword">if</span> (<span class="variable">$user</span>_id == <span class="string">"1"</span>)
-{
-    <span class="variable">$user</span>_id = (int)(<span class="variable">$user</span>_id);
-    #<span class="variable">$user</span>_id = intval(<span class="variable">$user</span>_id);
-    <span class="variable">$qry</span> = <span class="string">"SELECT * FROM `users` WHERE user_id='$user_id';"</span>;
-}
-<span class="variable">$result</span> = mysql_query(<span class="variable">$qry</span>) or die(<span class="string">'&lt;pre&gt;'</span> . mysql_error() . <span class="string">'&lt;/pre&gt;'</span> );
-print_r(mysql_fetch_row(<span class="variable">$result</span>));
-</code></pre><p>将user_id=0.999999999999999999999发送出去得到结果如下：</p>
-<pre><code>Array
-(
-    [<span class="number">0</span>] =&gt; <span class="number">0</span>
-    [<span class="number">1</span>] =&gt; lxx'
-    [<span class="number">2</span>] =&gt; 
-    [<span class="number">3</span>] =&gt; 
-    [<span class="number">4</span>] =&gt; 
-    [<span class="number">5</span>] =&gt; 
-)
-</code></pre><p>本来是要查询user_id的数据，结果却是user_id=0的数据。int和intval在转换数字的时候都是就低的，再如下代码:</p>
-<pre><code><span class="keyword">if</span> ($_POST[<span class="string">'uid'</span>] != <span class="number">1</span>) {
- <span class="variable">$res</span> = <span class="variable">$db-</span>&gt;query(<span class="string">"SELECT * FROM user WHERE uid=%d"</span>, (int)$_POST[<span class="string">'uid'</span>]);
- mail(...);
-} <span class="keyword">else</span> {
- die(<span class="string">"Cannot reset password of admin"</span>);
-}
-</code></pre><p>假如传入1.1，就绕过了$_POST[‘uid’]！=1的判断，就能对uid=1的用户进行操作了。另外intval还有个尽力模式，就是转换所有数字直到遇到非数字为止，如果采用:</p>
-<pre><code><span class="keyword">if</span> (intval(<span class="variable">$qq</span>) === <span class="string">'123456'</span>)
-{
-    <span class="variable">$db-</span>&gt;query(<span class="string">"select * from user where qq = $qq"</span>)
-}
-</code></pre><p>攻击者传入123456 union select version()进行攻击。</p>
-<p>4 PHP5.4.4 特殊情况</p>
-<p>这个版本的php的一个修改导致两个数字型字符溢出导致比较相等</p>
-<pre><code>$ php -r 'var_dump("<span class="number">615295194528</span><span class="number">097206937025</span><span class="number">83126814</span>" == "<span class="number">615295194528</span><span class="number">097200000000</span><span class="number">00000000</span>")<span class="comment">;'</span>
-bool(true)
-</code></pre><p>3 题外话：</p>
-<p>同样有类似问题的还有php strcmp函数,manual上是这么解释的，int strcmp ( string $str1 , string $str2 ),str1是第一个字符串，str2是第二个字符串，如果str1小于str2，返回<0,如果str1>str2,返回&gt;0,两者相等返回0，假如str2为一个array呢？</0,如果str1></p>
-<pre><code>$_GET[<span class="string">'key'</span>] = <span class="keyword">array</span>();
-<span class="variable">$key</span> = <span class="string">"llocdpocuzion5dcp2bindhspiccy"</span>;
-<span class="variable">$flag</span> = strcmp(<span class="variable">$key</span>, $_GET[<span class="string">'key'</span>]);
-<span class="keyword">if</span> (<span class="variable">$flag</span> == <span class="number">0</span>) {
-    print <span class="string">"Welcome!"</span>;
-} <span class="keyword">else</span> {
-    print <span class="string">"Bad key!"</span>;
-}
-</code></pre><p>运行结果：</p>
-<pre><code>root@kali:~/php<span class="comment"># php strcmp.php</span>
-PHP Warning: <span class="function"> strcmp(</span><span class="function">)</span> expects parameter 2 to be string,<span class="instruction"> array </span>given in /root/php/strcmp.php on line 13
-Welcome!
-</code></pre><p>参考：<br>1，<a href="http://phpsadness.com/sad/47" target="_blank" rel="external">http://phpsadness.com/sad/47</a><br>2，<a href="http://php.net/language.operators.comparison" target="_blank" rel="external">http://php.net/language.operators.comparison</a><br>3，<a href="http://indico.cern.ch/event/241705/material/slides/0.pdf" target="_blank" rel="external">http://indico.cern.ch/event/241705/material/slides/0.pdf</a></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>地址：<a href="http://drops.wooyun.org/tips/7679" target="_blank" rel="external">http://drops.wooyun.org/tips/7679</a><br>0x00 比较操作符</p>
-<p>]]>
-    </summary>
-    
-      <category term="php" scheme="http://xdxd.love/tags/php/"/>
-    
-      <category term="转载收藏" scheme="http://xdxd.love/categories/%E8%BD%AC%E8%BD%BD%E6%94%B6%E8%97%8F/"/>
     
   </entry>
   

