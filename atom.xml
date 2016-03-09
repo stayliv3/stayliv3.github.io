@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-03-09T02:18:03.000Z</updated>
+  <updated>2016-03-09T03:09:07.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -19,8 +19,8 @@
     <link href="http://xdxd.love/2016/03/08/php%E5%AF%B9%E8%B1%A1%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E/"/>
     <id>http://xdxd.love/2016/03/08/php对象注入漏洞/</id>
     <published>2016-03-08T10:29:59.000Z</published>
-    <updated>2016-03-09T02:18:03.000Z</updated>
-    <content type="html"><![CDATA[<h1 id="漏洞原理">漏洞原理</h1><p>理解php对象注入,需要了解基本的php面向对象编程的概念和php中的魔术方法。可以参考<a href="http://drops.wooyun.org/papers/4820" target="_blank" rel="external">理解php对象注入</a>,文中练习代码可以在<a href="">这里下载</a></p>
+    <updated>2016-03-09T03:09:07.000Z</updated>
+    <content type="html"><![CDATA[<h1 id="漏洞原理">漏洞原理</h1><p>理解php对象注入,需要了解基本的php面向对象编程的概念和php中的魔术方法。可以参考<a href="http://drops.wooyun.org/papers/4820" target="_blank" rel="external">理解php对象注入</a>,文中练习代码可以在<a href="https://github.com/stayliv3/blog_material/tree/master/objecti" target="_blank" rel="external">这里下载</a></p>
 <h1 id="利用方式">利用方式</h1><h1 id="修复方案">修复方案</h1>]]></content>
     <summary type="html">
     <![CDATA[<h1 id="漏洞原理">漏洞原理</h1><p>理解php对象注入,需要了解基本的php面向对象编程的概念和php中的魔术方法。可以参考<a href="http://drops.wooyun.org/papers/4820" target="_blank" rel="ext]]>
