@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-03-09T03:22:16.000Z</updated>
+  <updated>2016-03-09T03:29:24.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -19,11 +19,40 @@
     <link href="http://xdxd.love/2016/03/08/php%E5%AF%B9%E8%B1%A1%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E/"/>
     <id>http://xdxd.love/2016/03/08/php对象注入漏洞/</id>
     <published>2016-03-08T10:29:59.000Z</published>
-    <updated>2016-03-09T03:22:16.000Z</updated>
+    <updated>2016-03-09T03:29:24.000Z</updated>
     <content type="html"><![CDATA[<h1 id="漏洞原理">漏洞原理</h1><p>理解php对象注入,需要了解基本的php面向对象编程的概念和php中的魔术方法。可以参考<a href="http://drops.wooyun.org/papers/4820" target="_blank" rel="external">理解php对象注入</a>,文中练习代码可以在<a href="https://github.com/stayliv3/blog_material/tree/master/objecti" target="_blank" rel="external">这里下载</a></p>
 <p>用户可控的数据进入了unserialize函数进行对象重建，通常通过(但不限于)魔术方法进行利用</p>
 <h1 id="利用方式">利用方式</h1><h1 id="修复方案">修复方案</h1><p>避免用户可控的输入进入unserialize函数</p>
-]]></content>
+<h1 id="漏洞代码">漏洞代码</h1><p>php</p>
+<pre><code>class RunCode
+{
+   public <span class="variable">$code</span>;
+   function __construct()
+   {
+
+   }
+   function __wakeup()
+   {
+        if(isset(<span class="variable">$this-</span>&gt;code))
+        {
+            eval(<span class="variable">$this-</span>&gt;code);
+        }
+   }
+}
+<span class="keyword">if</span>(isset($_REQUEST[<span class="string">'array'</span>]))
+{   
+ <span class="variable">$var1</span>=unserialize($_REQUEST[<span class="string">'array'</span>]);
+if(is_array(<span class="variable">$var1</span>))
+{
+echo <span class="string">"&lt;br/&gt;First Element: "</span>.<span class="variable">$var1</span>[<span class="number">0</span>];
+}
+}
+<span class="keyword">else</span>
+{
+echo <span class="string">"Array parameter is missing"</span>;
+}
+ ?&gt;
+</code></pre>]]></content>
     <summary type="html">
     <![CDATA[<h1 id="漏洞原理">漏洞原理</h1><p>理解php对象注入,需要了解基本的php面向对象编程的概念和php中的魔术方法。可以参考<a href="http://drops.wooyun.org/papers/4820" target="_blank" rel="ext]]>
     </summary>
