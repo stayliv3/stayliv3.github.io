@@ -31,7 +31,7 @@ var impromptu_object = {
     &quot;lucky_numbers&quot;: [11630,12067,12407,12887]
 };
 alert(imp">
-<meta property="og:updated_time" content="2016-03-10T07:02:39.000Z">
+<meta property="og:updated_time" content="2016-03-10T07:06:32.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="jsonp漏洞分析">
 <meta name="twitter:description" content="漏洞原理json(javascript object notation)是javascript对象表示法的意思。
@@ -117,7 +117,7 @@ alert(imp">
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞原理"><span class="toc-number">1.</span> <span class="toc-text">漏洞原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#利用方式"><span class="toc-number">2.</span> <span class="toc-text">利用方式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#防御方案"><span class="toc-number">3.</span> <span class="toc-text">防御方案</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞原理"><span class="toc-number">1.</span> <span class="toc-text">漏洞原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#利用方式"><span class="toc-number">2.</span> <span class="toc-text">利用方式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#防御方案"><span class="toc-number">3.</span> <span class="toc-text">防御方案</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">4.</span> <span class="toc-text">参考资料</span></a></li></ol>
 		
 		</div>
 		
@@ -155,6 +155,7 @@ alert(a);
 <pre><code><span class="comment">//Ignoring The First Item "-1"Qmail.newMailsList={total:</span>
 </code></pre><p>2,referer的来源限制，利用前端referer的不可伪造性来保障请求数据的应用来源于可信的地方，此种方式力度较稀，完全依赖于referer，某些情况下（如存在xss）可能导致被绕过。</p>
 <p>3,token的加入，严格来说，这种利用javascript hijacking的方式获取数据是CSRF的一种，不过较之传统的CSRF不能获取数据只能提交而言，这种方式利用javascript可以获取一些敏感信息而已。如果我们能让攻击者对接口未知，就可以实现json hijacking的防御了。利用token对调用者的身份进行认证，这种方式对于调用者的身份会要求力度较细，但是一旦出现xss也可能导致前端Token的泄露，从而导致保护失效。</p>
+<h1 id="参考资料">参考资料</h1><p><a href="http://blog.knownsec.com/2015/03/jsonp_security_technic/" target="_blank" rel="external">知道创宇  JSONP 安全攻防技术</a></p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -208,7 +209,7 @@ alert(a);
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞原理"><span class="toc-number">1.</span> <span class="toc-text">漏洞原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#利用方式"><span class="toc-number">2.</span> <span class="toc-text">利用方式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#防御方案"><span class="toc-number">3.</span> <span class="toc-text">防御方案</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞原理"><span class="toc-number">1.</span> <span class="toc-text">漏洞原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#利用方式"><span class="toc-number">2.</span> <span class="toc-text">利用方式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#防御方案"><span class="toc-number">3.</span> <span class="toc-text">防御方案</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">4.</span> <span class="toc-text">参考资料</span></a></li></ol>
  
   </div>
 
