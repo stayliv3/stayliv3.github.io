@@ -14,10 +14,8 @@
     <meta name="description" content="命令执行可以细分成系统命令执行和代码注入。漏洞成因都是因为用户输入进入了关键函数导致的。
 
 #代码注入
-assertbool assert ( mixed $assertion [, string $description ] )
-assert() 会检查指定的 assertion 并在结果为 FALSE 时采取适当的行动。
-
-如果 assertion 是字符串，它将会被 assert() 当做">
+关键函数eval(), assert(), preg_replace(), call_user_func(), call_user_func_array(), array_map()
+assertbool assert ( mixed $assertion [, string $descript">
 <meta property="og:type" content="article">
 <meta property="og:title" content="代码审计之命令执行">
 <meta property="og:url" content="http://xdxd.love/2015/06/09/代码审计之命令执行/index.html">
@@ -25,21 +23,17 @@ assert() 会检查指定的 assertion 并在结果为 FALSE 时采取适当的�
 <meta property="og:description" content="命令执行可以细分成系统命令执行和代码注入。漏洞成因都是因为用户输入进入了关键函数导致的。
 
 #代码注入
-assertbool assert ( mixed $assertion [, string $description ] )
-assert() 会检查指定的 assertion 并在结果为 FALSE 时采取适当的行动。
-
-如果 assertion 是字符串，它将会被 assert() 当做">
+关键函数eval(), assert(), preg_replace(), call_user_func(), call_user_func_array(), array_map()
+assertbool assert ( mixed $assertion [, string $descript">
 <meta property="og:image" content="http://xdxd.love/images/mingling1.png">
-<meta property="og:updated_time" content="2016-03-10T08:04:17.000Z">
+<meta property="og:updated_time" content="2016-03-11T06:24:19.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="代码审计之命令执行">
 <meta name="twitter:description" content="命令执行可以细分成系统命令执行和代码注入。漏洞成因都是因为用户输入进入了关键函数导致的。
 
 #代码注入
-assertbool assert ( mixed $assertion [, string $description ] )
-assert() 会检查指定的 assertion 并在结果为 FALSE 时采取适当的行动。
-
-如果 assertion 是字符串，它将会被 assert() 当做">
+关键函数eval(), assert(), preg_replace(), call_user_func(), call_user_func_array(), array_map()
+assertbool assert ( mixed $assertion [, string $descript">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -115,13 +109,14 @@ assert() 会检查指定的 assertion 并在结果为 FALSE 时采取适当的�
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#assert"><span class="toc-number">1.</span> <span class="toc-text">assert</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#eval"><span class="toc-number">2.</span> <span class="toc-text">eval</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#call_user_func"><span class="toc-number">3.</span> <span class="toc-text">call_user_func</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#关键函数"><span class="toc-number">1.</span> <span class="toc-text">关键函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#assert"><span class="toc-number">2.</span> <span class="toc-text">assert</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#eval"><span class="toc-number">3.</span> <span class="toc-text">eval</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#call_user_func"><span class="toc-number">4.</span> <span class="toc-text">call_user_func</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#系统命令执行"><span class="toc-number"></span> <span class="toc-text">系统命令执行</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#关键函数-1"><span class="toc-number">1.</span> <span class="toc-text">关键函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#system"><span class="toc-number">2.</span> <span class="toc-text">system</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#利用方式："><span class="toc-number">3.</span> <span class="toc-text">利用方式：</span></a></li></ol>
 		
 		</div>
 		
 		<p>命令执行可以细分成系统命令执行和代码注入。漏洞成因都是因为用户输入进入了关键函数导致的。</p>
 <p><img src="/images/mingling1.png" alt=""></p>
 <p>#代码注入</p>
+<h2 id="关键函数">关键函数</h2><p>eval(), assert(), preg_replace(), call_user_func(), call_user_func_array(), array_map()</p>
 <h2 id="assert"><a href="http://php.net/manual/zh/function.assert.php" target="_blank" rel="external">assert</a></h2><pre><code>bool assert ( mixed <span class="variable">$assertion</span> [, string <span class="variable">$description</span> ] )
 assert() 会检查指定的 assertion 并在结果为 FALSE 时采取适当的行动。
 
@@ -144,6 +139,28 @@ assert(<span class="variable">$a</span>);
 <p>测试代码：</p>
 <pre><code>call_user_func(<span class="variable">$_REQUEST[</span><span class="string">'func'</span>], <span class="variable">$_REQUEST[</span><span class="string">'pass'</span>])<span class="comment">;</span>
 </code></pre><p>典型案例:</p>
+<h1 id="系统命令执行">系统命令执行</h1><h2 id="关键函数-1">关键函数</h2><p>system(),exec(),</p>
+<h2 id="system">system</h2><p>样例代码：</p>
+<pre><code>&lt;?php
+
+// include(<span class="string">"common.php"</span>);
+// showMenu();
+// echo <span class="string">'&lt;br&gt;'</span>;
+<span class="variable">$status</span> = $_GET[<span class="string">'status'</span>];
+<span class="variable">$ns</span>  = $_GET[<span class="string">'ns'</span>];
+<span class="variable">$host</span>   = $_GET[<span class="string">'host'</span>];
+<span class="variable">$query</span>_type   = $_GET[<span class="string">'query_type'</span>]; // ANY, MX, A , etc.
+<span class="variable">$ip</span>     = $_SERVER[<span class="string">'REMOTE_ADDR'</span>];
+<span class="variable">$self</span>   = $_SERVER[<span class="string">'PHP_SELF'</span>];
+    <span class="variable">$host</span> = trim(<span class="variable">$host</span>);
+      <span class="variable">$host</span> = strtolower(<span class="variable">$host</span>);
+      echo(<span class="string">"&lt;span class=\"</span>plainBlue\<span class="string">"&gt;&lt;b&gt;Executing : &lt;u&gt;dig @$ns $host $query_type&lt;/u&gt;&lt;/b&gt;&lt;br&gt;"</span>);
+      echo <span class="string">'&lt;pre&gt;'</span>;
+      //<span class="keyword">start</span> digging <span class="keyword">in</span> the namserver
+      system (<span class="string">"dig @$ns $host $query_type"</span>);
+      echo <span class="string">'&lt;/pre&gt;'</span>;
+?&gt;
+</code></pre><h2 id="利用方式：">利用方式：</h2><p>使用<code>||</code>分隔，执行多条命令</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -210,7 +227,7 @@ assert(<span class="variable">$a</span>);
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#assert"><span class="toc-number">1.</span> <span class="toc-text">assert</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#eval"><span class="toc-number">2.</span> <span class="toc-text">eval</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#call_user_func"><span class="toc-number">3.</span> <span class="toc-text">call_user_func</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#关键函数"><span class="toc-number">1.</span> <span class="toc-text">关键函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#assert"><span class="toc-number">2.</span> <span class="toc-text">assert</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#eval"><span class="toc-number">3.</span> <span class="toc-text">eval</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#call_user_func"><span class="toc-number">4.</span> <span class="toc-text">call_user_func</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#系统命令执行"><span class="toc-number"></span> <span class="toc-text">系统命令执行</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#关键函数-1"><span class="toc-number">1.</span> <span class="toc-text">关键函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#system"><span class="toc-number">2.</span> <span class="toc-text">system</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#利用方式："><span class="toc-number">3.</span> <span class="toc-text">利用方式：</span></a></li></ol>
  
   </div>
 
