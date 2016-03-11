@@ -4,24 +4,35 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>利用xposed绕过安卓SSL证书的强校验 | xd_xd&#39;s blog</title>
+    <title>thinkphp URL命令执行漏洞分析 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description" content="什么是SSL pinninghttps协议验证服务器身份的方式通常有三种，一是根据浏览器或者说操作系统（Android）自带的证书链；二是使用自签名证书；三是自签名证书加上SSL Pinning特性。第一种需要到知名证书机构购买证书，需要一定预算。第二种多见于内网使用。第三种在是安全性最高的，但是需要浏览器插件或客户端使用了SSL Pinning特性。Android应用程序在使用https协议时也">
+    <meta name="description" content="漏洞很老了。整理一下。补丁地址
+代码修复的方式为：
+/trunk/ThinkPHP/Lib/Core/Dispatcher.class.php 
+125  -   $res = preg_replace(&apos;@(w+)&apos;.$depr.&apos;([^&apos;.$depr.&apos;\/]+)@e&apos;, &apos;$var[\&apos;\\1\&apos;]=&quot;\\2&quot;;&apos;, implode($depr,$paths)); 
+125  +   $re">
 <meta property="og:type" content="article">
-<meta property="og:title" content="利用xposed绕过安卓SSL证书的强校验">
-<meta property="og:url" content="http://xdxd.love/2015/12/30/利用xposed绕过安卓SSL证书的强校验/index.html">
+<meta property="og:title" content="thinkphp URL命令执行漏洞分析">
+<meta property="og:url" content="http://xdxd.love/2016/03/11/thinkphp-URL命令执行漏洞分析/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="什么是SSL pinninghttps协议验证服务器身份的方式通常有三种，一是根据浏览器或者说操作系统（Android）自带的证书链；二是使用自签名证书；三是自签名证书加上SSL Pinning特性。第一种需要到知名证书机构购买证书，需要一定预算。第二种多见于内网使用。第三种在是安全性最高的，但是需要浏览器插件或客户端使用了SSL Pinning特性。Android应用程序在使用https协议时也">
-<meta property="og:image" content="http://xdxd.love/images/xposed1.png">
-<meta property="og:updated_time" content="2015-12-30T03:03:50.000Z">
+<meta property="og:description" content="漏洞很老了。整理一下。补丁地址
+代码修复的方式为：
+/trunk/ThinkPHP/Lib/Core/Dispatcher.class.php 
+125  -   $res = preg_replace(&apos;@(w+)&apos;.$depr.&apos;([^&apos;.$depr.&apos;\/]+)@e&apos;, &apos;$var[\&apos;\\1\&apos;]=&quot;\\2&quot;;&apos;, implode($depr,$paths)); 
+125  +   $re">
+<meta property="og:updated_time" content="2016-03-11T08:06:17.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="利用xposed绕过安卓SSL证书的强校验">
-<meta name="twitter:description" content="什么是SSL pinninghttps协议验证服务器身份的方式通常有三种，一是根据浏览器或者说操作系统（Android）自带的证书链；二是使用自签名证书；三是自签名证书加上SSL Pinning特性。第一种需要到知名证书机构购买证书，需要一定预算。第二种多见于内网使用。第三种在是安全性最高的，但是需要浏览器插件或客户端使用了SSL Pinning特性。Android应用程序在使用https协议时也">
+<meta name="twitter:title" content="thinkphp URL命令执行漏洞分析">
+<meta name="twitter:description" content="漏洞很老了。整理一下。补丁地址
+代码修复的方式为：
+/trunk/ThinkPHP/Lib/Core/Dispatcher.class.php 
+125  -   $res = preg_replace(&apos;@(w+)&apos;.$depr.&apos;([^&apos;.$depr.&apos;\/]+)@e&apos;, &apos;$var[\&apos;\\1\&apos;]=&quot;\\2&quot;;&apos;, implode($depr,$paths)); 
+125  +   $re">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -81,14 +92,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/12/30/利用xposed绕过安卓SSL证书的强校验/" title="利用xposed绕过安卓SSL证书的强校验" itemprop="url">利用xposed绕过安卓SSL证书的强校验</a>
+      <a href="/2016/03/11/thinkphp-URL命令执行漏洞分析/" title="thinkphp URL命令执行漏洞分析" itemprop="url">thinkphp URL命令执行漏洞分析</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2015-12-30T02:51:31.000Z" itemprop="datePublished"> 发表于 Dec 30 2015</time>
+    <time datetime="2016-03-11T07:14:03.000Z" itemprop="datePublished"> 发表于 Mar 11 2016</time>
     
   </p>
 </header>
@@ -97,20 +108,40 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#什么是SSL_pinning"><span class="toc-number">1.</span> <span class="toc-text">什么是SSL pinning</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JustTrustMe"><span class="toc-number">2.</span> <span class="toc-text">JustTrustMe</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">3.</span> <span class="toc-text">参考资料</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#反思"><span class="toc-number">1.</span> <span class="toc-text">反思</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">2.</span> <span class="toc-text">参考资料</span></a></li></ol>
 		
 		</div>
 		
-		<h1 id="什么是SSL_pinning">什么是SSL pinning</h1><p>https协议验证服务器身份的方式通常有三种，一是根据浏览器或者说操作系统（Android）自带的证书链；二是使用自签名证书；三是自签名证书加上SSL Pinning特性。第一种需要到知名证书机构购买证书，需要一定预算。第二种多见于内网使用。第三种在是安全性最高的，但是需要浏览器插件或客户端使用了SSL Pinning特性。<br>Android应用程序在使用https协议时也使用类似的3种方式验证服务器身份，分别是系统证书库、自带证书库、自带证书库 + SSL Pinning特性。<br>所以SSL Pinning，即SSL证书绑定，是验证服务器身份的一种方式，是在https协议建立通信时增加的代码逻辑，它通过自己的方式验证服务器身份，然后决定通信是否继续下去。它唯一指定了服务器的身份，所以安全性较高。</p>
-<p><img src="/images/xposed1.png" alt=""></p>
-<h1 id="JustTrustMe">JustTrustMe</h1><p>当客户端使用了SSL pinning的时候，手机导入burpsuite证书的方式也无法抓到通信包。除了修改apk验证证书逻辑重新打包的方式外，最简单的方法是使用xposed相关模块。</p>
-<p>xposed安装方法：</p>
-<p><a href="http://repo.xposed.info/module/de.robv.android.xposed.installer" target="_blank" rel="external">下载xposed安装包</a></p>
-<p>安装xposed框架到手机：</p>
-<pre><code>adb install <span class="tag">&lt;<span class="title">xposed-installer-you-just-downloaded</span>&gt;</span>.apk
-</code></pre><p>安装并启用<a href="https://github.com/Fuzion24/JustTrustMe" target="_blank" rel="external">justtrustme模块</a></p>
-<p>重启手机就可以抓到之前抓不到的https通信了。</p>
-<h1 id="参考资料">参考资料</h1><p><a href="http://www.nsfocus.com.cn/upload/contents/2015/07/2015_07241353337959.pdf" target="_blank" rel="external">http://www.nsfocus.com.cn/upload/contents/2015/07/2015_07241353337959.pdf</a></p>
+		<p>漏洞很老了。整理一下。<a href="http://www.thinkphp.cn/info/55.html" target="_blank" rel="external">补丁地址</a></p>
+<p>代码修复的方式为：</p>
+<pre><code>/trunk/ThinkPHP/Lib/Core/Dispatcher.class.php 
+<span class="number">125</span>  -   <span class="variable">$res</span> = preg_replace(<span class="string">'@(w+)'</span>.<span class="variable">$depr</span>.<span class="string">'([^'</span>.<span class="variable">$depr</span>.<span class="string">'\/]+)@e'</span>, <span class="string">'$var[\'</span>\\<span class="number">1</span>\<span class="string">']="\\2";'</span>, implode(<span class="variable">$depr</span>,<span class="variable">$paths</span>)); 
+<span class="number">125</span>  +   <span class="variable">$res</span> = preg_replace(<span class="string">'@(w+)'</span>.<span class="variable">$depr</span>.<span class="string">'([^'</span>.<span class="variable">$depr</span>.<span class="string">'\/]+)@e'</span>, <span class="string">'$var[\'</span>\\<span class="number">1</span>\<span class="string">']=\'</span>\\<span class="number">2</span>\<span class="string">';'</span>, implode(<span class="variable">$depr</span>,<span class="variable">$paths</span>)); 
+</code></pre><p>这里导致代码执行的原因有两个，一是preg_replace使用了e修饰符，这样<code>$var[\&#39;\\1\&#39;]=&quot;\\2&quot;;</code> 会被当做php代码执行。而双引号的变量会被解析，导致了代码执行。</p>
+<p>关键代码为：</p>
+<pre><code><span class="variable">$depr</span> = C(<span class="string">'URL_PATHINFO_DEPR'</span>);
+        // 分析PATHINFO信息
+        self::getPathInfo();
+        <span class="keyword">if</span>(!self::routerCheck()){   // 检测路由规则 如果没有则按默认规则调度URL
+            <span class="variable">$paths</span> = explode(<span class="variable">$depr</span>,trim($_SERVER[<span class="string">'PATH_INFO'</span>],<span class="string">'/'</span>));
+            <span class="variable">$var</span>  =  array();
+            if (C(<span class="string">'APP_GROUP_LIST'</span>) &amp;&amp; !isset($_GET[C(<span class="string">'VAR_GROUP'</span>)])){
+                <span class="variable">$var</span>[C(<span class="string">'VAR_GROUP'</span>)] = in_array(strtolower(<span class="variable">$paths</span>[<span class="number">0</span>]),explode(<span class="string">','</span>,strtolower(C(<span class="string">'APP_GROUP_LIST'</span>))))? array_shift(<span class="variable">$paths</span>) : <span class="string">''</span>;
+                if(C(<span class="string">'APP_GROUP_DENY'</span>) &amp;&amp; in_array(strtolower(<span class="variable">$var</span>[C(<span class="string">'VAR_GROUP'</span>)]),explode(<span class="string">','</span>,strtolower(C(<span class="string">'APP_GROUP_DENY'</span>))))) {
+                    // 禁止直接访问分组
+                    exit;
+                }
+            }
+            if(!isset($_GET[C(<span class="string">'VAR_MODULE'</span>)])) {// 还没有定义模块名称
+                <span class="variable">$var</span>[C(<span class="string">'VAR_MODULE'</span>)]  =   array_shift(<span class="variable">$paths</span>);
+            }
+            <span class="variable">$var</span>[C(<span class="string">'VAR_ACTION'</span>)]  =   array_shift(<span class="variable">$paths</span>);
+            // 解析剩余的URL参数
+            <span class="variable">$res</span> = preg_replace(<span class="string">'@(\w+)'</span>.<span class="variable">$depr</span>.<span class="string">'([^'</span>.<span class="variable">$depr</span>.<span class="string">'\/]+)@e'</span>, <span class="string">'$var[\'</span>\\<span class="number">1</span>\<span class="string">']=strip_tags(\'</span>\\<span class="number">2</span>\<span class="string">');'</span>, implode(<span class="variable">$depr</span>,<span class="variable">$paths</span>));
+            $_GET   =  array_merge(<span class="variable">$var</span>,$_GET);
+        }
+</code></pre><h1 id="反思">反思</h1><p>深入理解漏洞原型，理清复杂逻辑</p>
+<h1 id="参考资料">参考资料</h1><p><a href="http://www.zzxiaoyu.cn/?post=63" target="_blank" rel="external">Thinkphp 3.0-3.1版代码执行</a></p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -118,14 +149,9 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/移动安全/">移动安全</a>
+  <a class="article-category-link" href="/categories/代码审计/">代码审计</a>
 </div>
 
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/xposed/">xposed</a>
-  </div>
 
 </div>
 
@@ -133,7 +159,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2015/12/30/利用xposed绕过安卓SSL证书的强校验/" data-title="利用xposed绕过安卓SSL证书的强校验 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  <div data-url="http://xdxd.love/2016/03/11/thinkphp-URL命令执行漏洞分析/" data-title="thinkphp URL命令执行漏洞分析 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -146,19 +172,11 @@
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2016/01/07/无状态协议中认证状态保持方案的一些思考/" title="无状态协议中认证状态保持方案的一些思考">
-  <strong>上一篇：</strong><br/>
-  <span>
-  无状态协议中认证状态保持方案的一些思考</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2015/12/24/多步csrf漏洞场景及其利用/"  title="多步csrf漏洞场景及其利用">
+<a href="/2016/03/10/正则表达式练级/"  title="正则表达式练级">
  <strong>下一篇：</strong><br/> 
- <span>多步csrf漏洞场景及其利用
+ <span>正则表达式练级
 </span>
 </a>
 </div>
@@ -167,7 +185,7 @@
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/12/30/利用xposed绕过安卓SSL证书的强校验/" data-title="利用xposed绕过安卓SSL证书的强校验" data-url="http://xdxd.love/2015/12/30/利用xposed绕过安卓SSL证书的强校验/"></div>
+	<div class="ds-thread" data-thread-key="2016/03/11/thinkphp-URL命令执行漏洞分析/" data-title="thinkphp URL命令执行漏洞分析" data-url="http://xdxd.love/2016/03/11/thinkphp-URL命令执行漏洞分析/"></div>
 </section>
 
 
@@ -177,7 +195,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#什么是SSL_pinning"><span class="toc-number">1.</span> <span class="toc-text">什么是SSL pinning</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JustTrustMe"><span class="toc-number">2.</span> <span class="toc-text">JustTrustMe</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">3.</span> <span class="toc-text">参考资料</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#反思"><span class="toc-number">1.</span> <span class="toc-text">反思</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">2.</span> <span class="toc-text">参考资料</span></a></li></ol>
  
   </div>
 

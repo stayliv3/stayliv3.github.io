@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-03-10T07:27:04.000Z</updated>
+  <updated>2016-03-11T08:06:17.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -13,6 +13,53 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[thinkphp URL命令执行漏洞分析]]></title>
+    <link href="http://xdxd.love/2016/03/11/thinkphp-URL%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"/>
+    <id>http://xdxd.love/2016/03/11/thinkphp-URL命令执行漏洞分析/</id>
+    <published>2016-03-11T07:14:03.000Z</published>
+    <updated>2016-03-11T08:06:17.000Z</updated>
+    <content type="html"><![CDATA[<p>漏洞很老了。整理一下。<a href="http://www.thinkphp.cn/info/55.html" target="_blank" rel="external">补丁地址</a></p>
+<p>代码修复的方式为：</p>
+<pre><code>/trunk/ThinkPHP/Lib/Core/Dispatcher.class.php 
+<span class="number">125</span>  -   <span class="variable">$res</span> = preg_replace(<span class="string">'@(w+)'</span>.<span class="variable">$depr</span>.<span class="string">'([^'</span>.<span class="variable">$depr</span>.<span class="string">'\/]+)@e'</span>, <span class="string">'$var[\'</span>\\<span class="number">1</span>\<span class="string">']="\\2";'</span>, implode(<span class="variable">$depr</span>,<span class="variable">$paths</span>)); 
+<span class="number">125</span>  +   <span class="variable">$res</span> = preg_replace(<span class="string">'@(w+)'</span>.<span class="variable">$depr</span>.<span class="string">'([^'</span>.<span class="variable">$depr</span>.<span class="string">'\/]+)@e'</span>, <span class="string">'$var[\'</span>\\<span class="number">1</span>\<span class="string">']=\'</span>\\<span class="number">2</span>\<span class="string">';'</span>, implode(<span class="variable">$depr</span>,<span class="variable">$paths</span>)); 
+</code></pre><p>这里导致代码执行的原因有两个，一是preg_replace使用了e修饰符，这样<code>$var[\&#39;\\1\&#39;]=&quot;\\2&quot;;</code> 会被当做php代码执行。而双引号的变量会被解析，导致了代码执行。</p>
+<p>关键代码为：</p>
+<pre><code><span class="variable">$depr</span> = C(<span class="string">'URL_PATHINFO_DEPR'</span>);
+        // 分析PATHINFO信息
+        self::getPathInfo();
+        <span class="keyword">if</span>(!self::routerCheck()){   // 检测路由规则 如果没有则按默认规则调度URL
+            <span class="variable">$paths</span> = explode(<span class="variable">$depr</span>,trim($_SERVER[<span class="string">'PATH_INFO'</span>],<span class="string">'/'</span>));
+            <span class="variable">$var</span>  =  array();
+            if (C(<span class="string">'APP_GROUP_LIST'</span>) &amp;&amp; !isset($_GET[C(<span class="string">'VAR_GROUP'</span>)])){
+                <span class="variable">$var</span>[C(<span class="string">'VAR_GROUP'</span>)] = in_array(strtolower(<span class="variable">$paths</span>[<span class="number">0</span>]),explode(<span class="string">','</span>,strtolower(C(<span class="string">'APP_GROUP_LIST'</span>))))? array_shift(<span class="variable">$paths</span>) : <span class="string">''</span>;
+                if(C(<span class="string">'APP_GROUP_DENY'</span>) &amp;&amp; in_array(strtolower(<span class="variable">$var</span>[C(<span class="string">'VAR_GROUP'</span>)]),explode(<span class="string">','</span>,strtolower(C(<span class="string">'APP_GROUP_DENY'</span>))))) {
+                    // 禁止直接访问分组
+                    exit;
+                }
+            }
+            if(!isset($_GET[C(<span class="string">'VAR_MODULE'</span>)])) {// 还没有定义模块名称
+                <span class="variable">$var</span>[C(<span class="string">'VAR_MODULE'</span>)]  =   array_shift(<span class="variable">$paths</span>);
+            }
+            <span class="variable">$var</span>[C(<span class="string">'VAR_ACTION'</span>)]  =   array_shift(<span class="variable">$paths</span>);
+            // 解析剩余的URL参数
+            <span class="variable">$res</span> = preg_replace(<span class="string">'@(\w+)'</span>.<span class="variable">$depr</span>.<span class="string">'([^'</span>.<span class="variable">$depr</span>.<span class="string">'\/]+)@e'</span>, <span class="string">'$var[\'</span>\\<span class="number">1</span>\<span class="string">']=strip_tags(\'</span>\\<span class="number">2</span>\<span class="string">');'</span>, implode(<span class="variable">$depr</span>,<span class="variable">$paths</span>));
+            $_GET   =  array_merge(<span class="variable">$var</span>,$_GET);
+        }
+</code></pre><h1 id="反思">反思</h1><p>深入理解漏洞原型，理清复杂逻辑</p>
+<h1 id="参考资料">参考资料</h1><p><a href="http://www.zzxiaoyu.cn/?post=63" target="_blank" rel="external">Thinkphp 3.0-3.1版代码执行</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>漏洞很老了。整理一下。<a href="http://www.thinkphp.cn/info/55.html" target="_blank" rel="external">补丁地址</a></p>
+<p>代码修复的方式为：</p>
+<pre><code>/trunk/T]]>
+    </summary>
+    
+      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[正则表达式练级]]></title>
@@ -830,47 +877,6 @@ document.getElementById(<span class="string">"form2"</span>).submit();
       <category term="csrf" scheme="http://xdxd.love/tags/csrf/"/>
     
       <category term="前端安全" scheme="http://xdxd.love/categories/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[mybatis与sql注入]]></title>
-    <link href="http://xdxd.love/2015/12/23/mybatis%E4%B8%8Esql%E6%B3%A8%E5%85%A5/"/>
-    <id>http://xdxd.love/2015/12/23/mybatis与sql注入/</id>
-    <published>2015-12-23T06:38:51.000Z</published>
-    <updated>2015-12-25T07:10:58.000Z</updated>
-    <content type="html"><![CDATA[<p>MyBatis 是支持定制化 SQL、存储过程以及高级映射的优秀的持久层框架。MyBatis 避免了几乎所有的 JDBC 代码和手动设置参数以及获取结果集。MyBatis 可以对配置和原生Map使用简单的 XML 或注解，将接口和 Java 的 POJOs(Plain Old Java Objects,普通的 Java对象)映射成数据库中的记录。通常来说ORM的框架应该是可以避免SQL注入的，但是如果mybatis使用不当也会造成sql注入。</p>
-<p>The MyBatis data mapper framework makes it easier to use a relational database with object-oriented applications. Unlike traditional ORM solutions, MyBatis maps objects with SQL statements or stored procedures using a XML descriptor, rather than mapping objects to tables in a database; thus providing complete control over SQL, therefore susceptible to SQL injection if used incorrectly.</p>
-<p>MyBatis has 2 substitution methods. The <code>${}</code> method does direct string replacement (i.e. property substitution) so it’s vulnerable to SQL injection. The <code>#{}</code> method does parameter substitution on a PreparedStatement so it is not vulnerable.</p>
-<pre><code>&lt;<span class="keyword">select</span> id=<span class="string">"getPerson"</span> parameterType=<span class="string">"int"</span> resultType=<span class="string">"org.application.vo.Person"</span>&gt;
-<span class="keyword">SELECT</span> * <span class="keyword">FROM</span> PERSON <span class="keyword">WHERE</span> ID = <span class="preprocessor">#{id}</span>
-&lt;/<span class="keyword">select</span>&gt;
-</code></pre><p>使用<code>#</code>标记参数，mybatis会使用预编译的方式来处理参数，这样子是安全的。相当于使用了如下的jdbc代码：</p>
-<figure class="highlight"><figcaption><span>Comparable JDBC code */</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">String selectPerson = &#34;SELECT * FROM PERSON WHERE ID = ?&#34;; &#10;PreparedStatement ps = conn.prepareStatement(selectPerson); &#10;ps.setInt(1, id);</span><br></pre></td></tr></table></figure>
-<pre><code>&lt;<span class="keyword">select</span> id=<span class="string">"getPerson"</span> parameterType=<span class="string">"string"</span> resultType=<span class="string">"org.application.vo.Person"</span>&gt;
-<span class="keyword">SELECT</span> * <span class="keyword">FROM</span> PERSON <span class="keyword">WHERE</span> NAME = <span class="preprocessor">#{name} AND PHONE LIKE '${phone}'; </span>
-&lt;/<span class="keyword">select</span>&gt;   
-</code></pre><p>Note the parameter notation, ${phone} in the above getPerson statement. By default, using the ${} syntax will cause MyBatis to directly inject a string, unmodified, into a SQL Statement. MyBatis does NOT modify or escape the string before substitution.</p>
-<p>使用<code>$</code>符号mybatis会直接将字符串注入到sql语句中，不进行任何修改和转移如果没有对phone变量进行验证的话就可能导致sql注入。</p>
-<p>#安全开发建议</p>
-<p>尽量使用<code>#</code>符号，如果需要要对用户提交参数进行验证。</p>
-<p>like的写法：</p>
-<p>mysql：</p>
-<pre><code><span class="operator"><span class="keyword">select</span> * <span class="keyword">from</span> t_user <span class="keyword">where</span> <span class="keyword">name</span> <span class="keyword">like</span> <span class="keyword">concat</span>(<span class="string">'%'</span>, #{<span class="keyword">name</span>}, <span class="string">'%'</span>)  </span>
-</code></pre><p>oracle：</p>
-<pre><code><span class="operator"><span class="keyword">select</span> * <span class="keyword">from</span> t_user <span class="keyword">where</span> <span class="keyword">name</span> <span class="keyword">like</span> <span class="string">'%'</span> || #{<span class="keyword">name</span>} || <span class="string">'%'</span></span>
-</code></pre><p>sqlserver:</p>
-<pre><code><span class="operator"><span class="keyword">select</span> * <span class="keyword">from</span> t_user <span class="keyword">where</span> <span class="keyword">name</span> <span class="keyword">like</span> <span class="string">'%'</span> + #{<span class="keyword">name</span>} + <span class="string">'%'</span></span>
-</code></pre><p>参考资料：</p>
-<p><a href="http://apollo89.com/wordpress/?p=2175" target="_blank" rel="external">http://apollo89.com/wordpress/?p=2175</a><br><a href="http://mybatis.org/mybatis-3/zh/" target="_blank" rel="external">http://mybatis.org/mybatis-3/zh/</a><br><a href="http://software-security.sans.org/developer-how-to/fix-sql-injection-in-java-mybatis" target="_blank" rel="external">http://software-security.sans.org/developer-how-to/fix-sql-injection-in-java-mybatis</a></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>MyBatis 是支持定制化 SQL、存储过程以及高级映射的优秀的持久层框架。MyBatis 避免了几乎所有的 JDBC 代码和手动设置参数以及获取结果集。MyBatis 可以对配置和原生Map使用简单的 XML 或注解，将接口和 Java 的 POJOs(Plain Ol]]>
-    </summary>
-    
-      <category term="java" scheme="http://xdxd.love/tags/java/"/>
-    
-      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
     
   </entry>
   

@@ -14,8 +14,8 @@
     <meta name="description" content="命令执行可以细分成系统命令执行和代码注入。漏洞成因都是因为用户输入进入了关键函数导致的。
 
 #代码注入
-关键函数eval(), assert(), preg_replace(), call_user_func(), call_user_func_array(), array_map()
-assertbool assert ( mixed $assertion [, string $descript">
+关键函数eval(), assert(), preg_replace(), call_user_func(), call_user_func_array(), array_map() 以及动态函数$a($b)，
+assertbool assert ( mixed $assertion [, st">
 <meta property="og:type" content="article">
 <meta property="og:title" content="代码审计之命令执行">
 <meta property="og:url" content="http://xdxd.love/2015/06/09/代码审计之命令执行/index.html">
@@ -23,17 +23,17 @@ assertbool assert ( mixed $assertion [, string $descript">
 <meta property="og:description" content="命令执行可以细分成系统命令执行和代码注入。漏洞成因都是因为用户输入进入了关键函数导致的。
 
 #代码注入
-关键函数eval(), assert(), preg_replace(), call_user_func(), call_user_func_array(), array_map()
-assertbool assert ( mixed $assertion [, string $descript">
+关键函数eval(), assert(), preg_replace(), call_user_func(), call_user_func_array(), array_map() 以及动态函数$a($b)，
+assertbool assert ( mixed $assertion [, st">
 <meta property="og:image" content="http://xdxd.love/images/mingling1.png">
-<meta property="og:updated_time" content="2016-03-11T06:24:19.000Z">
+<meta property="og:updated_time" content="2016-03-11T07:36:14.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="代码审计之命令执行">
 <meta name="twitter:description" content="命令执行可以细分成系统命令执行和代码注入。漏洞成因都是因为用户输入进入了关键函数导致的。
 
 #代码注入
-关键函数eval(), assert(), preg_replace(), call_user_func(), call_user_func_array(), array_map()
-assertbool assert ( mixed $assertion [, string $descript">
+关键函数eval(), assert(), preg_replace(), call_user_func(), call_user_func_array(), array_map() 以及动态函数$a($b)，
+assertbool assert ( mixed $assertion [, st">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -109,14 +109,14 @@ assertbool assert ( mixed $assertion [, string $descript">
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#关键函数"><span class="toc-number">1.</span> <span class="toc-text">关键函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#assert"><span class="toc-number">2.</span> <span class="toc-text">assert</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#eval"><span class="toc-number">3.</span> <span class="toc-text">eval</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#call_user_func"><span class="toc-number">4.</span> <span class="toc-text">call_user_func</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#系统命令执行"><span class="toc-number"></span> <span class="toc-text">系统命令执行</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#关键函数-1"><span class="toc-number">1.</span> <span class="toc-text">关键函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#system"><span class="toc-number">2.</span> <span class="toc-text">system</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#利用方式："><span class="toc-number">3.</span> <span class="toc-text">利用方式：</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#关键函数"><span class="toc-number">1.</span> <span class="toc-text">关键函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#assert"><span class="toc-number">2.</span> <span class="toc-text">assert</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#eval"><span class="toc-number">3.</span> <span class="toc-text">eval</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#call_user_func"><span class="toc-number">4.</span> <span class="toc-text">call_user_func</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#preg_replace"><span class="toc-number">5.</span> <span class="toc-text">preg_replace</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#系统命令执行"><span class="toc-number"></span> <span class="toc-text">系统命令执行</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#关键函数-1"><span class="toc-number">1.</span> <span class="toc-text">关键函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#system"><span class="toc-number">2.</span> <span class="toc-text">system</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#利用方式："><span class="toc-number">3.</span> <span class="toc-text">利用方式：</span></a></li></ol>
 		
 		</div>
 		
 		<p>命令执行可以细分成系统命令执行和代码注入。漏洞成因都是因为用户输入进入了关键函数导致的。</p>
 <p><img src="/images/mingling1.png" alt=""></p>
 <p>#代码注入</p>
-<h2 id="关键函数">关键函数</h2><p>eval(), assert(), preg_replace(), call_user_func(), call_user_func_array(), array_map()</p>
+<h2 id="关键函数">关键函数</h2><p>eval(), assert(), preg_replace(), call_user_func(), call_user_func_array(), array_map() 以及动态函数$a($b)，</p>
 <h2 id="assert"><a href="http://php.net/manual/zh/function.assert.php" target="_blank" rel="external">assert</a></h2><pre><code>bool assert ( mixed <span class="variable">$assertion</span> [, string <span class="variable">$description</span> ] )
 assert() 会检查指定的 assertion 并在结果为 FALSE 时采取适当的行动。
 
@@ -138,6 +138,15 @@ assert(<span class="variable">$a</span>);
 <p>mixed call_user_func ( callable $callback [, mixed $parameter [, mixed $… ]] )<br>第一个参数 callback 是被调用的回调函数，其余参数是回调函数的参数。</p>
 <p>测试代码：</p>
 <pre><code>call_user_func(<span class="variable">$_REQUEST[</span><span class="string">'func'</span>], <span class="variable">$_REQUEST[</span><span class="string">'pass'</span>])<span class="comment">;</span>
+</code></pre><h2 id="preg_replace"><a href="http://php.net/manual/zh/function.preg-replace.php" target="_blank" rel="external">preg_replace</a></h2><p>preg_replace — 执行一个正则表达式的搜索和替换</p>
+<p>说明 </p>
+<p>mixed preg_replace ( mixed $pattern , mixed $replacement , mixed $subject [, int $limit = -1 [, int &amp;$count ]] )<br>搜索subject中匹配pattern的部分， 以replacement进行替换。</p>
+<p>测试代码：</p>
+<pre><code><span class="php"><span class="preprocessor">&lt;?php</span>
+
+preg_replace(<span class="string">"/\[(.*)\]/e"</span>,<span class="string">'\\1'</span>,<span class="variable">$_GET</span>[<span class="string">'str'</span>]);
+
+<span class="preprocessor">?&gt;</span></span>
 </code></pre><p>典型案例:</p>
 <h1 id="系统命令执行">系统命令执行</h1><h2 id="关键函数-1">关键函数</h2><p>system(),exec(),</p>
 <h2 id="system">system</h2><p>样例代码：</p>
@@ -227,7 +236,7 @@ assert(<span class="variable">$a</span>);
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#关键函数"><span class="toc-number">1.</span> <span class="toc-text">关键函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#assert"><span class="toc-number">2.</span> <span class="toc-text">assert</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#eval"><span class="toc-number">3.</span> <span class="toc-text">eval</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#call_user_func"><span class="toc-number">4.</span> <span class="toc-text">call_user_func</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#系统命令执行"><span class="toc-number"></span> <span class="toc-text">系统命令执行</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#关键函数-1"><span class="toc-number">1.</span> <span class="toc-text">关键函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#system"><span class="toc-number">2.</span> <span class="toc-text">system</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#利用方式："><span class="toc-number">3.</span> <span class="toc-text">利用方式：</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#关键函数"><span class="toc-number">1.</span> <span class="toc-text">关键函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#assert"><span class="toc-number">2.</span> <span class="toc-text">assert</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#eval"><span class="toc-number">3.</span> <span class="toc-text">eval</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#call_user_func"><span class="toc-number">4.</span> <span class="toc-text">call_user_func</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#preg_replace"><span class="toc-number">5.</span> <span class="toc-text">preg_replace</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#系统命令执行"><span class="toc-number"></span> <span class="toc-text">系统命令执行</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#关键函数-1"><span class="toc-number">1.</span> <span class="toc-text">关键函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#system"><span class="toc-number">2.</span> <span class="toc-text">system</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#利用方式："><span class="toc-number">3.</span> <span class="toc-text">利用方式：</span></a></li></ol>
  
   </div>
 
@@ -255,7 +264,7 @@ assert(<span class="variable">$a</span>);
 		  
 		
 		  
-			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>21</sup></a></li>
+			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>22</sup></a></li>
 		  
 		
 		  
