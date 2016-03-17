@@ -29,10 +29,10 @@
 对其中两例进行分析：location.hash.assign
     &amp;lt;script&amp;gt;
   var payload = window.location.hash.substr(">
-<meta property="og:image" content="http://xdxd.love/source/firing-range1.png">
-<meta property="og:image" content="http://xdxd.love/source/firing-range2.png">
-<meta property="og:image" content="http://xdxd.love/source/firing-range3.png">
-<meta property="og:updated_time" content="2016-03-17T06:34:45.000Z">
+<meta property="og:image" content="http://xdxd.love/source/images/firing-range1.png">
+<meta property="og:image" content="http://xdxd.love/source/images/firing-range2.png">
+<meta property="og:image" content="http://xdxd.love/source/images/firing-range3.png">
+<meta property="og:updated_time" content="2016-03-17T14:26:55.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="google firing-range xss测试应用">
 <meta name="twitter:description" content="firing-range是谷歌发布的一个XSS测试环境，用来检测扫描器的能力。在线访问地址：https://public-firing-range.appspot.com
@@ -123,14 +123,14 @@
 		
 		<p><a href="https://github.com/google/firing-range" target="_blank" rel="external">firing-range</a>是谷歌发布的一个XSS测试环境，用来检测扫描器的能力。在线访问地址：<a href="https://public-firing-range.appspot.com" target="_blank" rel="external">https://public-firing-range.appspot.com</a></p>
 <p>谷歌对每个位置都进行了详细的分类。</p>
-<p><img src="/source/firing-range1.png" alt=""></p>
-<p><img src="/source/firing-range2.png" alt=""></p>
+<p><img src="/source/images/firing-range1.png" alt=""></p>
+<p><img src="/source/images/firing-range2.png" alt=""></p>
 <p>对其中两例进行分析：location.hash.assign</p>
 <pre><code>    <span class="tag">&lt;<span class="title">script</span>&gt;</span><span class="javascript">
   <span class="keyword">var</span> payload = <span class="built_in">window</span>.location.hash.substr(<span class="number">1</span>);<span class="built_in">window</span>.location.assign(payload);
 </span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
 </code></pre><p>获取hash值，进入了assign函数。</p>
-<p><img src="/source/firing-range3.png" alt=""></p>
+<p><img src="/source/images/firing-range3.png" alt=""></p>
 <p>参考<a href="http://www.wooyun.org/bugs/wooyun-2013-041721" target="_blank" rel="external">搜狗浏览器4.2.2.9903任意网站伪造＋自有协议下XSS*2</a></p>
 <p>location.hash.innerHtml</p>
 <pre><code>    <span class="tag">&lt;<span class="title">script</span>&gt;</span><span class="javascript">
