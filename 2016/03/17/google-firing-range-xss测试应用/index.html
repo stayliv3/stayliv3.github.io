@@ -4,23 +4,44 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>php代码审计总结 | xd_xd&#39;s blog</title>
+    <title>google firing-range xss测试应用 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description">
+    <meta name="description" content="firing-range是谷歌发布的一个XSS测试环境，用来检测扫描器的能力。在线访问地址：https://public-firing-range.appspot.com
+谷歌对每个位置都进行了详细的分类。
+
+
+对其中两例进行分析：location.hash.assign
+    &amp;lt;script&amp;gt;
+  var payload = window.location.hash.substr(">
 <meta property="og:type" content="article">
-<meta property="og:title" content="php代码审计总结">
-<meta property="og:url" content="http://xdxd.love/2016/03/15/php代码审计总结/index.html">
+<meta property="og:title" content="google firing-range xss测试应用">
+<meta property="og:url" content="http://xdxd.love/2016/03/17/google-firing-range-xss测试应用/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description">
-<meta property="og:updated_time" content="2016-03-15T07:02:14.000Z">
+<meta property="og:description" content="firing-range是谷歌发布的一个XSS测试环境，用来检测扫描器的能力。在线访问地址：https://public-firing-range.appspot.com
+谷歌对每个位置都进行了详细的分类。
+
+
+对其中两例进行分析：location.hash.assign
+    &amp;lt;script&amp;gt;
+  var payload = window.location.hash.substr(">
+<meta property="og:image" content="http://xdxd.love/source/firing-range1.png">
+<meta property="og:image" content="http://xdxd.love/source/firing-range2.png">
+<meta property="og:image" content="http://xdxd.love/source/firing-range3.png">
+<meta property="og:updated_time" content="2016-03-17T06:34:45.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="php代码审计总结">
-<meta name="twitter:description">
+<meta name="twitter:title" content="google firing-range xss测试应用">
+<meta name="twitter:description" content="firing-range是谷歌发布的一个XSS测试环境，用来检测扫描器的能力。在线访问地址：https://public-firing-range.appspot.com
+谷歌对每个位置都进行了详细的分类。
+
+
+对其中两例进行分析：location.hash.assign
+    &amp;lt;script&amp;gt;
+  var payload = window.location.hash.substr(">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -80,14 +101,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2016/03/15/php代码审计总结/" title="php代码审计总结" itemprop="url">php代码审计总结</a>
+      <a href="/2016/03/17/google-firing-range-xss测试应用/" title="google firing-range xss测试应用" itemprop="url">google firing-range xss测试应用</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2016-03-15T06:41:20.000Z" itemprop="datePublished"> 发表于 Mar 15 2016</time>
+    <time datetime="2016-03-17T06:03:47.000Z" itemprop="datePublished"> 发表于 Mar 17 2016</time>
     
   </p>
 </header>
@@ -96,25 +117,40 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#location-search_和location-hash"><span class="toc-number">1.</span> <span class="toc-text">location.search 和location.hash</span></a></li></ol>
 		
 		</div>
 		
-		  
+		<p><a href="https://github.com/google/firing-range" target="_blank" rel="external">firing-range</a>是谷歌发布的一个XSS测试环境，用来检测扫描器的能力。在线访问地址：<a href="https://public-firing-range.appspot.com" target="_blank" rel="external">https://public-firing-range.appspot.com</a></p>
+<p>谷歌对每个位置都进行了详细的分类。</p>
+<p><img src="/source/firing-range1.png" alt=""></p>
+<p><img src="/source/firing-range2.png" alt=""></p>
+<p>对其中两例进行分析：location.hash.assign</p>
+<pre><code>    <span class="tag">&lt;<span class="title">script</span>&gt;</span><span class="javascript">
+  <span class="keyword">var</span> payload = <span class="built_in">window</span>.location.hash.substr(<span class="number">1</span>);<span class="built_in">window</span>.location.assign(payload);
+</span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+</code></pre><p>获取hash值，进入了assign函数。</p>
+<p><img src="/source/firing-range3.png" alt=""></p>
+<p>参考<a href="http://www.wooyun.org/bugs/wooyun-2013-041721" target="_blank" rel="external">搜狗浏览器4.2.2.9903任意网站伪造＋自有协议下XSS*2</a></p>
+<p>location.hash.innerHtml</p>
+<pre><code>    <span class="tag">&lt;<span class="title">script</span>&gt;</span><span class="javascript">
+      <span class="keyword">var</span> payload = <span class="built_in">window</span>.location.hash.substr(<span class="number">1</span>);<span class="keyword">var</span> div = <span class="built_in">document</span>.createElement(<span class="string">'div'</span>);
+div.id = <span class="string">'divEl'</span>;
+<span class="built_in">document</span>.documentElement.appendChild(div);
+<span class="keyword">var</span> divEl = <span class="built_in">document</span>.getElementById(<span class="string">'divEl'</span>);
+divEl.innerHTML = payload;
+    </span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+</code></pre><h1 id="location-search_和location-hash">location.search 和location.hash</h1><p>测试发现location.search获取到的值是浏览器地址栏url编码后的。而location.hash获取到的值是原始的值，既hash是%23获取到就是%23,hash是<code>&lt;</code>获取到就是<code>&lt;</code>说以直接innerHtml可以触发xss。</p>
+  
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/温故知新/">温故知新</a>
+  <a class="article-category-link" href="/categories/前端安全/">前端安全</a>
 </div>
 
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/php/">php</a>
-  </div>
 
 </div>
 
@@ -122,7 +158,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2016/03/15/php代码审计总结/" data-title="php代码审计总结 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  <div data-url="http://xdxd.love/2016/03/17/google-firing-range-xss测试应用/" data-title="google firing-range xss测试应用 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -148,7 +184,7 @@
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2016/03/15/php代码审计总结/" data-title="php代码审计总结" data-url="http://xdxd.love/2016/03/15/php代码审计总结/"></div>
+	<div class="ds-thread" data-thread-key="2016/03/17/google-firing-range-xss测试应用/" data-title="google firing-range xss测试应用" data-url="http://xdxd.love/2016/03/17/google-firing-range-xss测试应用/"></div>
 </section>
 
 
@@ -158,7 +194,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#location-search_和location-hash"><span class="toc-number">1.</span> <span class="toc-text">location.search 和location.hash</span></a></li></ol>
  
   </div>
 
@@ -190,7 +226,7 @@
 		  
 		
 		  
-			<li><a href="/categories/前端安全/" title="前端安全">前端安全<sup>6</sup></a></li>
+			<li><a href="/categories/前端安全/" title="前端安全">前端安全<sup>7</sup></a></li>
 		  
 		
 		  
@@ -212,17 +248,11 @@
 		  
 		
 		  
-			<li><a href="/categories/温故知新/" title="温故知新">温故知新<sup>1</sup></a></li>
-		  
-		
-		  
 		
 		  
 		
 		  
 			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>2</sup></a></li>
-		  
-		
 		  
 		
 		  
@@ -247,7 +277,7 @@
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/php/" title="php">php<sup>10</sup></a></li>
+				<li><a href="/tags/php/" title="php">php<sup>9</sup></a></li>
 			
 		
 			

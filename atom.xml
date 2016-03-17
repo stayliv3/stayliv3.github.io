@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-03-15T07:02:14.000Z</updated>
+  <updated>2016-03-17T06:34:45.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -15,19 +15,37 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title><![CDATA[php代码审计总结]]></title>
-    <link href="http://xdxd.love/2016/03/15/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E6%80%BB%E7%BB%93/"/>
-    <id>http://xdxd.love/2016/03/15/php代码审计总结/</id>
-    <published>2016-03-15T06:41:20.000Z</published>
-    <updated>2016-03-15T07:02:14.000Z</updated>
-    <content type="html"></content>
+    <title><![CDATA[google firing-range xss测试应用]]></title>
+    <link href="http://xdxd.love/2016/03/17/google-firing-range-xss%E6%B5%8B%E8%AF%95%E5%BA%94%E7%94%A8/"/>
+    <id>http://xdxd.love/2016/03/17/google-firing-range-xss测试应用/</id>
+    <published>2016-03-17T06:03:47.000Z</published>
+    <updated>2016-03-17T06:34:45.000Z</updated>
+    <content type="html"><![CDATA[<p><a href="https://github.com/google/firing-range" target="_blank" rel="external">firing-range</a>是谷歌发布的一个XSS测试环境，用来检测扫描器的能力。在线访问地址：<a href="https://public-firing-range.appspot.com" target="_blank" rel="external">https://public-firing-range.appspot.com</a></p>
+<p>谷歌对每个位置都进行了详细的分类。</p>
+<p><img src="/source/firing-range1.png" alt=""></p>
+<p><img src="/source/firing-range2.png" alt=""></p>
+<p>对其中两例进行分析：location.hash.assign</p>
+<pre><code>    <span class="tag">&lt;<span class="title">script</span>&gt;</span><span class="javascript">
+  <span class="keyword">var</span> payload = <span class="built_in">window</span>.location.hash.substr(<span class="number">1</span>);<span class="built_in">window</span>.location.assign(payload);
+</span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+</code></pre><p>获取hash值，进入了assign函数。</p>
+<p><img src="/source/firing-range3.png" alt=""></p>
+<p>参考<a href="http://www.wooyun.org/bugs/wooyun-2013-041721" target="_blank" rel="external">搜狗浏览器4.2.2.9903任意网站伪造＋自有协议下XSS*2</a></p>
+<p>location.hash.innerHtml</p>
+<pre><code>    <span class="tag">&lt;<span class="title">script</span>&gt;</span><span class="javascript">
+      <span class="keyword">var</span> payload = <span class="built_in">window</span>.location.hash.substr(<span class="number">1</span>);<span class="keyword">var</span> div = <span class="built_in">document</span>.createElement(<span class="string">'div'</span>);
+div.id = <span class="string">'divEl'</span>;
+<span class="built_in">document</span>.documentElement.appendChild(div);
+<span class="keyword">var</span> divEl = <span class="built_in">document</span>.getElementById(<span class="string">'divEl'</span>);
+divEl.innerHTML = payload;
+    </span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+</code></pre><h1 id="location-search_和location-hash">location.search 和location.hash</h1><p>测试发现location.search获取到的值是浏览器地址栏url编码后的。而location.hash获取到的值是原始的值，既hash是%23获取到就是%23,hash是<code>&lt;</code>获取到就是<code>&lt;</code>说以直接innerHtml可以触发xss。</p>
+]]></content>
     <summary type="html">
-    
+    <![CDATA[<p><a href="https://github.com/google/firing-range" target="_blank" rel="external">firing-range</a>是谷歌发布的一个XSS测试环境，用来检测扫描器的能力。在线访问地址：<a href]]>
     </summary>
     
-      <category term="php" scheme="http://xdxd.love/tags/php/"/>
-    
-      <category term="温故知新" scheme="http://xdxd.love/categories/%E6%B8%A9%E6%95%85%E7%9F%A5%E6%96%B0/"/>
+      <category term="前端安全" scheme="http://xdxd.love/categories/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8/"/>
     
   </entry>
   
