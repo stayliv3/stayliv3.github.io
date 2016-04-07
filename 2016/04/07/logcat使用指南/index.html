@@ -4,28 +4,41 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>centos 6安装mitmproxy | xd_xd&#39;s blog</title>
+    <title>logcat使用指南 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description" content="mitmproxy是一款支持HTTP(S)的中间人代理工具。不同于Fiddler2，burpsuite等类似功能工具，mitmproxy可在终端下运行。mitmproxy使用Python开发，是辅助web开发&amp;amp;测试，移动端调试，渗透测试的工具。
-mitmproxy作为定制化工具开发比较方便。但是mitmproxy需要太多依赖了。在mac上使用编译好的执行程序还是比较方便，ubuntu按照官">
+    <meta name="description" content="一共5中日志的输出方式：
+android.util.Log：提供了五种输出日志的方法
+Log.e(), Log.w(), Log.i(), Log.d(), Log.v()
+ERROR, WARN, INFO, DEBUG, VERBOSE
+adb logcat 命令会有非常多的输出，可以通过pid来过滤特定app的输出。
+案例房多多新房经纪人app logcat 默认输出了debug日志：
+/A">
 <meta property="og:type" content="article">
-<meta property="og:title" content="centos 6安装mitmproxy">
-<meta property="og:url" content="http://xdxd.love/2016/02/26/centos-6安装mitmproxy/index.html">
+<meta property="og:title" content="logcat使用指南">
+<meta property="og:url" content="http://xdxd.love/2016/04/07/logcat使用指南/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="mitmproxy是一款支持HTTP(S)的中间人代理工具。不同于Fiddler2，burpsuite等类似功能工具，mitmproxy可在终端下运行。mitmproxy使用Python开发，是辅助web开发&amp;amp;测试，移动端调试，渗透测试的工具。
-mitmproxy作为定制化工具开发比较方便。但是mitmproxy需要太多依赖了。在mac上使用编译好的执行程序还是比较方便，ubuntu按照官">
-<meta property="og:image" content="http://xdxd.love/source/mitmproxy1.png">
-<meta property="og:image" content="http://xdxd.love/images/mitmproxy1.JPG">
-<meta property="og:updated_time" content="2016-03-02T07:07:45.000Z">
+<meta property="og:description" content="一共5中日志的输出方式：
+android.util.Log：提供了五种输出日志的方法
+Log.e(), Log.w(), Log.i(), Log.d(), Log.v()
+ERROR, WARN, INFO, DEBUG, VERBOSE
+adb logcat 命令会有非常多的输出，可以通过pid来过滤特定app的输出。
+案例房多多新房经纪人app logcat 默认输出了debug日志：
+/A">
+<meta property="og:updated_time" content="2016-04-07T07:36:37.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="centos 6安装mitmproxy">
-<meta name="twitter:description" content="mitmproxy是一款支持HTTP(S)的中间人代理工具。不同于Fiddler2，burpsuite等类似功能工具，mitmproxy可在终端下运行。mitmproxy使用Python开发，是辅助web开发&amp;amp;测试，移动端调试，渗透测试的工具。
-mitmproxy作为定制化工具开发比较方便。但是mitmproxy需要太多依赖了。在mac上使用编译好的执行程序还是比较方便，ubuntu按照官">
+<meta name="twitter:title" content="logcat使用指南">
+<meta name="twitter:description" content="一共5中日志的输出方式：
+android.util.Log：提供了五种输出日志的方法
+Log.e(), Log.w(), Log.i(), Log.d(), Log.v()
+ERROR, WARN, INFO, DEBUG, VERBOSE
+adb logcat 命令会有非常多的输出，可以通过pid来过滤特定app的输出。
+案例房多多新房经纪人app logcat 默认输出了debug日志：
+/A">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -85,14 +98,14 @@ mitmproxy作为定制化工具开发比较方便。但是mitmproxy需要太多�
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2016/02/26/centos-6安装mitmproxy/" title="centos 6安装mitmproxy" itemprop="url">centos 6安装mitmproxy</a>
+      <a href="/2016/04/07/logcat使用指南/" title="logcat使用指南" itemprop="url">logcat使用指南</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2016-02-26T07:18:01.000Z" itemprop="datePublished"> 发表于 Feb 26 2016</time>
+    <time datetime="2016-04-07T06:08:27.000Z" itemprop="datePublished"> 发表于 Apr 7 2016</time>
     
   </p>
 </header>
@@ -101,32 +114,40 @@ mitmproxy作为定制化工具开发比较方便。但是mitmproxy需要太多�
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#案例"><span class="toc-number">1.</span> <span class="toc-text">案例</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">2.</span> <span class="toc-text">参考资料</span></a></li></ol>
 		
 		</div>
 		
-		<p><img src="/source/mitmproxy1.png" alt=""></p>
-<p>mitmproxy是一款支持HTTP(S)的中间人代理工具。不同于Fiddler2，burpsuite等类似功能工具，mitmproxy可在终端下运行。mitmproxy使用Python开发，是辅助web开发&amp;测试，移动端调试，渗透测试的工具。</p>
-<p>mitmproxy作为定制化工具开发比较方便。但是mitmproxy需要太多依赖了。在mac上使用编译好的执行程序还是比较方便，ubuntu按照官方说明也比较方便安装。</p>
-<p>ubuntu上安装命令如下：</p>
-<pre><code>$ sudo apt-<span class="built_in">get</span> install python-pip python-<span class="built_in">dev</span> libffi-<span class="built_in">dev</span> libssl-<span class="built_in">dev</span> libxml2-<span class="built_in">dev</span> libxslt1-<span class="built_in">dev</span>
-$ sudo pip install mitmproxy
-</code></pre><p>mitmproxy官方没有在centos上的安装说明。在centos6.7上安装失败多次，最后按照<a href="http://pacess.blogspot.com/2014/11/install-mitmproxy-on-centos.html" target="_blank" rel="external">在 CentOS 下安裝 mitmproxy</a>的说明，安装成功。</p>
-<pre><code>試過幾次失敗後，最終都能成功安裝在 CentOS <span class="number">6</span>。問題是出在 Python <span class="number">2.6</span> 及 Python <span class="number">3.4</span>。原來「mitmproxy」在 Python <span class="number">2.7</span> 才能順利安裝。要是使用 CentOS <span class="number">7</span> 的話，隨機附送的就是 Python <span class="number">2.7</span>。安裝「mitmproxy」的步驟如下：
-<span class="number">1.</span> 下載 Python 的 PIP 工具
-    wget https:<span class="comment">//bootstrap.pypa.io/get-pip.py</span>
-<span class="number">2.</span> 安裝 Python <span class="number">2.7</span> 的 PIP
-    python get-pip.py
-<span class="number">3.</span> 下載 Python 的 EZ Setup
-    wget https:<span class="comment">//bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py</span>
-<span class="number">4.</span> 安裝 Python <span class="number">2.7</span> 的 EZ Setup
-    python ez_setup.py
-<span class="number">5.</span> 安裝需要的封包
-    yum -y install python-pyasn1 python-flask python-urwid readline-devel gdbm-devel bzip2-devel ncurses-devel sqlite-devel tk-devel gcc python-setuptools python-pip python27-pip newt-python python-devel python27-devel python-pyasn1 pyOpenSSL gcc libxml2-devel libxslt-devel libffi-devel openssl-devel
-<span class="number">6.</span> 安裝 pyOpenSSL <span class="number">0.14</span>
-    easy_install http:<span class="comment">//pypi.python.org/packages/source/p/pyOpenSSL/pyOpenSSL-0.12.tar.gz</span>
-</code></pre><p>最后 pip install mitmporxy 就好。</p>
-<p><img src="/images/mitmproxy1.JPG" alt=""></p>
+		<p>一共5中日志的输出方式：</p>
+<p>android.util.Log：提供了五种输出日志的方法</p>
+<p>Log.e(), Log.w(), Log.i(), Log.d(), Log.v()</p>
+<p>ERROR, WARN, INFO, DEBUG, VERBOSE</p>
+<p>adb logcat 命令会有非常多的输出，可以通过pid来过滤特定app的输出。</p>
+<h1 id="案例">案例</h1><p>房多多新房经纪人app logcat 默认输出了debug日志：</p>
+<pre><code>/ActivityManager( <span class="number">1301</span>): Displayed com.fangdd.mobile.agent/com.fangdd.app.LoginActivity: +<span class="number">536</span>ms (total +<span class="number">1</span>s34ms)
+I/Timeline( <span class="number">1301</span>): Timeline: Activity_windows_visible id: ActivityRecord{<span class="number">43</span>dbf058 u0 com.fangdd.mobile.agent/com.fangdd.app.MainActivity t319} <span class="built_in">time</span>:<span class="number">184792085</span>
+I/Timeline( <span class="number">1301</span>): Timeline: Activity_windows_visible id: ActivityRecord{<span class="number">4549</span>a178 u0 com.fangdd.mobile.agent/com.fangdd.app.LoginActivity t319} <span class="built_in">time</span>:<span class="number">184792510</span>
+D/dalvikvm(<span class="number">24780</span>): Trying <span class="built_in">to</span> <span class="built_in">load</span> lib /data/app-lib/com.fangdd.mobile.agent-<span class="number">1</span>/libfddutils.so <span class="number">0x41a7b430</span>
+D/dalvikvm(<span class="number">24780</span>): Added shared lib /data/app-lib/com.fangdd.mobile.agent-<span class="number">1</span>/libfddutils.so <span class="number">0x41a7b430</span>
+D/dalvikvm(<span class="number">24780</span>): No JNI_OnLoad found <span class="operator">in</span> /data/app-lib/com.fangdd.mobile.agent-<span class="number">1</span>/libfddutils.so <span class="number">0x41a7b430</span>, skipping init
+W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.<span class="operator">a</span>.<span class="operator">a</span>.<span class="operator">a</span>(ProtoUtils.java:<span class="number">40</span>)
+W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.e.<span class="operator">a</span>.<span class="operator">a</span>.<span class="operator">a</span>(NewServerManager.java:<span class="number">412</span>)
+W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.e.<span class="operator">a</span>.<span class="operator">a</span>.<span class="operator">a</span>(NewServerManager.java:<span class="number">188</span>)
+W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.e.n.<span class="operator">a</span>(UserServerManager.java:<span class="number">245</span>)
+W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.ak.<span class="operator">a</span>(LoginActivity.java:<span class="number">147</span>)
+W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.mobile.f.<span class="operator">a</span>.<span class="operator">a</span>(BaseAsyncTask.java:<span class="number">23</span>)
+W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.mobile.f.<span class="operator">a</span>.doInBackground(BaseAsyncTask.java:<span class="number">8</span>)
+W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.<span class="operator">a</span>.<span class="operator">a</span>.<span class="operator">a</span>(ProtoUtils.java:<span class="number">40</span>)
+W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.e.<span class="operator">a</span>.<span class="operator">a</span>.<span class="operator">a</span>(NewServerManager.java:<span class="number">412</span>)
+W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.e.<span class="operator">a</span>.<span class="operator">a</span>.<span class="operator">a</span>(NewServerManager.java:<span class="number">188</span>)
+W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.e.n.<span class="operator">a</span>(UserServerManager.java:<span class="number">245</span>)
+W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.ak.<span class="operator">a</span>(LoginActivity.java:<span class="number">147</span>)
+W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.mobile.f.<span class="operator">a</span>.<span class="operator">a</span>(BaseAsyncTask.java:<span class="number">23</span>)
+W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.mobile.f.<span class="operator">a</span>.doInBackground(BaseAsyncTask.java:<span class="number">8</span>)
+</code></pre><p>这个是登录过程中的日志。这个app登录采用了tcp传输的二进制协议，而且进行了签名。通过这个日志，可以方便逆向分析。</p>
+<h1 id="参考资料">参考资料</h1><p><a href="http://drops.wooyun.org/tips/3812" target="_blank" rel="external">http://drops.wooyun.org/tips/3812</a></p>
+<p><a href="http://www.cnblogs.com/imouto/archive/2012/12/11/filtering-adb-logcat-output.html" target="_blank" rel="external">http://www.cnblogs.com/imouto/archive/2012/12/11/filtering-adb-logcat-output.html</a></p>
+<p><a href="https://wiki.cyanogenmod.org/w/Doc:_debugging_with_logcat/zh-cn" target="_blank" rel="external">https://wiki.cyanogenmod.org/w/Doc:_debugging_with_logcat/zh-cn</a></p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -134,14 +155,9 @@ $ sudo pip install mitmproxy
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/折腾不止/">折腾不止</a>
+  <a class="article-category-link" href="/categories/移动安全/">移动安全</a>
 </div>
 
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/mitmproxy/">mitmproxy</a>
-  </div>
 
 </div>
 
@@ -149,7 +165,7 @@ $ sudo pip install mitmproxy
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2016/02/26/centos-6安装mitmproxy/" data-title="centos 6安装mitmproxy | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  <div data-url="http://xdxd.love/2016/04/07/logcat使用指南/" data-title="logcat使用指南 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -162,19 +178,11 @@ $ sudo pip install mitmproxy
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2016/03/03/finecms-2-3-0-任意用户密码修改/" title="finecms &lt;= 2.3.0 任意用户密码修改">
-  <strong>上一篇：</strong><br/>
-  <span>
-  finecms &lt;= 2.3.0 任意用户密码修改</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2016/01/28/sqlalchemy记录执行sql/"  title="sqlalchemy保存字典对象报语法错误">
+<a href="/2016/04/05/使用python识别验证码/"  title="使用python识别验证码">
  <strong>下一篇：</strong><br/> 
- <span>sqlalchemy保存字典对象报语法错误
+ <span>使用python识别验证码
 </span>
 </a>
 </div>
@@ -183,7 +191,7 @@ $ sudo pip install mitmproxy
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2016/02/26/centos-6安装mitmproxy/" data-title="centos 6安装mitmproxy" data-url="http://xdxd.love/2016/02/26/centos-6安装mitmproxy/"></div>
+	<div class="ds-thread" data-thread-key="2016/04/07/logcat使用指南/" data-title="logcat使用指南" data-url="http://xdxd.love/2016/04/07/logcat使用指南/"></div>
 </section>
 
 
@@ -193,7 +201,7 @@ $ sudo pip install mitmproxy
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#案例"><span class="toc-number">1.</span> <span class="toc-text">案例</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">2.</span> <span class="toc-text">参考资料</span></a></li></ol>
  
   </div>
 

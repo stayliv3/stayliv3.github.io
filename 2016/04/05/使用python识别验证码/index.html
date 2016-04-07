@@ -4,28 +4,23 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>centos 6安装mitmproxy | xd_xd&#39;s blog</title>
+    <title>使用python识别验证码 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description" content="mitmproxy是一款支持HTTP(S)的中间人代理工具。不同于Fiddler2，burpsuite等类似功能工具，mitmproxy可在终端下运行。mitmproxy使用Python开发，是辅助web开发&amp;amp;测试，移动端调试，渗透测试的工具。
-mitmproxy作为定制化工具开发比较方便。但是mitmproxy需要太多依赖了。在mac上使用编译好的执行程序还是比较方便，ubuntu按照官">
+    <meta name="description">
 <meta property="og:type" content="article">
-<meta property="og:title" content="centos 6安装mitmproxy">
-<meta property="og:url" content="http://xdxd.love/2016/02/26/centos-6安装mitmproxy/index.html">
+<meta property="og:title" content="使用python识别验证码">
+<meta property="og:url" content="http://xdxd.love/2016/04/05/使用python识别验证码/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="mitmproxy是一款支持HTTP(S)的中间人代理工具。不同于Fiddler2，burpsuite等类似功能工具，mitmproxy可在终端下运行。mitmproxy使用Python开发，是辅助web开发&amp;amp;测试，移动端调试，渗透测试的工具。
-mitmproxy作为定制化工具开发比较方便。但是mitmproxy需要太多依赖了。在mac上使用编译好的执行程序还是比较方便，ubuntu按照官">
-<meta property="og:image" content="http://xdxd.love/source/mitmproxy1.png">
-<meta property="og:image" content="http://xdxd.love/images/mitmproxy1.JPG">
-<meta property="og:updated_time" content="2016-03-02T07:07:45.000Z">
+<meta property="og:description">
+<meta property="og:updated_time" content="2016-04-05T06:27:34.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="centos 6安装mitmproxy">
-<meta name="twitter:description" content="mitmproxy是一款支持HTTP(S)的中间人代理工具。不同于Fiddler2，burpsuite等类似功能工具，mitmproxy可在终端下运行。mitmproxy使用Python开发，是辅助web开发&amp;amp;测试，移动端调试，渗透测试的工具。
-mitmproxy作为定制化工具开发比较方便。但是mitmproxy需要太多依赖了。在mac上使用编译好的执行程序还是比较方便，ubuntu按照官">
+<meta name="twitter:title" content="使用python识别验证码">
+<meta name="twitter:description">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -85,14 +80,14 @@ mitmproxy作为定制化工具开发比较方便。但是mitmproxy需要太多�
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2016/02/26/centos-6安装mitmproxy/" title="centos 6安装mitmproxy" itemprop="url">centos 6安装mitmproxy</a>
+      <a href="/2016/04/05/使用python识别验证码/" title="使用python识别验证码" itemprop="url">使用python识别验证码</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2016-02-26T07:18:01.000Z" itemprop="datePublished"> 发表于 Feb 26 2016</time>
+    <time datetime="2016-04-05T06:27:34.000Z" itemprop="datePublished"> 发表于 Apr 5 2016</time>
     
   </p>
 </header>
@@ -105,43 +100,11 @@ mitmproxy作为定制化工具开发比较方便。但是mitmproxy需要太多�
 		
 		</div>
 		
-		<p><img src="/source/mitmproxy1.png" alt=""></p>
-<p>mitmproxy是一款支持HTTP(S)的中间人代理工具。不同于Fiddler2，burpsuite等类似功能工具，mitmproxy可在终端下运行。mitmproxy使用Python开发，是辅助web开发&amp;测试，移动端调试，渗透测试的工具。</p>
-<p>mitmproxy作为定制化工具开发比较方便。但是mitmproxy需要太多依赖了。在mac上使用编译好的执行程序还是比较方便，ubuntu按照官方说明也比较方便安装。</p>
-<p>ubuntu上安装命令如下：</p>
-<pre><code>$ sudo apt-<span class="built_in">get</span> install python-pip python-<span class="built_in">dev</span> libffi-<span class="built_in">dev</span> libssl-<span class="built_in">dev</span> libxml2-<span class="built_in">dev</span> libxslt1-<span class="built_in">dev</span>
-$ sudo pip install mitmproxy
-</code></pre><p>mitmproxy官方没有在centos上的安装说明。在centos6.7上安装失败多次，最后按照<a href="http://pacess.blogspot.com/2014/11/install-mitmproxy-on-centos.html" target="_blank" rel="external">在 CentOS 下安裝 mitmproxy</a>的说明，安装成功。</p>
-<pre><code>試過幾次失敗後，最終都能成功安裝在 CentOS <span class="number">6</span>。問題是出在 Python <span class="number">2.6</span> 及 Python <span class="number">3.4</span>。原來「mitmproxy」在 Python <span class="number">2.7</span> 才能順利安裝。要是使用 CentOS <span class="number">7</span> 的話，隨機附送的就是 Python <span class="number">2.7</span>。安裝「mitmproxy」的步驟如下：
-<span class="number">1.</span> 下載 Python 的 PIP 工具
-    wget https:<span class="comment">//bootstrap.pypa.io/get-pip.py</span>
-<span class="number">2.</span> 安裝 Python <span class="number">2.7</span> 的 PIP
-    python get-pip.py
-<span class="number">3.</span> 下載 Python 的 EZ Setup
-    wget https:<span class="comment">//bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py</span>
-<span class="number">4.</span> 安裝 Python <span class="number">2.7</span> 的 EZ Setup
-    python ez_setup.py
-<span class="number">5.</span> 安裝需要的封包
-    yum -y install python-pyasn1 python-flask python-urwid readline-devel gdbm-devel bzip2-devel ncurses-devel sqlite-devel tk-devel gcc python-setuptools python-pip python27-pip newt-python python-devel python27-devel python-pyasn1 pyOpenSSL gcc libxml2-devel libxslt-devel libffi-devel openssl-devel
-<span class="number">6.</span> 安裝 pyOpenSSL <span class="number">0.14</span>
-    easy_install http:<span class="comment">//pypi.python.org/packages/source/p/pyOpenSSL/pyOpenSSL-0.12.tar.gz</span>
-</code></pre><p>最后 pip install mitmporxy 就好。</p>
-<p><img src="/images/mitmproxy1.JPG" alt=""></p>
-  
+		  
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
 
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/折腾不止/">折腾不止</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/mitmproxy/">mitmproxy</a>
-  </div>
 
 </div>
 
@@ -149,7 +112,7 @@ $ sudo pip install mitmproxy
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2016/02/26/centos-6安装mitmproxy/" data-title="centos 6安装mitmproxy | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  <div data-url="http://xdxd.love/2016/04/05/使用python识别验证码/" data-title="使用python识别验证码 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -163,18 +126,18 @@ $ sudo pip install mitmproxy
 <nav class="article-nav clearfix">
  
  <div class="prev" >
- <a href="/2016/03/03/finecms-2-3-0-任意用户密码修改/" title="finecms &lt;= 2.3.0 任意用户密码修改">
+ <a href="/2016/04/07/logcat使用指南/" title="logcat使用指南">
   <strong>上一篇：</strong><br/>
   <span>
-  finecms &lt;= 2.3.0 任意用户密码修改</span>
+  logcat使用指南</span>
 </a>
 </div>
 
 
 <div class="next">
-<a href="/2016/01/28/sqlalchemy记录执行sql/"  title="sqlalchemy保存字典对象报语法错误">
+<a href="/2016/04/05/sql注入load-file-fuzz/"  title="sql注入load_file fuzz">
  <strong>下一篇：</strong><br/> 
- <span>sqlalchemy保存字典对象报语法错误
+ <span>sql注入load_file fuzz
 </span>
 </a>
 </div>
@@ -183,7 +146,7 @@ $ sudo pip install mitmproxy
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2016/02/26/centos-6安装mitmproxy/" data-title="centos 6安装mitmproxy" data-url="http://xdxd.love/2016/02/26/centos-6安装mitmproxy/"></div>
+	<div class="ds-thread" data-thread-key="2016/04/05/使用python识别验证码/" data-title="使用python识别验证码" data-url="http://xdxd.love/2016/04/05/使用python识别验证码/"></div>
 </section>
 
 

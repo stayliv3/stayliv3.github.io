@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-04-05T06:22:18.000Z</updated>
+  <updated>2016-04-07T07:36:37.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -13,6 +13,67 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[logcat使用指南]]></title>
+    <link href="http://xdxd.love/2016/04/07/logcat%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"/>
+    <id>http://xdxd.love/2016/04/07/logcat使用指南/</id>
+    <published>2016-04-07T06:08:27.000Z</published>
+    <updated>2016-04-07T07:36:37.000Z</updated>
+    <content type="html"><![CDATA[<p>一共5中日志的输出方式：</p>
+<p>android.util.Log：提供了五种输出日志的方法</p>
+<p>Log.e(), Log.w(), Log.i(), Log.d(), Log.v()</p>
+<p>ERROR, WARN, INFO, DEBUG, VERBOSE</p>
+<p>adb logcat 命令会有非常多的输出，可以通过pid来过滤特定app的输出。</p>
+<h1 id="案例">案例</h1><p>房多多新房经纪人app logcat 默认输出了debug日志：</p>
+<pre><code>/ActivityManager( <span class="number">1301</span>): Displayed com.fangdd.mobile.agent/com.fangdd.app.LoginActivity: +<span class="number">536</span>ms (total +<span class="number">1</span>s34ms)
+I/Timeline( <span class="number">1301</span>): Timeline: Activity_windows_visible id: ActivityRecord{<span class="number">43</span>dbf058 u0 com.fangdd.mobile.agent/com.fangdd.app.MainActivity t319} <span class="built_in">time</span>:<span class="number">184792085</span>
+I/Timeline( <span class="number">1301</span>): Timeline: Activity_windows_visible id: ActivityRecord{<span class="number">4549</span>a178 u0 com.fangdd.mobile.agent/com.fangdd.app.LoginActivity t319} <span class="built_in">time</span>:<span class="number">184792510</span>
+D/dalvikvm(<span class="number">24780</span>): Trying <span class="built_in">to</span> <span class="built_in">load</span> lib /data/app-lib/com.fangdd.mobile.agent-<span class="number">1</span>/libfddutils.so <span class="number">0x41a7b430</span>
+D/dalvikvm(<span class="number">24780</span>): Added shared lib /data/app-lib/com.fangdd.mobile.agent-<span class="number">1</span>/libfddutils.so <span class="number">0x41a7b430</span>
+D/dalvikvm(<span class="number">24780</span>): No JNI_OnLoad found <span class="operator">in</span> /data/app-lib/com.fangdd.mobile.agent-<span class="number">1</span>/libfddutils.so <span class="number">0x41a7b430</span>, skipping init
+W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.<span class="operator">a</span>.<span class="operator">a</span>.<span class="operator">a</span>(ProtoUtils.java:<span class="number">40</span>)
+W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.e.<span class="operator">a</span>.<span class="operator">a</span>.<span class="operator">a</span>(NewServerManager.java:<span class="number">412</span>)
+W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.e.<span class="operator">a</span>.<span class="operator">a</span>.<span class="operator">a</span>(NewServerManager.java:<span class="number">188</span>)
+W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.e.n.<span class="operator">a</span>(UserServerManager.java:<span class="number">245</span>)
+W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.ak.<span class="operator">a</span>(LoginActivity.java:<span class="number">147</span>)
+W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.mobile.f.<span class="operator">a</span>.<span class="operator">a</span>(BaseAsyncTask.java:<span class="number">23</span>)
+W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.mobile.f.<span class="operator">a</span>.doInBackground(BaseAsyncTask.java:<span class="number">8</span>)
+W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.<span class="operator">a</span>.<span class="operator">a</span>.<span class="operator">a</span>(ProtoUtils.java:<span class="number">40</span>)
+W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.e.<span class="operator">a</span>.<span class="operator">a</span>.<span class="operator">a</span>(NewServerManager.java:<span class="number">412</span>)
+W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.e.<span class="operator">a</span>.<span class="operator">a</span>.<span class="operator">a</span>(NewServerManager.java:<span class="number">188</span>)
+W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.e.n.<span class="operator">a</span>(UserServerManager.java:<span class="number">245</span>)
+W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.ak.<span class="operator">a</span>(LoginActivity.java:<span class="number">147</span>)
+W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.mobile.f.<span class="operator">a</span>.<span class="operator">a</span>(BaseAsyncTask.java:<span class="number">23</span>)
+W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.mobile.f.<span class="operator">a</span>.doInBackground(BaseAsyncTask.java:<span class="number">8</span>)
+</code></pre><p>这个是登录过程中的日志。这个app登录采用了tcp传输的二进制协议，而且进行了签名。通过这个日志，可以方便逆向分析。</p>
+<h1 id="参考资料">参考资料</h1><p><a href="http://drops.wooyun.org/tips/3812" target="_blank" rel="external">http://drops.wooyun.org/tips/3812</a></p>
+<p><a href="http://www.cnblogs.com/imouto/archive/2012/12/11/filtering-adb-logcat-output.html" target="_blank" rel="external">http://www.cnblogs.com/imouto/archive/2012/12/11/filtering-adb-logcat-output.html</a></p>
+<p><a href="https://wiki.cyanogenmod.org/w/Doc:_debugging_with_logcat/zh-cn" target="_blank" rel="external">https://wiki.cyanogenmod.org/w/Doc:_debugging_with_logcat/zh-cn</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>一共5中日志的输出方式：</p>
+<p>android.util.Log：提供了五种输出日志的方法</p>
+<p>Log.e(), Log.w(), Log.i(), Log.d(), Log.v()</p>
+<p>ERROR, WARN, INFO, DEBUG, VER]]>
+    </summary>
+    
+      <category term="移动安全" scheme="http://xdxd.love/categories/%E7%A7%BB%E5%8A%A8%E5%AE%89%E5%85%A8/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[使用python识别验证码]]></title>
+    <link href="http://xdxd.love/2016/04/05/%E4%BD%BF%E7%94%A8python%E8%AF%86%E5%88%AB%E9%AA%8C%E8%AF%81%E7%A0%81/"/>
+    <id>http://xdxd.love/2016/04/05/使用python识别验证码/</id>
+    <published>2016-04-05T06:27:34.000Z</published>
+    <updated>2016-04-05T06:27:34.000Z</updated>
+    <content type="html"></content>
+    <summary type="html">
+    
+    </summary>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[sql注入load_file fuzz]]></title>
@@ -848,93 +909,6 @@ print binascii.<span class="function"><span class="title">crc32</span><span clas
       <category term="CRC" scheme="http://xdxd.love/tags/CRC/"/>
     
       <category term="加密解密" scheme="http://xdxd.love/categories/%E5%8A%A0%E5%AF%86%E8%A7%A3%E5%AF%86/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[飞塔FortiGate SSH后门事件]]></title>
-    <link href="http://xdxd.love/2016/01/13/%E9%A3%9E%E5%A1%94FortiGate-SSH%E5%90%8E%E9%97%A8%E4%BA%8B%E4%BB%B6/"/>
-    <id>http://xdxd.love/2016/01/13/飞塔FortiGate-SSH后门事件/</id>
-    <published>2016-01-13T02:35:51.000Z</published>
-    <updated>2016-01-13T09:21:13.000Z</updated>
-    <content type="html"><![CDATA[<h1 id="参考资料">参考资料</h1><p><a href="http://tools.pwn.ren/2016/01/12/ssh-backdoor-for-fortigate-os-version-4-up-to-5-0-7.html" target="_blank" rel="external">飞塔系统存在SSH后门 影响版本 4.0 – 5.0.7！！</a></p>
-<p><a href="http://tools.pwn.ren/2016/01/12/ssh-backdoor-for-fortigate-os-version-4-x-up-to-5-0-7%E8%BF%9B%E4%B8%80%E6%AD%A5%E5%88%A9%E7%94%A8-html.html" target="_blank" rel="external">飞塔SSH后门 进一步利用方法</a></p>
-<p><a href="http://tools.pwn.ren/2016/01/12/%E9%9A%8F%E6%9C%BA4900%E5%8F%B0%E6%9C%BA%E5%99%A8%E6%A0%B7%E6%9C%AC%E6%B5%8B%E8%AF%95%E6%8A%A5%E5%91%8A.html" target="_blank" rel="external">飞塔SSH后门 4900台机器样本测试报告</a></p>
-<p><a href="http://seclists.org/fulldisclosure/2016/Jan/26" target="_blank" rel="external">SSH Backdoor for FortiGate OS Version 4.x up to 5.0.7</a></p>
-<p><a href="https://www.zoomeye.org/search?q=FortiSSH%20country:Thailand&amp;t=host" target="_blank" rel="external">zoomeye.org</a></p>
-<h1 id="思考">思考</h1><p>随着全网数据的平台越来越多，shodan，zoomeye，censys等。一旦有通用性的漏洞爆出来，很快就会对漏洞对全球的影响有了一个评估。如果平时对数据分析全面，可以迅速利用这种漏洞渗透目标。过两天应该会有对该漏洞详细的技术分析出现。</p>
-<p>对于这种事总是细思极恐的感觉。比较有意思的是从安全事件中对安全防御的思考。余弦的微博：</p>
-<p><img src="/images/fortygate1.png" alt=""></p>
-<p>网路游侠微博：<br><img src="/images/fortygate2.png" alt=""></p>
-<p>从技术角度来说，一个漏洞就是一个漏洞，一个可能导致风险的问题。可是像防火墙后门这种漏洞，可以直接渗透内网，而且存在这么多年，会不会有人利用过，回答可能是肯定的。虽然做防御的时候肯定要考虑如果别人进来了怎么办，可是有时候进来可能很简单，人家是有核武器的。</p>
-<h1 id="测试">测试</h1><p><a href="http://tools.pwn.ren/2016/01/12/%E9%9A%8F%E6%9C%BA4900%E5%8F%B0%E6%9C%BA%E5%99%A8%E6%A0%B7%E6%9C%AC%E6%B5%8B%E8%AF%95%E6%8A%A5%E5%91%8A.html" target="_blank" rel="external">飞塔SSH后门 4900台机器样本测试报告</a></p>
-<p>这里使用的脚本需要稍微修改一下，</p>
-<pre><code><span class="keyword">for</span> <span class="tag">i</span> <span class="keyword">in</span> ips:
-    <span class="tag">q</span>.<span class="function"><span class="title">put</span><span class="params">(ips)</span></span>
-</code></pre><p>改成：</p>
-<pre><code><span class="keyword">for</span> <span class="tag">i</span> <span class="keyword">in</span> ips:
-    <span class="tag">q</span>.<span class="function"><span class="title">put</span><span class="params">(i)</span></span>
-</code></pre><p>不知道是不是故意的。。。</p>
-<p>这里测试的时候没有筛选开放22端口的主机，直接对4900机器进行测试，最后存在漏洞的机器为858台。相关的脚本和数据地址。<a href="https://github.com/stayliv3/blog_material/tree/master/fortigate" target="_blank" rel="external">https://github.com/stayliv3/blog_material/tree/master/fortigate</a></p>
-<p><img src="/images/fortygate3.png" alt=""></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<h1 id="参考资料">参考资料</h1><p><a href="http://tools.pwn.ren/2016/01/12/ssh-backdoor-for-fortigate-os-version-4-up-to-5-0-7.html" target="_blank"]]>
-    </summary>
-    
-      <category term="黑盒测试" scheme="http://xdxd.love/categories/%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[保险箱安全分析]]></title>
-    <link href="http://xdxd.love/2016/01/13/%E4%BF%9D%E9%99%A9%E7%AE%B1%E5%AE%89%E5%85%A8%E5%88%86%E6%9E%90/"/>
-    <id>http://xdxd.love/2016/01/13/保险箱安全分析/</id>
-    <published>2016-01-13T01:50:05.000Z</published>
-    <updated>2016-01-13T01:59:05.000Z</updated>
-    <content type="html"><![CDATA[<p>参加freebuf的FIT大会，黑客叔叔演示了现场破解保险箱。他说道了有比较多的方法可以破解保险箱，比如可以设置多组密码，如果只设置了一组的话，其他组的默认密码还是123456.可以使用树莓派模拟信号秒开保险箱，备用钥匙安全性很低等。</p>
-<p>想起之前翻译的一篇国外的博客。Freebuf地址<a href="http://www.freebuf.com/news/special/38727.html" target="_blank" rel="external">走进科学：酒店保险箱真的保险么？</a></p>
-<p>本文是FreeBuf《走进科学》系列最新力作，翻译自国外安全组织G DATA SecurityLabs一篇针对酒店保险箱的分析报告。他们的研究对象是一款产自中国并且以很多不同的品牌出售的保险柜（made in China and is sold under many different brands）。相信读完本文之后大家会对酒店保险箱的安全性有一些新的认识。</p>
-<p>保险箱介绍</p>
-<p>下图中是一个标准的酒店保险箱。外壳是钢制的，自带电池，即使断电依然可以工作。通常打开保险箱的方式有两种，使用PIN码(4到10位的数字)或者刷信用卡。此外使用应急钥匙也可以打开保险箱。只是顾客是拿不到的，只有酒店的管理者才有这把钥匙。主要是当顾客忘记PIN码，电池没电又停电或者顾客离开酒店但是没有打开保险箱的情况下使用。</p>
-<p><img src="http://image.3001.net/images/20140721/1405934456300.png!small" alt=""><br>图中金色的铁片遮盖了钥匙孔。解开这两个螺丝，就可以看到插应急钥匙的地方。视频演示1（Youtube)：正常情况下打开和锁定保险柜。<br>保险箱工作原理</p>
-<p>保险箱由3个部分组成。钢制的箱体本身，前输入面板–包括PIN码输入和信用卡读卡器，位于门后的控制系统。<br><img src="http://image.3001.net/images/20140721/14059344754543.png!small" alt=""><br>为了更好的理解内部结构，我们把门拆开看一下。</p>
-<p><img src="http://image.3001.net/images/20140721/14059345065928.png!small" alt=""></p>
-<p><img src="http://image.3001.net/images/20140721/1405934503295.png!small" alt=""></p>
-<p>仔细看一下控制系统就会发现插应急钥匙的钥匙孔。还有用于开门的小马达和一块电路板。当用户输入PIN码的时候，电路板会检查PIN码是否正确。如果正确，则会启动马达。演示视频2（Youtube）。</p>
-<p>Hacking 1:打开保险箱</p>
-<p>超级管理密码：</p>
-<p>最简单的方法是使用超级管理密码。使用超级管理密码可以配置保险箱，查看保险箱使用记录，当然也能打开保险箱。默认的超级密码是一串简单的数字序列。启动超级密码输入的方式是快速按两次#号键。当然，超级密码是可以被修改的。但是在我们的测试过程中发现大量的保险箱都是默认的超级密码。</p>
-<p>开锁器</p>
-<p>应急钥匙是一种机械的开门方式。开起来钥匙还是挺复杂的。</p>
-<p><img src="http://image.3001.net/images/20140721/14059345965151.png!small" alt=""></p>
-<p><img src="http://image.3001.net/images/20140721/14059345972381.png!small" alt=""></p>
-<p>图中可以看到钥匙有4个部分。对于我们这种初学者，这种程度的钥匙还是挺复杂的。不过幸运的是制造商帮了我们一个忙。钥匙的四个面中，真正起作用的只有一个面。(这是吐槽中国特色的节奏么。。）</p>
-<p>演示视频3：不用钥匙，手动开锁。<br>人工短路，破坏保险箱逻辑</p>
-<p>第三种hack的方式是通过人工短路来模拟保险箱打开的信号。为了理解这种技术的原理，我们先看一下保险箱如何检测门是否打开的。</p>
-<p><img src="http://image.3001.net/images/20140721/1405934653165.png!small" alt=""></p>
-<p><img src="http://image.3001.net/images/20140721/14059346582376.png!small" alt=""></p>
-<p>通过上图可以看到，门开的时候会按压一个绿色的连接器，在电路板上形成一个短路信号。我们测试的攻击场景是这样的：</p>
-<p>1.关闭保险箱。<br>2.在保险箱的控制系统上引起一个短路，让保险箱认为自己的门打开了。(事实上门依然关闭的）<br>3.这时候，保险箱显示的不是等待打开保险箱的PIN码，而是变成等待输入一个新的PIN码用来关闭保险箱。<br>4.我们输入一个新的PIN码。<br>5.然后保险箱会尝试关闭门。(事实上门已经是关闭的了）<br>6.新输入的PIN码可以用来打开保险箱。<br>这种方式的难点在于如何从外部引起保险箱的短路。我们从固定保险箱logo的螺丝孔插入了一根铁丝。在我们的测试中，使用如此简单的工具，大概30分钟左右，可以成功引起保险箱短路。专业的窃贼的话，可以利用更加合适的工具，应该缩短这个时间。<br>Hacking 2:使用信用卡的风险<br>前面介绍过，保险箱也可以使用信用卡来锁定和打开。经过我们测试发现，这个场景中只能使用信用卡，其他的磁卡是不行的。系统会检查所用的磁卡是否是信用卡。<br><img src="http://image.3001.net/images/20140721/14059346854833.png!small" alt=""></p>
-<p>信用卡信息可以被窃取么</p>
-<p>我们经常看到有犯罪分子在ATM机上加装设备，获取银行卡信息。如下图所示就是常用来窃取银行卡信息的设备。</p>
-<p><img src="http://image.3001.net/images/20140721/14059347247265.jpg!small" alt=""></p>
-<p><img src="http://image.3001.net/images/20140721/14059347426365.jpg!small" alt=""></p>
-<p>在我们的例子中，实现窃取信用卡信息也不困难。我们使用Arduino Uno board来完成了这个任务。</p>
-<p><img src="http://image.3001.net/images/20140721/14059347629772.png!small" alt=""></p>
-<p>如图所示，并不需要多少空间就可以装下这个自制的设备。通过这个装置，可以读取到信用卡的号码，所有人的名字以及卡片的过期时间。下面是读取到的一张信用卡的截图。</p>
-<p><img src="http://image.3001.net/images/20140721/14059347747487.png!small" alt=""></p>
-<p>结论：</p>
-<p>经过以上的分析可以看出，我们分析的这一款保险箱安全级别并不是特别高。我们可以轻易的使用几种不同的方式来打开它。对于酒店的管理者，建议修改保险柜的默认超级密码。对于用户，我们建议不要过分依赖酒店的保险箱。而且尽量不要使用信用卡来开关保险箱，这样存在信用卡信息别盗的风险。</p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>参加freebuf的FIT大会，黑客叔叔演示了现场破解保险箱。他说道了有比较多的方法可以破解保险箱，比如可以设置多组密码，如果只设置了一组的话，其他组的默认密码还是123456.可以使用树莓派模拟信号秒开保险箱，备用钥匙安全性很低等。</p>
-<p>想起之前翻译的一篇国外的]]>
-    </summary>
-    
-      <category term="保险箱" scheme="http://xdxd.love/tags/%E4%BF%9D%E9%99%A9%E7%AE%B1/"/>
-    
-      <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
     
   </entry>
   
