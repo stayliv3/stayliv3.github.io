@@ -4,45 +4,44 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>撞库攻击防御方案 | xd_xd&#39;s blog</title>
+    <title>smali插桩调试apk | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description" content="#相关参考资料
-撞库扫号防范关于重复发包的防护与绕过用户角度看撞库，撞库攻击：一场需要用户参与的持久战
-#撞库的危害
-根据目前的测试经验来看，撞库在国内的互联网企业来说还是一种非常非常常见的漏洞类型。
-#基本的防御策略
+    <meta name="description" content="参考资料安卓动态调试七种武器之长生剑 - Smali Instrumentation
+Smali注入之打造属于自己的安卓crack利器
+利用代码.class public Lcrack;
+.super Ljava/lang/Object;
+.source &quot;crack.java&quot;
 
-其实还有很多方案，但是很多都是设计上就可以被绕过的。总的来说，验证码策略，超过一定次数阻断。和IP检测的策略是比较常见和有效的方式。WAF层上对请求频率的限制也是必须的。
-#防御">
+.method public static log(Ljava/lang/String;)V
+    .locals">
 <meta property="og:type" content="article">
-<meta property="og:title" content="撞库攻击防御方案">
-<meta property="og:url" content="http://xdxd.love/2015/04/15/撞库攻击防御方案/index.html">
+<meta property="og:title" content="smali插桩调试apk">
+<meta property="og:url" content="http://xdxd.love/2016/04/08/smali插桩调试apk/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="#相关参考资料
-撞库扫号防范关于重复发包的防护与绕过用户角度看撞库，撞库攻击：一场需要用户参与的持久战
-#撞库的危害
-根据目前的测试经验来看，撞库在国内的互联网企业来说还是一种非常非常常见的漏洞类型。
-#基本的防御策略
+<meta property="og:description" content="参考资料安卓动态调试七种武器之长生剑 - Smali Instrumentation
+Smali注入之打造属于自己的安卓crack利器
+利用代码.class public Lcrack;
+.super Ljava/lang/Object;
+.source &quot;crack.java&quot;
 
-其实还有很多方案，但是很多都是设计上就可以被绕过的。总的来说，验证码策略，超过一定次数阻断。和IP检测的策略是比较常见和有效的方式。WAF层上对请求频率的限制也是必须的。
-#防御">
-<meta property="og:image" content="http://xdxd.love/images/zhuangku1.png">
-<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+.method public static log(Ljava/lang/String;)V
+    .locals">
+<meta property="og:updated_time" content="2016-04-08T02:28:55.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="撞库攻击防御方案">
-<meta name="twitter:description" content="#相关参考资料
-撞库扫号防范关于重复发包的防护与绕过用户角度看撞库，撞库攻击：一场需要用户参与的持久战
-#撞库的危害
-根据目前的测试经验来看，撞库在国内的互联网企业来说还是一种非常非常常见的漏洞类型。
-#基本的防御策略
+<meta name="twitter:title" content="smali插桩调试apk">
+<meta name="twitter:description" content="参考资料安卓动态调试七种武器之长生剑 - Smali Instrumentation
+Smali注入之打造属于自己的安卓crack利器
+利用代码.class public Lcrack;
+.super Ljava/lang/Object;
+.source &quot;crack.java&quot;
 
-其实还有很多方案，但是很多都是设计上就可以被绕过的。总的来说，验证码策略，超过一定次数阻断。和IP检测的策略是比较常见和有效的方式。WAF层上对请求频率的限制也是必须的。
-#防御">
+.method public static log(Ljava/lang/String;)V
+    .locals">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -102,14 +101,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/04/15/撞库攻击防御方案/" title="撞库攻击防御方案" itemprop="url">撞库攻击防御方案</a>
+      <a href="/2016/04/08/smali插桩调试apk/" title="smali插桩调试apk" itemprop="url">smali插桩调试apk</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2015-04-15T03:33:24.000Z" itemprop="datePublished"> 发表于 Apr 15 2015</time>
+    <time datetime="2016-04-08T01:45:16.000Z" itemprop="datePublished"> 发表于 Apr 8 2016</time>
     
   </p>
 </header>
@@ -118,26 +117,33 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#利用代码"><span class="toc-number">2.</span> <span class="toc-text">利用代码</span></a></li></ol>
 		
 		</div>
 		
-		<p>#相关参考资料</p>
-<p><a href="http://drops.wooyun.org/tips/2830" target="_blank" rel="external">撞库扫号防范</a><br><a href="http://drops.wooyun.org/web/3910" target="_blank" rel="external">关于重复发包的防护与绕过</a><br>用户角度看撞库，<a href="http://www.freebuf.com/articles/database/29267.html" target="_blank" rel="external">撞库攻击：一场需要用户参与的持久战</a></p>
-<p>#撞库的危害</p>
-<p>根据目前的测试经验来看，撞库在国内的互联网企业来说还是一种非常非常常见的漏洞类型。</p>
-<p>#基本的防御策略</p>
-<p><img src="/images/zhuangku1.png" alt="zhuangku"></p>
-<p>其实还有很多方案，但是很多都是设计上就可以被绕过的。总的来说，验证码策略，超过一定次数阻断。和IP检测的策略是比较常见和有效的方式。WAF层上对请求频率的限制也是必须的。</p>
-<p>#防御策略绕过</p>
-<p>绕过的话就需要根据具体的方案来绕过。比如寻找没有做防护的接口，很多手机版的登陆接口是没有做防护的。所以防撞库统一登陆接口是很重要的一件事。统一之后，所有旧的接口都要禁用掉。避免被人发现出现问题。对于验证码的绕过，IP检测的绕过等都是常见的方式。此外还有一些设计错误的防御方案，比如使用token，只需要请求一次获取token就可以继续撞库，使用cookie里的值，如果设置为空就可以绕过等等。需要根据具体场景来测试。</p>
-<p>#测试</p>
-<p>分析手机taobao针对单个用户的登录策略，输错密码5次就会弹验证码。多次异常之后，输入其他用户首次登录就会有验证码。taobao的通信是加密的。</p>
-<p>微信尝试登录10次之后直接提示频率太快，阻断了当前用户的登录。换一个账号又可以登录10.看起来可能有问题。不过微信登录没有抓到包，可能使用TCP传输直接。</p>
-  
+		<h1 id="参考资料">参考资料</h1><p><a href="http://drops.wooyun.org/papers/6045" target="_blank" rel="external">安卓动态调试七种武器之长生剑 - Smali Instrumentation</a></p>
+<p><a href="http://www.52pojie.cn/thread-255754-1-1.html" target="_blank" rel="external">Smali注入之打造属于自己的安卓crack利器</a></p>
+<h1 id="利用代码">利用代码</h1><pre><code><span class="keyword">.class</span><span class="keyword"> public</span> <span class="class">Lcrack;</span>
+<span class="keyword">.super</span> <span class="class">Ljava/lang/Object;</span>
+<span class="keyword">.source</span> <span class="string">"crack.java"</span>
+
+<span class="keyword">.method</span><span class="keyword"> public</span><span class="keyword"> static</span><span class="function"> log(</span><span class="class">Ljava/lang/String;</span><span class="function">)</span>V
+<span class="keyword">    .locals</span> 1
+<span class="keyword">    .prologue</span>
+
+   <span class="instruction"> const-string </span><span class="variable">v0</span>, <span class="string">"info"</span>
+   <span class="instruction"> invoke-static </span>{<span class="variable">v0</span>, <span class="variable">p0</span>}, <span class="class">Landroid/util/Log;</span><span class="function">-&gt;d(</span><span class="class">Ljava/lang/String;</span><span class="class">Ljava/lang/String;</span><span class="function">)</span>I
+   <span class="instruction"> return-void
+</span><span class="keyword">.end method</span>
+</code></pre>  
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/移动安全/">移动安全</a>
+</div>
 
 
 </div>
@@ -146,7 +152,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2015/04/15/撞库攻击防御方案/" data-title="撞库攻击防御方案 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  <div data-url="http://xdxd.love/2016/04/08/smali插桩调试apk/" data-title="smali插桩调试apk | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -159,19 +165,11 @@
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2015/04/17/MS15-034-CVE-2015-1635-测试记录/" title="MS15-034/CVE-2015-1635 测试记录">
-  <strong>上一篇：</strong><br/>
-  <span>
-  MS15-034/CVE-2015-1635 测试记录</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2015/04/14/访问控制/"  title="访问控制设计学习">
+<a href="/2016/04/07/logcat使用指南/"  title="logcat使用指南">
  <strong>下一篇：</strong><br/> 
- <span>访问控制设计学习
+ <span>logcat使用指南
 </span>
 </a>
 </div>
@@ -180,7 +178,7 @@
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/04/15/撞库攻击防御方案/" data-title="撞库攻击防御方案" data-url="http://xdxd.love/2015/04/15/撞库攻击防御方案/"></div>
+	<div class="ds-thread" data-thread-key="2016/04/08/smali插桩调试apk/" data-title="smali插桩调试apk" data-url="http://xdxd.love/2016/04/08/smali插桩调试apk/"></div>
 </section>
 
 
@@ -190,7 +188,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#利用代码"><span class="toc-number">2.</span> <span class="toc-text">利用代码</span></a></li></ol>
  
   </div>
 
