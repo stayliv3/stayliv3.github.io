@@ -4,33 +4,33 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>CSP案例分析 | xd_xd&#39;s blog</title>
+    <title>XSScookie利用工具cookie-hacker修改版 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description" content="#参考资料http://drops.wooyun.org/tips/1439http://zone.wooyun.org/content/1310
-#基本概念
-内容安全策略（Content Security Policy，简称CSP）是一种以可信白名单作机制，来限制网站中是否可以包含某来源内容。默认配置下不允许执行内联代码
-(&amp;lt;script&amp;gt;块内容，内联事件，内联样式），以及禁止执行e">
+    <meta name="description" content="cookiehacker余弦大神些的cookie利用工具，可以方便的把xss收到的cookie写入本地。
+使用过程中遇到一个小问题。就是一个字段value值是base64编码的。里面有=号。使用cookiehacker写入的时候把等号自动给去掉了。
+查看源码发现是这么写的。
+k = c.split(&apos;=&apos;)[0].replace(/^\s+|\s+$/g, &quot;&quot;).replace(&apos; &apos;, &apos;+&apos;">
 <meta property="og:type" content="article">
-<meta property="og:title" content="CSP案例分析">
-<meta property="og:url" content="http://xdxd.love/2015/04/10/CSP遐想/index.html">
+<meta property="og:title" content="XSScookie利用工具cookie-hacker修改版">
+<meta property="og:url" content="http://xdxd.love/2016/04/12/XSScookie利用工具cookie-hacker修改版/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="#参考资料http://drops.wooyun.org/tips/1439http://zone.wooyun.org/content/1310
-#基本概念
-内容安全策略（Content Security Policy，简称CSP）是一种以可信白名单作机制，来限制网站中是否可以包含某来源内容。默认配置下不允许执行内联代码
-(&amp;lt;script&amp;gt;块内容，内联事件，内联样式），以及禁止执行e">
-<meta property="og:image" content="http://xdxd.love/images/csp3.png">
-<meta property="og:updated_time" content="2015-11-24T03:27:37.000Z">
+<meta property="og:description" content="cookiehacker余弦大神些的cookie利用工具，可以方便的把xss收到的cookie写入本地。
+使用过程中遇到一个小问题。就是一个字段value值是base64编码的。里面有=号。使用cookiehacker写入的时候把等号自动给去掉了。
+查看源码发现是这么写的。
+k = c.split(&apos;=&apos;)[0].replace(/^\s+|\s+$/g, &quot;&quot;).replace(&apos; &apos;, &apos;+&apos;">
+<meta property="og:image" content="http://evilcos.me/wp-content/uploads/2013/10/123.jpg">
+<meta property="og:updated_time" content="2016-04-12T07:58:36.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="CSP案例分析">
-<meta name="twitter:description" content="#参考资料http://drops.wooyun.org/tips/1439http://zone.wooyun.org/content/1310
-#基本概念
-内容安全策略（Content Security Policy，简称CSP）是一种以可信白名单作机制，来限制网站中是否可以包含某来源内容。默认配置下不允许执行内联代码
-(&amp;lt;script&amp;gt;块内容，内联事件，内联样式），以及禁止执行e">
+<meta name="twitter:title" content="XSScookie利用工具cookie-hacker修改版">
+<meta name="twitter:description" content="cookiehacker余弦大神些的cookie利用工具，可以方便的把xss收到的cookie写入本地。
+使用过程中遇到一个小问题。就是一个字段value值是base64编码的。里面有=号。使用cookiehacker写入的时候把等号自动给去掉了。
+查看源码发现是这么写的。
+k = c.split(&apos;=&apos;)[0].replace(/^\s+|\s+$/g, &quot;&quot;).replace(&apos; &apos;, &apos;+&apos;">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -90,14 +90,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/04/10/CSP遐想/" title="CSP案例分析" itemprop="url">CSP案例分析</a>
+      <a href="/2016/04/12/XSScookie利用工具cookie-hacker修改版/" title="XSScookie利用工具cookie-hacker修改版" itemprop="url">XSScookie利用工具cookie-hacker修改版</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2015-04-10T03:32:01.000Z" itemprop="datePublished"> 发表于 Apr 10 2015</time>
+    <time datetime="2016-04-12T07:49:06.000Z" itemprop="datePublished"> 发表于 Apr 12 2016</time>
     
   </p>
 </header>
@@ -110,42 +110,29 @@
 		
 		</div>
 		
-		<p>#参考资料<br><a href="http://drops.wooyun.org/tips/1439" target="_blank" rel="external">http://drops.wooyun.org/tips/1439</a><br><a href="http://zone.wooyun.org/content/1310" target="_blank" rel="external">http://zone.wooyun.org/content/1310</a></p>
-<p>#基本概念</p>
-<p>内容安全策略（Content Security Policy，简称CSP）是一种以可信白名单作机制，来限制网站中是否可以包含某来源内容。默认配置下不允许执行内联代码</p>
-<pre><code>(&lt;script&gt;块内容，内联事件，内联样式），以及禁止执行<span class="function"><span class="title">eval</span><span class="params">()</span></span> , <span class="function"><span class="title">newFunction</span><span class="params">()</span></span> , <span class="function"><span class="title">setTimeout</span><span class="params">([string], …)</span></span> 和<span class="function"><span class="title">setInterval</span><span class="params">([string], …)</span></span> 
-</code></pre><p>#普及难度</p>
-<p>参见zone里大神的讨论，</p>
-<pre><code>余弦&lt;evilcos@gmail.com&gt; <span class="number">19</span>:<span class="number">38</span>:<span class="number">25</span> 
-不过这个得有段时间了  也许<span class="number">2</span>年？ 
-
-superhei&lt;<span class="number">0</span>x@<span class="number">557.</span>im&gt; <span class="number">19</span>:<span class="number">38</span>:<span class="number">39</span> 
-<span class="number">20</span>年都不行 
-</code></pre><p>那是12年的对话了，现在看来应该是20年都不行了。根据zoomeye14年2月份的统计国内1千万的域名（含子域名）中发现7个使用了CSP策略，其中还有3个网站CSP语法使用错误。剩下4个站点3个是知乎的。。。</p>
-<p>看一下知乎的CSP策略：</p>
-<pre><code><span class="attribute">Content-Security-Policy</span>: <span class="string">default-src *; frame-src *.zhihu.com getpocket.com note.youdao.com; script-src *.zhihu.com *.google-analytics.com 'unsafe-eval'; style-src *.zhihu.com 'unsafe-inline'</span>
-<span class="attribute">Expires</span>: <span class="string">Fri, 02 Jan 2000 00:00:00 GMT</span>
-<span class="attribute">Vary</span>: <span class="string">Accept-Encoding</span>
-<span class="attribute">Pragma</span>: <span class="string">no-cache</span>
-<span class="attribute">Cache-Control</span>: <span class="string">private, no-store, max-age=0, no-cache, must-revalidate, post-check=0, pre-check=0</span>
-<span class="attribute">X-Frame-Options</span>: <span class="string">DENY</span>
-</code></pre><p>解读一下：</p>
-<p>default-src <em>;默认可以加载任意域<br>frame-src </em>.zhihu.com getpocket.com note.youdao.com; 白名单<br>script-src <em>.zhihu.com </em>.google-analytics.com ‘unsafe-eval’; 白名单，使用了unsafe-eval<br>style-src *.zhihu.com ‘unsafe-inline’ 白名单，使用了unsafe-inline</p>
-<p>看到蘑菇街也加了CSP策略：</p>
-<pre><code>Content-Security-Policy: script-src 'self' 'unsafe-inline' 'unsafe-eval' <span class="keyword">*</span>.mogujie.com <span class="keyword">*</span>.mogujie.com:8080 <span class="keyword">*</span>.mogujie.cn <span class="keyword">*</span>.mogucdn.com <span class="keyword">*</span>.juangua.com <span class="keyword">*</span>.mogujie.org <span class="keyword">*</span>.xiaodian.com www.google-analytics.com ssl.google-analytics.com hm.baidu.com d.emarbox.com ssl.emarbox.com bdimg.share.baidu.com; report-uri http://ss.mogujie.com/csp/index
-X-Content-Security-Policy: script-src 'self' 'unsafe-inline' 'unsafe-eval' <span class="keyword">*</span>.mogujie.com <span class="keyword">*</span>.mogujie.com:8080 <span class="keyword">*</span>.mogujie.cn <span class="keyword">*</span>.mogucdn.com <span class="keyword">*</span>.juangua.com <span class="keyword">*</span>.mogujie.org <span class="keyword">*</span>.xiaodian.com www.google-analytics.com ssl.google-analytics.com hm.baidu.com d.emarbox.com ssl.emarbox.com bdimg.share.baidu.com; report-uri http://ss.mogujie.com/csp/index
-X-WebKit-CSP: script-src 'self' 'unsafe-inline' 'unsafe-eval' <span class="keyword">*</span>.mogujie.com <span class="keyword">*</span>.mogujie.com:8080 <span class="keyword">*</span>.mogujie.cn <span class="keyword">*</span>.mogucdn.com <span class="keyword">*</span>.juangua.com <span class="keyword">*</span>.mogujie.org <span class="keyword">*</span>.xiaodian.com www.google-analytics.com ssl.google-analytics.com hm.baidu.com d.emarbox.com ssl.emarbox.com bdimg.share.baidu.com; report-uri http://ss.mogujie.com/csp/index
-</code></pre><p>使用了Content-Security-Policy，X-Content-Security-Policy，X-WebKit-CSP 为了兼容IE浏览器，知乎没有做IE浏览器兼容,比较任性。解读一下：</p>
-<p>script-src ‘self’ ‘unsafe-inline’ ‘unsafe-eval’ <em>.mogujie.com </em>.mogujie.com:8080 <em>.mogujie.cn </em>.mogucdn.com <em>.juangua.com </em>.mogujie.org *.xiaodian.com www.google-analytics.com ssl.google-analytics.com hm.baidu.com d.emarbox.com ssl.emarbox.com bdimg.share.baidu.com;</p>
-<p>白名单了很多地址，但是这里使用了unsafe-inline。使用unsafe-inline，CSP的效果就大大折扣，这也是因为业务上有时候会有不少inline的脚本。可以看到知乎已经经过改造，没有使用内联的脚本了。</p>
-<p>内联脚本实在是太常见了。可见CSP任重道远。</p>
-<p>刚刚在zoomeye搜了一下</p>
-<p><img src="/images/csp3.png" alt="2"></p>
-  
+		<p><a href="http://evilcos.me/?p=366" target="_blank" rel="external">cookiehacker</a>余弦大神些的cookie利用工具，可以方便的把xss收到的cookie写入本地。</p>
+<p><img src="http://evilcos.me/wp-content/uploads/2013/10/123.jpg" alt=""><br>使用过程中遇到一个小问题。就是一个字段value值是base64编码的。里面有=号。使用cookiehacker写入的时候把等号自动给去掉了。</p>
+<p>查看源码发现是这么写的。</p>
+<pre><code>k = c.split(<span class="string">'='</span>)[<span class="number">0</span>].replace(<span class="regexp">/^\s+|\s+$/g</span>, <span class="string">""</span>).replace(<span class="string">' '</span>, <span class="string">'+'</span>);
+v = c.split(<span class="string">'='</span>)[<span class="number">1</span>].replace(<span class="regexp">/^\s+|\s+$/g</span>, <span class="string">""</span>).replace(<span class="string">' '</span>, <span class="string">'+'</span>);
+</code></pre><p>使用split等号来取值。导致value里的等号丢掉了。修改成使用substring取值，修复这个bug。</p>
+<pre><code>k = c.<span class="keyword">substring</span>(<span class="number">0</span>,c.indexOf(<span class="string">'='</span>)).replace(/^\s+|\s+<span class="variable">$/</span>g, <span class="string">""</span>).replace(<span class="string">' '</span>, <span class="string">'+'</span>);
+v = c.<span class="keyword">substring</span>(c.indexOf(<span class="string">'='</span>)+ <span class="number">1</span>).replace(/^\s+|\s+<span class="variable">$/</span>g, <span class="string">""</span>).replace(<span class="string">' '</span>, <span class="string">'+'</span>); 
+</code></pre>  
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
 
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/前端安全/">前端安全</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/xss/">xss</a>
+  </div>
 
 </div>
 
@@ -153,7 +140,7 @@ X-WebKit-CSP: script-src 'self' 'unsafe-inline' 'unsafe-eval' <span class="keywo
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2015/04/10/CSP遐想/" data-title="CSP案例分析 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  <div data-url="http://xdxd.love/2016/04/12/XSScookie利用工具cookie-hacker修改版/" data-title="XSScookie利用工具cookie-hacker修改版 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -166,19 +153,11 @@ X-WebKit-CSP: script-src 'self' 'unsafe-inline' 'unsafe-eval' <span class="keywo
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2015/04/10/csp绕过/" title="注入js到图片bypass CSP（猜想)">
-  <strong>上一篇：</strong><br/>
-  <span>
-  注入js到图片bypass CSP（猜想)</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2015/04/09/andbug安装/"  title="mac下安装andbug安装">
+<a href="/2016/04/08/smali插桩调试apk/"  title="smali插桩调试apk">
  <strong>下一篇：</strong><br/> 
- <span>mac下安装andbug安装
+ <span>smali插桩调试apk
 </span>
 </a>
 </div>
@@ -187,7 +166,7 @@ X-WebKit-CSP: script-src 'self' 'unsafe-inline' 'unsafe-eval' <span class="keywo
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/04/10/CSP遐想/" data-title="CSP案例分析" data-url="http://xdxd.love/2015/04/10/CSP遐想/"></div>
+	<div class="ds-thread" data-thread-key="2016/04/12/XSScookie利用工具cookie-hacker修改版/" data-title="XSScookie利用工具cookie-hacker修改版" data-url="http://xdxd.love/2016/04/12/XSScookie利用工具cookie-hacker修改版/"></div>
 </section>
 
 

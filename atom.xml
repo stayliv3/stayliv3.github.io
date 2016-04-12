@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-04-08T02:28:55.000Z</updated>
+  <updated>2016-04-12T07:58:36.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -13,6 +13,32 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[XSScookie利用工具cookie-hacker修改版]]></title>
+    <link href="http://xdxd.love/2016/04/12/XSScookie%E5%88%A9%E7%94%A8%E5%B7%A5%E5%85%B7cookie-hacker%E4%BF%AE%E6%94%B9%E7%89%88/"/>
+    <id>http://xdxd.love/2016/04/12/XSScookie利用工具cookie-hacker修改版/</id>
+    <published>2016-04-12T07:49:06.000Z</published>
+    <updated>2016-04-12T07:58:36.000Z</updated>
+    <content type="html"><![CDATA[<p><a href="http://evilcos.me/?p=366" target="_blank" rel="external">cookiehacker</a>余弦大神些的cookie利用工具，可以方便的把xss收到的cookie写入本地。</p>
+<p><img src="http://evilcos.me/wp-content/uploads/2013/10/123.jpg" alt=""><br>使用过程中遇到一个小问题。就是一个字段value值是base64编码的。里面有=号。使用cookiehacker写入的时候把等号自动给去掉了。</p>
+<p>查看源码发现是这么写的。</p>
+<pre><code>k = c.split(<span class="string">'='</span>)[<span class="number">0</span>].replace(<span class="regexp">/^\s+|\s+$/g</span>, <span class="string">""</span>).replace(<span class="string">' '</span>, <span class="string">'+'</span>);
+v = c.split(<span class="string">'='</span>)[<span class="number">1</span>].replace(<span class="regexp">/^\s+|\s+$/g</span>, <span class="string">""</span>).replace(<span class="string">' '</span>, <span class="string">'+'</span>);
+</code></pre><p>使用split等号来取值。导致value里的等号丢掉了。修改成使用substring取值，修复这个bug。</p>
+<pre><code>k = c.<span class="keyword">substring</span>(<span class="number">0</span>,c.indexOf(<span class="string">'='</span>)).replace(/^\s+|\s+<span class="variable">$/</span>g, <span class="string">""</span>).replace(<span class="string">' '</span>, <span class="string">'+'</span>);
+v = c.<span class="keyword">substring</span>(c.indexOf(<span class="string">'='</span>)+ <span class="number">1</span>).replace(/^\s+|\s+<span class="variable">$/</span>g, <span class="string">""</span>).replace(<span class="string">' '</span>, <span class="string">'+'</span>); 
+</code></pre>]]></content>
+    <summary type="html">
+    <![CDATA[<p><a href="http://evilcos.me/?p=366" target="_blank" rel="external">cookiehacker</a>余弦大神些的cookie利用工具，可以方便的把xss收到的cookie写入本地。</p>
+<p><img sr]]>
+    </summary>
+    
+      <category term="xss" scheme="http://xdxd.love/tags/xss/"/>
+    
+      <category term="前端安全" scheme="http://xdxd.love/categories/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[smali插桩调试apk]]></title>
@@ -887,30 +913,6 @@ file:<span class="comment">///home/ctf/flag.txt</span>
       <category term="ffmpeg" scheme="http://xdxd.love/tags/ffmpeg/"/>
     
       <category term="渗透测试" scheme="http://xdxd.love/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[mysql表名大小写敏感问题]]></title>
-    <link href="http://xdxd.love/2016/01/18/mysql%E8%A1%A8%E5%90%8D%E5%A4%A7%E5%B0%8F%E5%86%99%E6%95%8F%E6%84%9F%E9%97%AE%E9%A2%98/"/>
-    <id>http://xdxd.love/2016/01/18/mysql表名大小写敏感问题/</id>
-    <published>2016-01-18T08:38:54.000Z</published>
-    <updated>2016-01-18T08:52:47.000Z</updated>
-    <content type="html"><![CDATA[<p>测试一个程序，提示找不到表。数据库看了一下表都存在的啊。貌似就大小写不对。抓执行的sql语句看了一下：</p>
-<p><img src="/images/mysqltable1.png" alt=""><br>发现同一个表既有使用大写也有使用小写，也是醉了。google: mysql table name case sensitive就可以找到解决方案。参考mysql的文档:<a href="http://dev.mysql.com/doc/refman/5.7/en/identifier-case-sensitivity.html" target="_blank" rel="external">9.2.2 Identifier Case Sensitivity</a></p>
-<p>windows上默认不区分大小写，但是linux上默认区分大小写。可以通过lower_case_table_names参数调整。设置lower_case_table_names=1可以不区分大小写。</p>
-<p><img src="/images/mysqltable2.png" alt=""></p>
-<p>我这里使用了官方的mysql docker镜像来做测试环境，只要添加一个启动参数就可以了。</p>
-<pre><code>docker <span class="keyword">run</span> -<span class="keyword">d</span> -p 3306:3306 --name=appmysql5 -<span class="keyword">e</span> MYSQL_PASS=<span class="string">"root"</span> -<span class="keyword">e</span> MYSQL_USER=<span class="string">"root"</span>  -<span class="keyword">e</span> EXTRA_OPTS=<span class="string">"--log-raw"</span> -<span class="keyword">e</span> EXTRA_OPTS=<span class="string">"--lower_case_table_names=1"</span>  xd/mysql5.6:v1
-</code></pre>]]></content>
-    <summary type="html">
-    <![CDATA[<p>测试一个程序，提示找不到表。数据库看了一下表都存在的啊。貌似就大小写不对。抓执行的sql语句看了一下：</p>
-<p><img src="/images/mysqltable1.png" alt=""><br>发现同一个表既有使用大写也有使用小写，也是醉了。google: ]]>
-    </summary>
-    
-      <category term="mysql" scheme="http://xdxd.love/tags/mysql/"/>
-    
-      <category term="奇技淫巧" scheme="http://xdxd.love/categories/%E5%A5%87%E6%8A%80%E6%B7%AB%E5%B7%A7/"/>
     
   </entry>
   
