@@ -4,33 +4,46 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>XSScookie利用工具cookie-hacker修改版 | xd_xd&#39;s blog</title>
+    <title>2016 CCTF writeup之萝莉之旅 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description" content="cookiehacker余弦大神些的cookie利用工具，可以方便的把xss收到的cookie写入本地。
-使用过程中遇到一个小问题。就是一个字段value值是base64编码的。里面有=号。使用cookiehacker写入的时候把等号自动给去掉了。
-查看源码发现是这么写的。
-k = c.split(&apos;=&apos;)[0].replace(/^\s+|\s+$/g, &quot;&quot;).replace(&apos; &apos;, &apos;+&apos;">
+    <meta name="description" content="CCTF感受周六花了一天时间做了下CCTF的pentest。还是有不少有意思的收获。这个名字叫pentest，而不是web，感觉也是花了心思的，感谢花时间精力准备的CCTF。loli1，loli2侥幸拿了一血，先装个逼。
+loli之旅打开首页萌了一脸，羞羞的图片，果然是loli.club啊。右键看了一下源码，除了一个注释貌似没有啥其他的信息了。
+&amp;lt;!--
+powered by PockyNy">
 <meta property="og:type" content="article">
-<meta property="og:title" content="XSScookie利用工具cookie-hacker修改版">
-<meta property="og:url" content="http://xdxd.love/2016/04/12/XSScookie利用工具cookie-hacker修改版/index.html">
+<meta property="og:title" content="2016 CCTF writeup之萝莉之旅">
+<meta property="og:url" content="http://xdxd.love/2016/05/03/2016-CCTF之萝莉之旅/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="cookiehacker余弦大神些的cookie利用工具，可以方便的把xss收到的cookie写入本地。
-使用过程中遇到一个小问题。就是一个字段value值是base64编码的。里面有=号。使用cookiehacker写入的时候把等号自动给去掉了。
-查看源码发现是这么写的。
-k = c.split(&apos;=&apos;)[0].replace(/^\s+|\s+$/g, &quot;&quot;).replace(&apos; &apos;, &apos;+&apos;">
-<meta property="og:image" content="http://evilcos.me/wp-content/uploads/2013/10/123.jpg">
-<meta property="og:updated_time" content="2016-04-12T07:58:36.000Z">
+<meta property="og:description" content="CCTF感受周六花了一天时间做了下CCTF的pentest。还是有不少有意思的收获。这个名字叫pentest，而不是web，感觉也是花了心思的，感谢花时间精力准备的CCTF。loli1，loli2侥幸拿了一血，先装个逼。
+loli之旅打开首页萌了一脸，羞羞的图片，果然是loli.club啊。右键看了一下源码，除了一个注释貌似没有啥其他的信息了。
+&amp;lt;!--
+powered by PockyNy">
+<meta property="og:image" content="http://xdxd.love/images/cctf4.png">
+<meta property="og:image" content="http://xdxd.love/images/cctf1.png">
+<meta property="og:image" content="http://xdxd.love/images/cctf2.png">
+<meta property="og:image" content="http://xdxd.love/images/cctf3.png">
+<meta property="og:image" content="http://xdxd.love/images/cctf6.png">
+<meta property="og:image" content="http://xdxd.love/images/cctf5.png">
+<meta property="og:image" content="http://xdxd.love/images/cctf7.png">
+<meta property="og:image" content="http://xdxd.love/images/cctf8.png">
+<meta property="og:image" content="http://xdxd.love/images/cctf9.png">
+<meta property="og:image" content="http://xdxd.love/images/cctf10.png">
+<meta property="og:image" content="http://xdxd.love/images/cctf11.png">
+<meta property="og:image" content="http://xdxd.love/images/cctf12.png">
+<meta property="og:image" content="http://xdxd.love/images/cctf13.png">
+<meta property="og:image" content="http://xdxd.love/images/cctf14.png">
+<meta property="og:updated_time" content="2016-05-03T08:16:35.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="XSScookie利用工具cookie-hacker修改版">
-<meta name="twitter:description" content="cookiehacker余弦大神些的cookie利用工具，可以方便的把xss收到的cookie写入本地。
-使用过程中遇到一个小问题。就是一个字段value值是base64编码的。里面有=号。使用cookiehacker写入的时候把等号自动给去掉了。
-查看源码发现是这么写的。
-k = c.split(&apos;=&apos;)[0].replace(/^\s+|\s+$/g, &quot;&quot;).replace(&apos; &apos;, &apos;+&apos;">
+<meta name="twitter:title" content="2016 CCTF writeup之萝莉之旅">
+<meta name="twitter:description" content="CCTF感受周六花了一天时间做了下CCTF的pentest。还是有不少有意思的收获。这个名字叫pentest，而不是web，感觉也是花了心思的，感谢花时间精力准备的CCTF。loli1，loli2侥幸拿了一血，先装个逼。
+loli之旅打开首页萌了一脸，羞羞的图片，果然是loli.club啊。右键看了一下源码，除了一个注释貌似没有啥其他的信息了。
+&amp;lt;!--
+powered by PockyNy">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -90,14 +103,14 @@ k = c.split(&apos;=&apos;)[0].replace(/^\s+|\s+$/g, &quot;&quot;).replace(&apos;
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2016/04/12/XSScookie利用工具cookie-hacker修改版/" title="XSScookie利用工具cookie-hacker修改版" itemprop="url">XSScookie利用工具cookie-hacker修改版</a>
+      <a href="/2016/05/03/2016-CCTF之萝莉之旅/" title="2016 CCTF writeup之萝莉之旅" itemprop="url">2016 CCTF writeup之萝莉之旅</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2016-04-12T07:49:06.000Z" itemprop="datePublished"> 发表于 Apr 12 2016</time>
+    <time datetime="2016-05-03T03:33:35.000Z" itemprop="datePublished"> 发表于 May 3 2016</time>
     
   </p>
 </header>
@@ -106,33 +119,68 @@ k = c.split(&apos;=&apos;)[0].replace(/^\s+|\s+$/g, &quot;&quot;).replace(&apos;
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#CCTF感受"><span class="toc-number">1.</span> <span class="toc-text">CCTF感受</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#loli之旅"><span class="toc-number">2.</span> <span class="toc-text">loli之旅</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#漏洞一"><span class="toc-number">2.1.</span> <span class="toc-text">漏洞一</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#漏洞二"><span class="toc-number">2.2.</span> <span class="toc-text">漏洞二</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#漏洞三"><span class="toc-number">2.3.</span> <span class="toc-text">漏洞三</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#漏洞四"><span class="toc-number">2.4.</span> <span class="toc-text">漏洞四</span></a></li></ol></li></ol>
 		
 		</div>
 		
-		<p><a href="http://evilcos.me/?p=366" target="_blank" rel="external">cookiehacker</a>余弦大神些的cookie利用工具，可以方便的把xss收到的cookie写入本地。</p>
-<p><img src="http://evilcos.me/wp-content/uploads/2013/10/123.jpg" alt=""><br>使用过程中遇到一个小问题。就是一个字段value值是base64编码的。里面有=号。使用cookiehacker写入的时候把等号自动给去掉了。</p>
-<p>查看源码发现是这么写的。</p>
-<pre><code>k = c.split(<span class="string">'='</span>)[<span class="number">0</span>].replace(<span class="regexp">/^\s+|\s+$/g</span>, <span class="string">""</span>).replace(<span class="string">' '</span>, <span class="string">'+'</span>);
-v = c.split(<span class="string">'='</span>)[<span class="number">1</span>].replace(<span class="regexp">/^\s+|\s+$/g</span>, <span class="string">""</span>).replace(<span class="string">' '</span>, <span class="string">'+'</span>);
-</code></pre><p>使用split等号来取值。导致value里的等号丢掉了。修改成使用substring取值，修复这个bug。</p>
-<pre><code>k = c.<span class="keyword">substring</span>(<span class="number">0</span>,c.indexOf(<span class="string">'='</span>)).replace(/^\s+|\s+<span class="variable">$/</span>g, <span class="string">""</span>).replace(<span class="string">' '</span>, <span class="string">'+'</span>);
-v = c.<span class="keyword">substring</span>(c.indexOf(<span class="string">'='</span>)+ <span class="number">1</span>).replace(/^\s+|\s+<span class="variable">$/</span>g, <span class="string">""</span>).replace(<span class="string">' '</span>, <span class="string">'+'</span>); 
-</code></pre>  
+		<p><img src="/images/cctf4.png" alt=""></p>
+<h1 id="CCTF感受">CCTF感受</h1><p>周六花了一天时间做了下CCTF的pentest。还是有不少有意思的收获。这个名字叫pentest，而不是web，感觉也是花了心思的，感谢花时间精力准备的CCTF。loli1，loli2侥幸拿了一血，先装个逼。<br><img src="/images/cctf1.png" alt=""></p>
+<h1 id="loli之旅">loli之旅</h1><p>打开首页萌了一脸，羞羞的图片，果然是loli.club啊。右键看了一下源码，除了一个注释貌似没有啥其他的信息了。</p>
+<pre><code><span class="comment">&lt;!--
+powered by PockyNya
+诚招前端，请联系邮箱：pocky@loli.club
+--&gt;</span>
+</code></pre><p>google直接搜索PockyNya，找到其github。</p>
+<p><img src="/images/cctf2.png" alt=""></p>
+<p>分析第一个仓库pyprint:<br><img src="/images/cctf3.png" alt=""></p>
+<p>可以找到一个博客地址：<a href="http://pocky.loli.club:41293/" target="_blank" rel="external">http://pocky.loli.club:41293/</a></p>
+<p>有了网址和源码，自然是要对源码做一番审计。这里我其实是用了一个比较猥琐的方式快速找到了源码中的漏洞。<br>在PockNya的github主页上，可以看到他follow了一个人，RicterZ，点进去可以看到自然是这道题目的作者了。由于平时就关注了RicterZ的github和博客。在RicterZ的github也可以看到pyprint这个仓库，是自己博客的开源代码。所以接下来就是把两个仓库都clone下来，diff了一下。~~~</p>
+<p>其实对于pyprint这个代码的审计，读一下commit时的comment可以发现很多信息，比直接看代码可以省不少功夫。不过有了diff大法，一切都是浮云。<br><img src="/images/cctf6.png" alt=""></p>
+<h2 id="漏洞一">漏洞一</h2><p><img src="/images/cctf5.png" alt=""></p>
+<p>看到登录页面login多了一个flag参数，查看模板文件，直接输出在了页面中，存在一个反射XSS。</p>
+<pre><code>&lt;form class=<span class="string">"form-horizontal login-form"</span> role=<span class="string">"form"</span> action=<span class="string">"/login?flag="</span> <span class="keyword">method</span>=<span class="string">"post"</span>&gt;
+</code></pre><p><img src="/images/cctf7.png" alt=""></p>
+<p>反射XSS需要绕过浏览器audit，根据博客文章提示，找到xss地址之后，发到作者邮箱。试了一下才知道，这个XSS是个意外，很快就被修复了。</p>
+<p><img src="/images/cctf8.png" alt=""></p>
+<h2 id="漏洞二">漏洞二</h2><p><img src="/images/cctf9.png" alt=""></p>
+<p>发现addpost这个方法的权限验证去掉了。查看相关模板，发现去掉了urlencode编码。导致越权发布文章，文章内容可以存储型XSS。根据代码中的接口和参数拼接请求。发布存储型XSS文章。将地址发给作者邮箱，获得cookie。cookie中flag参数解码就是最终的flag。</p>
+<h2 id="漏洞三">漏洞三</h2><p><img src="/images/cctf10.png" alt=""></p>
+<p>FileReadHandler存在任意文件读取的漏洞，看到这里很开心，可是被注释掉了。所有是逗你玩的代码了~~<br><img src="/images/cctf11.png" alt=""></p>
+<h2 id="漏洞四">漏洞四</h2><p><img src="/images/cctf12.png" alt=""><br>这里其实也不算漏洞，看到不一样的代码就跟进去看看做了啥。查看日志的时候，验证了cookie。这里当时不记得怎么弄的了，xss打到的cookie早就加了进去，直接拼日志的地址就可以访问了。现在来看只要本地伪造一个cookie就可以绕过这个验证？添加cookie之后可以查看到一篇一个lua脚本的日志。</p>
+<p><img src="/images/cctf13.png" alt=""></p>
+<p>lua脚本源码：</p>
+<pre><code><span class="operator"><span class="keyword">do</span>
+<span class="keyword">local</span> <span class="keyword">function</span> run(msg, matches)
+  <span class="keyword">if</span> matches[<span class="number">1</span>] ~= <span class="string">'!minecraft'</span> <span class="keyword">then</span>
+    operation = matches[<span class="number">1</span>]
+  <span class="keyword">else</span>
+    <span class="keyword">return</span> <span class="string">"!minecraft start|stop|restart"</span>
+  <span class="keyword">end</span>
+  <span class="keyword">if</span> <span class="keyword">string</span>.find(operation, <span class="string">'&amp;'</span>) <span class="keyword">or</span> <span class="keyword">string</span>.find(operation, <span class="string">'|'</span>) <span class="keyword">or</span> <span class="keyword">string</span>.find(operation, <span class="string">'`'</span>) <span class="keyword">then</span>
+    <span class="keyword">return</span> <span class="string">"Invalid operation "</span> .. operation
+  <span class="keyword">end</span>
+  <span class="keyword">local</span> <span class="keyword">t</span> = io.popen(<span class="string">'cd /home/telegram &amp;&amp; ./mc '</span> .. operation)
+  <span class="keyword">local</span> a = <span class="keyword">t</span>:<span class="keyword">read</span>(<span class="string">"*all"</span>)
+  <span class="keyword">return</span> a
+<span class="keyword">end</span>
+<span class="keyword">return</span> {
+  description = <span class="string">"loli.club minecraft bot!"</span>,
+  <span class="keyword">usage</span> = <span class="string">"!minecraft start|stop|restart"</span>,
+  patterns = {
+    <span class="string">"^!minecraft$"</span>,
+    <span class="string">"^!minecraft (.*)$"</span>
+  },
+  run = run
+}
+<span class="keyword">end</span>%</span>
+</code></pre><p>比较明显的命令注入漏洞。参考<a href="http://drops.wooyun.org/papers/1018" target="_blank" rel="external">Shell Injection &amp; Command Injection</a>。没有过滤分号<code>;</code>。</p>
+<p>第一次用telegram，找到bot的账号花了一会时间。本身漏洞是比较典型的。</p>
+<p><img src="/images/cctf14.png" alt=""></p>
+  
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
 
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/前端安全/">前端安全</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/xss/">xss</a>
-  </div>
 
 </div>
 
@@ -140,7 +188,7 @@ v = c.<span class="keyword">substring</span>(c.indexOf(<span class="string">'='<
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2016/04/12/XSScookie利用工具cookie-hacker修改版/" data-title="XSScookie利用工具cookie-hacker修改版 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  <div data-url="http://xdxd.love/2016/05/03/2016-CCTF之萝莉之旅/" data-title="2016 CCTF writeup之萝莉之旅 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -153,19 +201,11 @@ v = c.<span class="keyword">substring</span>(c.indexOf(<span class="string">'='<
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2016/04/25/使用shell和python分析大日志文件/" title="使用shell和python分析大日志文件">
-  <strong>上一篇：</strong><br/>
-  <span>
-  使用shell和python分析大日志文件</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2016/04/08/smali插桩调试apk/"  title="smali插桩调试apk">
+<a href="/2016/04/25/使用shell和python分析大日志文件/"  title="使用shell和python分析大日志文件">
  <strong>下一篇：</strong><br/> 
- <span>smali插桩调试apk
+ <span>使用shell和python分析大日志文件
 </span>
 </a>
 </div>
@@ -174,7 +214,7 @@ v = c.<span class="keyword">substring</span>(c.indexOf(<span class="string">'='<
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2016/04/12/XSScookie利用工具cookie-hacker修改版/" data-title="XSScookie利用工具cookie-hacker修改版" data-url="http://xdxd.love/2016/04/12/XSScookie利用工具cookie-hacker修改版/"></div>
+	<div class="ds-thread" data-thread-key="2016/05/03/2016-CCTF之萝莉之旅/" data-title="2016 CCTF writeup之萝莉之旅" data-url="http://xdxd.love/2016/05/03/2016-CCTF之萝莉之旅/"></div>
 </section>
 
 
@@ -184,7 +224,7 @@ v = c.<span class="keyword">substring</span>(c.indexOf(<span class="string">'='<
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#CCTF感受"><span class="toc-number">1.</span> <span class="toc-text">CCTF感受</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#loli之旅"><span class="toc-number">2.</span> <span class="toc-text">loli之旅</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#漏洞一"><span class="toc-number">2.1.</span> <span class="toc-text">漏洞一</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#漏洞二"><span class="toc-number">2.2.</span> <span class="toc-text">漏洞二</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#漏洞三"><span class="toc-number">2.3.</span> <span class="toc-text">漏洞三</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#漏洞四"><span class="toc-number">2.4.</span> <span class="toc-text">漏洞四</span></a></li></ol></li></ol>
  
   </div>
 

