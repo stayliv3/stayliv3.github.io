@@ -12,26 +12,23 @@
 
     
     <meta name="description" content="这个系列的文章以逆向路由器固件的方式来挖掘路由器中存在的漏洞。本篇文章主要以介绍解包固件工具为主。文中演示用的固件可以在这里下载。由于针对设备的攻击越来越多，很多厂商把不提供固件下载作为一种安全策略。所有有些时候只能通过物理的方式从设备中导出固件。后续的文章中会介绍相关技术。
-##通用的linux RE工具
-file — 用来检测是否是有效的文件和文件类型hexdump —16进制导出工具stri">
+通用的linux RE工具file — 用来检测是否是有效的文件和文件类型hexdump —16进制导出工具strings">
 <meta property="og:type" content="article">
 <meta property="og:title" content="逆向路由器固件之解包">
 <meta property="og:url" content="http://xdxd.love/2015/08/24/逆向路由器固件之解包/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
 <meta property="og:description" content="这个系列的文章以逆向路由器固件的方式来挖掘路由器中存在的漏洞。本篇文章主要以介绍解包固件工具为主。文中演示用的固件可以在这里下载。由于针对设备的攻击越来越多，很多厂商把不提供固件下载作为一种安全策略。所有有些时候只能通过物理的方式从设备中导出固件。后续的文章中会介绍相关技术。
-##通用的linux RE工具
-file — 用来检测是否是有效的文件和文件类型hexdump —16进制导出工具stri">
+通用的linux RE工具file — 用来检测是否是有效的文件和文件类型hexdump —16进制导出工具strings">
 <meta property="og:image" content="http://xdxd.love/images/Filetool.png">
 <meta property="og:image" content="http://xdxd.love/images/Hexdump.png">
 <meta property="og:image" content="http://xdxd.love/images/stringsuboot.png">
 <meta property="og:image" content="http://xdxd.love/images/Binwalkresults.png">
 <meta property="og:image" content="http://xdxd.love/images/fmk1.png">
-<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+<meta property="og:updated_time" content="2016-05-03T09:24:36.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="逆向路由器固件之解包">
 <meta name="twitter:description" content="这个系列的文章以逆向路由器固件的方式来挖掘路由器中存在的漏洞。本篇文章主要以介绍解包固件工具为主。文中演示用的固件可以在这里下载。由于针对设备的攻击越来越多，很多厂商把不提供固件下载作为一种安全策略。所有有些时候只能通过物理的方式从设备中导出固件。后续的文章中会介绍相关技术。
-##通用的linux RE工具
-file — 用来检测是否是有效的文件和文件类型hexdump —16进制导出工具stri">
+通用的linux RE工具file — 用来检测是否是有效的文件和文件类型hexdump —16进制导出工具strings">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -107,35 +104,28 @@ file — 用来检测是否是有效的文件和文件类型hexdump —16进制�
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#通用的linux_RE工具"><span class="toc-number">1.</span> <span class="toc-text">通用的linux RE工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第三方工具"><span class="toc-number">2.</span> <span class="toc-text">第三方工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#初步分析"><span class="toc-number">3.</span> <span class="toc-text">初步分析</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#File_Tool"><span class="toc-number"></span> <span class="toc-text">File Tool</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#hexdump"><span class="toc-number"></span> <span class="toc-text">hexdump</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#strings"><span class="toc-number"></span> <span class="toc-text">strings</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Binwalk"><span class="toc-number"></span> <span class="toc-text">Binwalk</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#提取文件系统"><span class="toc-number">1.</span> <span class="toc-text">提取文件系统</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考翻译"><span class="toc-number">2.</span> <span class="toc-text">参考翻译</span></a></li></ol>
 		
 		</div>
 		
 		<p>这个系列的文章以逆向路由器固件的方式来挖掘路由器中存在的漏洞。本篇文章主要以介绍解包固件工具为主。文中演示用的固件可以在这里<a href="http://www.tp-link.com/resources/software/TL-WR841N_V8_130506.zip" target="_blank" rel="external">下载</a>。由于针对设备的攻击越来越多，很多厂商把不提供固件下载作为一种安全策略。所有有些时候只能通过物理的方式从设备中导出固件。后续的文章中会介绍相关技术。</p>
-<p>##通用的linux RE工具</p>
-<p><a href="http://linux.die.net/man/1/file" target="_blank" rel="external">file</a> — 用来检测是否是有效的文件和文件类型<br><a href="http://www.freebsd.org/cgi/man.cgi?query=hexdump&amp;sektion=1" target="_blank" rel="external">hexdump</a> —16进制导出工具<br><a href="http://unixhelp.ed.ac.uk/CGI/man-cgi?strings" target="_blank" rel="external">strings</a> 跟hexdump类似但是可以以可读的形式展示<br><a href="http://linux.die.net/man/1/dd" target="_blank" rel="external">dd</a> — 从二进制文件中挖掘数据<br><a href="http://www.manpagez.com/man/1/lzma/" target="_blank" rel="external">lzma</a> — 解压LZMA文件</p>
-<p>##第三方工具</p>
-<p><a href="http://binwalk.org/" target="_blank" rel="external">binwalk</a> — 通过固件文件头来分析文件和文件系统<br><a href="https://code.google.com/p/firmware-mod-kit/" target="_blank" rel="external">Fireware Mod Kit</a> — 自动化分析固件文件的一系列脚本<br><a href="http://www.tldp.org/HOWTO/SquashFS-HOWTO/mksqoverview.html" target="_blank" rel="external">squashfs-tools</a> — 可以通过apt-get squashfs-tools 来安装。用来处理squashfs的一系列工具</p>
-<p>##初步分析</p>
-<p>通常来说逆向工程的第一步就是使用上面列出的通用linux工具从要分析的文件中挖掘出尽量多的信息。通过这些信息来决定下一步进行的分析。比如使用hexdump发现sqsh意味着文件中有一个squashfs文件系统或者识别出了固件包中常用的boot loader U-Boot。</p>
-<p>#File Tool</p>
-<p>文件工具通常只是告诉我们这个文件是否是已知的文件类型，某些情况下可以识别出文件的种类，比如数据文件。</p>
+<h2 id="通用的linux_RE工具">通用的linux RE工具</h2><p><a href="http://linux.die.net/man/1/file" target="_blank" rel="external">file</a> — 用来检测是否是有效的文件和文件类型<br><a href="http://www.freebsd.org/cgi/man.cgi?query=hexdump&amp;sektion=1" target="_blank" rel="external">hexdump</a> —16进制导出工具<br><a href="http://unixhelp.ed.ac.uk/CGI/man-cgi?strings" target="_blank" rel="external">strings</a> 跟hexdump类似但是可以以可读的形式展示<br><a href="http://linux.die.net/man/1/dd" target="_blank" rel="external">dd</a> — 从二进制文件中挖掘数据<br><a href="http://www.manpagez.com/man/1/lzma/" target="_blank" rel="external">lzma</a> — 解压LZMA文件</p>
+<h2 id="第三方工具">第三方工具</h2><p><a href="http://binwalk.org/" target="_blank" rel="external">binwalk</a> — 通过固件文件头来分析文件和文件系统<br><a href="https://code.google.com/p/firmware-mod-kit/" target="_blank" rel="external">Fireware Mod Kit</a> — 自动化分析固件文件的一系列脚本<br><a href="http://www.tldp.org/HOWTO/SquashFS-HOWTO/mksqoverview.html" target="_blank" rel="external">squashfs-tools</a> — 可以通过apt-get squashfs-tools 来安装。用来处理squashfs的一系列工具</p>
+<h2 id="初步分析">初步分析</h2><p>通常来说逆向工程的第一步就是使用上面列出的通用linux工具从要分析的文件中挖掘出尽量多的信息。通过这些信息来决定下一步进行的分析。比如使用hexdump发现sqsh意味着文件中有一个squashfs文件系统或者识别出了固件包中常用的boot loader U-Boot。</p>
+<h1 id="File_Tool">File Tool</h1><p>文件工具通常只是告诉我们这个文件是否是已知的文件类型，某些情况下可以识别出文件的种类，比如数据文件。</p>
 <p>使用file分析路由器固件如下：<br><img src="/images/Filetool.png" alt=""><br>file分析的结果可以告诉我们该文件是否是已知的类型，是否需要进一步分析。这里的结果我们可以看到仅仅是显示数据文件。</p>
-<p>#hexdump</p>
-<p>hexdump 工具可以让你分析文件中的每一个字节，这是非常有价值的。使用hexdump分析固件如下：</p>
+<h1 id="hexdump">hexdump</h1><p>hexdump 工具可以让你分析文件中的每一个字节，这是非常有价值的。使用hexdump分析固件如下：</p>
 <p>上面的命令会把hexdump的结果写入到文件hexTP.txt中做进一步分析。-C选项是设置hexdump输出为hex+ASCII的方式，更便于阅读。输出的文件十分巨大，这个例子中我们可以从文件头的地方看到这个固件是属于TP-Link的，但是这个信息我们已经知道了。所以下一步就是尝试strings命令，看看是否可以获得更多的信息。<br><img src="/images/Hexdump.png" alt=""></p>
-<p>#strings</p>
-<p>作为初始的信息收集，strings可能是最常用和做好用的工具之一，因为它可以显示文件中所有可打印的数据。跟使用hexdump一样，最好把strings的结果写入文件分析，以免下次想要分析的时候还需要重复一遍strings命令。<br><img src="/images/stringsuboot.png" alt=""><br>从strings的结果中，我们发现了一些有趣的信息。</p>
+<h1 id="strings">strings</h1><p>作为初始的信息收集，strings可能是最常用和做好用的工具之一，因为它可以显示文件中所有可打印的数据。跟使用hexdump一样，最好把strings的结果写入文件分析，以免下次想要分析的时候还需要重复一遍strings命令。<br><img src="/images/stringsuboot.png" alt=""><br>从strings的结果中，我们发现了一些有趣的信息。</p>
 <p>这个信息就在strings结果文件开始的地方，稍微往后翻一下或者搜索一下文件系统常用的boot loader名字比如U-boot，就可以找到这些信息。现在我们已经知道这个嵌入式系统使用U-boot作为boot loader，而且知道了它的版本信息。</p>
-<p>#Binwalk</p>
-<p>binwalk会分析二进制文件中可能的固件头或者文件系统，然后输出识别出的每个部分以及对应的偏移量。使用binwalk分析固件如下：<br><img src="/images/Binwalkresults.png" alt=""><br>binwalk给出了大量有用的信息。从这些信息中可以得知这个固件是运行在MIPS架构上的一个linux系统。使用了squashfs文件系统。同时也再次确认boot loader是U-boot。关于binwalk的更详细的用法可以参考<a href="http://www.freebuf.com/tools/15266.html" target="_blank" rel="external">Binwalk：后门（固件）分析利器</a>。</p>
-<p>##提取文件系统</p>
-<p>终于到了最关键的一步，我们要从固件镜像中分离出文件系统的内容。因为是linux系统，可以预见一些标准的linux文件比如passwd和shadow可能会有一些敏感信息。</p>
+<h1 id="Binwalk">Binwalk</h1><p>binwalk会分析二进制文件中可能的固件头或者文件系统，然后输出识别出的每个部分以及对应的偏移量。使用binwalk分析固件如下：<br><img src="/images/Binwalkresults.png" alt=""><br>binwalk给出了大量有用的信息。从这些信息中可以得知这个固件是运行在MIPS架构上的一个linux系统。使用了squashfs文件系统。同时也再次确认boot loader是U-boot。关于binwalk的更详细的用法可以参考<a href="http://www.freebuf.com/tools/15266.html" target="_blank" rel="external">Binwalk：后门（固件）分析利器</a>。</p>
+<h2 id="提取文件系统">提取文件系统</h2><p>终于到了最关键的一步，我们要从固件镜像中分离出文件系统的内容。因为是linux系统，可以预见一些标准的linux文件比如passwd和shadow可能会有一些敏感信息。</p>
 <p>很多人使用dd来分离文件系统的内容。使用binwalk和Firmware Modification Kit来解包最简单方便。</p>
 <p>使用binwalk的-e参数可以自动把固件镜像中的所有文件都解出来。</p>
 <pre><code>binwalk -<span class="keyword">e</span> &lt;<span class="keyword">input</span> <span class="keyword">file</span>&gt;
 </code></pre><p>使用Firmware Modification Kit中的extract-firmware.sh脚本会更加高效。如果你想重打包修改之后的固件的话可以使用build-firmware.sh来打包固件。这样可以节省大量时间自己解包和管理所有的偏移。</p>
 <p><a href="http://www.freebuf.com/articles/terminal/75524.html" target="_blank" rel="external">极路由安全设计架构分析</a>这里分析的极路由的那个固件包，使用FMK就可以一键解包。<br><img src="/images/fmk1.png" alt=""></p>
+<h2 id="参考翻译">参考翻译</h2><p><a href="http://www.secforce.com/blog/2014/04/reverse-engineer-router-firmware-part-1/" target="_blank" rel="external">Reverse Engineer Router Firmware</a></p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -202,7 +192,7 @@ file — 用来检测是否是有效的文件和文件类型hexdump —16进制�
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#通用的linux_RE工具"><span class="toc-number">1.</span> <span class="toc-text">通用的linux RE工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第三方工具"><span class="toc-number">2.</span> <span class="toc-text">第三方工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#初步分析"><span class="toc-number">3.</span> <span class="toc-text">初步分析</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#File_Tool"><span class="toc-number"></span> <span class="toc-text">File Tool</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#hexdump"><span class="toc-number"></span> <span class="toc-text">hexdump</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#strings"><span class="toc-number"></span> <span class="toc-text">strings</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Binwalk"><span class="toc-number"></span> <span class="toc-text">Binwalk</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#提取文件系统"><span class="toc-number">1.</span> <span class="toc-text">提取文件系统</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考翻译"><span class="toc-number">2.</span> <span class="toc-text">参考翻译</span></a></li></ol>
  
   </div>
 
