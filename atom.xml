@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-05-03T08:45:16.000Z</updated>
+  <updated>2016-05-05T08:20:21.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -13,6 +13,19 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[imagemagic RCE漏洞分析与利用]]></title>
+    <link href="http://xdxd.love/2016/05/05/imagemagic-RCE%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B8%8E%E5%88%A9%E7%94%A8/"/>
+    <id>http://xdxd.love/2016/05/05/imagemagic-RCE漏洞分析与利用/</id>
+    <published>2016-05-05T08:20:21.000Z</published>
+    <updated>2016-05-05T08:20:21.000Z</updated>
+    <content type="html"></content>
+    <summary type="html">
+    
+    </summary>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[2016 CCTF writeup之萝莉之旅]]></title>
@@ -886,76 +899,6 @@ $ sudo pip install mitmproxy
       <category term="mitmproxy" scheme="http://xdxd.love/tags/mitmproxy/"/>
     
       <category term="折腾不止" scheme="http://xdxd.love/categories/%E6%8A%98%E8%85%BE%E4%B8%8D%E6%AD%A2/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[sqlalchemy保存字典对象报语法错误]]></title>
-    <link href="http://xdxd.love/2016/01/28/sqlalchemy%E8%AE%B0%E5%BD%95%E6%89%A7%E8%A1%8Csql/"/>
-    <id>http://xdxd.love/2016/01/28/sqlalchemy记录执行sql/</id>
-    <published>2016-01-28T09:08:12.000Z</published>
-    <updated>2016-01-29T02:34:13.000Z</updated>
-    <content type="html"><![CDATA[<h1 id="问题分析">问题分析</h1><p>使用sqlalchemy的过程中,遇到写数据库的时候报语法错误，相关代码如下：</p>
-<pre><code># 定义requests对象,存储HTTP请求的所有信息<span class="value">:
-class <span class="function">Requests</span>(Base):
-    # 表的名字:
-    __tablename__ = <span class="string">'requests'</span>
-    # 表的结构:
-    id = <span class="function">Column</span>(<span class="function">Integer</span>(), primary_key=True)
-    # scheme = <span class="function">Column</span>(<span class="function">String</span>(<span class="number">20</span>))
-    method = <span class="function">Column</span>(<span class="function">String</span>(<span class="number">200</span>))
-    url = <span class="function">Column</span>(<span class="function">String</span>(<span class="number">2000</span>))
-    headers = <span class="function">Column</span>(<span class="function">Text</span>(<span class="number">20000</span>))
-    # cookies = <span class="function">Column</span>(<span class="function">Text</span>(<span class="number">20000</span>))
-    content = <span class="function">Column</span>(<span class="function">Text</span>(<span class="number">20000</span>))
-    # query = <span class="function">Column</span>(<span class="function">Text</span>(<span class="number">20000</span>))
-    timestamp_start = <span class="function">Column</span>(<span class="function">String</span>(<span class="number">2000</span>))
-    urlencoded_form=<span class="function">Column</span>(<span class="function">Text</span>(<span class="number">20000</span>))
-    multipart_form=<span class="function">Column</span>(<span class="function">Text</span>(<span class="number">20000</span>))
-    sqlmap=<span class="function">Column</span>(<span class="function">String</span>(<span class="number">20</span>))
-    xss=<span class="function">Column</span>(<span class="function">String</span>(<span class="number">20</span>))
-
-# 将请求信息写入数据库
-def <span class="function">save_request</span>(flow):
-    newrequest = <span class="function">Requests</span>(
-            # scheme=flow.request.scheme,
-            method=flow.request.method,
-            url=flow.request.url,
-            headers=<span class="function">str</span>(flow.request.headers.__dict__),
-            # headers={<span class="string">'fields'</span>: [[<span class="string">'Host'</span>, <span class="string">'zone.wooyun.org'</span>], [<span class="string">'Proxy-Connection'</span>, <span class="string">'keep-alive'</span>], [<span class="string">'Cache-Control'</span>, <span class="string">'max-age=0'</span>], [<span class="string">'Accept'</span>, <span class="string">'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'</span>], [<span class="string">'Upgrade-Insecure-Requests'</span>, <span class="string">'1'</span>], [<span class="string">'User-Agent'</span>, <span class="string">'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.82 Safari/537.36'</span>], [<span class="string">'Referer'</span>, <span class="string">'http://zone.wooyun.org/content/24881'</span>], [<span class="string">'Accept-Encoding'</span>, <span class="string">'gzip, deflate, sdch'</span>], [<span class="string">'Accept-Language'</span>, <span class="string">'zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4,fr;q=0.2'</span>], [<span class="string">'Cookie'</span>, <span class="string">'__cfduid=dc40888efca4ab0ff91186dc39428d9451452910746; wy_uid=5216UsFxwcFbseAhJt2wKwW3D3TWpih1g71JAjeIlpCT; wy_pwd=8c96%2BGWnQmu1BRR1RePbtZrkAZ6bY8HvlPtgcggYQmaideN8%2F08EAzHsV1XKQ72ZwX7q%2BxN4FJgnfUHorw; wy_token=192c2fd47fa5d03123ced3320c7e580c; PHPSESSID=e0e6vqec509trlqu7tv1lfeu70; bdshare_firstime=1453095346906; login_type=d8d1the3gNwSvY8dSI2oIhzdLszQ8nsd2ne%2Fl6JY; __ads_session=xk9roUMxqgiiIx0CggA=; Hm_lvt_c12f88b5c1cd041a732dea597a5ec94c=1453453560; Hm_lpvt_c12f88b5c1cd041a732dea597a5ec94c=1453876852; Hm_lvt_3faf3a47435cc512f3b86dc12af100d0=1453682212; Hm_lpvt_3faf3a47435cc512f3b86dc12af100d0=1453882158'</span>], [<span class="string">'AlexaToolbar-ALX_NS_PH'</span>, <span class="string">'AlexaToolbar/alxg-3.3'</span>]]},
-            # cookies=flow.request.cookies,
-            content=flow.request.content,
-            # query=flow.request.query,
-            timestamp_start=flow.request.timestamp_start,
-            # id=<span class="function">get_md5_value</span>(flow.request.url+flow.request.content+<span class="function">str</span>(flow.request.timestamp_start))
-            urlencoded_form=flow.request.urlencoded_form,
-            multipart_form=flow.request.multipart_form,
-    )
-    session = <span class="function">DBSession</span>()
-    session.<span class="function">add</span>(newrequest)
-    session.<span class="function">commit</span>()
-    session.<span class="function">close</span>()</span>
-</code></pre><p>当写入的数据类型为字典时，报语法错误。</p>
-<pre><code><span class="name">ProgrammingError</span>: (<span class="name">_mysql_exceptions</span>.<span class="name">ProgrammingError</span>) (<span class="number">1064</span>, <span class="string">'You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near \'\'fields\': "((\'Host\',\'dongweiming.github.io\'),(\'Proxy-Connection\',\'keep-alive\'),(\' at line 1'</span>) [<span class="name">SQL</span>: <span class="atom">u</span><span class="string">'INSERT INTO requests (method, url, headers, content, timestamp_start, urlencoded_form, multipart_form, sqlmap, xss) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)'</span>] [<span class="atom">parameters</span>: (<span class="string">'GET'</span>, <span class="string">'http://dongweiming.github.io/blog/archives/how-to-use-celery/'</span>, {<span class="string">'fields'</span>: [[<span class="string">'Host'</span>, <span class="string">'dongweiming.github.io'</span>], [<span class="string">'Proxy-Connection'</span>, <span class="string">'keep-alive'</span>], [<span class="string">'Cache-Control'</span>, <span class="string">'max-age=0'</span>], [<span class="string">'Accept'</span>, <span class="string">'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'</span>], [<span class="string">'Upgrade-Insecure-Requests'</span>, <span class="string">'1'</span>], [<span class="string">'User-Agent'</span>, <span class="string">'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.82 Safari/537.36'</span>], [<span class="string">'Referer'</span>, <span class="string">'https://www.google.com/'</span>], [<span class="string">'Accept-Encoding'</span>, <span class="string">'gzip, deflate, sdch'</span>], [<span class="string">'Accept-Language'</span>, <span class="string">'zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4,fr;q=0.2'</span>], [<span class="string">'Cookie'</span>, <span class="string">'__utma=221486477.1712369208.1453863719.1453863719.1453972410.2; __utmc=221486477; __utmz=221486477.1453972410.2.2.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided)'</span>], [<span class="string">'AlexaToolbar-ALX_NS_PH'</span>, <span class="string">'AlexaToolbar/alxg-3.3'</span>], [<span class="string">'If-Modified-Since'</span>, <span class="string">'Tue, 26 Jan 2016 10:36:35 GMT'</span>]]}, <span class="string">''</span>, <span class="number">1454034516.300893</span>, <span class="name">None</span>, <span class="name">None</span>, <span class="name">None</span>, <span class="name">None</span>)]
-</code></pre><p>一开始看到语法错误，感觉有SQL注入啊。可是sqlalchemy应该是用预编译的方式，报错信息也显示了，确实是采用了预编译的方式。</p>
-<pre><code>u'<span class="type">INSERT</span> <span class="type">INTO</span> requests (<span class="keyword">method</span>, url, headers, content, timestamp_start, urlencoded_form, multipart_form, sqlmap, xss) <span class="type">VALUES</span> (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-</code></pre><p>使用如下python代码可以记录sqlalchemy执行的sql语句。</p>
-<pre><code># <span class="tag">logging</span><span class="class">.basicConfig</span>(filename=<span class="string">'db.log'</span>)
-# <span class="tag">logging</span><span class="class">.getLogger</span>(<span class="string">'sqlalchemy.engine'</span>)<span class="class">.setLevel</span>(logging.INFO)
-</code></pre><p>经过调试分析发现，如果传入类型为字典，就会导致</p>
-<pre><code>ProgrammingError: (_mysql_exceptions.ProgrammingError) (1064, 'You have <span class="keyword">an</span> <span class="keyword">error</span> <span class="keyword">in</span> your SQL <span class="keyword">syntax</span>; 
-</code></pre><p>错误。</p>
-<p>sqlalchemy的bug？是否有可能造成sql注入？</p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<h1 id="问题分析">问题分析</h1><p>使用sqlalchemy的过程中,遇到写数据库的时候报语法错误，相关代码如下：</p>
-<pre><code># 定义requests对象,存储HTTP请求的所有信息<span class="value">:
-class <sp]]>
-    </summary>
-    
-      <category term="python" scheme="http://xdxd.love/tags/python/"/>
-    
-      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
     
   </entry>
   
