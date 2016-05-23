@@ -11,16 +11,22 @@
     
 
     
-    <meta name="description" content="漏洞原理代码分析">
+    <meta name="description" content="漏洞原理目前的分析讲的比较清楚了。概括来讲imagemagic允许使用外部库处理图片。这个特性叫做delegate。通过使用system()调用命令行来实现的。命令预先配置在delegates.xml中。接受输入图片参数再完成最后的命令拼接。就是拼接命令的过程，出现了命令注入的漏洞。
+代码分析使用正常png图片执行命令。
+参考资料https://imagetragick.com/http://dr">
 <meta property="og:type" content="article">
 <meta property="og:title" content="imagemagic RCE漏洞分析与利用">
 <meta property="og:url" content="http://xdxd.love/2016/05/05/imagemagic-RCE漏洞分析与利用/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="漏洞原理代码分析">
-<meta property="og:updated_time" content="2016-05-06T02:28:21.000Z">
+<meta property="og:description" content="漏洞原理目前的分析讲的比较清楚了。概括来讲imagemagic允许使用外部库处理图片。这个特性叫做delegate。通过使用system()调用命令行来实现的。命令预先配置在delegates.xml中。接受输入图片参数再完成最后的命令拼接。就是拼接命令的过程，出现了命令注入的漏洞。
+代码分析使用正常png图片执行命令。
+参考资料https://imagetragick.com/http://dr">
+<meta property="og:updated_time" content="2016-05-09T02:58:04.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="imagemagic RCE漏洞分析与利用">
-<meta name="twitter:description" content="漏洞原理代码分析">
+<meta name="twitter:description" content="漏洞原理目前的分析讲的比较清楚了。概括来讲imagemagic允许使用外部库处理图片。这个特性叫做delegate。通过使用system()调用命令行来实现的。命令预先配置在delegates.xml中。接受输入图片参数再完成最后的命令拼接。就是拼接命令的过程，出现了命令注入的漏洞。
+代码分析使用正常png图片执行命令。
+参考资料https://imagetragick.com/http://dr">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -96,11 +102,14 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞原理"><span class="toc-number">1.</span> <span class="toc-text">漏洞原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#代码分析"><span class="toc-number">2.</span> <span class="toc-text">代码分析</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞原理"><span class="toc-number">1.</span> <span class="toc-text">漏洞原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#代码分析"><span class="toc-number">2.</span> <span class="toc-text">代码分析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">3.</span> <span class="toc-text">参考资料</span></a></li></ol>
 		
 		</div>
 		
-		<h1 id="漏洞原理">漏洞原理</h1><h1 id="代码分析">代码分析</h1>  
+		<h1 id="漏洞原理">漏洞原理</h1><p>目前的分析讲的比较清楚了。概括来讲imagemagic允许使用外部库处理图片。这个特性叫做delegate。通过使用system()调用命令行来实现的。命令预先配置在delegates.xml中。接受输入图片参数再完成最后的命令拼接。就是拼接命令的过程，出现了命令注入的漏洞。</p>
+<h1 id="代码分析">代码分析</h1><p>使用正常png图片执行命令。</p>
+<h1 id="参考资料">参考资料</h1><p><a href="https://imagetragick.com/" target="_blank" rel="external">https://imagetragick.com/</a><br><a href="http://drops.wooyun.org/papers/15589" target="_blank" rel="external">http://drops.wooyun.org/papers/15589</a><br><a href="http://360adlab.com/?p=1895" target="_blank" rel="external">http://360adlab.com/?p=1895</a><br><a href="http://ricterz.me/posts/Write%20Up%3A%20Remote%20Command%20Execute%20in%20Wordpress%204.5.1" target="_blank" rel="external">http://ricterz.me/posts/Write%20Up%3A%20Remote%20Command%20Execute%20in%20Wordpress%204.5.1</a><br><a href="https://github.com/ImageTragick/PoCs" target="_blank" rel="external">https://github.com/ImageTragick/PoCs</a><br><a href="http://weibo.com/p/1001603971443670055277" target="_blank" rel="external">http://weibo.com/p/1001603971443670055277</a></p>
+  
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
@@ -130,6 +139,14 @@
 	
 <nav class="article-nav clearfix">
  
+ <div class="prev" >
+ <a href="/2016/05/10/一次破解apk通信签名进行漏洞挖掘的记录/" title="一次破解apk通信签名进行漏洞挖掘的记录">
+  <strong>上一篇：</strong><br/>
+  <span>
+  一次破解apk通信签名进行漏洞挖掘的记录</span>
+</a>
+</div>
+
 
 <div class="next">
 <a href="/2016/05/03/2016-CCTF之萝莉之旅/"  title="2016 CCTF writeup之萝莉之旅">
@@ -153,7 +170,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞原理"><span class="toc-number">1.</span> <span class="toc-text">漏洞原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#代码分析"><span class="toc-number">2.</span> <span class="toc-text">代码分析</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞原理"><span class="toc-number">1.</span> <span class="toc-text">漏洞原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#代码分析"><span class="toc-number">2.</span> <span class="toc-text">代码分析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">3.</span> <span class="toc-text">参考资料</span></a></li></ol>
  
   </div>
 
@@ -193,7 +210,7 @@
 		  
 		
 		  
-			<li><a href="/categories/奇技淫巧/" title="奇技淫巧">奇技淫巧<sup>3</sup></a></li>
+			<li><a href="/categories/奇技淫巧/" title="奇技淫巧">奇技淫巧<sup>2</sup></a></li>
 		  
 		
 		  
@@ -203,7 +220,7 @@
 		  
 		
 		  
-			<li><a href="/categories/渗透测试/" title="渗透测试">渗透测试<sup>4</sup></a></li>
+			<li><a href="/categories/渗透测试/" title="渗透测试">渗透测试<sup>5</sup></a></li>
 		  
 		
 		  
@@ -211,7 +228,7 @@
 		  
 		
 		  
-			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>4</sup></a></li>
+			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>5</sup></a></li>
 		  
 		
 		  
@@ -256,7 +273,7 @@
 			
 		
 			
-				<li><a href="/tags/sqlmap/" title="sqlmap">sqlmap<sup>1</sup></a></li>
+				<li><a href="/tags/sql注入/" title="sql注入">sql注入<sup>1</sup></a></li>
 			
 		
 			
@@ -304,11 +321,11 @@
 			
 		
 			
-				<li><a href="/tags/任意文件删除/" title="任意文件删除">任意文件删除<sup>1</sup></a></li>
+				<li><a href="/tags/签名逆向/" title="签名逆向">签名逆向<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/ssi/" title="ssi">ssi<sup>1</sup></a></li>
+				<li><a href="/tags/任意文件删除/" title="任意文件删除">任意文件删除<sup>1</sup></a></li>
 			
 		
 		</ul>

