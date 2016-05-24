@@ -78,6 +78,49 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
+    <a href="/2016/05/23/一个任意文件读取漏洞分析/" title="一个任意文件读取漏洞记录" itemprop="url">
+  
+    <h1 itemprop="name">一个任意文件读取漏洞记录</h1>
+    
+     
+           <p itemprop="description" >黑盒测试黑盒测试发现某个接口存在任意文件读取的漏洞。首选判断是文件读取还是文件包含，因为file_get_content(“/etc/passwd”)和include(“/etc/passwd”)黑盒来看的表现可能一样。而文件包含是可以getshell的，文件读取就只能读取文件。</p>
+        
+    
+    <time datetime="2016-05-23T07:27:05.000Z" itemprop="datePublished">May 23 2016</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/05/23/sql注入之waf绕过小案例/" title="sql注入之waf绕过小案例" itemprop="url">
+  
+    <h1 itemprop="name">sql注入之waf绕过小案例</h1>
+    
+     
+           <p itemprop="description" >mysql大于号，等于号等无法使用，使用减号绕过。
+if(ASCII(mid(database(),1,1))-104,7,6)=6 
+ASCII(mid(database(),1,1))-104 等于0的时候为false，其他为true。
+mssql长度函数用len  截取函数</p>
+        
+    
+    <time datetime="2016-05-23T02:59:55.000Z" itemprop="datePublished">May 23 2016</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
     <a href="/2016/05/10/一次破解apk通信签名进行漏洞挖掘的记录/" title="一次破解apk通信签名进行漏洞挖掘的记录" itemprop="url">
   
     <h1 itemprop="name">一次破解apk通信签名进行漏洞挖掘的记录</h1>
@@ -248,49 +291,6 @@ adb logcat 命令会有非常多的</p>
 
 
 
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/04/05/sql注入load-file-fuzz/" title="sql注入load_file fuzz" itemprop="url">
-  
-    <h1 itemprop="name">sql注入load_file fuzz</h1>
-    
-     
-           <p itemprop="description" >在linux系统上即使mysql有文件权限，由于目录权限的问题，一般也没法写shell。只能通过读文件来获取敏感信息。
-SQLNuke就是一个fuzz load_file的工具。详细的使用说明可以参考：SQLNuke——mysql 注入load_file Fuzz工具.
-不过sq</p>
-        
-    
-    <time datetime="2016-04-05T06:06:16.000Z" itemprop="datePublished">Apr 5 2016</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/03/28/bugfree任意文件伤上传漏洞/" title="bugfree任意文件上传漏洞" itemprop="url">
-  
-    <h1 itemprop="name">bugfree任意文件上传漏洞</h1>
-    
-     
-           <p itemprop="description" >漏洞详情http://wooyun.org/bugs/wooyun-2010-023919http://wooyun.org/bugs/wooyun-2010-074519
-最近渗透过程中遇到一个3.0.2版本的bugfree。利用这个上传获得shell。这个上传其实并不鸡肋。如</p>
-        
-    
-    <time datetime="2016-03-28T08:57:49.000Z" itemprop="datePublished">Mar 28 2016</time>
-  </a>
-</section>
-
-
-
-
-
-
 
   <nav id="page-nav" class="clearfix unexpand">
     <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/2/">Next<span></span></a>
@@ -345,7 +345,7 @@ SQLNuke就是一个fuzz load_file的工具。详细的使用说明可以参考�
 		  
 		
 		  
-			<li><a href="/categories/渗透测试/" title="渗透测试">渗透测试<sup>5</sup></a></li>
+			<li><a href="/categories/渗透测试/" title="渗透测试">渗透测试<sup>7</sup></a></li>
 		  
 		
 		  
