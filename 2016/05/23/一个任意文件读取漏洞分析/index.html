@@ -19,9 +19,9 @@
 <meta property="og:description" content="黑盒测试黑盒测试发现某个接口存在任意文件读取的漏洞。首选判断是文件读取还是文件包含，因为file_get_content(“/etc/passwd”)和include(“/etc/passwd”)黑盒来看的表现可能一样。而文件包含是可以getshell的，文件读取就只能读取文件。可以通过尝试读取相对路径的脚本文件，比如/read.php?file=read.php的方式，如果可以读取到文件源码，说">
 <meta property="og:image" content="http://xdxd.love/images/wenjianduqu1.gif">
 <meta property="og:image" content="http://xdxd.love/images/wenjianduqu2.png">
-<meta property="og:image" content="http://xdxd.love/images/wenjianduqu2.png">
+<meta property="og:image" content="http://xdxd.love/images/wenjianduqu3.png">
 <meta property="og:image" content="http://xdxd.love/images/wenjianduqu4.png">
-<meta property="og:updated_time" content="2016-05-24T08:04:54.000Z">
+<meta property="og:updated_time" content="2016-05-24T08:09:46.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="一个任意文件读取漏洞记录">
 <meta name="twitter:description" content="黑盒测试黑盒测试发现某个接口存在任意文件读取的漏洞。首选判断是文件读取还是文件包含，因为file_get_content(“/etc/passwd”)和include(“/etc/passwd”)黑盒来看的表现可能一样。而文件包含是可以getshell的，文件读取就只能读取文件。可以通过尝试读取相对路径的脚本文件，比如/read.php?file=read.php的方式，如果可以读取到文件源码，说">
@@ -113,7 +113,7 @@
 <span class="regexp">/etc/</span>sysconfig<span class="regexp">/network-scripts/i</span>fcfg-eth0   ip地址
 <span class="regexp">/etc/</span>hosts                                  通常配置了一些内网域名
 </code></pre><p>等等可以通过字典的方式来猜解。</p>
-<p>这个案例通过passwd中获得的用户来获取到了这个用户的bash_history，从bash_history获取到了一些压缩包的地址。从而读取到了个性化的文件,一些压缩包的文件。<br><img src="/images/wenjianduqu2.png" alt=""><br><img src="/images/wenjianduqu2.png" alt=""></p>
+<p>这个案例通过passwd中获得的用户来获取到了这个用户的bash_history，从bash_history获取到了一些压缩包的地址。从而读取到了个性化的文件,一些压缩包的文件。<br><img src="/images/wenjianduqu2.png" alt=""><br><img src="/images/wenjianduqu3.png" alt=""></p>
 <p>通过mysql的配置文件得知了数据的存储目录。通过直接读取数据库文件可以获取到数据库内的信息。</p>
 <p><img src="/images/wenjianduqu4.png" alt=""></p>
 <h1 id="漏洞分析">漏洞分析</h1><p>读取到应用代码，对漏洞原因进行分析。</p>
