@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-05-24T09:11:44.000Z</updated>
+  <updated>2016-05-26T14:05:32.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -19,7 +19,7 @@
     <link href="http://xdxd.love/2016/05/23/%E4%B8%80%E4%B8%AA%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"/>
     <id>http://xdxd.love/2016/05/23/一个任意文件读取漏洞分析/</id>
     <published>2016-05-23T07:27:05.000Z</published>
-    <updated>2016-05-24T09:11:44.000Z</updated>
+    <updated>2016-05-26T14:05:32.000Z</updated>
     <content type="html"><![CDATA[<h1 id="黑盒测试">黑盒测试</h1><p>黑盒测试发现某个接口存在任意文件读取的漏洞。<br><img src="/images/wenjianduqu1.gif" alt=""><br>首选判断是文件读取还是文件包含，因为file_get_content(“/etc/passwd”)和include(“/etc/passwd”)黑盒来看的表现可能一样。而文件包含是可以getshell的，文件读取就只能读取文件。可以通过尝试读取相对路径的脚本文件，比如<code>/read.php?file=read.php</code>的方式，如果可以读取到文件源码，说明是文件读取，如果不能读取到文件源码说明是文件包含。</p>
 <h1 id="文件读取">文件读取</h1><p>服务器上有价值的文件主要可以分为3类。通用的系统/应用配置文件，个性化的文件以及web应用的源码文件。而想要读取到一个文件只需要知道这个文件的绝对路径或者相对路径就可以了。</p>
 <p>把web应用的源码单独出来是觉得应用源码可以很方便的通过相对路径获取到，不需要费劲得到源码的绝对路径。系统的通用配置文件比如</p>
@@ -101,14 +101,10 @@
 <p>通过入口初始化文件读取到配置文件。</p>
 <pre><code><span class="comment">/* 初始化设置 END */</span>
 <span class="comment">//--------------------------------------------------</span>
-<span class="keyword">require</span> (ROOT_PATH . ADMIN_PATH . <span class="string">'/includes/config.php'</span>);
-define(<span class="string">'CLS_PATH'</span>, ROOT_PATH . ADMIN_PATH . <span class="string">'/'</span>);
-<span class="comment">/**
- - <span class="doctag">@author</span>  jonah.fu
- - <span class="doctag">@date</span>    2012-03-28
- */</span>
-<span class="keyword">include</span> ROOT_PATH . ADMIN_PATH . <span class="string">'/includes/base/autoload.class.php'</span>;
-autoloader::init();
+<span class="keyword">require</span> (ROOT_PATH <span class="built_in">. </span>ADMIN_PATH <span class="built_in">. </span><span class="string">'/includes/config.php'</span>);
+<span class="class"><span class="keyword">define</span></span>(<span class="string">'CLS_PATH'</span>, ROOT_PATH <span class="built_in">. </span>ADMIN_PATH <span class="built_in">. </span><span class="string">'/'</span>);
+include ROOT_PATH <span class="built_in">. </span>ADMIN_PATH <span class="built_in">. </span><span class="string">'/includes/base/autoload.class.php'</span>;
+autoloader<span class="tag">::init</span>();
 <span class="comment">/* 初始化memcached */</span>
 <span class="comment">//$cache = new base_memcached();</span>
 </code></pre><p>配置文件中自然有数据库账号，这个暂且不说。先看autoload.class.php。autoload实现自动加载类的功能。通过其实现方式拼接出存在漏洞的action类文件路径。</p>

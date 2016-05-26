@@ -22,7 +22,7 @@
 <meta property="og:image" content="http://xdxd.love/images/wenjianduqu3.png">
 <meta property="og:image" content="http://xdxd.love/images/wenjianduqu4.png">
 <meta property="og:image" content="http://xdxd.love/images/wenjianduqu5.png">
-<meta property="og:updated_time" content="2016-05-24T09:11:44.000Z">
+<meta property="og:updated_time" content="2016-05-26T14:05:32.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="一个任意文件读取漏洞记录">
 <meta name="twitter:description" content="黑盒测试黑盒测试发现某个接口存在任意文件读取的漏洞。首选判断是文件读取还是文件包含，因为file_get_content(“/etc/passwd”)和include(“/etc/passwd”)黑盒来看的表现可能一样。而文件包含是可以getshell的，文件读取就只能读取文件。可以通过尝试读取相对路径的脚本文件，比如/read.php?file=read.php的方式，如果可以读取到文件源码，说">
@@ -186,14 +186,10 @@
 <p>通过入口初始化文件读取到配置文件。</p>
 <pre><code><span class="comment">/* 初始化设置 END */</span>
 <span class="comment">//--------------------------------------------------</span>
-<span class="keyword">require</span> (ROOT_PATH . ADMIN_PATH . <span class="string">'/includes/config.php'</span>);
-define(<span class="string">'CLS_PATH'</span>, ROOT_PATH . ADMIN_PATH . <span class="string">'/'</span>);
-<span class="comment">/**
- - <span class="doctag">@author</span>  jonah.fu
- - <span class="doctag">@date</span>    2012-03-28
- */</span>
-<span class="keyword">include</span> ROOT_PATH . ADMIN_PATH . <span class="string">'/includes/base/autoload.class.php'</span>;
-autoloader::init();
+<span class="keyword">require</span> (ROOT_PATH <span class="built_in">. </span>ADMIN_PATH <span class="built_in">. </span><span class="string">'/includes/config.php'</span>);
+<span class="class"><span class="keyword">define</span></span>(<span class="string">'CLS_PATH'</span>, ROOT_PATH <span class="built_in">. </span>ADMIN_PATH <span class="built_in">. </span><span class="string">'/'</span>);
+include ROOT_PATH <span class="built_in">. </span>ADMIN_PATH <span class="built_in">. </span><span class="string">'/includes/base/autoload.class.php'</span>;
+autoloader<span class="tag">::init</span>();
 <span class="comment">/* 初始化memcached */</span>
 <span class="comment">//$cache = new base_memcached();</span>
 </code></pre><p>配置文件中自然有数据库账号，这个暂且不说。先看autoload.class.php。autoload实现自动加载类的功能。通过其实现方式拼接出存在漏洞的action类文件路径。</p>
