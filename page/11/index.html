@@ -78,28 +78,6 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2014/12/05/ipbsql/" title="IP.Board 3.4.7 SQL注入分析" itemprop="url">
-  
-    <h1 itemprop="name">IP.Board 3.4.7 SQL注入分析</h1>
-    
-     
-           <p itemprop="description" >##参考资料http://www.freebuf.com/articles/web/53018.htmlhttp://seclists.org/fulldisclosure/2014/Nov/20
-##代码分析
-根据之前的漏洞分析可知，入口在interface/ipsconnec</p>
-        
-    
-    <time datetime="2014-12-04T18:03:22.000Z" itemprop="datePublished">Dec 5 2014</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
     <a href="/2014/12/01/burp/" title="burpsuite csrf poc 乱码问题" itemprop="url">
   
     <h1 itemprop="name">burpsuite csrf poc 乱码问题</h1>
@@ -295,9 +273,32 @@ ht</p>
 
 
 
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2014/10/21/yxcms/" title="yxcms1.2.6任意文件删除漏洞分析" itemprop="url">
+  
+    <h1 itemprop="name">yxcms1.2.6任意文件删除漏洞分析</h1>
+    
+     
+           <p itemprop="description" >测试版本:1.2.6
+YXcms的在使用unlink函数删除文件的时候没有考虑到对该参数做一个限制，导致存在很多个任意文件删除的漏洞。漏洞代码也比较直接，比如：
+if(!empty($_POST[&#39;oldheadpic&#39;])){
+    $picpath=$this-&amp;gt;up</p>
+        
+    
+    <time datetime="2014-10-20T20:07:34.000Z" itemprop="datePublished">Oct 21 2014</time>
+  </a>
+</section>
+
+
+
+
+
+
 
   <nav id="page-nav" class="clearfix unexpand">
-    <a class="extend prev" rel="prev" href="/page/10/"><span></span>Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/12/">Next<span></span></a>
+    <a class="extend prev" rel="prev" href="/page/10/"><span></span>Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span>
   </nav>
 
 </div>
@@ -327,7 +328,7 @@ ht</p>
 		  
 		
 		  
-			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>26</sup></a></li>
+			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>25</sup></a></li>
 		  
 		
 		  

