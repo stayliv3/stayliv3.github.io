@@ -11,25 +11,22 @@
     
 
     
-    <meta name="description" content="##android activity 安全相关参考资料
-http://drops.wooyun.org/tips/3936http://www.wooyun.org/bugs/wooyun-2014-048502http://wooyun.org/bugs/wooyun-2010-089524
-测试过程之前有小伙伴把这个漏洞提到乌云。因为TSRC的同学认为这不是漏洞。因为需要物理接触手机，使用ad">
+    <meta name="description" content="android activity 安全相关参考资料http://drops.wooyun.org/tips/3936http://www.wooyun.org/bugs/wooyun-2014-048502http://wooyun.org/bugs/wooyun-2010-089524
+测试过程之前有小伙伴把这个漏洞提到乌云。因为TSRC的同学认为这不是漏洞。因为需要物理接触手机，使用adb绕过">
 <meta property="og:type" content="article">
 <meta property="og:title" content="qqmail锁屏密码绕过漏洞">
 <meta property="og:url" content="http://xdxd.love/2015/04/08/qqmail/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="##android activity 安全相关参考资料
-http://drops.wooyun.org/tips/3936http://www.wooyun.org/bugs/wooyun-2014-048502http://wooyun.org/bugs/wooyun-2010-089524
-测试过程之前有小伙伴把这个漏洞提到乌云。因为TSRC的同学认为这不是漏洞。因为需要物理接触手机，使用ad">
+<meta property="og:description" content="android activity 安全相关参考资料http://drops.wooyun.org/tips/3936http://www.wooyun.org/bugs/wooyun-2014-048502http://wooyun.org/bugs/wooyun-2010-089524
+测试过程之前有小伙伴把这个漏洞提到乌云。因为TSRC的同学认为这不是漏洞。因为需要物理接触手机，使用adb绕过">
 <meta property="og:image" content="http://xdxd.love/images/qqmail2.jpeg">
 <meta property="og:image" content="http://xdxd.love/images/qqmail3.jpeg">
 <meta property="og:image" content="http://xdxd.love/images/qqmail1.jpeg">
-<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+<meta property="og:updated_time" content="2016-06-28T01:57:19.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="qqmail锁屏密码绕过漏洞">
-<meta name="twitter:description" content="##android activity 安全相关参考资料
-http://drops.wooyun.org/tips/3936http://www.wooyun.org/bugs/wooyun-2014-048502http://wooyun.org/bugs/wooyun-2010-089524
-测试过程之前有小伙伴把这个漏洞提到乌云。因为TSRC的同学认为这不是漏洞。因为需要物理接触手机，使用ad">
+<meta name="twitter:description" content="android activity 安全相关参考资料http://drops.wooyun.org/tips/3936http://www.wooyun.org/bugs/wooyun-2014-048502http://wooyun.org/bugs/wooyun-2010-089524
+测试过程之前有小伙伴把这个漏洞提到乌云。因为TSRC的同学认为这不是漏洞。因为需要物理接触手机，使用adb绕过">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -105,12 +102,11 @@ http://drops.wooyun.org/tips/3936http://www.wooyun.org/bugs/wooyun-2014-048502ht
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#测试过程"><span class="toc-number">1.</span> <span class="toc-text">测试过程</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#android_activity_安全相关参考资料"><span class="toc-number">1.</span> <span class="toc-text">android activity 安全相关参考资料</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#测试过程"><span class="toc-number">2.</span> <span class="toc-text">测试过程</span></a></li></ol>
 		
 		</div>
 		
-		<p>##android activity 安全相关参考资料</p>
-<p><a href="http://drops.wooyun.org/tips/3936" target="_blank" rel="external">http://drops.wooyun.org/tips/3936</a><br><a href="http://www.wooyun.org/bugs/wooyun-2014-048502" target="_blank" rel="external">http://www.wooyun.org/bugs/wooyun-2014-048502</a><br><a href="http://wooyun.org/bugs/wooyun-2010-089524" target="_blank" rel="external">http://wooyun.org/bugs/wooyun-2010-089524</a></p>
+		<h2 id="android_activity_安全相关参考资料">android activity 安全相关参考资料</h2><p><a href="http://drops.wooyun.org/tips/3936" target="_blank" rel="external">http://drops.wooyun.org/tips/3936</a><br><a href="http://www.wooyun.org/bugs/wooyun-2014-048502" target="_blank" rel="external">http://www.wooyun.org/bugs/wooyun-2014-048502</a><br><a href="http://wooyun.org/bugs/wooyun-2010-089524" target="_blank" rel="external">http://wooyun.org/bugs/wooyun-2010-089524</a></p>
 <h2 id="测试过程">测试过程</h2><p>之前有小伙伴把这个漏洞提到乌云。因为TSRC的同学认为这不是漏洞。因为需要物理接触手机，使用adb绕过锁屏，不需要root条件。<br>其实这个场景应该算是典型的使用activity绕过锁屏限制，因为锁屏这个功能的设计场景就是当手机被他人物理接触的情况下保护用户的隐私，那么非root条件下的锁屏绕过就是典型的安全策略绕过了。截止到现在腾讯也没有修复这个问题。</p>
 <p>使用drozer 查看组件信息：</p>
 <pre><code>＃adb forward tcp:<span class="number">31415</span> tcp:<span class="number">31415</span>
@@ -154,6 +150,11 @@ Package: com<span class="class">.tencent</span><span class="class">.androidqqmai
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/移动安全/">移动安全</a>
+</div>
 
 
 </div>
@@ -206,7 +207,7 @@ Package: com<span class="class">.tencent</span><span class="class">.androidqqmai
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#测试过程"><span class="toc-number">1.</span> <span class="toc-text">测试过程</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#android_activity_安全相关参考资料"><span class="toc-number">1.</span> <span class="toc-text">android activity 安全相关参考资料</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#测试过程"><span class="toc-number">2.</span> <span class="toc-text">测试过程</span></a></li></ol>
  
   </div>
 
@@ -264,7 +265,7 @@ Package: com<span class="class">.tencent</span><span class="class">.androidqqmai
 		  
 		
 		  
-			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>4</sup></a></li>
+			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>5</sup></a></li>
 		  
 		
 		  
