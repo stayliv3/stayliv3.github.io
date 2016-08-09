@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>安卓分析辅助工具Inspeckage介绍 | xd_xd&#39;s blog</title>
+    <title>安卓分析工具Inspeckage介绍 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
@@ -14,7 +14,7 @@
     <meta name="description" content="Inspeckage是一个用来动态分析安卓app的xposed模块。Inspeckage对动态分析很多常用的功能进行了汇总并且内建一个webserver。整个分析操作可以在友好的界面环境中进行。可以参考:Inspeckage - Android Package Inspector
 Inspeckage的安装就不赘述了，参考xposed框架的安装以及使用。下面主要介绍一下Inspeckage的功能和">
 <meta property="og:type" content="article">
-<meta property="og:title" content="安卓分析辅助工具Inspeckage介绍">
+<meta property="og:title" content="安卓分析工具Inspeckage介绍">
 <meta property="og:url" content="http://xdxd.love/2016/08/09/安卓分析辅助工具Inspeckage介绍/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
 <meta property="og:description" content="Inspeckage是一个用来动态分析安卓app的xposed模块。Inspeckage对动态分析很多常用的功能进行了汇总并且内建一个webserver。整个分析操作可以在友好的界面环境中进行。可以参考:Inspeckage - Android Package Inspector
@@ -28,9 +28,9 @@ Inspeckage的安装就不赘述了，参考xposed框架的安装以及使用。�
 <meta property="og:image" content="http://xdxd.love/images/inspeckage11.png">
 <meta property="og:image" content="http://xdxd.love/images/inspeckage12.png">
 <meta property="og:image" content="http://xdxd.love/images/inspeckage13.png">
-<meta property="og:updated_time" content="2016-08-09T07:47:36.000Z">
+<meta property="og:updated_time" content="2016-08-09T08:00:37.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="安卓分析辅助工具Inspeckage介绍">
+<meta name="twitter:title" content="安卓分析工具Inspeckage介绍">
 <meta name="twitter:description" content="Inspeckage是一个用来动态分析安卓app的xposed模块。Inspeckage对动态分析很多常用的功能进行了汇总并且内建一个webserver。整个分析操作可以在友好的界面环境中进行。可以参考:Inspeckage - Android Package Inspector
 Inspeckage的安装就不赘述了，参考xposed框架的安装以及使用。下面主要介绍一下Inspeckage的功能和">
 
@@ -92,7 +92,7 @@ Inspeckage的安装就不赘述了，参考xposed框架的安装以及使用。�
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2016/08/09/安卓分析辅助工具Inspeckage介绍/" title="安卓分析辅助工具Inspeckage介绍" itemprop="url">安卓分析辅助工具Inspeckage介绍</a>
+      <a href="/2016/08/09/安卓分析辅助工具Inspeckage介绍/" title="安卓分析工具Inspeckage介绍" itemprop="url">安卓分析工具Inspeckage介绍</a>
   </h1>
   <p class="article-author">By
        
@@ -135,6 +135,7 @@ Inspeckage的安装就不赘述了，参考xposed框架的安装以及使用。�
 <p>由于这个apk采用的md5方法是写在so中的，所以inspeckage的hash记录中并没有相关的记录。这个可以采用hook自定义函数的方式来解决。<br>反编译apk，找到调用so的方法为getPart2，同理其实也可以手动hookgetPart1。<br><img src="/images/inspeckage12.png" alt=""></p>
 <p>设置好hook的方法后，重启app生效。</p>
 <p><img src="/images/inspeckage13.png" alt=""></p>
+<p>在hook的记录中可以看到getPart2的返回值。Inspeckage在动态分析apk的过程可以快速获得一些信息，节省分析的时间。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -157,7 +158,7 @@ Inspeckage的安装就不赘述了，参考xposed框架的安装以及使用。�
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2016/08/09/安卓分析辅助工具Inspeckage介绍/" data-title="安卓分析辅助工具Inspeckage介绍 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  <div data-url="http://xdxd.love/2016/08/09/安卓分析辅助工具Inspeckage介绍/" data-title="安卓分析工具Inspeckage介绍 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -183,7 +184,7 @@ Inspeckage的安装就不赘述了，参考xposed框架的安装以及使用。�
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2016/08/09/安卓分析辅助工具Inspeckage介绍/" data-title="安卓分析辅助工具Inspeckage介绍" data-url="http://xdxd.love/2016/08/09/安卓分析辅助工具Inspeckage介绍/"></div>
+	<div class="ds-thread" data-thread-key="2016/08/09/安卓分析辅助工具Inspeckage介绍/" data-title="安卓分析工具Inspeckage介绍" data-url="http://xdxd.love/2016/08/09/安卓分析辅助工具Inspeckage介绍/"></div>
 </section>
 
 

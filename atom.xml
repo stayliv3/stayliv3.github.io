@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-08-09T07:47:36.000Z</updated>
+  <updated>2016-08-09T08:00:37.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -15,11 +15,11 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title><![CDATA[安卓分析辅助工具Inspeckage介绍]]></title>
+    <title><![CDATA[安卓分析工具Inspeckage介绍]]></title>
     <link href="http://xdxd.love/2016/08/09/%E5%AE%89%E5%8D%93%E5%88%86%E6%9E%90%E8%BE%85%E5%8A%A9%E5%B7%A5%E5%85%B7Inspeckage%E4%BB%8B%E7%BB%8D/"/>
     <id>http://xdxd.love/2016/08/09/安卓分析辅助工具Inspeckage介绍/</id>
     <published>2016-08-09T07:12:04.000Z</published>
-    <updated>2016-08-09T07:47:36.000Z</updated>
+    <updated>2016-08-09T08:00:37.000Z</updated>
     <content type="html"><![CDATA[<p>Inspeckage是一个用来动态分析安卓app的xposed模块。Inspeckage对动态分析很多常用的功能进行了汇总并且内建一个webserver。整个分析操作可以在友好的界面环境中进行。可以参考:<a href="http://repo.xposed.info/module/mobi.acpm.inspeckage" target="_blank" rel="external">Inspeckage - Android Package Inspector</a></p>
 <p>Inspeckage的安装就不赘述了，参考xposed框架的安装以及使用。下面主要介绍一下Inspeckage的功能和使用。</p>
 <p>安装之后，可以在桌面上看到inspeckage的图标。点开之后主界面如下：</p>
@@ -43,6 +43,7 @@
 <p>由于这个apk采用的md5方法是写在so中的，所以inspeckage的hash记录中并没有相关的记录。这个可以采用hook自定义函数的方式来解决。<br>反编译apk，找到调用so的方法为getPart2，同理其实也可以手动hookgetPart1。<br><img src="/images/inspeckage12.png" alt=""></p>
 <p>设置好hook的方法后，重启app生效。</p>
 <p><img src="/images/inspeckage13.png" alt=""></p>
+<p>在hook的记录中可以看到getPart2的返回值。Inspeckage在动态分析apk的过程可以快速获得一些信息，节省分析的时间。</p>
 ]]></content>
     <summary type="html">
     <![CDATA[<p>Inspeckage是一个用来动态分析安卓app的xposed模块。Inspeckage对动态分析很多常用的功能进行了汇总并且内建一个webserver。整个分析操作可以在友好的界面环境中进行。可以参考:<a href="http://repo.xposed.info/mo]]>
