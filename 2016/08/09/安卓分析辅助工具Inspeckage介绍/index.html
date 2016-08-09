@@ -11,16 +11,14 @@
     
 
     
-    <meta name="description" content="Inspeckage是一个用来动态分析安卓app的xposed模块。Inspeckage对动态分析很多常用的功能进行了汇总并且内建一个webserver。整个分析操作可以在友好的界面环境中进行。
-可以参考:Inspeckage - Android Package Inspector
-Inspeckage的安装就不赘述了，参考xposed框架的安装以及使用。下面主要介绍一下Inspeckage的功能">
+    <meta name="description" content="Inspeckage是一个用来动态分析安卓app的xposed模块。Inspeckage对动态分析很多常用的功能进行了汇总并且内建一个webserver。整个分析操作可以在友好的界面环境中进行。可以参考:Inspeckage - Android Package Inspector
+Inspeckage的安装就不赘述了，参考xposed框架的安装以及使用。下面主要介绍一下Inspeckage的功能和">
 <meta property="og:type" content="article">
 <meta property="og:title" content="安卓分析辅助工具Inspeckage介绍">
 <meta property="og:url" content="http://xdxd.love/2016/08/09/安卓分析辅助工具Inspeckage介绍/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="Inspeckage是一个用来动态分析安卓app的xposed模块。Inspeckage对动态分析很多常用的功能进行了汇总并且内建一个webserver。整个分析操作可以在友好的界面环境中进行。
-可以参考:Inspeckage - Android Package Inspector
-Inspeckage的安装就不赘述了，参考xposed框架的安装以及使用。下面主要介绍一下Inspeckage的功能">
+<meta property="og:description" content="Inspeckage是一个用来动态分析安卓app的xposed模块。Inspeckage对动态分析很多常用的功能进行了汇总并且内建一个webserver。整个分析操作可以在友好的界面环境中进行。可以参考:Inspeckage - Android Package Inspector
+Inspeckage的安装就不赘述了，参考xposed框架的安装以及使用。下面主要介绍一下Inspeckage的功能和">
 <meta property="og:image" content="http://xdxd.love/images/inspeckage3.png">
 <meta property="og:image" content="http://xdxd.love/images/inspeckage5.png">
 <meta property="og:image" content="http://xdxd.love/images/inspeckage6.png">
@@ -30,12 +28,11 @@ Inspeckage的安装就不赘述了，参考xposed框架的安装以及使用。�
 <meta property="og:image" content="http://xdxd.love/images/inspeckage11.png">
 <meta property="og:image" content="http://xdxd.love/images/inspeckage12.png">
 <meta property="og:image" content="http://xdxd.love/images/inspeckage13.png">
-<meta property="og:updated_time" content="2016-08-09T07:12:40.000Z">
+<meta property="og:updated_time" content="2016-08-09T07:47:36.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="安卓分析辅助工具Inspeckage介绍">
-<meta name="twitter:description" content="Inspeckage是一个用来动态分析安卓app的xposed模块。Inspeckage对动态分析很多常用的功能进行了汇总并且内建一个webserver。整个分析操作可以在友好的界面环境中进行。
-可以参考:Inspeckage - Android Package Inspector
-Inspeckage的安装就不赘述了，参考xposed框架的安装以及使用。下面主要介绍一下Inspeckage的功能">
+<meta name="twitter:description" content="Inspeckage是一个用来动态分析安卓app的xposed模块。Inspeckage对动态分析很多常用的功能进行了汇总并且内建一个webserver。整个分析操作可以在友好的界面环境中进行。可以参考:Inspeckage - Android Package Inspector
+Inspeckage的安装就不赘述了，参考xposed框架的安装以及使用。下面主要介绍一下Inspeckage的功能和">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -115,30 +112,29 @@ Inspeckage的安装就不赘述了，参考xposed框架的安装以及使用。�
 		
 		</div>
 		
-		<p>Inspeckage是一个用来动态分析安卓app的xposed模块。Inspeckage对动态分析很多常用的功能进行了汇总并且内建一个webserver。整个分析操作可以在友好的界面环境中进行。</p>
-<p>可以参考:<br><a href="http://repo.xposed.info/module/mobi.acpm.inspeckage" target="_blank" rel="external">Inspeckage - Android Package Inspector</a></p>
+		<p>Inspeckage是一个用来动态分析安卓app的xposed模块。Inspeckage对动态分析很多常用的功能进行了汇总并且内建一个webserver。整个分析操作可以在友好的界面环境中进行。可以参考:<a href="http://repo.xposed.info/module/mobi.acpm.inspeckage" target="_blank" rel="external">Inspeckage - Android Package Inspector</a></p>
 <p>Inspeckage的安装就不赘述了，参考xposed框架的安装以及使用。下面主要介绍一下Inspeckage的功能和使用。</p>
 <p>安装之后，可以在桌面上看到inspeckage的图标。点开之后主界面如下：</p>
-<p><img src="/images/inspeckage3.png" alt="image"></p>
+<p><img src="/images/inspeckage3.png" alt=""></p>
 <p>在choose target下拉列表中选择要分析的app，这里以乌云峰会puzzle1中的apk为例进行介绍。然后在电脑的terminal中执行</p>
 <p><code>adb forward tcp:8008 tcp:8008</code></p>
 <p>转发手机的8008端口到本地。在电脑上访问<a href="http://127.0.0.1:8008" target="_blank" rel="external">http://127.0.0.1:8008</a> 就可以看到inspeckage的web界面了。</p>
-<p><img src="/images/inspeckage5.png" alt="image"></p>
+<p><img src="/images/inspeckage5.png" alt=""></p>
 <p>如图所示，inspeckage提供了对所分析apk的一些基本信息，提供直接下载apk到电脑，截图手机屏幕等辅助功能，最核心的功能是监控share preferences，加解密函数的使用，http访问等。下面一一分析。</p>
 <p>设置选项中，提供了ssl uncheck，设置代理等。经过测试发现SSL uncheck效果一般。https流量依然很多抓不到。</p>
-<p><img src="/images/inspeckage6.png" alt="image"></p>
+<p><img src="/images/inspeckage6.png" alt=""></p>
 <p>使用logcat功能需要先转发端口到本地。<code>adb forward tcp:8887 tcp:8887</code></p>
 <p>点击start，再点connect就可以在网页中实时查看该app的logcat输出。</p>
-<p><img src="/images/inspeckage8.png" alt="image"></p>
+<p><img src="/images/inspeckage8.png" alt=""></p>
 <p>Tree view按钮可以实时浏览app的数据目录并直接下载文件到本地。</p>
-<p><img src="/images/inspeckage7.png" alt="image"></p>
+<p><img src="/images/inspeckage7.png" alt=""></p>
 <p>wooyun这个puzzle的writeup中是使用smali插桩的方式打印出了aes加密的密钥。</p>
-<p><img src="/images/inspeckage10.png" alt="image"></p>
+<p><img src="/images/inspeckage10.png" alt=""></p>
 <p>如果采用inspeckage来分析的话，直接在crypto记录中就可以看到。</p>
-<p><img src="/images/inspeckage11.png" alt="image"></p>
-<p>由于这个apk采用的md5方法是写在so中的，所以inspeckage的hash记录中并没有相关的记录。这个可以采用hook自定义函数的方式来解决。<br>反编译apk，找到调用so的方法为getPart2，同理其实也可以手动hookgetPart1。<br><img src="/images/inspeckage12.png" alt="image"></p>
+<p><img src="/images/inspeckage11.png" alt=""></p>
+<p>由于这个apk采用的md5方法是写在so中的，所以inspeckage的hash记录中并没有相关的记录。这个可以采用hook自定义函数的方式来解决。<br>反编译apk，找到调用so的方法为getPart2，同理其实也可以手动hookgetPart1。<br><img src="/images/inspeckage12.png" alt=""></p>
 <p>设置好hook的方法后，重启app生效。</p>
-<p><img src="/images/inspeckage13.png" alt="image"></p>
+<p><img src="/images/inspeckage13.png" alt=""></p>
   
 	</div>
 		<footer class="article-footer clearfix">
