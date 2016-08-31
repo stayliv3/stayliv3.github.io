@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>逆向路由器固件之二 | xd_xd&#39;s blog</title>
+    <title>逆向路由器固件之信息泄露 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
@@ -14,7 +14,7 @@
     <meta name="description" content="之前的文章中详细介绍了各种解包路由器固件的工具。解包之后就获得了固件中的文件。下一步就是分析文件寻找漏洞了。这次分析的目标是Trendnet路由器，分析的漏洞是一个远程获取路由器权限的漏洞。
 通过路由器的登录界面得知路由器型号为Trendnet TEW-654TR,这对收集目标的信息是很有帮助的。通过官方介绍得知该路由器的一些特性。包括支持路由器，无线接入点，无线接入点客户端三种模式，支持NAT和">
 <meta property="og:type" content="article">
-<meta property="og:title" content="逆向路由器固件之二">
+<meta property="og:title" content="逆向路由器固件之信息泄露">
 <meta property="og:url" content="http://xdxd.love/2015/08/24/逆向路由器固件之二/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
 <meta property="og:description" content="之前的文章中详细介绍了各种解包路由器固件的工具。解包之后就获得了固件中的文件。下一步就是分析文件寻找漏洞了。这次分析的目标是Trendnet路由器，分析的漏洞是一个远程获取路由器权限的漏洞。
@@ -23,9 +23,9 @@
 <meta property="og:image" content="http://xdxd.love/images/trendnet2.png">
 <meta property="og:image" content="http://xdxd.love/images/trendnet3.png">
 <meta property="og:image" content="http://xdxd.love/images/trendnet4.png">
-<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+<meta property="og:updated_time" content="2016-08-31T09:31:00.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="逆向路由器固件之二">
+<meta name="twitter:title" content="逆向路由器固件之信息泄露">
 <meta name="twitter:description" content="之前的文章中详细介绍了各种解包路由器固件的工具。解包之后就获得了固件中的文件。下一步就是分析文件寻找漏洞了。这次分析的目标是Trendnet路由器，分析的漏洞是一个远程获取路由器权限的漏洞。
 通过路由器的登录界面得知路由器型号为Trendnet TEW-654TR,这对收集目标的信息是很有帮助的。通过官方介绍得知该路由器的一些特性。包括支持路由器，无线接入点，无线接入点客户端三种模式，支持NAT和">
 
@@ -87,7 +87,7 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/08/24/逆向路由器固件之二/" title="逆向路由器固件之二" itemprop="url">逆向路由器固件之二</a>
+      <a href="/2015/08/24/逆向路由器固件之二/" title="逆向路由器固件之信息泄露" itemprop="url">逆向路由器固件之信息泄露</a>
   </h1>
   <p class="article-author">By
        
@@ -103,11 +103,11 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li></ol>
 		
 		</div>
 		
-		<p><a href="http://localhost:4000/2015/08/24/%E9%80%86%E5%90%91%E8%B7%AF%E7%94%B1%E5%99%A8%E5%9B%BA%E4%BB%B6%E4%B9%8B%E8%A7%A3%E5%8C%85/" target="_blank" rel="external">之前的文章中</a>详细介绍了各种解包路由器固件的工具。解包之后就获得了固件中的文件。下一步就是分析文件寻找漏洞了。这次分析的目标是Trendnet路由器，分析的漏洞是一个远程获取路由器权限的漏洞。<br><img src="/images/trendnet1.png" alt=""></p>
+		<p><a href="http://xdxd.love/2015/08/24/%E9%80%86%E5%90%91%E8%B7%AF%E7%94%B1%E5%99%A8%E5%9B%BA%E4%BB%B6%E4%B9%8B%E8%A7%A3%E5%8C%85/">之前的文章中</a>详细介绍了各种解包路由器固件的工具。解包之后就获得了固件中的文件。下一步就是分析文件寻找漏洞了。这次分析的目标是Trendnet路由器，分析的漏洞是一个远程获取路由器权限的漏洞。<br><img src="/images/trendnet1.png" alt=""></p>
 <p>通过路由器的登录界面得知路由器型号为Trendnet TEW-654TR,这对收集目标的信息是很有帮助的。通过<a href="http://www.trendnet.com/products/proddetail.asp?prod=175_TEW-654TR&amp;cat=41" target="_blank" rel="external">官方介绍</a>得知该路由器的一些特性。包括支持路由器，无线接入点，无线接入点客户端三种模式，支持NAT和有状态的包检查防御攻击以及有一个简单的web界面支持远程管理等。官网目前最新版固件为V1.10B26。本文中分析的固件版本为V1.10B12,可以从<a href="http://download.trendnet.com/TEW-654TR/firmware/" target="_blank" rel="external">这里下载</a>。</p>
 <p>为了方便就不适用file等工具进行信息收集了。直接使用binwalk查看bin文件信息，可以看到是比较标准的基于linux的文件系统。</p>
 <p><img src="/images/trendnet2.png" alt=""></p>
@@ -259,7 +259,8 @@ system_manager &amp;
 
 <span class="comment">#insert cc_dev module for reset packet counter</span>
 insmod /<span class="class"><span class="keyword">lib</span>/<span class="title">modules</span>/<span class="title">cc_dev</span>.<span class="title">ko</span></span>
-</code></pre>  
+</code></pre><h1 id="参考资料">参考资料</h1><p>整理翻译自<a href="http://www.devttys0.com/2011/09/exploiting-embedded-systems-part-2/" target="_blank" rel="external">devttys0</a></p>
+  
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
@@ -281,7 +282,7 @@ insmod /<span class="class"><span class="keyword">lib</span>/<span class="title"
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2015/08/24/逆向路由器固件之二/" data-title="逆向路由器固件之二 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  <div data-url="http://xdxd.love/2015/08/24/逆向路由器固件之二/" data-title="逆向路由器固件之信息泄露 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -315,7 +316,7 @@ insmod /<span class="class"><span class="keyword">lib</span>/<span class="title"
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/08/24/逆向路由器固件之二/" data-title="逆向路由器固件之二" data-url="http://xdxd.love/2015/08/24/逆向路由器固件之二/"></div>
+	<div class="ds-thread" data-thread-key="2015/08/24/逆向路由器固件之二/" data-title="逆向路由器固件之信息泄露" data-url="http://xdxd.love/2015/08/24/逆向路由器固件之二/"></div>
 </section>
 
 
@@ -325,7 +326,7 @@ insmod /<span class="class"><span class="keyword">lib</span>/<span class="title"
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li></ol>
  
   </div>
 
