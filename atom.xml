@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-09-14T06:54:51.000Z</updated>
+  <updated>2016-09-14T06:59:25.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -19,12 +19,11 @@
     <link href="http://xdxd.love/2016/09/14/w3school%E4%B8%8A%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81%E7%9A%84%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E/"/>
     <id>http://xdxd.love/2016/09/14/w3school上示例代码的安全漏洞/</id>
     <published>2016-09-14T05:51:05.000Z</published>
-    <updated>2016-09-14T06:54:51.000Z</updated>
+    <updated>2016-09-14T06:59:25.000Z</updated>
     <content type="html"><![CDATA[<p>这个漏洞原理本身比较简单，而且很古老了。这里主要想说明一下，在w3school这样的平台上还存在着这样的代码说明我们对编写安全的代码还是不够重视。w3school上的示例对于初学者简单明了。很多人应该都看这个网站学习过web相关的知识。</p>
 <p>我们用Google搜索<code>php 文件上传</code>或者英文的<code>php file upload</code> </p>
 <p><img src="/images/phpupload2.png" alt=""><br><img src="/images/phpupload1.png" alt=""></p>
 <p>第一个结果就是w3school的教学页面，而这个教程中给出的示例代码是存在安全漏洞的。</p>
-<p><img src="/images/phpupload3.png" alt=""></p>
 <p>完整的代码如下：<a href="http://www.w3school.com.cn/php/php_file_upload.asp" target="_blank" rel="external">参考地址</a></p>
 <p>上传的表单：</p>
 <pre><code><span class="tag">&lt;<span class="title">html</span>&gt;</span>
