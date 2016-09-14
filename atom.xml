@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-09-14T06:24:49.000Z</updated>
+  <updated>2016-09-14T06:44:14.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -19,7 +19,7 @@
     <link href="http://xdxd.love/2016/09/14/w3school%E4%B8%8A%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81%E7%9A%84%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E/"/>
     <id>http://xdxd.love/2016/09/14/w3school上示例代码的安全漏洞/</id>
     <published>2016-09-14T05:51:05.000Z</published>
-    <updated>2016-09-14T06:24:49.000Z</updated>
+    <updated>2016-09-14T06:44:14.000Z</updated>
     <content type="html"><![CDATA[<p>这个漏洞原理本身比较简单，而且很古老了。这里主要想说明一下，在w3school这样的平台上还存在着这样的代码说明我们对编写安全的代码还是不够重视。w3school上的示例对于初学者简单明了。很多人应该都看这个网站学习过web相关的知识。</p>
 <p>我们用Google搜索<code>php 文件上传</code>或者英文的<code>php file upload</code> </p>
 <p><img src="/images/phpupload2.png" alt=""><br><img src="/images/phpupload1.png" alt=""></p>
@@ -74,7 +74,7 @@
 <span class="preprocessor">?&gt;</span></span>
 </code></pre><p>文中也多次提到了文件上传的安全问题。<br><img src="/images/phpupload4.png" alt=""><br><img src="/images/phpupload5.png" alt=""></p>
 <p>而为了安全，最后示例的代码中加了限制，只允许用户上传gif，jpg格式的图片。而这个限制，是通过<code>$_FILES[&quot;file&quot;][&quot;type&quot;]</code>来限制的。做安全的同学都知道，这个参数是浏览器生成传递给服务端的，虽然不是用户输入数据，但是是属于客户端传递过来的数据，也就是用户其实是可以控制这个参数的。只需要修改<code>Content-Type: image/jpeg</code> 就可以绕过这个检查，上传任意类型的文件。</p>
-<p><img src="/images/phpupload5.png" alt=""></p>
+<p><img src="/images/phpupload6.png" alt=""></p>
 <p>所以，当我们用Google搜索php文件上传，给出的第一个示例代码是存在安全漏洞的。编写安全的代码，任重而道远。</p>
 ]]></content>
     <summary type="html">
