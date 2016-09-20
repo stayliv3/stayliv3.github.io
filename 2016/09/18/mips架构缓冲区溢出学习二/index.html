@@ -4,23 +4,23 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>逆向路由器固件之qemu仿真环境运行固件应用 | xd_xd&#39;s blog</title>
+    <title>mips架构缓冲区溢出学习二 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description" content="#qemu安装">
+    <meta name="description" content="mips架构缓冲区溢出学习一中介绍了mips栈溢出的基本原理。这里介绍一下ROP的方式实现命令执行。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="逆向路由器固件之qemu仿真环境运行固件应用">
-<meta property="og:url" content="http://xdxd.love/2015/09/01/逆向路由器固件之四-qemu仿真环境运行固件应用/index.html">
+<meta property="og:title" content="mips架构缓冲区溢出学习二">
+<meta property="og:url" content="http://xdxd.love/2016/09/18/mips架构缓冲区溢出学习二/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="#qemu安装">
-<meta property="og:updated_time" content="2016-08-31T09:54:44.000Z">
+<meta property="og:description" content="mips架构缓冲区溢出学习一中介绍了mips栈溢出的基本原理。这里介绍一下ROP的方式实现命令执行。">
+<meta property="og:updated_time" content="2016-09-20T02:56:35.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="逆向路由器固件之qemu仿真环境运行固件应用">
-<meta name="twitter:description" content="#qemu安装">
+<meta name="twitter:title" content="mips架构缓冲区溢出学习二">
+<meta name="twitter:description" content="mips架构缓冲区溢出学习一中介绍了mips栈溢出的基本原理。这里介绍一下ROP的方式实现命令执行。">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -80,14 +80,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/09/01/逆向路由器固件之四-qemu仿真环境运行固件应用/" title="逆向路由器固件之qemu仿真环境运行固件应用" itemprop="url">逆向路由器固件之qemu仿真环境运行固件应用</a>
+      <a href="/2016/09/18/mips架构缓冲区溢出学习二/" title="mips架构缓冲区溢出学习二" itemprop="url">mips架构缓冲区溢出学习二</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2015-09-01T02:43:28.000Z" itemprop="datePublished"> 发表于 Sep 1 2015</time>
+    <time datetime="2016-09-18T01:59:49.000Z" itemprop="datePublished"> 发表于 Sep 18 2016</time>
     
   </p>
 </header>
@@ -100,7 +100,7 @@
 		
 		</div>
 		
-		<p>#qemu安装</p>
+		<p><a href="http://xdxd.love/2016/09/08/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84mips%E6%9E%B6%E6%9E%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/">mips架构缓冲区溢出学习一</a>中介绍了mips栈溢出的基本原理。这里介绍一下ROP的方式实现命令执行。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -114,7 +114,7 @@
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/qemu/">qemu</a>
+  <span></span> <a href="/tags/mips/">mips</a>
   </div>
 
 </div>
@@ -123,7 +123,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2015/09/01/逆向路由器固件之四-qemu仿真环境运行固件应用/" data-title="逆向路由器固件之qemu仿真环境运行固件应用 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  <div data-url="http://xdxd.love/2016/09/18/mips架构缓冲区溢出学习二/" data-title="mips架构缓冲区溢出学习二 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -136,19 +136,11 @@
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2015/09/06/part5-通过qemu和ida远程调试设备固件/" title="part5 通过qemu和ida远程调试设备固件">
-  <strong>上一篇：</strong><br/>
-  <span>
-  part5 通过qemu和ida远程调试设备固件</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2015/08/24/逆向路由器固件之二/"  title="逆向路由器固件之信息泄露">
+<a href="/2016/09/14/w3school上示例代码的安全漏洞/"  title="w3school上示例代码的安全漏洞">
  <strong>下一篇：</strong><br/> 
- <span>逆向路由器固件之信息泄露
+ <span>w3school上示例代码的安全漏洞
 </span>
 </a>
 </div>
@@ -157,7 +149,7 @@
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/09/01/逆向路由器固件之四-qemu仿真环境运行固件应用/" data-title="逆向路由器固件之qemu仿真环境运行固件应用" data-url="http://xdxd.love/2015/09/01/逆向路由器固件之四-qemu仿真环境运行固件应用/"></div>
+	<div class="ds-thread" data-thread-key="2016/09/18/mips架构缓冲区溢出学习二/" data-title="mips架构缓冲区溢出学习二" data-url="http://xdxd.love/2016/09/18/mips架构缓冲区溢出学习二/"></div>
 </section>
 
 
@@ -254,10 +246,6 @@
 			
 		
 			
-				<li><a href="/tags/qemu/" title="qemu">qemu<sup>2</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/支付漏洞/" title="支付漏洞">支付漏洞<sup>2</sup></a></li>
 			
 		
@@ -270,11 +258,11 @@
 			
 		
 			
-				<li><a href="/tags/sqlmap/" title="sqlmap">sqlmap<sup>1</sup></a></li>
+				<li><a href="/tags/qemu/" title="qemu">qemu<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/binwalk/" title="binwalk">binwalk<sup>1</sup></a></li>
+				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
 			
 		
 			
@@ -286,7 +274,7 @@
 			
 		
 			
-				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
+				<li><a href="/tags/binwalk/" title="binwalk">binwalk<sup>1</sup></a></li>
 			
 		
 			
@@ -323,6 +311,10 @@
 		
 			
 				<li><a href="/tags/XXE/" title="XXE">XXE<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/任意文件删除/" title="任意文件删除">任意文件删除<sup>1</sup></a></li>
 			
 		
 		</ul>
