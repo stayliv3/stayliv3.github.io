@@ -332,6 +332,162 @@ Segmentation fault
   </entry>
   
   <entry>
+    <title><![CDATA[confluence任意文件读取漏洞以及CVE-2016-6596 SSRF漏洞分析]]></title>
+    <link href="http://xdxd.love/2016/06/03/confluence%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"/>
+    <id>http://xdxd.love/2016/06/03/confluence任意文件读取漏洞分析/</id>
+    <published>2016-06-03T09:29:03.000Z</published>
+    <updated>2016-09-23T05:46:48.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="poc">poc</h2><p><a href="https://www.exploit-db.com/exploits/39170/" target="_blank" rel="external">exploit-db</a>中提供了poc，可以读取confluence配置文件。后来跟漏洞发现者邮件沟通得知他也是通过黑盒测试的方式发现这个漏洞的。<a href="http://zone.wooyun.org/content/27104" target="_blank" rel="external">有关Atlassian Confluence信息泄露漏洞的尝试</a>中分析了使用了../../无法跳到系统根目录，但是可以使用file://协议读取系统文件。所以这个漏洞的危害是读取任意系统文件。</p>
+<h2 id="漏洞分析">漏洞分析</h2><p>经过fuzz发现某些特殊字符会导致系统500，报错。比如<code>%0a</code></p>
+<pre><code><span class="symbol">http:</span>/<span class="regexp">/115.159.160.174:8099/spaces</span><span class="regexp">/viewdefaultdecorator.action?decoratorName=file:/</span><span class="regexp">//etc</span><span class="regexp">/passwdd%0a</span>
+</code></pre><p>获得stack trace信息</p>
+<p><img src="/images/confluence7.png" alt=""></p>
+<p>反编译存在漏洞的confluence jar文件获得源代码。</p>
+<p>jar文件目录为：/opt/atlassian/confluence/lib</p>
+<p>使用<a href="https://github.com/kwart/jd-cmd" target="_blank" rel="external">jd-cmd</a>反编译jar。命令为：</p>
+<pre><code>./jd-cli ../confluence/<span class="class"><span class="keyword">lib</span>/*.<span class="title">jar</span> -<span class="title">od</span> <span class="title">test</span></span>
+</code></pre><p>根据stack trace定位com.atlassian.confluence.admin.actions.lookandfeel.ViewDefaultDecoratorAction.execute方法。其实第一次分析，是通过查找字符串的方式定位代码的，后来发现可以通过stack trace快速定位。</p>
+<pre><code>public <span class="class"><span class="keyword">class</span> <span class="title">ViewDefaultDecoratorAction</span>
+  <span class="keyword">extends</span> <span class="title">AbstractDecoratorAction</span>
+  <span class="keyword">implements</span> <span class="title">LookAndFeel</span>
+</span>{
+  private <span class="literal">static</span> <span class="keyword">final</span> <span class="built_in">String</span> HTML_QUOTE = <span class="string">"&amp;quot;"</span>;
+
+  public <span class="built_in">String</span> execute()
+    throws Exception
+  {
+    <span class="built_in">String</span> template = readDefaultTemplate();
+    <span class="keyword">if</span> (template == <span class="keyword">null</span>)
+    {
+      addActionError(<span class="string">"template.not.found"</span>, <span class="keyword">new</span> <span class="built_in">String</span>[] { decoratorName });
+      <span class="keyword">return</span> <span class="string">"success"</span>;
+    }
+    BufferedReader br = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> StringReader(template));
+
+    <span class="built_in">String</span> decoratorSource = <span class="string">""</span>;
+    <span class="built_in">String</span> s;
+    <span class="keyword">while</span> ((s = br.readLine()) != <span class="keyword">null</span>) {
+      decoratorSource = decoratorSource + getIndent(s) + GeneralUtil.htmlEncode(s) + <span class="string">"&lt;br/&gt;"</span>;
+    }
+    setContent(linkIncludes(decoratorSource));
+
+    <span class="keyword">return</span> <span class="string">"success"</span>;
+  }
+</code></pre><p>跟进readDefaultTemplate方法：</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">abstract</span> class AbstractDecoratorAction
+  extends AbstractLookAndFeelAction
+{
+  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Logger <span class="built_in">log</span> = LoggerFactory.getLogger(AbstractDecoratorAction.class);
+  <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> KLUDGE_WWRESOURCE_TEMPLATE = <span class="string">"decorators/wwloader.vmd"</span>;
+  <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> KLUDGE_CLASSPATH_TEMPLATE = <span class="string">"com/atlassian/confluence/cploader.vm"</span>;
+  <span class="keyword">String</span> content;
+  <span class="keyword">protected</span> <span class="keyword">String</span> decoratorName;
+
+  <span class="keyword">protected</span> <span class="keyword">String</span> readDefaultTemplate()
+  {
+    <span class="keyword">String</span> templateSource = getTemplateFromResourceLoader(<span class="string">"decorators/wwloader.vmd"</span>, decoratorName);
+    <span class="keyword">if</span> (templateSource == <span class="keyword">null</span>) {
+      templateSource = getTemplateFromResourceLoader(<span class="string">"com/atlassian/confluence/cploader.vm"</span>, decoratorName);
+    }
+    <span class="keyword">if</span> (templateSource == <span class="keyword">null</span>) {
+      <span class="built_in">log</span>.warn(<span class="string">"Couldn't load default template source for "</span> + decoratorName);
+    }
+    <span class="keyword">return</span> templateSource;
+  }
+
+  <span class="keyword">protected</span> <span class="keyword">String</span> getTemplateFromResourceLoader(<span class="keyword">String</span> knownTemplatePath, <span class="keyword">String</span> templateToRetrieve)
+  {
+    <span class="keyword">if</span> ((!<span class="string">""</span>.equals(decoratorName)) &amp;&amp; (isUnderConfluenceApp(ServletContextThreadLocal.getRequest(), decoratorName)) &amp;&amp; (
+      (decoratorName.endsWith(<span class="string">".vm"</span>)) || (decoratorName.endsWith(<span class="string">".vmd"</span>)))) {
+      <span class="keyword">try</span>
+      {
+        Template t = VelocityManager.getInstance().getVelocityEngine().getTemplate(knownTemplatePath);
+        <span class="keyword">return</span> getTemplateSource(templateToRetrieve, t.getResourceLoader(), t.getEncoding());
+      }
+      <span class="keyword">catch</span> (Exception e)
+      {
+        <span class="keyword">return</span> <span class="keyword">null</span>;
+      }
+    }
+    <span class="keyword">return</span> <span class="keyword">null</span>;
+  }
+
+  <span class="keyword">protected</span> <span class="keyword">String</span> getTemplateSource(<span class="keyword">String</span> template, ResourceLoader resourceLoader, <span class="keyword">String</span> encoding)
+  {
+    <span class="keyword">String</span> result = <span class="string">""</span>;
+    InputStream is = <span class="keyword">null</span>;
+    <span class="keyword">try</span>
+    {
+      is = resourceLoader.getResourceStream(template);
+      <span class="keyword">BufferedReader</span> br = <span class="keyword">new</span> <span class="keyword">BufferedReader</span>(<span class="keyword">new</span> InputStreamReader(is, encoding));
+      <span class="keyword">while</span> ((s = br.readLine()) != <span class="keyword">null</span>) {
+        result = result + s + System.getProperty(<span class="string">"line.separator"</span>);
+      }
+      <span class="keyword">return</span> result;
+    }
+    <span class="keyword">catch</span> (Exception e)
+    {
+      <span class="keyword">String</span> s;
+      <span class="built_in">log</span>.warn(<span class="string">"Trouble reading velocity template"</span>, e);
+      <span class="keyword">return</span> <span class="keyword">null</span>;
+    }
+    <span class="keyword">finally</span>
+    {
+      <span class="keyword">if</span> (is != <span class="keyword">null</span>) {
+        <span class="keyword">try</span>
+        {
+          is.close();
+        }
+        <span class="keyword">catch</span> (IOException e)
+        {
+          <span class="built_in">log</span>.warn(<span class="string">"Trouble closing velocity template"</span>, e);
+        }
+      }
+    }
+  }
+</code></pre><p>猜测是框架读取模板文件导致的任意文件读取。反编译最新版的confluence，对比代码。</p>
+<p>可以看到getTemplateFromResourceLoader方法增加了一个条件判断。</p>
+<pre><code><span class="list">(!<span class="string">""</span>.equals<span class="list">(<span class="keyword">decoratorName</span>)</span>)</span> &amp;&amp; <span class="list">(<span class="keyword">isUnderConfluenceApp</span><span class="list">(<span class="keyword">ServletContextThreadLocal</span>.getRequest<span class="list">()</span>, decoratorName)</span>)</span> &amp;&amp; <span class="list">(
+      <span class="list">(<span class="keyword">decoratorName</span>.endsWith<span class="list">(<span class="string">".vm"</span>)</span>)</span> || <span class="list">(<span class="keyword">decoratorName</span>.endsWith<span class="list">(<span class="string">".vmd"</span>)</span>)</span>)</span>
+</code></pre><p>判断decoratorName不能为空，且要以.vm或者.vmd结尾。</p>
+<pre><code><span class="keyword">protected</span> <span class="keyword">String</span> getTemplateFromResourceLoader(<span class="keyword">String</span> knownTemplatePath, <span class="keyword">String</span> templateToRetrieve)
+{
+  <span class="keyword">if</span> ((!<span class="string">""</span>.equals(decoratorName)) &amp;&amp; (isUnderConfluenceApp(ServletContextThreadLocal.getRequest(), decoratorName)) &amp;&amp; (
+    (decoratorName.endsWith(<span class="string">".vm"</span>)) || (decoratorName.endsWith(<span class="string">".vmd"</span>)))) {
+    <span class="keyword">try</span>
+    {
+      Template t = VelocityManager.getInstance().getVelocityEngine().getTemplate(knownTemplatePath);
+      <span class="keyword">return</span> getTemplateSource(templateToRetrieve, t.getResourceLoader(), t.getEncoding());
+    }
+    <span class="keyword">catch</span> (Exception e)
+    {
+      <span class="keyword">return</span> <span class="keyword">null</span>;
+    }
+  }
+  <span class="keyword">return</span> <span class="keyword">null</span>;
+}
+</code></pre><p>在最新版系统系统中新建一个text.vm文件，通过file协议读取，发现可以成功读取。所以confluence是通过文件名结尾这个方式来修复这个任意文件读取漏洞的。如果有file协议阶段的问题，就可能再次导致漏洞。不过目前所知，并没有可以截断的方法。</p>
+<p><img src="/images/confluence8.png" alt=""></p>
+<h2 id="ssrf问题">ssrf问题</h2><p>这个加载模板的方法支持file协议，通过报错信息可以得知，是通过java.net.URI.create来读取文件的。</p>
+<p>尝试其他协议，包括https，ftp协议都是支持的。</p>
+<pre><code><span class="symbol">http:</span>/<span class="regexp">/115.159.160.174:8099/spaces</span><span class="regexp">/viewdefaultdecorator.action?decoratorName=ftp:/</span><span class="regexp">/127.0.0.1:3306/</span>.vm
+</code></pre><p><img src="/images/confluence9.png" alt=""></p>
+<pre><code><span class="symbol">http:</span>/<span class="regexp">/115.159.160.174:8099/spaces</span><span class="regexp">/viewdefaultdecorator.action?decoratorName=https:/</span><span class="regexp">/127.0.0.1:3399/</span>?.vm
+</code></pre><p><img src="/images/confluence10.png" alt=""></p>
+<p>不知道为什么不支持http。不知道是否做了限制。想尝试通过https302到http测试。但是默认需要https证书正确才可以访问。尝试通过在java添加自签名证书失败。</p>
+<h1 id="参考资料">参考资料</h1><p><a href="https://www.exploit-db.com/exploits/39170/" target="_blank" rel="external">https://www.exploit-db.com/exploits/39170/</a><br><a href="http://zone.wooyun.org/content/27104" target="_blank" rel="external">http://zone.wooyun.org/content/27104</a><br><a href="http://www.wooyun.org/bugs/wooyun-2010-0207331" target="_blank" rel="external">http://www.wooyun.org/bugs/wooyun-2010-0207331</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h2 id="poc">poc</h2><p><a href="https://www.exploit-db.com/exploits/39170/" target="_blank" rel="external">exploit-db</a>中提供了poc，可以读取conflu]]>
+    </summary>
+    
+      <category term="java" scheme="http://xdxd.love/tags/java/"/>
+    
+      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+    
+  </entry>
+  
+  <entry>
     <title><![CDATA[一个任意文件读取漏洞记录]]></title>
     <link href="http://xdxd.love/2016/05/23/%E4%B8%80%E4%B8%AA%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"/>
     <id>http://xdxd.love/2016/05/23/一个任意文件读取漏洞分析/</id>
@@ -1011,32 +1167,6 @@ alert(a);
 <p>比如：</p>
 <pre><code>var impromptu_object = {
     <span ]]>
-    </summary>
-    
-      <category term="前端安全" scheme="http://xdxd.love/categories/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[使用转义防御XSS]]></title>
-    <link href="http://xdxd.love/2016/03/09/%E4%BD%BF%E7%94%A8%E8%BD%AC%E4%B9%89%E9%98%B2%E5%BE%A1XSS/"/>
-    <id>http://xdxd.love/2016/03/09/使用转义防御XSS/</id>
-    <published>2016-03-09T07:53:57.000Z</published>
-    <updated>2016-03-09T08:26:02.000Z</updated>
-    <content type="html"><![CDATA[<p>在输出的时候防御XSS即对用户输入进行转义，XSS的问题本质上还是代码注入，HTML或者javascript的代码注入，即混淆了用户输入的数据和代码。而解决这个问题，就需要根据用户可控数据具体输出的环境进行恰当的转义。</p>
-<h1 id="在html标签中输出">在html标签中输出</h1><pre><code><span class="tag">&lt;<span class="title">HTML标签</span>&gt;</span>[输出]<span class="tag">&lt;/<span class="title">HTML标签</span>&gt;</span>
-</code></pre><p>只需要htmlencode即可。更具体是转义掉&lt; &gt; 就可以防止html注入。</p>
-<h1 id="输出在普通html属性中">输出在普通html属性中</h1><pre><code><span class="tag">&lt;<span class="title">div</span> <span class="attribute">attr</span>=<span class="value">不可信数据</span>&gt;</span>content<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
-</code></pre><p>好的方案应该是把不可信数据用双引号包裹起来，然后对数据进行htmlencode。</p>
-<h1 id="在script标签中输出">在script标签中输出</h1><pre><code><span class="tag">&lt;<span class="title">script</span>&gt;</span><span class="actionscript"><span class="keyword">var</span> $a=<span class="string">"不可信数据"</span></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
-</code></pre><p>确保输出变量在引号中，使用javascript编码输入数据。要防止<code>&lt;/script&gt;</code> 截断</p>
-<h1 id="输出在on事件中">输出在on事件中</h1><pre><code><span class="tag">&lt;<span class="title">a</span> <span class="attribute">href</span>=<span class="value">#</span> <span class="attribute">onlick</span>=<span class="value">"funcA('$var')"</span>&gt;</span> test<span class="tag">&lt;/<span class="title">a</span>&gt;</span>
-</code></pre><p>防御：先做javascript编码，再做html编码。因为输出数据位于html标签属性中，浏览器会进行html自解码。</p>
-<h1 id="在地址中输出">在地址中输出</h1><p>对协议进行白名单，http或者https，然后对其他部门进行url编码。避免javascript，data uri等伪协议攻击。</p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>在输出的时候防御XSS即对用户输入进行转义，XSS的问题本质上还是代码注入，HTML或者javascript的代码注入，即混淆了用户输入的数据和代码。而解决这个问题，就需要根据用户可控数据具体输出的环境进行恰当的转义。</p>
-<h1 id="在html标签中输出">在ht]]>
     </summary>
     
       <category term="前端安全" scheme="http://xdxd.love/categories/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8/"/>

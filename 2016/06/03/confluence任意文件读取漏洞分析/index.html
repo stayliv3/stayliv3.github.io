@@ -1,0 +1,748 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>confluence任意文件读取漏洞以及CVE-2016-6596 SSRF漏洞分析 | xd_xd&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="xd_xd">
+    
+
+    
+    <meta name="description" content="pocexploit-db中提供了poc，可以读取confluence配置文件。后来跟漏洞发现者邮件沟通得知他也是通过黑盒测试的方式发现这个漏洞的。有关Atlassian Confluence信息泄露漏洞的尝试中分析了使用了../../无法跳到系统根目录，但是可以使用file://协议读取系统文件。所以这个漏洞的危害是读取任意系统文件。
+漏洞分析经过fuzz发现某些特殊字符会导致系统500，报错。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="confluence任意文件读取漏洞以及CVE-2016-6596 SSRF漏洞分析">
+<meta property="og:url" content="http://xdxd.love/2016/06/03/confluence任意文件读取漏洞分析/index.html">
+<meta property="og:site_name" content="xd_xd's blog">
+<meta property="og:description" content="pocexploit-db中提供了poc，可以读取confluence配置文件。后来跟漏洞发现者邮件沟通得知他也是通过黑盒测试的方式发现这个漏洞的。有关Atlassian Confluence信息泄露漏洞的尝试中分析了使用了../../无法跳到系统根目录，但是可以使用file://协议读取系统文件。所以这个漏洞的危害是读取任意系统文件。
+漏洞分析经过fuzz发现某些特殊字符会导致系统500，报错。">
+<meta property="og:image" content="http://xdxd.love/images/confluence7.png">
+<meta property="og:image" content="http://xdxd.love/images/confluence8.png">
+<meta property="og:image" content="http://xdxd.love/images/confluence9.png">
+<meta property="og:image" content="http://xdxd.love/images/confluence10.png">
+<meta property="og:updated_time" content="2016-09-23T05:46:48.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="confluence任意文件读取漏洞以及CVE-2016-6596 SSRF漏洞分析">
+<meta name="twitter:description" content="pocexploit-db中提供了poc，可以读取confluence配置文件。后来跟漏洞发现者邮件沟通得知他也是通过黑盒测试的方式发现这个漏洞的。有关Atlassian Confluence信息泄露漏洞的尝试中分析了使用了../../无法跳到系统根目录，但是可以使用file://协议读取系统文件。所以这个漏洞的危害是读取任意系统文件。
+漏洞分析经过fuzz发现某些特殊字符会导致系统500，报错。">
+
+    
+    <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="xd_xd&#39;s blog" title="xd_xd&#39;s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="xd_xd&#39;s blog">xd_xd&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:xdxd.love">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/06/03/confluence任意文件读取漏洞分析/" title="confluence任意文件读取漏洞以及CVE-2016-6596 SSRF漏洞分析" itemprop="url">confluence任意文件读取漏洞以及CVE-2016-6596 SSRF漏洞分析</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
+		
+  <p class="article-time">
+    <time datetime="2016-06-03T09:29:03.000Z" itemprop="datePublished"> 发表于 Jun 3 2016</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#poc"><span class="toc-number">1.</span> <span class="toc-text">poc</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#漏洞分析"><span class="toc-number">2.</span> <span class="toc-text">漏洞分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ssrf问题"><span class="toc-number">3.</span> <span class="toc-text">ssrf问题</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number"></span> <span class="toc-text">参考资料</span></a>
+		
+		</div>
+		
+		<h2 id="poc">poc</h2><p><a href="https://www.exploit-db.com/exploits/39170/" target="_blank" rel="external">exploit-db</a>中提供了poc，可以读取confluence配置文件。后来跟漏洞发现者邮件沟通得知他也是通过黑盒测试的方式发现这个漏洞的。<a href="http://zone.wooyun.org/content/27104" target="_blank" rel="external">有关Atlassian Confluence信息泄露漏洞的尝试</a>中分析了使用了../../无法跳到系统根目录，但是可以使用file://协议读取系统文件。所以这个漏洞的危害是读取任意系统文件。</p>
+<h2 id="漏洞分析">漏洞分析</h2><p>经过fuzz发现某些特殊字符会导致系统500，报错。比如<code>%0a</code></p>
+<pre><code><span class="symbol">http:</span>/<span class="regexp">/115.159.160.174:8099/spaces</span><span class="regexp">/viewdefaultdecorator.action?decoratorName=file:/</span><span class="regexp">//etc</span><span class="regexp">/passwdd%0a</span>
+</code></pre><p>获得stack trace信息</p>
+<p><img src="/images/confluence7.png" alt=""></p>
+<p>反编译存在漏洞的confluence jar文件获得源代码。</p>
+<p>jar文件目录为：/opt/atlassian/confluence/lib</p>
+<p>使用<a href="https://github.com/kwart/jd-cmd" target="_blank" rel="external">jd-cmd</a>反编译jar。命令为：</p>
+<pre><code>./jd-cli ../confluence/<span class="class"><span class="keyword">lib</span>/*.<span class="title">jar</span> -<span class="title">od</span> <span class="title">test</span></span>
+</code></pre><p>根据stack trace定位com.atlassian.confluence.admin.actions.lookandfeel.ViewDefaultDecoratorAction.execute方法。其实第一次分析，是通过查找字符串的方式定位代码的，后来发现可以通过stack trace快速定位。</p>
+<pre><code>public <span class="class"><span class="keyword">class</span> <span class="title">ViewDefaultDecoratorAction</span>
+  <span class="keyword">extends</span> <span class="title">AbstractDecoratorAction</span>
+  <span class="keyword">implements</span> <span class="title">LookAndFeel</span>
+</span>{
+  private <span class="literal">static</span> <span class="keyword">final</span> <span class="built_in">String</span> HTML_QUOTE = <span class="string">"&amp;quot;"</span>;
+
+  public <span class="built_in">String</span> execute()
+    throws Exception
+  {
+    <span class="built_in">String</span> template = readDefaultTemplate();
+    <span class="keyword">if</span> (template == <span class="keyword">null</span>)
+    {
+      addActionError(<span class="string">"template.not.found"</span>, <span class="keyword">new</span> <span class="built_in">String</span>[] { decoratorName });
+      <span class="keyword">return</span> <span class="string">"success"</span>;
+    }
+    BufferedReader br = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> StringReader(template));
+
+    <span class="built_in">String</span> decoratorSource = <span class="string">""</span>;
+    <span class="built_in">String</span> s;
+    <span class="keyword">while</span> ((s = br.readLine()) != <span class="keyword">null</span>) {
+      decoratorSource = decoratorSource + getIndent(s) + GeneralUtil.htmlEncode(s) + <span class="string">"&lt;br/&gt;"</span>;
+    }
+    setContent(linkIncludes(decoratorSource));
+
+    <span class="keyword">return</span> <span class="string">"success"</span>;
+  }
+</code></pre><p>跟进readDefaultTemplate方法：</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">abstract</span> class AbstractDecoratorAction
+  extends AbstractLookAndFeelAction
+{
+  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Logger <span class="built_in">log</span> = LoggerFactory.getLogger(AbstractDecoratorAction.class);
+  <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> KLUDGE_WWRESOURCE_TEMPLATE = <span class="string">"decorators/wwloader.vmd"</span>;
+  <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> KLUDGE_CLASSPATH_TEMPLATE = <span class="string">"com/atlassian/confluence/cploader.vm"</span>;
+  <span class="keyword">String</span> content;
+  <span class="keyword">protected</span> <span class="keyword">String</span> decoratorName;
+
+  <span class="keyword">protected</span> <span class="keyword">String</span> readDefaultTemplate()
+  {
+    <span class="keyword">String</span> templateSource = getTemplateFromResourceLoader(<span class="string">"decorators/wwloader.vmd"</span>, decoratorName);
+    <span class="keyword">if</span> (templateSource == <span class="keyword">null</span>) {
+      templateSource = getTemplateFromResourceLoader(<span class="string">"com/atlassian/confluence/cploader.vm"</span>, decoratorName);
+    }
+    <span class="keyword">if</span> (templateSource == <span class="keyword">null</span>) {
+      <span class="built_in">log</span>.warn(<span class="string">"Couldn't load default template source for "</span> + decoratorName);
+    }
+    <span class="keyword">return</span> templateSource;
+  }
+
+  <span class="keyword">protected</span> <span class="keyword">String</span> getTemplateFromResourceLoader(<span class="keyword">String</span> knownTemplatePath, <span class="keyword">String</span> templateToRetrieve)
+  {
+    <span class="keyword">if</span> ((!<span class="string">""</span>.equals(decoratorName)) &amp;&amp; (isUnderConfluenceApp(ServletContextThreadLocal.getRequest(), decoratorName)) &amp;&amp; (
+      (decoratorName.endsWith(<span class="string">".vm"</span>)) || (decoratorName.endsWith(<span class="string">".vmd"</span>)))) {
+      <span class="keyword">try</span>
+      {
+        Template t = VelocityManager.getInstance().getVelocityEngine().getTemplate(knownTemplatePath);
+        <span class="keyword">return</span> getTemplateSource(templateToRetrieve, t.getResourceLoader(), t.getEncoding());
+      }
+      <span class="keyword">catch</span> (Exception e)
+      {
+        <span class="keyword">return</span> <span class="keyword">null</span>;
+      }
+    }
+    <span class="keyword">return</span> <span class="keyword">null</span>;
+  }
+
+  <span class="keyword">protected</span> <span class="keyword">String</span> getTemplateSource(<span class="keyword">String</span> template, ResourceLoader resourceLoader, <span class="keyword">String</span> encoding)
+  {
+    <span class="keyword">String</span> result = <span class="string">""</span>;
+    InputStream is = <span class="keyword">null</span>;
+    <span class="keyword">try</span>
+    {
+      is = resourceLoader.getResourceStream(template);
+      <span class="keyword">BufferedReader</span> br = <span class="keyword">new</span> <span class="keyword">BufferedReader</span>(<span class="keyword">new</span> InputStreamReader(is, encoding));
+      <span class="keyword">while</span> ((s = br.readLine()) != <span class="keyword">null</span>) {
+        result = result + s + System.getProperty(<span class="string">"line.separator"</span>);
+      }
+      <span class="keyword">return</span> result;
+    }
+    <span class="keyword">catch</span> (Exception e)
+    {
+      <span class="keyword">String</span> s;
+      <span class="built_in">log</span>.warn(<span class="string">"Trouble reading velocity template"</span>, e);
+      <span class="keyword">return</span> <span class="keyword">null</span>;
+    }
+    <span class="keyword">finally</span>
+    {
+      <span class="keyword">if</span> (is != <span class="keyword">null</span>) {
+        <span class="keyword">try</span>
+        {
+          is.close();
+        }
+        <span class="keyword">catch</span> (IOException e)
+        {
+          <span class="built_in">log</span>.warn(<span class="string">"Trouble closing velocity template"</span>, e);
+        }
+      }
+    }
+  }
+</code></pre><p>猜测是框架读取模板文件导致的任意文件读取。反编译最新版的confluence，对比代码。</p>
+<p>可以看到getTemplateFromResourceLoader方法增加了一个条件判断。</p>
+<pre><code><span class="list">(!<span class="string">""</span>.equals<span class="list">(<span class="keyword">decoratorName</span>)</span>)</span> &amp;&amp; <span class="list">(<span class="keyword">isUnderConfluenceApp</span><span class="list">(<span class="keyword">ServletContextThreadLocal</span>.getRequest<span class="list">()</span>, decoratorName)</span>)</span> &amp;&amp; <span class="list">(
+      <span class="list">(<span class="keyword">decoratorName</span>.endsWith<span class="list">(<span class="string">".vm"</span>)</span>)</span> || <span class="list">(<span class="keyword">decoratorName</span>.endsWith<span class="list">(<span class="string">".vmd"</span>)</span>)</span>)</span>
+</code></pre><p>判断decoratorName不能为空，且要以.vm或者.vmd结尾。</p>
+<pre><code><span class="keyword">protected</span> <span class="keyword">String</span> getTemplateFromResourceLoader(<span class="keyword">String</span> knownTemplatePath, <span class="keyword">String</span> templateToRetrieve)
+{
+  <span class="keyword">if</span> ((!<span class="string">""</span>.equals(decoratorName)) &amp;&amp; (isUnderConfluenceApp(ServletContextThreadLocal.getRequest(), decoratorName)) &amp;&amp; (
+    (decoratorName.endsWith(<span class="string">".vm"</span>)) || (decoratorName.endsWith(<span class="string">".vmd"</span>)))) {
+    <span class="keyword">try</span>
+    {
+      Template t = VelocityManager.getInstance().getVelocityEngine().getTemplate(knownTemplatePath);
+      <span class="keyword">return</span> getTemplateSource(templateToRetrieve, t.getResourceLoader(), t.getEncoding());
+    }
+    <span class="keyword">catch</span> (Exception e)
+    {
+      <span class="keyword">return</span> <span class="keyword">null</span>;
+    }
+  }
+  <span class="keyword">return</span> <span class="keyword">null</span>;
+}
+</code></pre><p>在最新版系统系统中新建一个text.vm文件，通过file协议读取，发现可以成功读取。所以confluence是通过文件名结尾这个方式来修复这个任意文件读取漏洞的。如果有file协议阶段的问题，就可能再次导致漏洞。不过目前所知，并没有可以截断的方法。</p>
+<p><img src="/images/confluence8.png" alt=""></p>
+<h2 id="ssrf问题">ssrf问题</h2><p>这个加载模板的方法支持file协议，通过报错信息可以得知，是通过java.net.URI.create来读取文件的。</p>
+<p>尝试其他协议，包括https，ftp协议都是支持的。</p>
+<pre><code><span class="symbol">http:</span>/<span class="regexp">/115.159.160.174:8099/spaces</span><span class="regexp">/viewdefaultdecorator.action?decoratorName=ftp:/</span><span class="regexp">/127.0.0.1:3306/</span>.vm
+</code></pre><p><img src="/images/confluence9.png" alt=""></p>
+<pre><code><span class="symbol">http:</span>/<span class="regexp">/115.159.160.174:8099/spaces</span><span class="regexp">/viewdefaultdecorator.action?decoratorName=https:/</span><span class="regexp">/127.0.0.1:3399/</span>?.vm
+</code></pre><p><img src="/images/confluence10.png" alt=""></p>
+<p>不知道为什么不支持http。不知道是否做了限制。想尝试通过https302到http测试。但是默认需要https证书正确才可以访问。尝试通过在java添加自签名证书失败。</p>
+<h1 id="参考资料">参考资料</h1><p><a href="https://www.exploit-db.com/exploits/39170/" target="_blank" rel="external">https://www.exploit-db.com/exploits/39170/</a><br><a href="http://zone.wooyun.org/content/27104" target="_blank" rel="external">http://zone.wooyun.org/content/27104</a><br><a href="http://www.wooyun.org/bugs/wooyun-2010-0207331" target="_blank" rel="external">http://www.wooyun.org/bugs/wooyun-2010-0207331</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/代码审计/">代码审计</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/java/">java</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://xdxd.love/2016/06/03/confluence任意文件读取漏洞分析/" data-title="confluence任意文件读取漏洞以及CVE-2016-6596 SSRF漏洞分析 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/08/09/安卓分析辅助工具Inspeckage介绍/" title="安卓分析工具Inspeckage介绍">
+  <strong>上一篇：</strong><br/>
+  <span>
+  安卓分析工具Inspeckage介绍</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/05/23/一个任意文件读取漏洞分析/"  title="一个任意文件读取漏洞记录">
+ <strong>下一篇：</strong><br/> 
+ <span>一个任意文件读取漏洞记录
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/06/03/confluence任意文件读取漏洞分析/" data-title="confluence任意文件读取漏洞以及CVE-2016-6596 SSRF漏洞分析" data-url="http://xdxd.love/2016/06/03/confluence任意文件读取漏洞分析/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#poc"><span class="toc-number">1.</span> <span class="toc-text">poc</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#漏洞分析"><span class="toc-number">2.</span> <span class="toc-text">漏洞分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ssrf问题"><span class="toc-number">3.</span> <span class="toc-text">ssrf问题</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number"></span> <span class="toc-text">参考资料</span></a>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">新浪微博</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=5256150165&verifier=0935d97e&dpc=1"></iframe>
+</div>
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>27</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/前端安全/" title="前端安全">前端安全<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/加密解密/" title="加密解密">加密解密<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/奇技淫巧/" title="奇技淫巧">奇技淫巧<sup>2</sup></a></li>
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/渗透测试/" title="渗透测试">渗透测试<sup>6</sup></a></li>
+		  
+		
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/转载收藏/" title="转载收藏">转载收藏<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/黑盒测试/" title="黑盒测试">黑盒测试<sup>8</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/php/" title="php">php<sup>10</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mips/" title="mips">mips<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/支付漏洞/" title="支付漏洞">支付漏洞<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/xss/" title="xss">xss<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/binwalk/" title="binwalk">binwalk<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcpdump/" title="tcpdump">tcpdump<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/密码学/" title="密码学">密码学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/inspeckage/" title="inspeckage">inspeckage<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/csrf/" title="csrf">csrf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/github/" title="github">github<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ctf/" title="ctf">ctf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/xposed/" title="xposed">xposed<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/php-wdcp/" title="php,wdcp">php,wdcp<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mips-溢出/" title="mips 溢出">mips 溢出<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/XXE/" title="XXE">XXE<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.heysec.org/" target="_blank" title="heysec.org">heysec.org</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://sco4x0.com" target="_blank" title="sco4x0&#39;s blog">sco4x0&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://virusdefender.net" target="_blank" title="virusdefender&#39;s blog">virusdefender&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackersb.cn/" target="_blank" title="Striker&#39;s blog">Striker&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://www.leavesongs.com/" target="_blank" title="离别歌">离别歌</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.stardustsky.net/" target="_blank" title="Stardustsky博客">Stardustsky博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.waitalone.cn/" target="_blank" title="独自等待">独自等待</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.cnblogs.com/S4b0r/" target="_blank" title="S4b0r&#39; blog">S4b0r&#39; blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.leesec.com/" target="_blank" title="leesec">leesec</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://xss1.com/" target="_blank" title="0x_Jin">0x_Jin</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://bl4ck.in/" target="_blank" title="Tomato">Tomato</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackfun.org/" target="_blank" title="4ido10n">4ido10n</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+</aside>
+</div>
+    </div>
+    <footer></footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"xdxd"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253479891'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1253479891' type='text/javascript'%3E%3C/script%3E"));</script>
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
