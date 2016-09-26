@@ -4,41 +4,32 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>logcat使用指南 | xd_xd&#39;s blog</title>
+    <title>小脚本之监控论坛帖子更新并发送邮件通知 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description" content="一共5中日志的输出方式：
-android.util.Log：提供了五种输出日志的方法
-Log.e(), Log.w(), Log.i(), Log.d(), Log.v()
-ERROR, WARN, INFO, DEBUG, VERBOSE
-adb logcat 命令会有非常多的输出，可以通过pid来过滤特定app的输出。
-案例房多多新房经纪人app logcat 默认输出了debug日志：
-/A">
+    <meta name="description" content="需求想要监控某个论坛是否有更新帖。如果有帖子更新并且标题符合某种条件就发送邮件通知
+实现用python来实现比较简单，不到100行代码。用requests进行http请求，BeautifulSoup进行html解析。为了加快请求响应速度，设置useragent为手机的useragent，这样子就可以返回手机页面。
+编写一个函数获取第一条帖子的标题。这里的例子为discuz论坛。
+def getne">
 <meta property="og:type" content="article">
-<meta property="og:title" content="logcat使用指南">
-<meta property="og:url" content="http://xdxd.love/2016/04/07/logcat使用指南/index.html">
+<meta property="og:title" content="小脚本之监控论坛帖子更新并发送邮件通知">
+<meta property="og:url" content="http://xdxd.love/2016/09/26/小脚本之监控论坛帖子更新并发送邮件通知/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="一共5中日志的输出方式：
-android.util.Log：提供了五种输出日志的方法
-Log.e(), Log.w(), Log.i(), Log.d(), Log.v()
-ERROR, WARN, INFO, DEBUG, VERBOSE
-adb logcat 命令会有非常多的输出，可以通过pid来过滤特定app的输出。
-案例房多多新房经纪人app logcat 默认输出了debug日志：
-/A">
-<meta property="og:updated_time" content="2016-04-07T07:36:37.000Z">
+<meta property="og:description" content="需求想要监控某个论坛是否有更新帖。如果有帖子更新并且标题符合某种条件就发送邮件通知
+实现用python来实现比较简单，不到100行代码。用requests进行http请求，BeautifulSoup进行html解析。为了加快请求响应速度，设置useragent为手机的useragent，这样子就可以返回手机页面。
+编写一个函数获取第一条帖子的标题。这里的例子为discuz论坛。
+def getne">
+<meta property="og:updated_time" content="2016-09-26T06:29:27.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="logcat使用指南">
-<meta name="twitter:description" content="一共5中日志的输出方式：
-android.util.Log：提供了五种输出日志的方法
-Log.e(), Log.w(), Log.i(), Log.d(), Log.v()
-ERROR, WARN, INFO, DEBUG, VERBOSE
-adb logcat 命令会有非常多的输出，可以通过pid来过滤特定app的输出。
-案例房多多新房经纪人app logcat 默认输出了debug日志：
-/A">
+<meta name="twitter:title" content="小脚本之监控论坛帖子更新并发送邮件通知">
+<meta name="twitter:description" content="需求想要监控某个论坛是否有更新帖。如果有帖子更新并且标题符合某种条件就发送邮件通知
+实现用python来实现比较简单，不到100行代码。用requests进行http请求，BeautifulSoup进行html解析。为了加快请求响应速度，设置useragent为手机的useragent，这样子就可以返回手机页面。
+编写一个函数获取第一条帖子的标题。这里的例子为discuz论坛。
+def getne">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -98,14 +89,14 @@ adb logcat 命令会有非常多的输出，可以通过pid来过滤特定app的
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2016/04/07/logcat使用指南/" title="logcat使用指南" itemprop="url">logcat使用指南</a>
+      <a href="/2016/09/26/小脚本之监控论坛帖子更新并发送邮件通知/" title="小脚本之监控论坛帖子更新并发送邮件通知" itemprop="url">小脚本之监控论坛帖子更新并发送邮件通知</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2016-04-07T06:08:27.000Z" itemprop="datePublished"> 发表于 Apr 7 2016</time>
+    <time datetime="2016-09-26T06:19:44.000Z" itemprop="datePublished"> 发表于 Sep 26 2016</time>
     
   </p>
 </header>
@@ -114,40 +105,57 @@ adb logcat 命令会有非常多的输出，可以通过pid来过滤特定app的
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#案例"><span class="toc-number">1.</span> <span class="toc-text">案例</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">2.</span> <span class="toc-text">参考资料</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#需求"><span class="toc-number">1.</span> <span class="toc-text">需求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实现"><span class="toc-number">2.</span> <span class="toc-text">实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Supervisord"><span class="toc-number">3.</span> <span class="toc-text">Supervisord</span></a></li></ol>
 		
 		</div>
 		
-		<p>一共5中日志的输出方式：</p>
-<p>android.util.Log：提供了五种输出日志的方法</p>
-<p>Log.e(), Log.w(), Log.i(), Log.d(), Log.v()</p>
-<p>ERROR, WARN, INFO, DEBUG, VERBOSE</p>
-<p>adb logcat 命令会有非常多的输出，可以通过pid来过滤特定app的输出。</p>
-<h1 id="案例">案例</h1><p>房多多新房经纪人app logcat 默认输出了debug日志：</p>
-<pre><code>/ActivityManager( <span class="number">1301</span>): Displayed com.fangdd.mobile.agent/com.fangdd.app.LoginActivity: +<span class="number">536</span>ms (total +<span class="number">1</span>s34ms)
-I/Timeline( <span class="number">1301</span>): Timeline: Activity_windows_visible id: ActivityRecord{<span class="number">43</span>dbf058 u0 com.fangdd.mobile.agent/com.fangdd.app.MainActivity t319} <span class="built_in">time</span>:<span class="number">184792085</span>
-I/Timeline( <span class="number">1301</span>): Timeline: Activity_windows_visible id: ActivityRecord{<span class="number">4549</span>a178 u0 com.fangdd.mobile.agent/com.fangdd.app.LoginActivity t319} <span class="built_in">time</span>:<span class="number">184792510</span>
-D/dalvikvm(<span class="number">24780</span>): Trying <span class="built_in">to</span> <span class="built_in">load</span> lib /data/app-lib/com.fangdd.mobile.agent-<span class="number">1</span>/libfddutils.so <span class="number">0x41a7b430</span>
-D/dalvikvm(<span class="number">24780</span>): Added shared lib /data/app-lib/com.fangdd.mobile.agent-<span class="number">1</span>/libfddutils.so <span class="number">0x41a7b430</span>
-D/dalvikvm(<span class="number">24780</span>): No JNI_OnLoad found <span class="operator">in</span> /data/app-lib/com.fangdd.mobile.agent-<span class="number">1</span>/libfddutils.so <span class="number">0x41a7b430</span>, skipping init
-W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.<span class="operator">a</span>.<span class="operator">a</span>.<span class="operator">a</span>(ProtoUtils.java:<span class="number">40</span>)
-W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.e.<span class="operator">a</span>.<span class="operator">a</span>.<span class="operator">a</span>(NewServerManager.java:<span class="number">412</span>)
-W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.e.<span class="operator">a</span>.<span class="operator">a</span>.<span class="operator">a</span>(NewServerManager.java:<span class="number">188</span>)
-W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.e.n.<span class="operator">a</span>(UserServerManager.java:<span class="number">245</span>)
-W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.ak.<span class="operator">a</span>(LoginActivity.java:<span class="number">147</span>)
-W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.mobile.f.<span class="operator">a</span>.<span class="operator">a</span>(BaseAsyncTask.java:<span class="number">23</span>)
-W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.mobile.f.<span class="operator">a</span>.doInBackground(BaseAsyncTask.java:<span class="number">8</span>)
-W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.<span class="operator">a</span>.<span class="operator">a</span>.<span class="operator">a</span>(ProtoUtils.java:<span class="number">40</span>)
-W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.e.<span class="operator">a</span>.<span class="operator">a</span>.<span class="operator">a</span>(NewServerManager.java:<span class="number">412</span>)
-W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.e.<span class="operator">a</span>.<span class="operator">a</span>.<span class="operator">a</span>(NewServerManager.java:<span class="number">188</span>)
-W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.e.n.<span class="operator">a</span>(UserServerManager.java:<span class="number">245</span>)
-W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.ak.<span class="operator">a</span>(LoginActivity.java:<span class="number">147</span>)
-W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.mobile.f.<span class="operator">a</span>.<span class="operator">a</span>(BaseAsyncTask.java:<span class="number">23</span>)
-W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.mobile.f.<span class="operator">a</span>.doInBackground(BaseAsyncTask.java:<span class="number">8</span>)
-</code></pre><p>这个是登录过程中的日志。这个app登录采用了tcp传输的二进制协议，而且进行了签名。通过这个日志，可以方便逆向分析。</p>
-<h1 id="参考资料">参考资料</h1><p><a href="http://drops.wooyun.org/tips/3812" target="_blank" rel="external">http://drops.wooyun.org/tips/3812</a></p>
-<p><a href="http://www.cnblogs.com/imouto/archive/2012/12/11/filtering-adb-logcat-output.html" target="_blank" rel="external">http://www.cnblogs.com/imouto/archive/2012/12/11/filtering-adb-logcat-output.html</a></p>
-<p><a href="https://wiki.cyanogenmod.org/w/Doc:_debugging_with_logcat/zh-cn" target="_blank" rel="external">https://wiki.cyanogenmod.org/w/Doc:_debugging_with_logcat/zh-cn</a></p>
+		<h2 id="需求">需求</h2><p>想要监控某个论坛是否有更新帖。如果有帖子更新并且标题符合某种条件就发送邮件通知</p>
+<h2 id="实现">实现</h2><p>用python来实现比较简单，不到100行代码。用requests进行http请求，BeautifulSoup进行html解析。为了加快请求响应速度，设置useragent为手机的useragent，这样子就可以返回手机页面。</p>
+<p>编写一个函数获取第一条帖子的标题。这里的例子为discuz论坛。</p>
+<pre><code><span class="function"><span class="keyword">def</span> <span class="title">getnewesttitle</span><span class="params">()</span>:</span>
+    url = <span class="string">'http://www.test.net/forum.php?mod=forumdisplay&amp;fid=33&amp;filter=author&amp;orderby=dateline'</span>
+    headers = {<span class="string">'user-agent'</span>: <span class="string">'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.76 Mobile Safari/537.36'</span>}
+    r = requests.get(url, headers=headers)
+    soup = BeautifulSoup(r.text)
+    newest = soup.find(<span class="string">'span'</span>,class_=<span class="string">'by'</span>)
+    <span class="keyword">return</span> newest.parent.text
+</code></pre><p>主要逻辑为运行时先获取第一条帖子的标题，并保存。然后不断循环获取第一条帖子的标题，如果跟之前保存的不一样，就认为有帖子更新。</p>
+<pre><code>newesttitle = <span class="function"><span class="title">getnewesttitle</span><span class="params">()</span></span>
+while True:
+    try:
+        thenexttitle = <span class="function"><span class="title">getnewesttitle</span><span class="params">()</span></span>
+        <span class="function"><span class="title">print</span><span class="params">(<span class="string">'monitoring'</span>)</span></span>
+        print newesttitle.<span class="function"><span class="title">encode</span><span class="params">(<span class="string">'utf-8'</span>)</span></span>
+        print thenexttitle.<span class="function"><span class="title">encode</span><span class="params">(<span class="string">'utf-8'</span>)</span></span>
+        <span class="keyword">if</span> thenexttitle != newesttitle:
+            newesttitle = thenexttitle
+            <span class="function"><span class="title">send_mail</span><span class="params">(smtp_user, smtp_pass, thenexttitle.strip()</span></span>, thenexttitle.<span class="function"><span class="title">strip</span><span class="params">()</span></span>)
+        <span class="keyword">else</span>:
+            pass
+    except RuntimeError:
+        <span class="function"><span class="title">print</span><span class="params">(RuntimeError)</span></span>
+    <span class="tag">time</span>.<span class="function"><span class="title">sleep</span><span class="params">(<span class="number">1</span>)</span></span>
+</code></pre><p>发送邮件采用QQ邮箱，用sender模块。</p>
+<pre><code><span class="function"><span class="keyword">def</span> <span class="title">send_mail</span><span class="params">(smtp_user, smtp_pass, subject=<span class="string">'test'</span>, body=<span class="string">'test'</span>, sendto=sendto, smtp_server=<span class="string">'smtp.qq.com'</span>,
+              smtp_port=<span class="number">465</span>)</span>:</span>
+    mail = Mail(smtp_server, port=smtp_port, username=smtp_user, password=smtp_pass, use_tls=<span class="keyword">False</span>, use_ssl=<span class="keyword">True</span>,
+                debug_level=<span class="keyword">None</span>)
+    mail.send_message(subject, fromaddr=smtp_user, to=sendto, body=body)
+</code></pre><h2 id="Supervisord">Supervisord</h2><p>使用Supervisord做进程管理，如果程序挂掉，可以自动重启。</p>
+<p>supervisord配置为：</p>
+<pre><code><span class="title">[program:gettahua]</span>
+<span class="setting">command=<span class="value">python get.py</span></span>
+<span class="comment">;numprocs=1                 ; 默认为1</span>
+<span class="comment">;process_name=%(program_name)s   ; 默认为 %(program_name)s，即 [program:x] 中的 x</span>
+<span class="setting">directory=<span class="value">/root/ ; 执行 command 之前，先切换到工作目录</span></span>
+<span class="setting">user=<span class="value">root            ; 使用 oxygen 用户来启动该进程</span></span>
+<span class="comment">; 程序崩溃时自动重启，重启次数是有限制的，默认为3次</span>
+<span class="setting">autorestart=<span class="value"><span class="keyword">true</span></span></span>
+<span class="setting">startretries=<span class="value"><span class="number">9999999999</span></span></span>
+<span class="setting">redirect_stderr=<span class="value"><span class="keyword">true</span>        ; 重定向输出的日志</span></span>
+<span class="setting">stdout_logfile = <span class="value">/var/log/test.log</span></span>
+<span class="setting">loglevel=<span class="value">info</span></span>
+</code></pre><p>然后就可以安心干活，不用盯着论坛刷帖了~~</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -155,9 +163,14 @@ W/System.err(<span class="number">24780</span>):    <span class="keyword">at</sp
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/移动安全/">移动安全</a>
+  <a class="article-category-link" href="/categories/折腾不止/">折腾不止</a>
 </div>
 
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/python/">python</a>
+  </div>
 
 </div>
 
@@ -165,7 +178,7 @@ W/System.err(<span class="number">24780</span>):    <span class="keyword">at</sp
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2016/04/07/logcat使用指南/" data-title="logcat使用指南 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  <div data-url="http://xdxd.love/2016/09/26/小脚本之监控论坛帖子更新并发送邮件通知/" data-title="小脚本之监控论坛帖子更新并发送邮件通知 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -178,19 +191,11 @@ W/System.err(<span class="number">24780</span>):    <span class="keyword">at</sp
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2016/04/08/smali插桩调试apk/" title="smali插桩调试apk">
-  <strong>上一篇：</strong><br/>
-  <span>
-  smali插桩调试apk</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2016/03/28/bugfree任意文件伤上传漏洞/"  title="bugfree任意文件上传漏洞">
+<a href="/2016/09/20/逆向路由器固件之动态调试/"  title="逆向路由器固件之动态调试">
  <strong>下一篇：</strong><br/> 
- <span>bugfree任意文件上传漏洞
+ <span>逆向路由器固件之动态调试
 </span>
 </a>
 </div>
@@ -199,7 +204,7 @@ W/System.err(<span class="number">24780</span>):    <span class="keyword">at</sp
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2016/04/07/logcat使用指南/" data-title="logcat使用指南" data-url="http://xdxd.love/2016/04/07/logcat使用指南/"></div>
+	<div class="ds-thread" data-thread-key="2016/09/26/小脚本之监控论坛帖子更新并发送邮件通知/" data-title="小脚本之监控论坛帖子更新并发送邮件通知" data-url="http://xdxd.love/2016/09/26/小脚本之监控论坛帖子更新并发送邮件通知/"></div>
 </section>
 
 
@@ -209,7 +214,7 @@ W/System.err(<span class="number">24780</span>):    <span class="keyword">at</sp
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#案例"><span class="toc-number">1.</span> <span class="toc-text">案例</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">2.</span> <span class="toc-text">参考资料</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#需求"><span class="toc-number">1.</span> <span class="toc-text">需求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实现"><span class="toc-number">2.</span> <span class="toc-text">实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Supervisord"><span class="toc-number">3.</span> <span class="toc-text">Supervisord</span></a></li></ol>
  
   </div>
 

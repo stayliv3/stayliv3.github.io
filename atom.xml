@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-09-22T06:21:59.000Z</updated>
+  <updated>2016-09-26T06:29:27.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -13,6 +13,71 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[小脚本之监控论坛帖子更新并发送邮件通知]]></title>
+    <link href="http://xdxd.love/2016/09/26/%E5%B0%8F%E8%84%9A%E6%9C%AC%E4%B9%8B%E7%9B%91%E6%8E%A7%E8%AE%BA%E5%9D%9B%E5%B8%96%E5%AD%90%E6%9B%B4%E6%96%B0%E5%B9%B6%E5%8F%91%E9%80%81%E9%82%AE%E4%BB%B6%E9%80%9A%E7%9F%A5/"/>
+    <id>http://xdxd.love/2016/09/26/小脚本之监控论坛帖子更新并发送邮件通知/</id>
+    <published>2016-09-26T06:19:44.000Z</published>
+    <updated>2016-09-26T06:29:27.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="需求">需求</h2><p>想要监控某个论坛是否有更新帖。如果有帖子更新并且标题符合某种条件就发送邮件通知</p>
+<h2 id="实现">实现</h2><p>用python来实现比较简单，不到100行代码。用requests进行http请求，BeautifulSoup进行html解析。为了加快请求响应速度，设置useragent为手机的useragent，这样子就可以返回手机页面。</p>
+<p>编写一个函数获取第一条帖子的标题。这里的例子为discuz论坛。</p>
+<pre><code><span class="function"><span class="keyword">def</span> <span class="title">getnewesttitle</span><span class="params">()</span>:</span>
+    url = <span class="string">'http://www.test.net/forum.php?mod=forumdisplay&amp;fid=33&amp;filter=author&amp;orderby=dateline'</span>
+    headers = {<span class="string">'user-agent'</span>: <span class="string">'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.76 Mobile Safari/537.36'</span>}
+    r = requests.get(url, headers=headers)
+    soup = BeautifulSoup(r.text)
+    newest = soup.find(<span class="string">'span'</span>,class_=<span class="string">'by'</span>)
+    <span class="keyword">return</span> newest.parent.text
+</code></pre><p>主要逻辑为运行时先获取第一条帖子的标题，并保存。然后不断循环获取第一条帖子的标题，如果跟之前保存的不一样，就认为有帖子更新。</p>
+<pre><code>newesttitle = <span class="function"><span class="title">getnewesttitle</span><span class="params">()</span></span>
+while True:
+    try:
+        thenexttitle = <span class="function"><span class="title">getnewesttitle</span><span class="params">()</span></span>
+        <span class="function"><span class="title">print</span><span class="params">(<span class="string">'monitoring'</span>)</span></span>
+        print newesttitle.<span class="function"><span class="title">encode</span><span class="params">(<span class="string">'utf-8'</span>)</span></span>
+        print thenexttitle.<span class="function"><span class="title">encode</span><span class="params">(<span class="string">'utf-8'</span>)</span></span>
+        <span class="keyword">if</span> thenexttitle != newesttitle:
+            newesttitle = thenexttitle
+            <span class="function"><span class="title">send_mail</span><span class="params">(smtp_user, smtp_pass, thenexttitle.strip()</span></span>, thenexttitle.<span class="function"><span class="title">strip</span><span class="params">()</span></span>)
+        <span class="keyword">else</span>:
+            pass
+    except RuntimeError:
+        <span class="function"><span class="title">print</span><span class="params">(RuntimeError)</span></span>
+    <span class="tag">time</span>.<span class="function"><span class="title">sleep</span><span class="params">(<span class="number">1</span>)</span></span>
+</code></pre><p>发送邮件采用QQ邮箱，用sender模块。</p>
+<pre><code><span class="function"><span class="keyword">def</span> <span class="title">send_mail</span><span class="params">(smtp_user, smtp_pass, subject=<span class="string">'test'</span>, body=<span class="string">'test'</span>, sendto=sendto, smtp_server=<span class="string">'smtp.qq.com'</span>,
+              smtp_port=<span class="number">465</span>)</span>:</span>
+    mail = Mail(smtp_server, port=smtp_port, username=smtp_user, password=smtp_pass, use_tls=<span class="keyword">False</span>, use_ssl=<span class="keyword">True</span>,
+                debug_level=<span class="keyword">None</span>)
+    mail.send_message(subject, fromaddr=smtp_user, to=sendto, body=body)
+</code></pre><h2 id="Supervisord">Supervisord</h2><p>使用Supervisord做进程管理，如果程序挂掉，可以自动重启。</p>
+<p>supervisord配置为：</p>
+<pre><code><span class="title">[program:gettahua]</span>
+<span class="setting">command=<span class="value">python get.py</span></span>
+<span class="comment">;numprocs=1                 ; 默认为1</span>
+<span class="comment">;process_name=%(program_name)s   ; 默认为 %(program_name)s，即 [program:x] 中的 x</span>
+<span class="setting">directory=<span class="value">/root/ ; 执行 command 之前，先切换到工作目录</span></span>
+<span class="setting">user=<span class="value">root            ; 使用 oxygen 用户来启动该进程</span></span>
+<span class="comment">; 程序崩溃时自动重启，重启次数是有限制的，默认为3次</span>
+<span class="setting">autorestart=<span class="value"><span class="keyword">true</span></span></span>
+<span class="setting">startretries=<span class="value"><span class="number">9999999999</span></span></span>
+<span class="setting">redirect_stderr=<span class="value"><span class="keyword">true</span>        ; 重定向输出的日志</span></span>
+<span class="setting">stdout_logfile = <span class="value">/var/log/test.log</span></span>
+<span class="setting">loglevel=<span class="value">info</span></span>
+</code></pre><p>然后就可以安心干活，不用盯着论坛刷帖了~~</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h2 id="需求">需求</h2><p>想要监控某个论坛是否有更新帖。如果有帖子更新并且标题符合某种条件就发送邮件通知</p>
+<h2 id="实现">实现</h2><p>用python来实现比较简单，不到100行代码。用requests进行http请求，BeautifulS]]>
+    </summary>
+    
+      <category term="python" scheme="http://xdxd.love/tags/python/"/>
+    
+      <category term="折腾不止" scheme="http://xdxd.love/categories/%E6%8A%98%E8%85%BE%E4%B8%8D%E6%AD%A2/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[逆向路由器固件之动态调试]]></title>
@@ -1117,59 +1182,6 @@ divEl.innerHTML = payload;
     <summary type="html">
     
     </summary>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[jsonp漏洞分析]]></title>
-    <link href="http://xdxd.love/2016/03/10/jsonp%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"/>
-    <id>http://xdxd.love/2016/03/10/jsonp漏洞分析/</id>
-    <published>2016-03-10T02:46:53.000Z</published>
-    <updated>2016-03-10T07:06:32.000Z</updated>
-    <content type="html"><![CDATA[<h1 id="漏洞原理">漏洞原理</h1><p>json(javascript object notation)是javascript对象表示法的意思。</p>
-<p>比如：</p>
-<pre><code>var impromptu_object = {
-    <span class="string">"given_name"</span> : <span class="string">"john"</span>,
-    <span class="string">"family_name"</span>: <span class="string">"smith"</span>,
-    <span class="string">"lucky_numbers"</span>: [<span class="number">11630</span>,<span class="number">12067</span>,<span class="number">12407</span>,<span class="number">12887</span>]
-};
-alert(impromptu_object.given_name);
-</code></pre><p>运行结果是弹出john。</p>
-<p>jsonp字面上的含义是”填充式(padding)的JSON”,它通过填充二外的内容吧JSON序列化包装起来，变成一段有效的可以独立运行的Javascript语句。常见的例子包括函数调用(例如callback_function({…JSON data…}))或变量赋值(var return_value = {…JSON data…})</p>
-<h1 id="利用方式">利用方式</h1><p>返回值形式为：变量赋值的形式</p>
-<pre><code>Qmail.newMailsList={total:446,mailHome:"http://mail.qq.com/cgi-bin/login?f...
-
-
-<span class="tag">&lt;<span class="title">script</span>&gt;</span><span class="actionscript">  
-<span class="keyword">var</span> Qmail={};   先定义变量
-</span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>  
-<span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"http://mail.qq.com/cgi-bin/login?fun=passport&amp;target=MLIST&amp;t=login.js&amp;pagesize=10&amp;resp_charset=gb2312&amp;1=3"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>  
-<span class="tag">&lt;<span class="title">script</span>&gt;</span><span class="javascript">  
-alert(Qmail.newMailsList.nextUrl);  
-alert(<span class="built_in">document</span>.scripts[<span class="number">1</span>].src=Qmail.newMailsList.nextUrl);  
-alert(Qmail.newMailsList.summary);  
-</span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>  
-</code></pre><p>返回值形式为函数调用</p>
-<pre><code><span class="tag">&lt;<span class="title">script</span>&gt;</span><span class="actionscript">  
-<span class="function"><span class="keyword">function</span> <span class="title">wooyun_callback</span><span class="params">(a)</span></span>{  
-alert(a);  
-}  
-</span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>  
-<span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"http://www.wooyun.org/userdata.php?callback=wooyun_callback"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>  
-</code></pre><h1 id="防御方案">防御方案</h1><p>1，对于同域的json使用情况下，可以在数据的输出头部加入while(1);的方式避免数据被script标签的方式引用，这可以防止一些比较有特性的浏览器里导致的数据泄漏。腾讯的一个案例加了”-1”</p>
-<pre><code><span class="comment">//Ignoring The First Item "-1"Qmail.newMailsList={total:</span>
-</code></pre><p>2,referer的来源限制，利用前端referer的不可伪造性来保障请求数据的应用来源于可信的地方，此种方式力度较稀，完全依赖于referer，某些情况下（如存在xss）可能导致被绕过。</p>
-<p>3,token的加入，严格来说，这种利用javascript hijacking的方式获取数据是CSRF的一种，不过较之传统的CSRF不能获取数据只能提交而言，这种方式利用javascript可以获取一些敏感信息而已。如果我们能让攻击者对接口未知，就可以实现json hijacking的防御了。利用token对调用者的身份进行认证，这种方式对于调用者的身份会要求力度较细，但是一旦出现xss也可能导致前端Token的泄露，从而导致保护失效。</p>
-<h1 id="参考资料">参考资料</h1><p><a href="http://blog.knownsec.com/2015/03/jsonp_security_technic/" target="_blank" rel="external">知道创宇  JSONP 安全攻防技术</a></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<h1 id="漏洞原理">漏洞原理</h1><p>json(javascript object notation)是javascript对象表示法的意思。</p>
-<p>比如：</p>
-<pre><code>var impromptu_object = {
-    <span ]]>
-    </summary>
-    
-      <category term="前端安全" scheme="http://xdxd.love/categories/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8/"/>
     
   </entry>
   
