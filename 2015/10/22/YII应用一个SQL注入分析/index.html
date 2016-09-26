@@ -11,29 +11,29 @@
     
 
     
-    <meta name="description" content="#漏洞发现过程黑盒测试发现。使用工具burpsuite。当在购物车中删除商品时，发送数据包如下：
+    <meta name="description" content="漏洞发现过程黑盒测试发现。使用工具burpsuite。当在购物车中删除商品时，发送数据包如下：
 POST /cart/miniDel.html HTTP/1.1
 id=219&apos;
 报sql语法错误，经过手工确认可以注入sql语句。
-Exception (Database Exception) &amp;amp;#039;yii\db\Exception&amp;amp;#039; with message &amp;am">
+Exception (Database Exception) &amp;amp;#039;yii\db\Exception&amp;amp;#039; with message &amp;amp">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Yii应用一个SQL注入分析">
 <meta property="og:url" content="http://xdxd.love/2015/10/22/YII应用一个SQL注入分析/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="#漏洞发现过程黑盒测试发现。使用工具burpsuite。当在购物车中删除商品时，发送数据包如下：
+<meta property="og:description" content="漏洞发现过程黑盒测试发现。使用工具burpsuite。当在购物车中删除商品时，发送数据包如下：
 POST /cart/miniDel.html HTTP/1.1
 id=219&apos;
 报sql语法错误，经过手工确认可以注入sql语句。
-Exception (Database Exception) &amp;amp;#039;yii\db\Exception&amp;amp;#039; with message &amp;am">
+Exception (Database Exception) &amp;amp;#039;yii\db\Exception&amp;amp;#039; with message &amp;amp">
 <meta property="og:image" content="http://xdxd.love/images/yiisqli1.png">
-<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+<meta property="og:updated_time" content="2016-09-26T07:09:07.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Yii应用一个SQL注入分析">
-<meta name="twitter:description" content="#漏洞发现过程黑盒测试发现。使用工具burpsuite。当在购物车中删除商品时，发送数据包如下：
+<meta name="twitter:description" content="漏洞发现过程黑盒测试发现。使用工具burpsuite。当在购物车中删除商品时，发送数据包如下：
 POST /cart/miniDel.html HTTP/1.1
 id=219&apos;
 报sql语法错误，经过手工确认可以注入sql语句。
-Exception (Database Exception) &amp;amp;#039;yii\db\Exception&amp;amp;#039; with message &amp;am">
+Exception (Database Exception) &amp;amp;#039;yii\db\Exception&amp;amp;#039; with message &amp;amp">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -109,17 +109,17 @@ Exception (Database Exception) &amp;amp;#039;yii\db\Exception&amp;amp;#039; with
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#漏洞发现过程"><span class="toc-number">1.</span> <span class="toc-text">漏洞发现过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码分析跟踪"><span class="toc-number">2.</span> <span class="toc-text">代码分析跟踪</span></a></li></ol>
 		
 		</div>
 		
-		<p>#漏洞发现过程<br>黑盒测试发现。使用工具burpsuite。当在购物车中删除商品时，发送数据包如下：</p>
+		<h2 id="漏洞发现过程">漏洞发现过程</h2><p>黑盒测试发现。使用工具burpsuite。当在购物车中删除商品时，发送数据包如下：</p>
 <pre><code>POST /cart/miniDel.html HTTP/<span class="number">1.1</span>
 id=<span class="number">219</span>'
 </code></pre><p>报sql语法错误，经过手工确认可以注入sql语句。</p>
 <pre><code>Exception (Database Exception) &amp;<span class="string">#039</span>;yii\db\Exception&amp;<span class="string">#039</span>; <span class="keyword">with</span> <span class="keyword">message</span> &amp;<span class="string">#039</span>;SQLSTATE[<span class="number">42000</span>]: Syntax error <span class="keyword">or</span> access violation: <span class="number">1064</span> You have an error <span class="keyword">in</span> your SQL syntax; check the manual that corresponds <span class="keyword">to</span> your MySQL server version <span class="keyword">for</span> the right syntax <span class="keyword">to</span> use <span class="keyword">near</span> &amp;<span class="string">#039</span>;&amp;<span class="string">#039</span>;)&amp;<span class="string">#039</span>; at line <span class="number">1</span>
 </code></pre><p>SQL注入是高危漏洞。这里利用这个漏洞可能导致数据库所有信息泄漏。</p>
-<p>#代码分析跟踪<br>跟踪分析代码从controller跟到model，到Yii框架的api就可以清晰的获知整个数据在应用内的流向和进入的函数。<br>url/cart/miniDel.html路由到/mall/apps/main/controllers/CartController.php中的actionMiniDel方法：</p>
+<h2 id="代码分析跟踪">代码分析跟踪</h2><p>跟踪分析代码从controller跟到model，到Yii框架的api就可以清晰的获知整个数据在应用内的流向和进入的函数。<br>url/cart/miniDel.html路由到/mall/apps/main/controllers/CartController.php中的actionMiniDel方法：</p>
 <pre><code>/**
  * MINI层删除交互
  */
@@ -295,7 +295,7 @@ operator format: [operator, operand1, operand2, ...]
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#漏洞发现过程"><span class="toc-number">1.</span> <span class="toc-text">漏洞发现过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码分析跟踪"><span class="toc-number">2.</span> <span class="toc-text">代码分析跟踪</span></a></li></ol>
  
   </div>
 
