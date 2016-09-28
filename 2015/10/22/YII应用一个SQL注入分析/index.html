@@ -26,7 +26,7 @@ id=219&apos;
 报sql语法错误，经过手工确认可以注入sql语句。
 Exception (Database Exception) &amp;amp;#039;yii\db\Exception&amp;amp;#039; with message &amp;amp">
 <meta property="og:image" content="http://xdxd.love/images/yiisqli1.png">
-<meta property="og:updated_time" content="2016-09-26T07:09:07.000Z">
+<meta property="og:updated_time" content="2016-09-26T07:11:26.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Yii应用一个SQL注入分析">
 <meta name="twitter:description" content="漏洞发现过程黑盒测试发现。使用工具burpsuite。当在购物车中删除商品时，发送数据包如下：
@@ -109,7 +109,7 @@ Exception (Database Exception) &amp;amp;#039;yii\db\Exception&amp;amp;#039; with
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#漏洞发现过程"><span class="toc-number">1.</span> <span class="toc-text">漏洞发现过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码分析跟踪"><span class="toc-number">2.</span> <span class="toc-text">代码分析跟踪</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#漏洞发现过程"><span class="toc-number">1.</span> <span class="toc-text">漏洞发现过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码分析跟踪"><span class="toc-number">2.</span> <span class="toc-text">代码分析跟踪</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码修复方案"><span class="toc-number">3.</span> <span class="toc-text">代码修复方案</span></a></li></ol>
 		
 		</div>
 		
@@ -218,7 +218,7 @@ public static <span class="keyword">function</span> deleteAll(<span class="varia
 <pre><code>$user=<span class="attribute">Yii</span>::app<span class="function"><span class="params">()</span>-&gt;</span>db-&gt;createCommand<span class="function"><span class="params">()</span>
 -&gt;</span><span class="keyword">delete</span>(<span class="string">'tbl_user'</span>, <span class="string">'user_id=:id'</span>, array(<span class="string">':id'</span>=&gt;<span class="number">2</span>));
 </code></pre><p>这里用户输入直接拼接到了$condition里，而condition是Where的条件。可以有两种类型，字符串或者数组。关于Yii如何处理$condition可以参考<a href="http://www.yiiframework.com/doc-2.0/yii-db-query.html#where(" target="_blank" rel="external">api手册</a>-detail).condition为字符串时，直接作为where的条件进入SQL语句。因为这里把用户输入放到了condition字符串中，所以导致了SQL注入。</p>
-<p>#代码修复方案<br>Yii处理$condition的<a href="http://www.yiiframework.com/doc-2.0/yii-db-query.html#where(" target="_blank" rel="external">api手册</a>-detail)中可以得知，conditon为数组的时候有两种形式：</p>
+<h2 id="代码修复方案">代码修复方案</h2><p>Yii处理$condition的<a href="http://www.yiiframework.com/doc-2.0/yii-db-query.html#where(" target="_blank" rel="external">api手册</a>-detail)中可以得知，conditon为数组的时候有两种形式：</p>
 <pre><code>The <span class="variable">$condition</span> parameter should be either a string (e.g. <span class="string">'id=1'</span>) or an <span class="keyword">array</span>.
 The <span class="variable">$condition</span> specified <span class="keyword">as</span> an <span class="keyword">array</span> can be <span class="keyword">in</span> one <span class="keyword">of</span> the following two formats:
 hash format: [<span class="string">'column1'</span> =&gt; value1, <span class="string">'column2'</span> =&gt; value2, ...]
@@ -295,7 +295,7 @@ operator format: [operator, operand1, operand2, ...]
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#漏洞发现过程"><span class="toc-number">1.</span> <span class="toc-text">漏洞发现过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码分析跟踪"><span class="toc-number">2.</span> <span class="toc-text">代码分析跟踪</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#漏洞发现过程"><span class="toc-number">1.</span> <span class="toc-text">漏洞发现过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码分析跟踪"><span class="toc-number">2.</span> <span class="toc-text">代码分析跟踪</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码修复方案"><span class="toc-number">3.</span> <span class="toc-text">代码修复方案</span></a></li></ol>
  
   </div>
 
@@ -357,7 +357,7 @@ operator format: [operator, operand1, operand2, ...]
 		  
 		
 		  
-			<li><a href="/categories/转载收藏/" title="转载收藏">转载收藏<sup>2</sup></a></li>
+			<li><a href="/categories/转载收藏/" title="转载收藏">转载收藏<sup>1</sup></a></li>
 		  
 		
 		  
@@ -374,7 +374,7 @@ operator format: [operator, operand1, operand2, ...]
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/php/" title="php">php<sup>10</sup></a></li>
+				<li><a href="/tags/php/" title="php">php<sup>9</sup></a></li>
 			
 		
 			
