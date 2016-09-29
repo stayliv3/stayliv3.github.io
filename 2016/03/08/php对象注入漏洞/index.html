@@ -15,7 +15,7 @@
 用户可控的数据进入了unserialize函数进行对象重建，通常通过(但不限于)魔术方法进行利用
 利用方式通常利用wakeup或destruct魔幻方法有关，但还有很多其他常见注入点。
 修复方案避免用户可控的输入进入unserialize函数
-漏洞代码ph">
+漏洞代码&amp;l">
 <meta property="og:type" content="article">
 <meta property="og:title" content="php对象注入漏洞简介">
 <meta property="og:url" content="http://xdxd.love/2016/03/08/php对象注入漏洞/index.html">
@@ -24,15 +24,16 @@
 用户可控的数据进入了unserialize函数进行对象重建，通常通过(但不限于)魔术方法进行利用
 利用方式通常利用wakeup或destruct魔幻方法有关，但还有很多其他常见注入点。
 修复方案避免用户可控的输入进入unserialize函数
-漏洞代码ph">
-<meta property="og:updated_time" content="2016-09-29T07:54:07.000Z">
+漏洞代码&amp;l">
+<meta property="og:image" content="http://xdxd.love/images/phpobjectinjection1.png">
+<meta property="og:updated_time" content="2016-09-29T08:01:35.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="php对象注入漏洞简介">
 <meta name="twitter:description" content="漏洞原理理解php对象注入,需要了解基本的php面向对象编程的概念和php中的魔术方法。可以参考理解php对象注入,文中练习代码可以在这里下载
 用户可控的数据进入了unserialize函数进行对象重建，通常通过(但不限于)魔术方法进行利用
 利用方式通常利用wakeup或destruct魔幻方法有关，但还有很多其他常见注入点。
 修复方案避免用户可控的输入进入unserialize函数
-漏洞代码ph">
+漏洞代码&amp;l">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -116,8 +117,8 @@
 <p>用户可控的数据进入了unserialize函数进行对象重建，通常通过(但不限于)魔术方法进行利用</p>
 <h1 id="利用方式">利用方式</h1><p>通常利用<strong>wakeup或</strong>destruct魔幻方法有关，但还有很多其他常见注入点。</p>
 <h1 id="修复方案">修复方案</h1><p>避免用户可控的输入进入unserialize函数</p>
-<h1 id="漏洞代码">漏洞代码</h1><p>php</p>
-<pre><code>class RunCode
+<h1 id="漏洞代码">漏洞代码</h1><pre><code>&lt;?php
+class RunCode
 {
    public <span class="variable">$code</span>;
    function __construct()
@@ -180,6 +181,7 @@ echo <span class="string">"Array parameter is missing"</span>;
 
 echo serialize(<span class="variable">$usr</span>);
 </code></pre><p>生成的序列化数据为：<code>O:7:&quot;RunCode&quot;:2:{s:3:&quot;age&quot;;i:0;s:4:&quot;code&quot;;s:10:&quot;phpinfo();&quot;;}</code></p>
+<p><img src="/images/phpobjectinjection1.png" alt=""></p>
   
 	</div>
 		<footer class="article-footer clearfix">
