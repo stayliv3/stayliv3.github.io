@@ -78,6 +78,76 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
+    <a href="/2015/03/30/Bar-Mitzvah-Attack/" title="Bar Mitzvah Attack" itemprop="url">
+  
+    <h1 itemprop="name">Bar Mitzvah Attack</h1>
+    
+     
+           <p itemprop="description" >漏洞危害：RC4 算法存在缺陷，它能够在某些情况下泄露SSL/TLS加密流量中的密文，从而将账户用户名密码，信用卡数据和其他敏感信息泄露给黑客。
+漏洞评级： 高
+修复建议：禁用RC4算法 2015-1-5 开始 github 已经停止支持RC4 算法了。禁用RC4会导致IE6无法</p>
+        
+    
+    <time datetime="2015-03-30T02:28:08.000Z" itemprop="datePublished">Mar 30 2015</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2015/03/25/maccms/" title="maccms urldecode导致的注入" itemprop="url">
+  
+    <h1 itemprop="name">maccms urldecode导致的注入</h1>
+    
+     
+           <p itemprop="description" >分析maccms的历史漏洞，发现在大量白帽子的洗礼下，安全性的提升还是很快的。尤其是引入360_safe3.
+
+php导致漏洞的利用成本增加。记录一下分析相关代码的过程。。在最新版中这些漏洞都已经修复了。而且最新版的360也开始检测urldecode之前的变量是否存在危险字符了。</p>
+        
+    
+    <time datetime="2015-03-25T08:34:58.000Z" itemprop="datePublished">Mar 25 2015</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2015/03/24/xionghaicms/" title="熊海cms 代码审计" itemprop="url">
+  
+    <h1 itemprop="name">熊海cms 代码审计</h1>
+    
+     
+           <p itemprop="description" >官网：http://www.isea.pw/
+#问题一：本地文件包含
+&amp;lt;?php
+//单一入口模式
+error_reporting(0); //关闭错误显示
+$file=addslashes($_GET[&#39;r&#39;]); //接收文件名
+$action=$file==&#39;&#39;?&#39;i</p>
+        
+    
+    <time datetime="2015-03-24T08:24:05.000Z" itemprop="datePublished">Mar 24 2015</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
     <a href="/2015/03/24/phpshe/" title="phpshe 商城安装过程分析" itemprop="url">
   
     <h1 itemprop="name">phpshe 商城安装过程分析</h1>
@@ -233,74 +303,6 @@ burpsuite自动生成csrf poc的功能已经很强大了。默认可以生成</p
 
 
 
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2014/11/25/discuz/" title="discuz X 任意文件删除漏洞学习" itemprop="url">
-  
-    <h1 itemprop="name">discuz X 任意文件删除漏洞学习</h1>
-    
-     
-           <p itemprop="description" >##测试方式漏洞来源：http://www.wooyun.org/bugs/wooyun-2010-065513先说一下这个漏洞的利用过程吧。这个原帖里已经写的比较清楚了。注册用户。1，访问：http://localhost/Discuz_X3.1_SC_UTF8/upload/</p>
-        
-    
-    <time datetime="2014-11-25T12:46:47.000Z" itemprop="datePublished">Nov 25 2014</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2014/11/17/strcmp/" title="strcmp绕过问题" itemprop="url">
-  
-    <h1 itemprop="name">strcmp绕过问题</h1>
-    
-     
-           <p itemprop="description" >官方说明:
-Note a difference between 5.2 and 5.3 versions
-
-echo (int)strcmp(&#39;pending&#39;,array());
-will output -1 in PHP 5.2.16 (probably in all ver</p>
-        
-    
-    <time datetime="2014-11-16T20:04:14.000Z" itemprop="datePublished">Nov 17 2014</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2014/10/31/mysqlfeature/" title="mysql的几个小特性在sql注入中的应用" itemprop="url">
-  
-    <h1 itemprop="name">mysql的几个小特性在sql注入中的应用</h1>
-    
-     
-           <p itemprop="description" >mysql的几个小特性在sql注入中的应用
-###参考资料
-https://websec.wordpress.com/2008/09/09/mysql-authentication-bypass/
-http://bugs.mysql.com/bug.php?id=39337
-ht</p>
-        
-    
-    <time datetime="2014-10-30T20:04:08.000Z" itemprop="datePublished">Oct 31 2014</time>
-  </a>
-</section>
-
-
-
-
-
-
 
   <nav id="page-nav" class="clearfix unexpand">
     <a class="extend prev" rel="prev" href="/page/10/"><span></span>Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/12/">Next<span></span></a>
@@ -329,7 +331,11 @@ ht</p>
 		<ul>
 		
 		  
-			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>9</sup></a></li>
+			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>10</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/人生苦短/" title="人生苦短">人生苦短<sup>1</sup></a></li>
 		  
 		
 		  
@@ -351,7 +357,7 @@ ht</p>
 		  
 		
 		  
-			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>4</sup></a></li>
+			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>5</sup></a></li>
 		  
 		
 		  

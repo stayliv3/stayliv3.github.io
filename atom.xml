@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-09-26T06:29:27.000Z</updated>
+  <updated>2016-10-10T09:20:25.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -13,6 +13,62 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[常用linux命令]]></title>
+    <link href="http://xdxd.love/2016/10/10/%E5%B8%B8%E7%94%A8linux%E5%91%BD%E4%BB%A4/"/>
+    <id>http://xdxd.love/2016/10/10/常用linux命令/</id>
+    <published>2016-10-10T07:58:52.000Z</published>
+    <updated>2016-10-10T09:20:25.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="打包目录文件">打包目录文件</h2><p>示例一：将整个 /etc 目录下的文件全部打包成为 /tmp/etc.tar</p>
+<pre><code>[root<span class="constant">@linux</span> ~]<span class="preprocessor"># tar -cvf /tmp/etc.tar /etc &lt;==仅打包，不压缩！</span>
+[root<span class="constant">@linux</span> ~]<span class="preprocessor"># tar -zcvf /tmp/etc.tar.gz /etc &lt;==打包后，以 gzip 压缩</span>
+[root<span class="constant">@linux</span> ~]<span class="preprocessor"># tar -jcvf /tmp/etc.tar.bz2 /etc &lt;==打包后，以 bzip2 压缩</span>
+</code></pre><h2 id="使用nc传输文件">使用nc传输文件</h2><pre><code>我来发送（ubuntu <span class="number">10.04</span>）：  $ nc 接收者ip 端口号 &lt; 要发送的文件 
+同事接收（ubuntu <span class="number">12.04</span>）：  $ nc -l 端口号 &gt; 要保存的文件名  
+注： 端口号（<span class="number">1024</span> ～ <span class="number">65535</span>）要匹配
+</code></pre>]]></content>
+    <summary type="html">
+    <![CDATA[<h2 id="打包目录文件">打包目录文件</h2><p>示例一：将整个 /etc 目录下的文件全部打包成为 /tmp/etc.tar</p>
+<pre><code>[root<span class="constant">@linux</span> ~]<span class=]]>
+    </summary>
+    
+      <category term="折腾不止" scheme="http://xdxd.love/categories/%E6%8A%98%E8%85%BE%E4%B8%8D%E6%AD%A2/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[esp8266芯片相关]]></title>
+    <link href="http://xdxd.love/2016/10/09/esp8266%E8%8A%AF%E7%89%87%E7%9B%B8%E5%85%B3/"/>
+    <id>http://xdxd.love/2016/10/09/esp8266芯片相关/</id>
+    <published>2016-10-09T09:11:15.000Z</published>
+    <updated>2016-10-09T09:20:47.000Z</updated>
+    <content type="html"><![CDATA[<h1 id="相关工具">相关工具</h1><p><a href="http://espressif.com/en/support/download/other-tools?keys=&amp;field_type_tid%5B%5D=14" target="_blank" rel="external">flash烧写工具</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h1 id="相关工具">相关工具</h1><p><a href="http://espressif.com/en/support/download/other-tools?keys=&amp;field_type_tid%5B%5D=14" target="_blank" r]]>
+    </summary>
+    
+      <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[台湾游记]]></title>
+    <link href="http://xdxd.love/2016/10/09/%E5%8F%B0%E6%B9%BE%E6%B8%B8%E8%AE%B0/"/>
+    <id>http://xdxd.love/2016/10/09/台湾游记/</id>
+    <published>2016-10-09T07:23:23.000Z</published>
+    <updated>2016-10-10T09:25:31.000Z</updated>
+    <content type="html"><![CDATA[<p><a href="http://bbs.qyer.com/forum-52-0-1-1.html?#gotonav" target="_blank" rel="external">穷游网台湾精华帖</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p><a href="http://bbs.qyer.com/forum-52-0-1-1.html?#gotonav" target="_blank" rel="external">穷游网台湾精华帖</a></p>
+]]>
+    </summary>
+    
+      <category term="人生苦短" scheme="http://xdxd.love/categories/%E4%BA%BA%E7%94%9F%E8%8B%A6%E7%9F%AD/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[小脚本之监控论坛帖子更新并发送邮件通知]]></title>
@@ -1004,184 +1060,6 @@ divEl.innerHTML = payload;
     </summary>
     
       <category term="前端安全" scheme="http://xdxd.love/categories/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[审计mybatis的sql注入]]></title>
-    <link href="http://xdxd.love/2016/03/14/%E5%AE%A1%E8%AE%A1mybatis%E7%9A%84sql%E6%B3%A8%E5%85%A5/"/>
-    <id>http://xdxd.love/2016/03/14/审计mybatis的sql注入/</id>
-    <published>2016-03-14T07:27:24.000Z</published>
-    <updated>2016-03-15T02:24:39.000Z</updated>
-    <content type="html"><![CDATA[<h1 id="mybatis_概述">mybatis 概述</h1><p><a href="http://www.mybatis.org/" target="_blank" rel="external">MyBatis</a>是支持定制化 SQL、存储过程以及高级映射的优秀的持久层框架。MyBatis 避免了几乎所有的 JDBC 代码和手动设置参数以及获取结果集。MyBatis 可以对配置和原生Map使用简单的 XML 或注解，将接口和 Java 的 POJOs(Plain Old Java Objects,普通的 Java对象)映射成数据库中的记录</p>
-<h1 id="mybatis存在的sql注入问题">mybatis存在的sql注入问题</h1><p>mybatis避免了用户直接拼接SQL语句，但是认为只要使用了mybatis就可以杜绝SQL注入的观点是不正确的。mybatis在配置SQL语句的时候，有两种描述参数的方式。<code>#{}</code>和<code>${}</code>。</p>
-<p>比如：</p>
-<pre><code>&lt;<span class="keyword">select</span> id=<span class="string">"selectPerson"</span> parameterType=<span class="string">"int"</span> resultType=<span class="string">"hashmap"</span>&gt;
-  <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> PERSON <span class="keyword">WHERE</span> ID = <span class="preprocessor">#{id}</span>
-&lt;/<span class="keyword">select</span>&gt;
-</code></pre><p>这个语句被称作 selectPerson，接受一个 int（或 Integer）类型的参数，并返回一个 HashMap类型的对象，其中的键是列名，值便是结果行中的对应值。</p>
-<p>注意参数符号：</p>
-<pre><code>#{<span class="ruby">id}</span>
-</code></pre><p>这就告诉 MyBatis 创建一个预处理语句参数，通过 JDBC，这样的一个参数在 SQL中会由一个“?”来标识，并被传递到一个新的预处理语句中，就像这样：</p>
-<pre><code>// Similar JDBC <span class="preprocessor">code</span>, NOT MyBatis…
-<span class="keyword">String </span><span class="keyword">selectPerson </span>= <span class="string">"SELECT * FROM PERSON WHERE ID=?"</span><span class="comment">;</span>
-<span class="label">PreparedStatement</span> ps = conn.prepareStatement(<span class="keyword">selectPerson);
-</span><span class="label">ps.setInt</span>(<span class="number">1</span>,id)<span class="comment">;</span>
-</code></pre><p>使用<code>#</code>mybatis会使用预编译来处理参数，这样子可以避免SQL注入。</p>
-<p>但是使用<code>$</code>描述参数会直接把变量拼接到SQL语句中，不做任何处理。相当于直接字符串拼接SQL。这样的方式就可能存在SQL注入。下面的描述来自mybatis官方文档。</p>
-<pre><code>默认情况下,使用#{}格式的语法会导致 MyBatis 创建预处理语句属性并安全地设置值（比如?）。这样做更安全，更迅速，通常也是首选做法，不过有时你只是想直接在 SQL 语句中插入一个不改变的字符串。比如，像 <span class="keyword">ORDER</span> <span class="keyword">BY</span>，你可以这样来使用：
-
-<span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="label">${columnName}</span>
-这里 MyBatis 不会修改或转义字符串。
-
-<span class="keyword">NOTE</span> 以这种方式接受从用户输出的内容并提供给语句中不变的字符串是不安全的，会导致潜在的 SQL 注入攻击，因此要么不允许用户输入这些字段，要么自行转义并检验。
-</code></pre><h1 id="demo演示">demo演示</h1><p>使用<a href="http://www.cnblogs.com/zhanjindong/p/3397828.html" target="_blank" rel="external">MyBatis使用示例</a>作为demo测试。</p>
-<p>mapper文件：</p>
-<pre><code><span class="pi">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;</span>
-<span class="doctype">&lt;!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"&gt;</span>
-<span class="tag">&lt;<span class="title">mapper</span> <span class="attribute">namespace</span>=<span class="value">"test.mybatis.UserMapper"</span>&gt;</span>
-    <span class="comment">&lt;!-- 这里namespace必须是UserMapper接口的路径” --&gt;</span>
-    <span class="tag">&lt;<span class="title">insert</span> <span class="attribute">id</span>=<span class="value">"insertUser"</span> <span class="attribute">parameterType</span>=<span class="value">"User"</span>&gt;</span>
-        insert into user(name,age) values(#{name},#{age})
-        <span class="comment">&lt;!-- 这里sql结尾不能加分号，否则报“ORA-00911”的错误 --&gt;</span>
-    <span class="tag">&lt;/<span class="title">insert</span>&gt;</span>
-    <span class="comment">&lt;!-- 这里的id必须和UserMapper接口中的接口方法名相同 --&gt;</span>
-    <span class="tag">&lt;<span class="title">select</span> <span class="attribute">id</span>=<span class="value">"getUser"</span> <span class="attribute">resultType</span>=<span class="value">"User"</span>&gt;</span>
-        select * from user where name=#{name}
-    <span class="tag">&lt;/<span class="title">select</span>&gt;</span>
-<span class="tag">&lt;/<span class="title">mapper</span>&gt;</span>
-</code></pre><p>在输入中插入单引号</p>
-<pre><code><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">getUser</span>(<span class="params"></span>) </span>{
-    SqlSession sqlSession = sqlSessionFactory.openSession();
-    <span class="keyword">try</span> {
-        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-        User user = userMapper.getUser(<span class="string">"'zhangsan"</span>);
-        System.<span class="keyword">out</span>.println(<span class="string">"name: "</span> + user.getName() + <span class="string">"|age: "</span>
-                + user.getAge());
-    } <span class="keyword">finally</span> {
-        sqlSession.close();
-    }
-</code></pre><p>查看执行的sql语句：</p>
-<p><img src="/images/mybatis21.png" alt=""></p>
-<p>可以看到输入被单引号包裹，并且对字符串中的单引号进行了转义。</p>
-<p>将<code>#</code>改成<code>$</code>,mapper文件为：</p>
-<pre><code>&lt;<span class="keyword">select</span> id=<span class="string">"getUser"</span> resultType=<span class="string">"User"</span>&gt;
-    <span class="keyword">select</span> * <span class="keyword">from</span> user <span class="keyword">where</span> name=${_parameter}
-&lt;/<span class="keyword">select</span>&gt;
-</code></pre><p>这里由于代码的写法问题，name需要改成_parameter,参考<a href="http://woshixy.blog.51cto.com/5637578/1180914" target="_blank" rel="external">Mybatis中传参包There is no getter for property named XXX in class java.lang.String</a>。</p>
-<p>查看执行的SQL语句：</p>
-<p><img src="/images/mybatis22.png" alt=""></p>
-<p>输入没有任何改变的拼接到SQL中，造成了SQL注入。</p>
-<h1 id="实战分析">实战分析</h1><p>mybatis generator插件默认生成的order by 条件是使用<code>$</code>表示变量。</p>
-<pre><code>...
- <span class="tag">&lt;<span class="title">select</span> <span class="attribute">id</span>=<span class="value">"selectByExample"</span> <span class="attribute">resultMap</span>=<span class="value">"BaseResultMap"</span> <span class="attribute">parameterType</span>=<span class="value">"com.tgwoo.ctspmt.model.MtVMsgItemExample"</span> &gt;</span>
-    <span class="tag">&lt;<span class="title">include</span> <span class="attribute">refid</span>=<span class="value">"OracleDialectPrefix"</span> /&gt;</span>
-    select
-    <span class="tag">&lt;<span class="title">if</span> <span class="attribute">test</span>=<span class="value">"distinct"</span> &gt;</span>
-      distinct
-    <span class="tag">&lt;/<span class="title">if</span>&gt;</span>
-    <span class="tag">&lt;<span class="title">include</span> <span class="attribute">refid</span>=<span class="value">"Base_Column_List"</span> /&gt;</span>
-    from CTSPMT.MT_V_MSG_ITEM
-    <span class="tag">&lt;<span class="title">if</span> <span class="attribute">test</span>=<span class="value">"_parameter != null"</span> &gt;</span>
-      <span class="tag">&lt;<span class="title">include</span> <span class="attribute">refid</span>=<span class="value">"Example_Where_Clause"</span> /&gt;</span>
-    <span class="tag">&lt;/<span class="title">if</span>&gt;</span>
-    <span class="tag">&lt;<span class="title">if</span> <span class="attribute">test</span>=<span class="value">"orderByClause != null"</span> &gt;</span>
-      order by ${orderByClause}
-    <span class="tag">&lt;/<span class="title">if</span>&gt;</span>
-    <span class="tag">&lt;<span class="title">include</span> <span class="attribute">refid</span>=<span class="value">"OracleDialectSuffix"</span> /&gt;</span>
-  <span class="tag">&lt;/<span class="title">select</span>&gt;</span>
-...
-  <span class="tag">&lt;<span class="title">sql</span> <span class="attribute">id</span>=<span class="value">"OracleDialectPrefix"</span> &gt;</span>
-    <span class="tag">&lt;<span class="title">if</span> <span class="attribute">test</span>=<span class="value">"page != null"</span> &gt;</span>
-      select * from ( select row_.*, rownum rownum_ from ( 
-    <span class="tag">&lt;/<span class="title">if</span>&gt;</span>
-  <span class="tag">&lt;/<span class="title">sql</span>&gt;</span>
-  <span class="tag">&lt;<span class="title">sql</span> <span class="attribute">id</span>=<span class="value">"OracleDialectSuffix"</span> &gt;</span>
-    <span class="tag">&lt;<span class="title">if</span> <span class="attribute">test</span>=<span class="value">"page != null"</span> &gt;</span>
-      <span class="cdata">&lt;![CDATA[ ) row_ ) where rownum_ &gt; #{page.begin} and rownum_ &lt;= #{page.end} ]]&gt;</span>
-    <span class="tag">&lt;/<span class="title">if</span>&gt;</span>
-  <span class="tag">&lt;/<span class="title">sql</span>&gt;</span>
-...
-</code></pre><p>所以使用mybatis generator插件生成的代码中，需要自己过滤order by参数，如果用户可控就会导致SQL注入。而大部分情况下，开发者可能没有意识到这个问题。</p>
-<p>以freecms为例。<a href="http://www.freeteam.cn/" target="_blank" rel="external">Freecms</a>是一款开源javacms。最新版下载<a href="http://www.freeteam.cn/freecms1.5.rar" target="_blank" rel="external">地址</a>。freecms中的orderby都是使用的<code>$</code>描述变量。</p>
-<p><img src="/images/mybatis23.png" alt=""></p>
-<p>前面的分析可以知道，这种情况，mybatis会直接拼接字符串到SQL中不做任何处理。</p>
-<p>注册用户登录访问：</p>
-<pre><code>http://192.168.99.100:8080/freecms/member/creditlog_list.do?order=extractvalue(1,concat(0x7C,(select%20user()),0x7C))
-</code></pre><p><img src="/images/mybatis24.png" alt=""></p>
-<p>查看执行的SQL为：</p>
-<p><img src="/images/mybatis25.png" alt=""></p>
-<h1 id="修复方案">修复方案</h1><p>尽量使用<code>#</code>描述参数，如果一定要使用<code>$</code>，则需要自己过滤用户输入。</p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<h1 id="mybatis_概述">mybatis 概述</h1><p><a href="http://www.mybatis.org/" target="_blank" rel="external">MyBatis</a>是支持定制化 SQL、存储过程以及高级映射的优秀的持]]>
-    </summary>
-    
-      <category term="java" scheme="http://xdxd.love/tags/java/"/>
-    
-      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[thinkphp URL命令执行漏洞分析]]></title>
-    <link href="http://xdxd.love/2016/03/11/thinkphp-URL%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"/>
-    <id>http://xdxd.love/2016/03/11/thinkphp-URL命令执行漏洞分析/</id>
-    <published>2016-03-11T07:14:03.000Z</published>
-    <updated>2016-03-11T08:06:17.000Z</updated>
-    <content type="html"><![CDATA[<p>漏洞很老了。整理一下。<a href="http://www.thinkphp.cn/info/55.html" target="_blank" rel="external">补丁地址</a></p>
-<p>代码修复的方式为：</p>
-<pre><code>/trunk/ThinkPHP/Lib/Core/Dispatcher.class.php 
-<span class="number">125</span>  -   <span class="variable">$res</span> = preg_replace(<span class="string">'@(w+)'</span>.<span class="variable">$depr</span>.<span class="string">'([^'</span>.<span class="variable">$depr</span>.<span class="string">'\/]+)@e'</span>, <span class="string">'$var[\'</span>\\<span class="number">1</span>\<span class="string">']="\\2";'</span>, implode(<span class="variable">$depr</span>,<span class="variable">$paths</span>)); 
-<span class="number">125</span>  +   <span class="variable">$res</span> = preg_replace(<span class="string">'@(w+)'</span>.<span class="variable">$depr</span>.<span class="string">'([^'</span>.<span class="variable">$depr</span>.<span class="string">'\/]+)@e'</span>, <span class="string">'$var[\'</span>\\<span class="number">1</span>\<span class="string">']=\'</span>\\<span class="number">2</span>\<span class="string">';'</span>, implode(<span class="variable">$depr</span>,<span class="variable">$paths</span>)); 
-</code></pre><p>这里导致代码执行的原因有两个，一是preg_replace使用了e修饰符，这样<code>$var[\&#39;\\1\&#39;]=&quot;\\2&quot;;</code> 会被当做php代码执行。而双引号的变量会被解析，导致了代码执行。</p>
-<p>关键代码为：</p>
-<pre><code><span class="variable">$depr</span> = C(<span class="string">'URL_PATHINFO_DEPR'</span>);
-        // 分析PATHINFO信息
-        self::getPathInfo();
-        <span class="keyword">if</span>(!self::routerCheck()){   // 检测路由规则 如果没有则按默认规则调度URL
-            <span class="variable">$paths</span> = explode(<span class="variable">$depr</span>,trim($_SERVER[<span class="string">'PATH_INFO'</span>],<span class="string">'/'</span>));
-            <span class="variable">$var</span>  =  array();
-            if (C(<span class="string">'APP_GROUP_LIST'</span>) &amp;&amp; !isset($_GET[C(<span class="string">'VAR_GROUP'</span>)])){
-                <span class="variable">$var</span>[C(<span class="string">'VAR_GROUP'</span>)] = in_array(strtolower(<span class="variable">$paths</span>[<span class="number">0</span>]),explode(<span class="string">','</span>,strtolower(C(<span class="string">'APP_GROUP_LIST'</span>))))? array_shift(<span class="variable">$paths</span>) : <span class="string">''</span>;
-                if(C(<span class="string">'APP_GROUP_DENY'</span>) &amp;&amp; in_array(strtolower(<span class="variable">$var</span>[C(<span class="string">'VAR_GROUP'</span>)]),explode(<span class="string">','</span>,strtolower(C(<span class="string">'APP_GROUP_DENY'</span>))))) {
-                    // 禁止直接访问分组
-                    exit;
-                }
-            }
-            if(!isset($_GET[C(<span class="string">'VAR_MODULE'</span>)])) {// 还没有定义模块名称
-                <span class="variable">$var</span>[C(<span class="string">'VAR_MODULE'</span>)]  =   array_shift(<span class="variable">$paths</span>);
-            }
-            <span class="variable">$var</span>[C(<span class="string">'VAR_ACTION'</span>)]  =   array_shift(<span class="variable">$paths</span>);
-            // 解析剩余的URL参数
-            <span class="variable">$res</span> = preg_replace(<span class="string">'@(\w+)'</span>.<span class="variable">$depr</span>.<span class="string">'([^'</span>.<span class="variable">$depr</span>.<span class="string">'\/]+)@e'</span>, <span class="string">'$var[\'</span>\\<span class="number">1</span>\<span class="string">']=strip_tags(\'</span>\\<span class="number">2</span>\<span class="string">');'</span>, implode(<span class="variable">$depr</span>,<span class="variable">$paths</span>));
-            $_GET   =  array_merge(<span class="variable">$var</span>,$_GET);
-        }
-</code></pre><h1 id="反思">反思</h1><p>深入理解漏洞原型，理清复杂逻辑</p>
-<h1 id="参考资料">参考资料</h1><p><a href="http://www.zzxiaoyu.cn/?post=63" target="_blank" rel="external">Thinkphp 3.0-3.1版代码执行</a></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>漏洞很老了。整理一下。<a href="http://www.thinkphp.cn/info/55.html" target="_blank" rel="external">补丁地址</a></p>
-<p>代码修复的方式为：</p>
-<pre><code>/trunk/T]]>
-    </summary>
-    
-      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[referer安全技术攻防]]></title>
-    <link href="http://xdxd.love/2016/03/10/referer%E5%AE%89%E5%85%A8%E6%8A%80%E6%9C%AF%E6%94%BB%E9%98%B2/"/>
-    <id>http://xdxd.love/2016/03/10/referer安全技术攻防/</id>
-    <published>2016-03-10T07:09:02.000Z</published>
-    <updated>2016-03-10T07:09:02.000Z</updated>
-    <content type="html"></content>
-    <summary type="html">
-    
-    </summary>
     
   </entry>
   

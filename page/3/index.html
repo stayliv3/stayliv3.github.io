@@ -78,6 +78,69 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
+    <a href="/2016/03/14/审计mybatis的sql注入/" title="审计mybatis的sql注入" itemprop="url">
+  
+    <h1 itemprop="name">审计mybatis的sql注入</h1>
+    
+     
+           <p itemprop="description" >mybatis 概述MyBatis是支持定制化 SQL、存储过程以及高级映射的优秀的持久层框架。MyBatis 避免了几乎所有的 JDBC 代码和手动设置参数以及获取结果集。MyBatis 可以对配置和原生Map使用简单的 XML 或注解，将接口和 Java 的 POJOs(Pl</p>
+        
+    
+    <time datetime="2016-03-14T07:27:24.000Z" itemprop="datePublished">Mar 14 2016</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/03/11/thinkphp-URL命令执行漏洞分析/" title="thinkphp URL命令执行漏洞分析" itemprop="url">
+  
+    <h1 itemprop="name">thinkphp URL命令执行漏洞分析</h1>
+    
+     
+           <p itemprop="description" >漏洞很老了。整理一下。补丁地址
+代码修复的方式为：
+/trunk/ThinkPHP/Lib/Core/Dispatcher.class.php 
+125  -   $res = preg_replace(&#39;@(w+)&#39;.$depr.&#39;([^&#39;.$depr.&#39;\/]+)@e&#39;, &#39;</p>
+        
+    
+    <time datetime="2016-03-11T07:14:03.000Z" itemprop="datePublished">Mar 11 2016</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/03/10/referer安全技术攻防/" title="referer安全技术攻防" itemprop="url">
+  
+    <h1 itemprop="name">referer安全技术攻防</h1>
+    
+     
+           <p itemprop="description" ></p>
+        
+    
+    <time datetime="2016-03-10T07:09:02.000Z" itemprop="datePublished">Mar 10 2016</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
     <a href="/2016/03/10/jsonp漏洞分析/" title="jsonp漏洞分析" itemprop="url">
   
     <h1 itemprop="name">jsonp漏洞分析</h1>
@@ -234,71 +297,6 @@ class Requests(Base):
 
 
 
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/01/20/input标签type为hidden时的xss利用/" title="input标签type为hidden时的xss利用" itemprop="url">
-  
-    <h1 itemprop="name">input标签type为hidden时的xss利用</h1>
-    
-     
-           <p itemprop="description" >问题场景有时候会遇到这个场景的XSS，输出在input标签的value里，可以引入双引号，所以可以引入新的属性。但是type是hidden。导致常规的一些事件没法利用。
-&amp;lt;input type=&quot;hidden&quot; name=&quot;redacted&quot; value=&quot;default&quot;</p>
-        
-    
-    <time datetime="2016-01-20T06:05:01.000Z" itemprop="datePublished">Jan 20 2016</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/01/18/ffmpeg-SSRF漏洞分析/" title="ffmpeg SSRF漏洞分析" itemprop="url">
-  
-    <h1 itemprop="name">ffmpeg SSRF漏洞分析</h1>
-    
-     
-           <p itemprop="description" >漏洞预警这个漏洞关注度不高，最先被人知道应该是俄罗斯人写的这个文章，但是俄语看不懂，google翻译也没看懂。中文的相关报道都是来自solidot15日的这个简短报道。
-而ffmpeg得反应很快，1月16日就发布了修复版本。
-
-漏洞影响如果ffmpeg解析了一个恶意的文件，会导致</p>
-        
-    
-    <time datetime="2016-01-18T10:41:41.000Z" itemprop="datePublished">Jan 18 2016</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2016/01/18/mysql表名大小写敏感问题/" title="mysql表名大小写敏感问题" itemprop="url">
-  
-    <h1 itemprop="name">mysql表名大小写敏感问题</h1>
-    
-     
-           <p itemprop="description" >测试一个程序，提示找不到表。数据库看了一下表都存在的啊。貌似就大小写不对。抓执行的sql语句看了一下：
-发现同一个表既有使用大写也有使用小写，也是醉了。google: mysql table name case sensitive就可以找到解决方案。参考mysql的文档:9.2.</p>
-        
-    
-    <time datetime="2016-01-18T08:38:54.000Z" itemprop="datePublished">Jan 18 2016</time>
-  </a>
-</section>
-
-
-
-
-
-
 
   <nav id="page-nav" class="clearfix unexpand">
     <a class="extend prev" rel="prev" href="/page/2/"><span></span>Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/4/">Next<span></span></a>
@@ -327,7 +325,11 @@ class Requests(Base):
 		<ul>
 		
 		  
-			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>9</sup></a></li>
+			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>10</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/人生苦短/" title="人生苦短">人生苦短<sup>1</sup></a></li>
 		  
 		
 		  
@@ -349,7 +351,7 @@ class Requests(Base):
 		  
 		
 		  
-			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>4</sup></a></li>
+			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>5</sup></a></li>
 		  
 		
 		  
