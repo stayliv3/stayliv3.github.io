@@ -4,24 +4,41 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>利用xposed绕过安卓SSL证书的强校验 | xd_xd&#39;s blog</title>
+    <title>unicode同形字引起的安全问题 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description" content="什么是SSL pinninghttps协议验证服务器身份的方式通常有三种，一是根据浏览器或者说操作系统（Android）自带的证书链；二是使用自签名证书；三是自签名证书加上SSL Pinning特性。第一种需要到知名证书机构购买证书，需要一定预算。第二种多见于内网使用。第三种在是安全性最高的，但是需要浏览器插件或客户端使用了SSL Pinning特性。Android应用程序在使用https协议时也">
+    <meta name="description" content="历史上的安全漏洞spotify的漏洞相关资料：
+https://labs.spotify.com/2013/06/18/creative-usernames/
+spotify的漏洞相比于github的漏洞来说是一个真正的高危漏洞，可以修改任意用户的密码。
+github的漏洞相关资料：
+https://twitter.com/GitHubSecurity/status/757686530748125">
 <meta property="og:type" content="article">
-<meta property="og:title" content="利用xposed绕过安卓SSL证书的强校验">
-<meta property="og:url" content="http://xdxd.love/2015/12/30/利用xposed绕过安卓SSL证书的强校验/index.html">
+<meta property="og:title" content="unicode同形字引起的安全问题">
+<meta property="og:url" content="http://xdxd.love/2016/10/17/unicode同形字引起的安全问题/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="什么是SSL pinninghttps协议验证服务器身份的方式通常有三种，一是根据浏览器或者说操作系统（Android）自带的证书链；二是使用自签名证书；三是自签名证书加上SSL Pinning特性。第一种需要到知名证书机构购买证书，需要一定预算。第二种多见于内网使用。第三种在是安全性最高的，但是需要浏览器插件或客户端使用了SSL Pinning特性。Android应用程序在使用https协议时也">
-<meta property="og:image" content="http://xdxd.love/images/xposed1.png">
-<meta property="og:updated_time" content="2015-12-30T03:03:50.000Z">
+<meta property="og:description" content="历史上的安全漏洞spotify的漏洞相关资料：
+https://labs.spotify.com/2013/06/18/creative-usernames/
+spotify的漏洞相比于github的漏洞来说是一个真正的高危漏洞，可以修改任意用户的密码。
+github的漏洞相关资料：
+https://twitter.com/GitHubSecurity/status/757686530748125">
+<meta property="og:image" content="http://xdxd.love/images/unicodesec1.png">
+<meta property="og:image" content="http://xdxd.love/images/unicodesec2.png">
+<meta property="og:image" content="http://xdxd.love/images/unicodesec3.png">
+<meta property="og:image" content="http://xdxd.love/images/unicode4.png">
+<meta property="og:image" content="http://xdxd.love/images/unicodesec5.png">
+<meta property="og:image" content="http://xdxd.love/images/unicodesec6.png">
+<meta property="og:updated_time" content="2016-10-17T00:25:41.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="利用xposed绕过安卓SSL证书的强校验">
-<meta name="twitter:description" content="什么是SSL pinninghttps协议验证服务器身份的方式通常有三种，一是根据浏览器或者说操作系统（Android）自带的证书链；二是使用自签名证书；三是自签名证书加上SSL Pinning特性。第一种需要到知名证书机构购买证书，需要一定预算。第二种多见于内网使用。第三种在是安全性最高的，但是需要浏览器插件或客户端使用了SSL Pinning特性。Android应用程序在使用https协议时也">
+<meta name="twitter:title" content="unicode同形字引起的安全问题">
+<meta name="twitter:description" content="历史上的安全漏洞spotify的漏洞相关资料：
+https://labs.spotify.com/2013/06/18/creative-usernames/
+spotify的漏洞相比于github的漏洞来说是一个真正的高危漏洞，可以修改任意用户的密码。
+github的漏洞相关资料：
+https://twitter.com/GitHubSecurity/status/757686530748125">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -81,14 +98,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/12/30/利用xposed绕过安卓SSL证书的强校验/" title="利用xposed绕过安卓SSL证书的强校验" itemprop="url">利用xposed绕过安卓SSL证书的强校验</a>
+      <a href="/2016/10/17/unicode同形字引起的安全问题/" title="unicode同形字引起的安全问题" itemprop="url">unicode同形字引起的安全问题</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2015-12-30T02:51:31.000Z" itemprop="datePublished"> 发表于 Dec 30 2015</time>
+    <time datetime="2016-10-17T00:25:08.000Z" itemprop="datePublished"> 发表于 Oct 17 2016</time>
     
   </p>
 </header>
@@ -97,20 +114,38 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#什么是SSL_pinning"><span class="toc-number">1.</span> <span class="toc-text">什么是SSL pinning</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JustTrustMe"><span class="toc-number">2.</span> <span class="toc-text">JustTrustMe</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">3.</span> <span class="toc-text">参考资料</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#历史上的安全漏洞"><span class="toc-number">1.</span> <span class="toc-text">历史上的安全漏洞</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#spotify的漏洞"><span class="toc-number">1.1.</span> <span class="toc-text">spotify的漏洞</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#github的漏洞"><span class="toc-number">1.2.</span> <span class="toc-text">github的漏洞</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#魔法在哪里"><span class="toc-number">2.</span> <span class="toc-text">魔法在哪里</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#编码的基础知识、unicode编码和同形字"><span class="toc-number">2.1.</span> <span class="toc-text">编码的基础知识、unicode编码和同形字</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#unicode转ascii"><span class="toc-number">2.2.</span> <span class="toc-text">unicode转ascii</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞原理"><span class="toc-number">3.</span> <span class="toc-text">漏洞原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#对微信的测试记录"><span class="toc-number">4.</span> <span class="toc-text">对微信的测试记录</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#搭建支持unicode用户名的邮件服务器"><span class="toc-number">4.1.</span> <span class="toc-text">搭建支持unicode用户名的邮件服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#绑定邮箱以及重置密码"><span class="toc-number">4.2.</span> <span class="toc-text">绑定邮箱以及重置密码</span></a></li></ol></li></ol>
 		
 		</div>
 		
-		<h1 id="什么是SSL_pinning">什么是SSL pinning</h1><p>https协议验证服务器身份的方式通常有三种，一是根据浏览器或者说操作系统（Android）自带的证书链；二是使用自签名证书；三是自签名证书加上SSL Pinning特性。第一种需要到知名证书机构购买证书，需要一定预算。第二种多见于内网使用。第三种在是安全性最高的，但是需要浏览器插件或客户端使用了SSL Pinning特性。<br>Android应用程序在使用https协议时也使用类似的3种方式验证服务器身份，分别是系统证书库、自带证书库、自带证书库 + SSL Pinning特性。<br>所以SSL Pinning，即SSL证书绑定，是验证服务器身份的一种方式，是在https协议建立通信时增加的代码逻辑，它通过自己的方式验证服务器身份，然后决定通信是否继续下去。它唯一指定了服务器的身份，所以安全性较高。</p>
-<p><img src="/images/xposed1.png" alt=""></p>
-<h1 id="JustTrustMe">JustTrustMe</h1><p>当客户端使用了SSL pinning的时候，手机导入burpsuite证书的方式也无法抓到通信包。除了修改apk验证证书逻辑重新打包的方式外，最简单的方法是使用xposed相关模块。</p>
-<p>xposed安装方法：</p>
-<p><a href="http://repo.xposed.info/module/de.robv.android.xposed.installer" target="_blank" rel="external">下载xposed安装包</a></p>
-<p>安装xposed框架到手机：</p>
-<pre><code>adb install <span class="tag">&lt;<span class="title">xposed-installer-you-just-downloaded</span>&gt;</span>.apk
-</code></pre><p>安装并启用<a href="https://github.com/Fuzion24/JustTrustMe" target="_blank" rel="external">justtrustme模块</a></p>
-<p>重启手机就可以抓到之前抓不到的https通信了。</p>
-<h1 id="参考资料">参考资料</h1><p><a href="http://www.nsfocus.com.cn/upload/contents/2015/07/2015_07241353337959.pdf" target="_blank" rel="external">http://www.nsfocus.com.cn/upload/contents/2015/07/2015_07241353337959.pdf</a></p>
+		<h1 id="历史上的安全漏洞">历史上的安全漏洞</h1><h2 id="spotify的漏洞">spotify的漏洞</h2><p>相关资料：</p>
+<p><a href="https://labs.spotify.com/2013/06/18/creative-usernames/" target="_blank" rel="external">https://labs.spotify.com/2013/06/18/creative-usernames/</a></p>
+<p>spotify的漏洞相比于github的漏洞来说是一个真正的高危漏洞，可以修改任意用户的密码。</p>
+<h2 id="github的漏洞">github的漏洞</h2><p>相关资料：</p>
+<p><a href="https://twitter.com/GitHubSecurity/status/757686530748125184" target="_blank" rel="external">https://twitter.com/GitHubSecurity/status/757686530748125184</a><br><a href="https://bounty.github.com/researchers/jagracey.html?ljh" target="_blank" rel="external">https://bounty.github.com/researchers/jagracey.html?ljh</a></p>
+<p>github的邮箱名允许unicode字符，导致可以把找回密码的token发送到攻击者的邮箱。从twitter的讨论来以及自己的测试结果来看提供邮箱服务的产品大部分都是白名单了邮箱的用户名，所以都是不可以使用unicode字符的。测试了网易的企业邮箱和腾讯的企业邮箱，都不可以使用unicode字符。所以只能自己搭一个邮件服务器来测试这个问题。</p>
+<h1 id="魔法在哪里">魔法在哪里</h1><h2 id="编码的基础知识、unicode编码和同形字">编码的基础知识、unicode编码和同形字</h2><p>参考资料：<br><a href="http://www.freebuf.com/articles/web/25623.html" target="_blank" rel="external">http://www.freebuf.com/articles/web/25623.html</a><br><a href="http://www.irongeek.com/homoglyph-attack-generator.php" target="_blank" rel="external">http://www.irongeek.com/homoglyph-attack-generator.php</a></p>
+<p>了解了编码是二进制和字符之间的映射关系之后，可以了解到unicode字符无非也是一种字符而已，只要程序支持，应该不会有任何问题。为什么这个unicode字符在处理过程中变成了另外一个字符，而且是看起来很相似的字符，难道程序也跟人眼看一样，被相同的外表迷惑了。显然程序处理的是二进制的数据，只要二进制不同，无论外表看起来多么一样，程序都应该可以分辨出来。关于unicode同形字的问题，unicode homoglyphs，其实早就有不少讨论。不过大多是利用同形字来迷惑人钓鱼之类。那么机器怎么也会被同形字迷惑呢。</p>
+<p>github的漏洞描述中是这么写的:a flaw in the way email addresses were being normalized to standard character sets when used to look up accounts during the password recovery flow. 在邮件地址标准化成标准的字符集的时候出现问题。</p>
+<p>而spoity中对有对详细漏洞的代码分析：可以看到也是对字符串的标准化操作导致unicode字符转换成了与他同形的ascii字符。</p>
+<h2 id="unicode转ascii">unicode转ascii</h2><p>参考资料：<br><a href="https://www.peterbe.com/plog/unicode-to-ascii" target="_blank" rel="external">https://www.peterbe.com/plog/unicode-to-ascii</a><br><a href="http://savanttools.com/unicode-to-ascii.asp" target="_blank" rel="external">http://savanttools.com/unicode-to-ascii.asp</a></p>
+<p>这里才是最有意思的地方，为什么对unicode字符的标准化会导致unicode转变成了对应的同形字。电脑应该是只看二进制，又不是跟人一样，会被同形的字迷惑。通过搜索发现，原来有专门的unicode转ascii函数，对unicode于同形的ascii之间有对应的map。</p>
+<p>比如github中提到的例子，转成对应的ascii就刚好对的上。<br><img src="/images/unicodesec1.png" alt="image"></p>
+<h1 id="漏洞原理">漏洞原理</h1><p>漏洞的原理比较有意思，主要的条件是用户的id支持unicode。比如两个ID：mike@example.org vs mıke@example.org<br>然而在一些业务逻辑中会对用户id做标准化的操作，比如重置密码的时候，mıke@example.org标准化之后变成了mike@example.org，从而重置了mike@example.org的密码。</p>
+<p>所以关键的条件就是用户识别的ID(包括可以用来登录的邮箱)支持unicode。而在某些业务逻辑中有对unicode字符进行所谓标准化，转换成了对应的ascii。其实假如某些业务逻辑不支持unicode，直接丢掉了那部分unicode，应该也是一样的，目前没有看到类似的案例。导致在这部分业务逻辑中出现了越权的问题。典型的场景就是修改密码，导致可以修改他人的密码。</p>
+<h1 id="对微信的测试记录">对微信的测试记录</h1><p>实际中的场景比较少，大部分产品都会对用户登录名做白名单限制了。经过一番寻找发现微信的绑定邮箱是支持unicode的，而且是邮箱的用户名和域名部分都支持unicode。当然最后的测试结果是不存在这个漏洞。作为一个典型的测试过程记录一下。</p>
+<h2 id="搭建支持unicode用户名的邮件服务器">搭建支持unicode用户名的邮件服务器</h2><p>使用iredmail方便快速搭建邮件服务器。然后发现iredmail对用户名也是有过滤的。代码在iRedAdmin-0.6.1/libs/iredutils.py 中的is_email方法。修改该方法直接返回True,不检查邮件用户名。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">######################&#10;# Regular expressions.&#10;#&#10;# Email.&#10;reEmail = r&#39;&#39;&#39;[\w\-][\w\-\.\+\=]*@[\w\-][\w\-\.]*\.[a-zA-Z0-9\-]&#123;2,15&#125;&#39;&#39;&#39;&#10;&#10;# Domain.&#10;reDomain = r&#39;&#39;&#39;[\w\-][\w\-\.]*\.[a-z0-9\-]&#123;2,15&#125;&#39;&#39;&#39;&#10;&#10;# End Regular expressions.&#10;####&#10;&#10;#####################################&#10;# Pre-defined values of SQL functions.&#10;sqlUnixTimestamp = web.sqlliteral(&#39;UNIX_TIMESTAMP()&#39;)&#10;&#10;#####&#10;&#10;##############&#10;# Validators&#10;#&#10;INVALID_EMAIL_CHARS = &#39;~!#$%^&#38;*()\\/\ &#39;&#10;INVALID_DOMAIN_CHARS = &#39;~!#$%^&#38;*()+\\/\ &#39;&#10;&#10;&#10;def is_email(s):&#10;    #return True &#30452;&#25509;&#36820;&#22238;true&#65292;&#19981;&#26816;&#26597;email&#21517;&#31216;&#21512;&#27861;&#24615;&#12290;&#10;    s = str(s)&#10;    if len(set(s) &#38; set(INVALID_EMAIL_CHARS)) &#62; 0 \&#10;       or &#39;.&#39; not in s \&#10;       or s.count(&#39;@&#39;) != 1:&#10;        return False&#10;&#10;    reCompEmail = re.compile(reEmail + &#39;$&#39;, re.IGNORECASE)&#10;    if reCompEmail.match(s):&#10;        return True&#10;    else:&#10;        return False</span><br></pre></td></tr></table></figure>
+<p><img src="/images/unicodesec2.png" alt="image"></p>
+<p>然后发现依然无法收到邮件，发现服务器返回505。拒绝了含有unicode字符的邮箱。</p>
+<p><img src="/images/unicodesec3.png" alt="image"></p>
+<p>采用的解决方式在数据库中插入了一条域名的邮箱，转发到一个正常的邮箱。这样可以接受这个域名所有的邮件。</p>
+<p><img src="/images/unicode4.png" alt="image"></p>
+<p>因为iredmail默认开启了SSL，为了调试，查看具体的smtp信息，关闭了SSL，直接明文传。</p>
+<h2 id="绑定邮箱以及重置密码">绑定邮箱以及重置密码</h2><p>微信邮箱绑定支持unicode字符的邮箱。<br><img src="/images/unicodesec5.png" alt="image"></p>
+<p>绑定邮箱后，重置密码。</p>
+<p><img src="/images/unicodesec6.png" alt="image"> </p>
+<p>正常重置了自己的密码。链接中的email字段是base64编码的。解码出来是含有unicode字符的邮箱。所以微信的重置密码业务逻辑中没有标准化unicode字符这个处理。不存在unicode同形字引起的漏洞。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -118,14 +153,9 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/移动安全/">移动安全</a>
+  <a class="article-category-link" href="/categories/渗透测试/">渗透测试</a>
 </div>
 
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/xposed/">xposed</a>
-  </div>
 
 </div>
 
@@ -133,7 +163,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2015/12/30/利用xposed绕过安卓SSL证书的强校验/" data-title="利用xposed绕过安卓SSL证书的强校验 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  <div data-url="http://xdxd.love/2016/10/17/unicode同形字引起的安全问题/" data-title="unicode同形字引起的安全问题 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -146,19 +176,11 @@
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2016/01/07/无状态协议中认证状态保持方案的一些思考/" title="无状态协议中认证状态保持方案的一些思考">
-  <strong>上一篇：</strong><br/>
-  <span>
-  无状态协议中认证状态保持方案的一些思考</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2015/12/24/多步csrf漏洞场景及其利用/"  title="多步csrf漏洞场景及其利用">
+<a href="/2016/10/10/常用linux命令/"  title="常用linux命令">
  <strong>下一篇：</strong><br/> 
- <span>多步csrf漏洞场景及其利用
+ <span>常用linux命令
 </span>
 </a>
 </div>
@@ -167,7 +189,7 @@
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/12/30/利用xposed绕过安卓SSL证书的强校验/" data-title="利用xposed绕过安卓SSL证书的强校验" data-url="http://xdxd.love/2015/12/30/利用xposed绕过安卓SSL证书的强校验/"></div>
+	<div class="ds-thread" data-thread-key="2016/10/17/unicode同形字引起的安全问题/" data-title="unicode同形字引起的安全问题" data-url="http://xdxd.love/2016/10/17/unicode同形字引起的安全问题/"></div>
 </section>
 
 
@@ -177,7 +199,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#什么是SSL_pinning"><span class="toc-number">1.</span> <span class="toc-text">什么是SSL pinning</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JustTrustMe"><span class="toc-number">2.</span> <span class="toc-text">JustTrustMe</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">3.</span> <span class="toc-text">参考资料</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#历史上的安全漏洞"><span class="toc-number">1.</span> <span class="toc-text">历史上的安全漏洞</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#spotify的漏洞"><span class="toc-number">1.1.</span> <span class="toc-text">spotify的漏洞</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#github的漏洞"><span class="toc-number">1.2.</span> <span class="toc-text">github的漏洞</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#魔法在哪里"><span class="toc-number">2.</span> <span class="toc-text">魔法在哪里</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#编码的基础知识、unicode编码和同形字"><span class="toc-number">2.1.</span> <span class="toc-text">编码的基础知识、unicode编码和同形字</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#unicode转ascii"><span class="toc-number">2.2.</span> <span class="toc-text">unicode转ascii</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞原理"><span class="toc-number">3.</span> <span class="toc-text">漏洞原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#对微信的测试记录"><span class="toc-number">4.</span> <span class="toc-text">对微信的测试记录</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#搭建支持unicode用户名的邮件服务器"><span class="toc-number">4.1.</span> <span class="toc-text">搭建支持unicode用户名的邮件服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#绑定邮箱以及重置密码"><span class="toc-number">4.2.</span> <span class="toc-text">绑定邮箱以及重置密码</span></a></li></ol></li></ol>
  
   </div>
 

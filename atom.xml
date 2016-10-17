@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-10-11T10:59:42.000Z</updated>
+  <updated>2016-10-17T00:25:41.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -13,6 +13,50 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[unicode同形字引起的安全问题]]></title>
+    <link href="http://xdxd.love/2016/10/17/unicode%E5%90%8C%E5%BD%A2%E5%AD%97%E5%BC%95%E8%B5%B7%E7%9A%84%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/"/>
+    <id>http://xdxd.love/2016/10/17/unicode同形字引起的安全问题/</id>
+    <published>2016-10-17T00:25:08.000Z</published>
+    <updated>2016-10-17T00:25:41.000Z</updated>
+    <content type="html"><![CDATA[<h1 id="历史上的安全漏洞">历史上的安全漏洞</h1><h2 id="spotify的漏洞">spotify的漏洞</h2><p>相关资料：</p>
+<p><a href="https://labs.spotify.com/2013/06/18/creative-usernames/" target="_blank" rel="external">https://labs.spotify.com/2013/06/18/creative-usernames/</a></p>
+<p>spotify的漏洞相比于github的漏洞来说是一个真正的高危漏洞，可以修改任意用户的密码。</p>
+<h2 id="github的漏洞">github的漏洞</h2><p>相关资料：</p>
+<p><a href="https://twitter.com/GitHubSecurity/status/757686530748125184" target="_blank" rel="external">https://twitter.com/GitHubSecurity/status/757686530748125184</a><br><a href="https://bounty.github.com/researchers/jagracey.html?ljh" target="_blank" rel="external">https://bounty.github.com/researchers/jagracey.html?ljh</a></p>
+<p>github的邮箱名允许unicode字符，导致可以把找回密码的token发送到攻击者的邮箱。从twitter的讨论来以及自己的测试结果来看提供邮箱服务的产品大部分都是白名单了邮箱的用户名，所以都是不可以使用unicode字符的。测试了网易的企业邮箱和腾讯的企业邮箱，都不可以使用unicode字符。所以只能自己搭一个邮件服务器来测试这个问题。</p>
+<h1 id="魔法在哪里">魔法在哪里</h1><h2 id="编码的基础知识、unicode编码和同形字">编码的基础知识、unicode编码和同形字</h2><p>参考资料：<br><a href="http://www.freebuf.com/articles/web/25623.html" target="_blank" rel="external">http://www.freebuf.com/articles/web/25623.html</a><br><a href="http://www.irongeek.com/homoglyph-attack-generator.php" target="_blank" rel="external">http://www.irongeek.com/homoglyph-attack-generator.php</a></p>
+<p>了解了编码是二进制和字符之间的映射关系之后，可以了解到unicode字符无非也是一种字符而已，只要程序支持，应该不会有任何问题。为什么这个unicode字符在处理过程中变成了另外一个字符，而且是看起来很相似的字符，难道程序也跟人眼看一样，被相同的外表迷惑了。显然程序处理的是二进制的数据，只要二进制不同，无论外表看起来多么一样，程序都应该可以分辨出来。关于unicode同形字的问题，unicode homoglyphs，其实早就有不少讨论。不过大多是利用同形字来迷惑人钓鱼之类。那么机器怎么也会被同形字迷惑呢。</p>
+<p>github的漏洞描述中是这么写的:a flaw in the way email addresses were being normalized to standard character sets when used to look up accounts during the password recovery flow. 在邮件地址标准化成标准的字符集的时候出现问题。</p>
+<p>而spoity中对有对详细漏洞的代码分析：可以看到也是对字符串的标准化操作导致unicode字符转换成了与他同形的ascii字符。</p>
+<h2 id="unicode转ascii">unicode转ascii</h2><p>参考资料：<br><a href="https://www.peterbe.com/plog/unicode-to-ascii" target="_blank" rel="external">https://www.peterbe.com/plog/unicode-to-ascii</a><br><a href="http://savanttools.com/unicode-to-ascii.asp" target="_blank" rel="external">http://savanttools.com/unicode-to-ascii.asp</a></p>
+<p>这里才是最有意思的地方，为什么对unicode字符的标准化会导致unicode转变成了对应的同形字。电脑应该是只看二进制，又不是跟人一样，会被同形的字迷惑。通过搜索发现，原来有专门的unicode转ascii函数，对unicode于同形的ascii之间有对应的map。</p>
+<p>比如github中提到的例子，转成对应的ascii就刚好对的上。<br><img src="/images/unicodesec1.png" alt="image"></p>
+<h1 id="漏洞原理">漏洞原理</h1><p>漏洞的原理比较有意思，主要的条件是用户的id支持unicode。比如两个ID：mike@example.org vs mıke@example.org<br>然而在一些业务逻辑中会对用户id做标准化的操作，比如重置密码的时候，mıke@example.org标准化之后变成了mike@example.org，从而重置了mike@example.org的密码。</p>
+<p>所以关键的条件就是用户识别的ID(包括可以用来登录的邮箱)支持unicode。而在某些业务逻辑中有对unicode字符进行所谓标准化，转换成了对应的ascii。其实假如某些业务逻辑不支持unicode，直接丢掉了那部分unicode，应该也是一样的，目前没有看到类似的案例。导致在这部分业务逻辑中出现了越权的问题。典型的场景就是修改密码，导致可以修改他人的密码。</p>
+<h1 id="对微信的测试记录">对微信的测试记录</h1><p>实际中的场景比较少，大部分产品都会对用户登录名做白名单限制了。经过一番寻找发现微信的绑定邮箱是支持unicode的，而且是邮箱的用户名和域名部分都支持unicode。当然最后的测试结果是不存在这个漏洞。作为一个典型的测试过程记录一下。</p>
+<h2 id="搭建支持unicode用户名的邮件服务器">搭建支持unicode用户名的邮件服务器</h2><p>使用iredmail方便快速搭建邮件服务器。然后发现iredmail对用户名也是有过滤的。代码在iRedAdmin-0.6.1/libs/iredutils.py 中的is_email方法。修改该方法直接返回True,不检查邮件用户名。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">######################&#10;# Regular expressions.&#10;#&#10;# Email.&#10;reEmail = r&#39;&#39;&#39;[\w\-][\w\-\.\+\=]*@[\w\-][\w\-\.]*\.[a-zA-Z0-9\-]&#123;2,15&#125;&#39;&#39;&#39;&#10;&#10;# Domain.&#10;reDomain = r&#39;&#39;&#39;[\w\-][\w\-\.]*\.[a-z0-9\-]&#123;2,15&#125;&#39;&#39;&#39;&#10;&#10;# End Regular expressions.&#10;####&#10;&#10;#####################################&#10;# Pre-defined values of SQL functions.&#10;sqlUnixTimestamp = web.sqlliteral(&#39;UNIX_TIMESTAMP()&#39;)&#10;&#10;#####&#10;&#10;##############&#10;# Validators&#10;#&#10;INVALID_EMAIL_CHARS = &#39;~!#$%^&#38;*()\\/\ &#39;&#10;INVALID_DOMAIN_CHARS = &#39;~!#$%^&#38;*()+\\/\ &#39;&#10;&#10;&#10;def is_email(s):&#10;    #return True &#30452;&#25509;&#36820;&#22238;true&#65292;&#19981;&#26816;&#26597;email&#21517;&#31216;&#21512;&#27861;&#24615;&#12290;&#10;    s = str(s)&#10;    if len(set(s) &#38; set(INVALID_EMAIL_CHARS)) &#62; 0 \&#10;       or &#39;.&#39; not in s \&#10;       or s.count(&#39;@&#39;) != 1:&#10;        return False&#10;&#10;    reCompEmail = re.compile(reEmail + &#39;$&#39;, re.IGNORECASE)&#10;    if reCompEmail.match(s):&#10;        return True&#10;    else:&#10;        return False</span><br></pre></td></tr></table></figure>
+<p><img src="/images/unicodesec2.png" alt="image"></p>
+<p>然后发现依然无法收到邮件，发现服务器返回505。拒绝了含有unicode字符的邮箱。</p>
+<p><img src="/images/unicodesec3.png" alt="image"></p>
+<p>采用的解决方式在数据库中插入了一条域名的邮箱，转发到一个正常的邮箱。这样可以接受这个域名所有的邮件。</p>
+<p><img src="/images/unicode4.png" alt="image"></p>
+<p>因为iredmail默认开启了SSL，为了调试，查看具体的smtp信息，关闭了SSL，直接明文传。</p>
+<h2 id="绑定邮箱以及重置密码">绑定邮箱以及重置密码</h2><p>微信邮箱绑定支持unicode字符的邮箱。<br><img src="/images/unicodesec5.png" alt="image"></p>
+<p>绑定邮箱后，重置密码。</p>
+<p><img src="/images/unicodesec6.png" alt="image"> </p>
+<p>正常重置了自己的密码。链接中的email字段是base64编码的。解码出来是含有unicode字符的邮箱。所以微信的重置密码业务逻辑中没有标准化unicode字符这个处理。不存在unicode同形字引起的漏洞。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h1 id="历史上的安全漏洞">历史上的安全漏洞</h1><h2 id="spotify的漏洞">spotify的漏洞</h2><p>相关资料：</p>
+<p><a href="https://labs.spotify.com/2013/06/18/creative-user]]>
+    </summary>
+    
+      <category term="渗透测试" scheme="http://xdxd.love/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[常用linux命令]]></title>
@@ -1019,124 +1063,6 @@ divEl.innerHTML = payload;
     </summary>
     
       <category term="前端安全" scheme="http://xdxd.love/categories/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[审计mybatis的sql注入]]></title>
-    <link href="http://xdxd.love/2016/03/14/%E5%AE%A1%E8%AE%A1mybatis%E7%9A%84sql%E6%B3%A8%E5%85%A5/"/>
-    <id>http://xdxd.love/2016/03/14/审计mybatis的sql注入/</id>
-    <published>2016-03-14T07:27:24.000Z</published>
-    <updated>2016-03-15T02:24:39.000Z</updated>
-    <content type="html"><![CDATA[<h1 id="mybatis_概述">mybatis 概述</h1><p><a href="http://www.mybatis.org/" target="_blank" rel="external">MyBatis</a>是支持定制化 SQL、存储过程以及高级映射的优秀的持久层框架。MyBatis 避免了几乎所有的 JDBC 代码和手动设置参数以及获取结果集。MyBatis 可以对配置和原生Map使用简单的 XML 或注解，将接口和 Java 的 POJOs(Plain Old Java Objects,普通的 Java对象)映射成数据库中的记录</p>
-<h1 id="mybatis存在的sql注入问题">mybatis存在的sql注入问题</h1><p>mybatis避免了用户直接拼接SQL语句，但是认为只要使用了mybatis就可以杜绝SQL注入的观点是不正确的。mybatis在配置SQL语句的时候，有两种描述参数的方式。<code>#{}</code>和<code>${}</code>。</p>
-<p>比如：</p>
-<pre><code>&lt;<span class="keyword">select</span> id=<span class="string">"selectPerson"</span> parameterType=<span class="string">"int"</span> resultType=<span class="string">"hashmap"</span>&gt;
-  <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> PERSON <span class="keyword">WHERE</span> ID = <span class="preprocessor">#{id}</span>
-&lt;/<span class="keyword">select</span>&gt;
-</code></pre><p>这个语句被称作 selectPerson，接受一个 int（或 Integer）类型的参数，并返回一个 HashMap类型的对象，其中的键是列名，值便是结果行中的对应值。</p>
-<p>注意参数符号：</p>
-<pre><code>#{<span class="ruby">id}</span>
-</code></pre><p>这就告诉 MyBatis 创建一个预处理语句参数，通过 JDBC，这样的一个参数在 SQL中会由一个“?”来标识，并被传递到一个新的预处理语句中，就像这样：</p>
-<pre><code>// Similar JDBC <span class="preprocessor">code</span>, NOT MyBatis…
-<span class="keyword">String </span><span class="keyword">selectPerson </span>= <span class="string">"SELECT * FROM PERSON WHERE ID=?"</span><span class="comment">;</span>
-<span class="label">PreparedStatement</span> ps = conn.prepareStatement(<span class="keyword">selectPerson);
-</span><span class="label">ps.setInt</span>(<span class="number">1</span>,id)<span class="comment">;</span>
-</code></pre><p>使用<code>#</code>mybatis会使用预编译来处理参数，这样子可以避免SQL注入。</p>
-<p>但是使用<code>$</code>描述参数会直接把变量拼接到SQL语句中，不做任何处理。相当于直接字符串拼接SQL。这样的方式就可能存在SQL注入。下面的描述来自mybatis官方文档。</p>
-<pre><code>默认情况下,使用#{}格式的语法会导致 MyBatis 创建预处理语句属性并安全地设置值（比如?）。这样做更安全，更迅速，通常也是首选做法，不过有时你只是想直接在 SQL 语句中插入一个不改变的字符串。比如，像 <span class="keyword">ORDER</span> <span class="keyword">BY</span>，你可以这样来使用：
-
-<span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="label">${columnName}</span>
-这里 MyBatis 不会修改或转义字符串。
-
-<span class="keyword">NOTE</span> 以这种方式接受从用户输出的内容并提供给语句中不变的字符串是不安全的，会导致潜在的 SQL 注入攻击，因此要么不允许用户输入这些字段，要么自行转义并检验。
-</code></pre><h1 id="demo演示">demo演示</h1><p>使用<a href="http://www.cnblogs.com/zhanjindong/p/3397828.html" target="_blank" rel="external">MyBatis使用示例</a>作为demo测试。</p>
-<p>mapper文件：</p>
-<pre><code><span class="pi">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;</span>
-<span class="doctype">&lt;!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"&gt;</span>
-<span class="tag">&lt;<span class="title">mapper</span> <span class="attribute">namespace</span>=<span class="value">"test.mybatis.UserMapper"</span>&gt;</span>
-    <span class="comment">&lt;!-- 这里namespace必须是UserMapper接口的路径” --&gt;</span>
-    <span class="tag">&lt;<span class="title">insert</span> <span class="attribute">id</span>=<span class="value">"insertUser"</span> <span class="attribute">parameterType</span>=<span class="value">"User"</span>&gt;</span>
-        insert into user(name,age) values(#{name},#{age})
-        <span class="comment">&lt;!-- 这里sql结尾不能加分号，否则报“ORA-00911”的错误 --&gt;</span>
-    <span class="tag">&lt;/<span class="title">insert</span>&gt;</span>
-    <span class="comment">&lt;!-- 这里的id必须和UserMapper接口中的接口方法名相同 --&gt;</span>
-    <span class="tag">&lt;<span class="title">select</span> <span class="attribute">id</span>=<span class="value">"getUser"</span> <span class="attribute">resultType</span>=<span class="value">"User"</span>&gt;</span>
-        select * from user where name=#{name}
-    <span class="tag">&lt;/<span class="title">select</span>&gt;</span>
-<span class="tag">&lt;/<span class="title">mapper</span>&gt;</span>
-</code></pre><p>在输入中插入单引号</p>
-<pre><code><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">getUser</span>(<span class="params"></span>) </span>{
-    SqlSession sqlSession = sqlSessionFactory.openSession();
-    <span class="keyword">try</span> {
-        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-        User user = userMapper.getUser(<span class="string">"'zhangsan"</span>);
-        System.<span class="keyword">out</span>.println(<span class="string">"name: "</span> + user.getName() + <span class="string">"|age: "</span>
-                + user.getAge());
-    } <span class="keyword">finally</span> {
-        sqlSession.close();
-    }
-</code></pre><p>查看执行的sql语句：</p>
-<p><img src="/images/mybatis21.png" alt=""></p>
-<p>可以看到输入被单引号包裹，并且对字符串中的单引号进行了转义。</p>
-<p>将<code>#</code>改成<code>$</code>,mapper文件为：</p>
-<pre><code>&lt;<span class="keyword">select</span> id=<span class="string">"getUser"</span> resultType=<span class="string">"User"</span>&gt;
-    <span class="keyword">select</span> * <span class="keyword">from</span> user <span class="keyword">where</span> name=${_parameter}
-&lt;/<span class="keyword">select</span>&gt;
-</code></pre><p>这里由于代码的写法问题，name需要改成_parameter,参考<a href="http://woshixy.blog.51cto.com/5637578/1180914" target="_blank" rel="external">Mybatis中传参包There is no getter for property named XXX in class java.lang.String</a>。</p>
-<p>查看执行的SQL语句：</p>
-<p><img src="/images/mybatis22.png" alt=""></p>
-<p>输入没有任何改变的拼接到SQL中，造成了SQL注入。</p>
-<h1 id="实战分析">实战分析</h1><p>mybatis generator插件默认生成的order by 条件是使用<code>$</code>表示变量。</p>
-<pre><code>...
- <span class="tag">&lt;<span class="title">select</span> <span class="attribute">id</span>=<span class="value">"selectByExample"</span> <span class="attribute">resultMap</span>=<span class="value">"BaseResultMap"</span> <span class="attribute">parameterType</span>=<span class="value">"com.tgwoo.ctspmt.model.MtVMsgItemExample"</span> &gt;</span>
-    <span class="tag">&lt;<span class="title">include</span> <span class="attribute">refid</span>=<span class="value">"OracleDialectPrefix"</span> /&gt;</span>
-    select
-    <span class="tag">&lt;<span class="title">if</span> <span class="attribute">test</span>=<span class="value">"distinct"</span> &gt;</span>
-      distinct
-    <span class="tag">&lt;/<span class="title">if</span>&gt;</span>
-    <span class="tag">&lt;<span class="title">include</span> <span class="attribute">refid</span>=<span class="value">"Base_Column_List"</span> /&gt;</span>
-    from CTSPMT.MT_V_MSG_ITEM
-    <span class="tag">&lt;<span class="title">if</span> <span class="attribute">test</span>=<span class="value">"_parameter != null"</span> &gt;</span>
-      <span class="tag">&lt;<span class="title">include</span> <span class="attribute">refid</span>=<span class="value">"Example_Where_Clause"</span> /&gt;</span>
-    <span class="tag">&lt;/<span class="title">if</span>&gt;</span>
-    <span class="tag">&lt;<span class="title">if</span> <span class="attribute">test</span>=<span class="value">"orderByClause != null"</span> &gt;</span>
-      order by ${orderByClause}
-    <span class="tag">&lt;/<span class="title">if</span>&gt;</span>
-    <span class="tag">&lt;<span class="title">include</span> <span class="attribute">refid</span>=<span class="value">"OracleDialectSuffix"</span> /&gt;</span>
-  <span class="tag">&lt;/<span class="title">select</span>&gt;</span>
-...
-  <span class="tag">&lt;<span class="title">sql</span> <span class="attribute">id</span>=<span class="value">"OracleDialectPrefix"</span> &gt;</span>
-    <span class="tag">&lt;<span class="title">if</span> <span class="attribute">test</span>=<span class="value">"page != null"</span> &gt;</span>
-      select * from ( select row_.*, rownum rownum_ from ( 
-    <span class="tag">&lt;/<span class="title">if</span>&gt;</span>
-  <span class="tag">&lt;/<span class="title">sql</span>&gt;</span>
-  <span class="tag">&lt;<span class="title">sql</span> <span class="attribute">id</span>=<span class="value">"OracleDialectSuffix"</span> &gt;</span>
-    <span class="tag">&lt;<span class="title">if</span> <span class="attribute">test</span>=<span class="value">"page != null"</span> &gt;</span>
-      <span class="cdata">&lt;![CDATA[ ) row_ ) where rownum_ &gt; #{page.begin} and rownum_ &lt;= #{page.end} ]]&gt;</span>
-    <span class="tag">&lt;/<span class="title">if</span>&gt;</span>
-  <span class="tag">&lt;/<span class="title">sql</span>&gt;</span>
-...
-</code></pre><p>所以使用mybatis generator插件生成的代码中，需要自己过滤order by参数，如果用户可控就会导致SQL注入。而大部分情况下，开发者可能没有意识到这个问题。</p>
-<p>以freecms为例。<a href="http://www.freeteam.cn/" target="_blank" rel="external">Freecms</a>是一款开源javacms。最新版下载<a href="http://www.freeteam.cn/freecms1.5.rar" target="_blank" rel="external">地址</a>。freecms中的orderby都是使用的<code>$</code>描述变量。</p>
-<p><img src="/images/mybatis23.png" alt=""></p>
-<p>前面的分析可以知道，这种情况，mybatis会直接拼接字符串到SQL中不做任何处理。</p>
-<p>注册用户登录访问：</p>
-<pre><code>http://192.168.99.100:8080/freecms/member/creditlog_list.do?order=extractvalue(1,concat(0x7C,(select%20user()),0x7C))
-</code></pre><p><img src="/images/mybatis24.png" alt=""></p>
-<p>查看执行的SQL为：</p>
-<p><img src="/images/mybatis25.png" alt=""></p>
-<h1 id="修复方案">修复方案</h1><p>尽量使用<code>#</code>描述参数，如果一定要使用<code>$</code>，则需要自己过滤用户输入。</p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<h1 id="mybatis_概述">mybatis 概述</h1><p><a href="http://www.mybatis.org/" target="_blank" rel="external">MyBatis</a>是支持定制化 SQL、存储过程以及高级映射的优秀的持]]>
-    </summary>
-    
-      <category term="java" scheme="http://xdxd.love/tags/java/"/>
-    
-      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
     
   </entry>
   
