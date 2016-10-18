@@ -11,18 +11,18 @@
     
 
     
-    <meta name="description" content="参考资料整理翻译自A New Method for Symmetric NAT Traversal in UDP and TCPNAT的四种类型及类型检测
+    <meta name="description" content="前言这种方法从安全的角度来说是利用了目前路由器实现对称NAT的方法中存在端口可以预测的漏洞，利用这个漏洞来实现打洞。加上一次发送大量的包，来增加命中的概率。
+参考资料整理翻译自A New Method for Symmetric NAT Traversal in UDP and TCPNAT的四种类型及类型检测
 关键字NAT穿透，对称NAT，UDP,P2P，状态包预测，TCP，P2P打洞
-4中NAT类型用语定义
-1.内部Tuple：指内部主机的私有地址和端口号所构成的二元组，即内部主机所发送报文的源地址、端口所构成的二元组2.外部Tuple：指内部Tu">
+4中NA">
 <meta property="og:type" content="article">
 <meta property="og:title" content="对称NAT穿透的一种新方法">
 <meta property="og:url" content="http://xdxd.love/2016/10/18/对称NAT穿透的一种新方法/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="参考资料整理翻译自A New Method for Symmetric NAT Traversal in UDP and TCPNAT的四种类型及类型检测
+<meta property="og:description" content="前言这种方法从安全的角度来说是利用了目前路由器实现对称NAT的方法中存在端口可以预测的漏洞，利用这个漏洞来实现打洞。加上一次发送大量的包，来增加命中的概率。
+参考资料整理翻译自A New Method for Symmetric NAT Traversal in UDP and TCPNAT的四种类型及类型检测
 关键字NAT穿透，对称NAT，UDP,P2P，状态包预测，TCP，P2P打洞
-4中NAT类型用语定义
-1.内部Tuple：指内部主机的私有地址和端口号所构成的二元组，即内部主机所发送报文的源地址、端口所构成的二元组2.外部Tuple：指内部Tu">
+4中NA">
 <meta property="og:image" content="http://xdxd.love/images/nat1.png">
 <meta property="og:image" content="http://xdxd.love/images/nat2.png">
 <meta property="og:image" content="http://xdxd.love/images/nat3.png">
@@ -32,13 +32,13 @@
 <meta property="og:image" content="http://xdxd.love/images/nat7.png">
 <meta property="og:image" content="http://xdxd.love/images/nat8.png">
 <meta property="og:image" content="http://xdxd.love/images/nat9.png">
-<meta property="og:updated_time" content="2016-10-18T03:11:12.000Z">
+<meta property="og:updated_time" content="2016-10-18T03:15:00.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="对称NAT穿透的一种新方法">
-<meta name="twitter:description" content="参考资料整理翻译自A New Method for Symmetric NAT Traversal in UDP and TCPNAT的四种类型及类型检测
+<meta name="twitter:description" content="前言这种方法从安全的角度来说是利用了目前路由器实现对称NAT的方法中存在端口可以预测的漏洞，利用这个漏洞来实现打洞。加上一次发送大量的包，来增加命中的概率。
+参考资料整理翻译自A New Method for Symmetric NAT Traversal in UDP and TCPNAT的四种类型及类型检测
 关键字NAT穿透，对称NAT，UDP,P2P，状态包预测，TCP，P2P打洞
-4中NAT类型用语定义
-1.内部Tuple：指内部主机的私有地址和端口号所构成的二元组，即内部主机所发送报文的源地址、端口所构成的二元组2.外部Tuple：指内部Tu">
+4中NA">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -114,11 +114,12 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#关键字"><span class="toc-number">2.</span> <span class="toc-text">关键字</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4中NAT类型"><span class="toc-number">3.</span> <span class="toc-text">4中NAT类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#已经存在的穿透方案"><span class="toc-number">4.</span> <span class="toc-text">已经存在的穿透方案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#新方法"><span class="toc-number">5.</span> <span class="toc-text">新方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#第一阶段"><span class="toc-number">5.1.</span> <span class="toc-text">第一阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第二阶段"><span class="toc-number">5.2.</span> <span class="toc-text">第二阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第三阶段"><span class="toc-number">5.3.</span> <span class="toc-text">第三阶段</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#新方法的优势"><span class="toc-number">6.</span> <span class="toc-text">新方法的优势</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结论"><span class="toc-number">7.</span> <span class="toc-text">结论</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">2.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#关键字"><span class="toc-number">3.</span> <span class="toc-text">关键字</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4中NAT类型"><span class="toc-number">4.</span> <span class="toc-text">4中NAT类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#已经存在的穿透方案"><span class="toc-number">5.</span> <span class="toc-text">已经存在的穿透方案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#新方法"><span class="toc-number">6.</span> <span class="toc-text">新方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#第一阶段"><span class="toc-number">6.1.</span> <span class="toc-text">第一阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第二阶段"><span class="toc-number">6.2.</span> <span class="toc-text">第二阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第三阶段"><span class="toc-number">6.3.</span> <span class="toc-text">第三阶段</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#新方法的优势"><span class="toc-number">7.</span> <span class="toc-text">新方法的优势</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结论"><span class="toc-number">8.</span> <span class="toc-text">结论</span></a></li></ol>
 		
 		</div>
 		
-		<h2 id="参考资料">参考资料</h2><p>整理翻译自<a href="https://www.goto.info.waseda.ac.jp/~wei/file/wei-apan-v10.pdf" target="_blank" rel="external">A New Method for Symmetric NAT Traversal in UDP and TCP</a><br><a href="http://www.cnblogs.com/my_life/articles/1908552.html" target="_blank" rel="external">NAT的四种类型及类型检测</a></p>
+		<h2 id="前言">前言</h2><p>这种方法从安全的角度来说是利用了目前路由器实现对称NAT的方法中存在端口可以预测的漏洞，利用这个漏洞来实现打洞。加上一次发送大量的包，来增加命中的概率。</p>
+<h2 id="参考资料">参考资料</h2><p>整理翻译自<a href="https://www.goto.info.waseda.ac.jp/~wei/file/wei-apan-v10.pdf" target="_blank" rel="external">A New Method for Symmetric NAT Traversal in UDP and TCP</a><br><a href="http://www.cnblogs.com/my_life/articles/1908552.html" target="_blank" rel="external">NAT的四种类型及类型检测</a></p>
 <h2 id="关键字">关键字</h2><p>NAT穿透，对称NAT，UDP,P2P，状态包预测，TCP，P2P打洞</p>
 <h2 id="4中NAT类型">4中NAT类型</h2><p>用语定义</p>
 <p>1.内部Tuple：指内部主机的私有地址和端口号所构成的二元组，即内部主机所发送报文的源地址、端口所构成的二元组<br>2.外部Tuple：指内部Tuple经过NAT的源地址/端口转换之后，所获得的外部地址、端口所构成的二元组，即外部主机收到经NAT转换之后的报文时，它所看到的该报文的源地址（通常是NAT设备的地址）和源端口<br>3.目标Tuple：指外部主机的地址、端口所构成的二元组，即内部主机所发送报文的目标地址、端口所构成的二元组</p>
@@ -205,7 +206,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#关键字"><span class="toc-number">2.</span> <span class="toc-text">关键字</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4中NAT类型"><span class="toc-number">3.</span> <span class="toc-text">4中NAT类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#已经存在的穿透方案"><span class="toc-number">4.</span> <span class="toc-text">已经存在的穿透方案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#新方法"><span class="toc-number">5.</span> <span class="toc-text">新方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#第一阶段"><span class="toc-number">5.1.</span> <span class="toc-text">第一阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第二阶段"><span class="toc-number">5.2.</span> <span class="toc-text">第二阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第三阶段"><span class="toc-number">5.3.</span> <span class="toc-text">第三阶段</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#新方法的优势"><span class="toc-number">6.</span> <span class="toc-text">新方法的优势</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结论"><span class="toc-number">7.</span> <span class="toc-text">结论</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">2.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#关键字"><span class="toc-number">3.</span> <span class="toc-text">关键字</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4中NAT类型"><span class="toc-number">4.</span> <span class="toc-text">4中NAT类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#已经存在的穿透方案"><span class="toc-number">5.</span> <span class="toc-text">已经存在的穿透方案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#新方法"><span class="toc-number">6.</span> <span class="toc-text">新方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#第一阶段"><span class="toc-number">6.1.</span> <span class="toc-text">第一阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第二阶段"><span class="toc-number">6.2.</span> <span class="toc-text">第二阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第三阶段"><span class="toc-number">6.3.</span> <span class="toc-text">第三阶段</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#新方法的优势"><span class="toc-number">7.</span> <span class="toc-text">新方法的优势</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结论"><span class="toc-number">8.</span> <span class="toc-text">结论</span></a></li></ol>
  
   </div>
 
