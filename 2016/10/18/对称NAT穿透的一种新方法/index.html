@@ -1,0 +1,645 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>对称NAT穿透的一种新方法 | xd_xd&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="xd_xd">
+    
+
+    
+    <meta name="description" content="参考资料整理翻译自A New Method for Symmetric NAT Traversal in UDP and TCPNAT的四种类型及类型检测
+关键字NAT穿透，对称NAT，UDP,P2P，状态包预测，TCP，P2P打洞
+4中NAT类型用语定义
+1.内部Tuple：指内部主机的私有地址和端口号所构成的二元组，即内部主机所发送报文的源地址、端口所构成的二元组2.外部Tuple：指内部Tu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="对称NAT穿透的一种新方法">
+<meta property="og:url" content="http://xdxd.love/2016/10/18/对称NAT穿透的一种新方法/index.html">
+<meta property="og:site_name" content="xd_xd's blog">
+<meta property="og:description" content="参考资料整理翻译自A New Method for Symmetric NAT Traversal in UDP and TCPNAT的四种类型及类型检测
+关键字NAT穿透，对称NAT，UDP,P2P，状态包预测，TCP，P2P打洞
+4中NAT类型用语定义
+1.内部Tuple：指内部主机的私有地址和端口号所构成的二元组，即内部主机所发送报文的源地址、端口所构成的二元组2.外部Tuple：指内部Tu">
+<meta property="og:image" content="http://xdxd.love/images/nat1.png">
+<meta property="og:image" content="http://xdxd.love/images/nat2.png">
+<meta property="og:image" content="http://xdxd.love/images/nat3.png">
+<meta property="og:image" content="http://xdxd.love/images/nat4.png">
+<meta property="og:image" content="http://xdxd.love/images/nat5.png">
+<meta property="og:image" content="http://xdxd.love/images/nat6.png">
+<meta property="og:image" content="http://xdxd.love/images/nat7.png">
+<meta property="og:image" content="http://xdxd.love/images/nat8.png">
+<meta property="og:image" content="http://xdxd.love/images/nat9.png">
+<meta property="og:updated_time" content="2016-10-18T03:11:12.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="对称NAT穿透的一种新方法">
+<meta name="twitter:description" content="参考资料整理翻译自A New Method for Symmetric NAT Traversal in UDP and TCPNAT的四种类型及类型检测
+关键字NAT穿透，对称NAT，UDP,P2P，状态包预测，TCP，P2P打洞
+4中NAT类型用语定义
+1.内部Tuple：指内部主机的私有地址和端口号所构成的二元组，即内部主机所发送报文的源地址、端口所构成的二元组2.外部Tuple：指内部Tu">
+
+    
+    <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="xd_xd&#39;s blog" title="xd_xd&#39;s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="xd_xd&#39;s blog">xd_xd&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:xdxd.love">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/10/18/对称NAT穿透的一种新方法/" title="对称NAT穿透的一种新方法" itemprop="url">对称NAT穿透的一种新方法</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
+		
+  <p class="article-time">
+    <time datetime="2016-10-18T01:57:26.000Z" itemprop="datePublished"> 发表于 Oct 18 2016</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#关键字"><span class="toc-number">2.</span> <span class="toc-text">关键字</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4中NAT类型"><span class="toc-number">3.</span> <span class="toc-text">4中NAT类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#已经存在的穿透方案"><span class="toc-number">4.</span> <span class="toc-text">已经存在的穿透方案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#新方法"><span class="toc-number">5.</span> <span class="toc-text">新方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#第一阶段"><span class="toc-number">5.1.</span> <span class="toc-text">第一阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第二阶段"><span class="toc-number">5.2.</span> <span class="toc-text">第二阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第三阶段"><span class="toc-number">5.3.</span> <span class="toc-text">第三阶段</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#新方法的优势"><span class="toc-number">6.</span> <span class="toc-text">新方法的优势</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结论"><span class="toc-number">7.</span> <span class="toc-text">结论</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="参考资料">参考资料</h2><p>整理翻译自<a href="https://www.goto.info.waseda.ac.jp/~wei/file/wei-apan-v10.pdf" target="_blank" rel="external">A New Method for Symmetric NAT Traversal in UDP and TCP</a><br><a href="http://www.cnblogs.com/my_life/articles/1908552.html" target="_blank" rel="external">NAT的四种类型及类型检测</a></p>
+<h2 id="关键字">关键字</h2><p>NAT穿透，对称NAT，UDP,P2P，状态包预测，TCP，P2P打洞</p>
+<h2 id="4中NAT类型">4中NAT类型</h2><p>用语定义</p>
+<p>1.内部Tuple：指内部主机的私有地址和端口号所构成的二元组，即内部主机所发送报文的源地址、端口所构成的二元组<br>2.外部Tuple：指内部Tuple经过NAT的源地址/端口转换之后，所获得的外部地址、端口所构成的二元组，即外部主机收到经NAT转换之后的报文时，它所看到的该报文的源地址（通常是NAT设备的地址）和源端口<br>3.目标Tuple：指外部主机的地址、端口所构成的二元组，即内部主机所发送报文的目标地址、端口所构成的二元组</p>
+<p>详细释义</p>
+<ol>
+<li>Full Cone NAT：所有来自同一 个内部Tuple X的请求均被NAT转换至同一个外部Tuple Y，而不管这些请求是不是属于同一个应用或者是多个应用的。除此之外，当X-Y的转换关系建立之后，任意外部主机均可随时将Y中的地址和端口作为目标地址 和目标端口，向内部主机发送UDP报文，由于对外部请求的来源无任何限制，因此这种方式虽然足够简单，但却不那么安全.</li>
+</ol>
+<p><img src="/images/nat1.png" alt=""></p>
+<ol>
+<li>Restricted Cone NAT： 它是Full Cone的受限版本：所有来自同一个内部Tuple X的请求均被NAT转换至同一个外部Tuple Y，这与Full Cone相同，但不同的是，只有当内部主机曾经发送过报文给外部主机（假设其IP地址为Z）后，外部主机才能以Y中的信息作为目标地址和目标端口，向内部 主机发送UDP请求报文，这意味着，NAT设备只向内转发（目标地址/端口转换）那些来自于当前已知的外部主机的UDP报文，从而保障了外部请求来源的安 全性</li>
+</ol>
+<p><img src="/images/nat2.png" alt=""></p>
+<ol>
+<li>Port Restricted Cone NAT：它是Restricted Cone NAT的进一步受限版。只有当内部主机曾经发送过报文给外部主机（假设其IP地址为Z且端口为P）之后，外部主机才能以Y中的信息作为目标地址和目标端 口，向内部主机发送UDP报文，同时，其请求报文的源端口必须为P，这一要求进一步强化了对外部报文请求来源的限制，从而较Restrictd Cone更具安全性</li>
+</ol>
+<p><img src="/images/nat3.png" alt=""></p>
+<ol>
+<li>Symmetric NAT：这是一种比所有Cone NAT都要更为灵活的转换方式：在Cone NAT中，内部主机的内部Tuple与外部Tuple的转换映射关系是独立于内部主机所发出的UDP报文中的目标地址及端口的，即与目标Tuple无关； 在Symmetric NAT中，目标Tuple则成为了NAT设备建立转换关系的一个重要考量：只有来自于同一个内部Tuple 、且针对同一目标Tuple的请求才被NAT转换至同一个外部Tuple，否则的话，NAT将为之分配一个新的外部Tuple；打个比方，当内部主机以相 同的内部Tuple对2个不同的目标Tuple发送UDP报文时，此时NAT将会为内部主机分配两个不同的外部Tuple，并且建立起两个不同的内、外部 Tuple转换关系。与此同时，只有接收到了内部主机所发送的数据包的外部主机才能向内部主机返回UDP报文，这里对外部返回报文来源的限制是与Port Restricted Cone一致的。不难看出，如果说Full Cone是要求最宽松NAT UDP转换方式，那么，Symmetric NAT则是要求最严格的NAT方式，其不仅体现在转换关系的建立上，而且还体现在对外部报文来源的限制方面。</li>
+</ol>
+<p><img src="/images/nat4.png" alt=""></p>
+<h2 id="已经存在的穿透方案">已经存在的穿透方案</h2><p>UPNP，STUN，Teredo等都无法支持对称NAT(第4类NAT)穿透。</p>
+<h2 id="新方法">新方法</h2><p>新方法的UDP打洞基于端口预测和限制TTL的值。也适用于其他的NAT类型。<br>新方法一共有3个阶段。</p>
+<p><img src="/images/nat5.png" alt=""></p>
+<h3 id="第一阶段">第一阶段</h3><p>假设两个通讯的终端分别为echo client和echo server。</p>
+<p>F1：echo client跟S1通讯，然后S1获得其经过NAT a的端口号。<br>F2：S1返回获得的端口号给echo client<br>F3：echo client给S2发一个包。包括上次S1返回的nat之后的端口号。S2记录下相关的NAT端口信息。<br><img src="/images/nat6.png" alt=""></p>
+<h3 id="第二阶段">第二阶段</h3><p>第二阶段是echo server跟S1和S2通信。流程跟echo client类似。</p>
+<p><img src="/images/nat7.png" alt=""></p>
+<h3 id="第三阶段">第三阶段</h3><p>经过之前的通讯，服务器可以获得echo client和echo server两次nat的端口号。比如echo client第一次nat端口为5361，第二次nat端口为5362，那么有理由猜测，第三次的端口为5363.经过测试发现端口的变化多是有一定的规律，递增，递减，跳跃等。</p>
+<p>F7: 基于前面两个阶段的通信，可以预测打洞的端口和打洞的模式。发送给echo server.<br>F8: 基于预测的端口，echo server发送大量的包。这些包包括一个固定的目的端口和低的TTL值。<br>F9: 同理，服务器将预测的端口发给echo client，跟F7类似。<br>F10: 基于预测的端口，echo client发送大量固定端口的数据包到预测的端口。之后，echo client 转换到接受模式。</p>
+<p>如果预测的端口刚好被大量的包都命中。那么就可以建立通信。</p>
+<p><img src="/images/nat8.png" alt=""></p>
+<h2 id="新方法的优势">新方法的优势</h2><h2 id="结论">结论</h2><p><img src="/images/nat9.png" alt=""></p>
+<p>这种方法从安全的角度来说是利用了目前路由器实现对称NAT的方法中存在端口可以预测的漏洞，利用这个漏洞来实现打洞。加上一次发送大量的包，来增加命中的概率。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/万物互联/">万物互联</a>
+</div>
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://xdxd.love/2016/10/18/对称NAT穿透的一种新方法/" data-title="对称NAT穿透的一种新方法 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2016/10/17/unicode同形字引起的安全问题/"  title="unicode同形字引起的安全问题">
+ <strong>下一篇：</strong><br/> 
+ <span>unicode同形字引起的安全问题
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/10/18/对称NAT穿透的一种新方法/" data-title="对称NAT穿透的一种新方法" data-url="http://xdxd.love/2016/10/18/对称NAT穿透的一种新方法/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#关键字"><span class="toc-number">2.</span> <span class="toc-text">关键字</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4中NAT类型"><span class="toc-number">3.</span> <span class="toc-text">4中NAT类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#已经存在的穿透方案"><span class="toc-number">4.</span> <span class="toc-text">已经存在的穿透方案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#新方法"><span class="toc-number">5.</span> <span class="toc-text">新方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#第一阶段"><span class="toc-number">5.1.</span> <span class="toc-text">第一阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第二阶段"><span class="toc-number">5.2.</span> <span class="toc-text">第二阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第三阶段"><span class="toc-number">5.3.</span> <span class="toc-text">第三阶段</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#新方法的优势"><span class="toc-number">6.</span> <span class="toc-text">新方法的优势</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结论"><span class="toc-number">7.</span> <span class="toc-text">结论</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">新浪微博</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=5256150165&verifier=0935d97e&dpc=1"></iframe>
+</div>
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>11</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/人生苦短/" title="人生苦短">人生苦短<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>27</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/前端安全/" title="前端安全">前端安全<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/加密解密/" title="加密解密">加密解密<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/奇技淫巧/" title="奇技淫巧">奇技淫巧<sup>2</sup></a></li>
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/渗透测试/" title="渗透测试">渗透测试<sup>7</sup></a></li>
+		  
+		
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/转载收藏/" title="转载收藏">转载收藏<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/黑盒测试/" title="黑盒测试">黑盒测试<sup>8</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/php/" title="php">php<sup>9</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mips/" title="mips">mips<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/支付漏洞/" title="支付漏洞">支付漏洞<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/xss/" title="xss">xss<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/qemu/" title="qemu">qemu<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcpdump/" title="tcpdump">tcpdump<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/密码学/" title="密码学">密码学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/inspeckage/" title="inspeckage">inspeckage<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/csrf/" title="csrf">csrf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/github/" title="github">github<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ctf/" title="ctf">ctf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/xposed/" title="xposed">xposed<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/折腾/" title="折腾">折腾<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/php-wdcp/" title="php,wdcp">php,wdcp<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/XXE/" title="XXE">XXE<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.heysec.org/" target="_blank" title="heysec.org">heysec.org</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://sco4x0.com" target="_blank" title="sco4x0&#39;s blog">sco4x0&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://virusdefender.net" target="_blank" title="virusdefender&#39;s blog">virusdefender&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackersb.cn/" target="_blank" title="Striker&#39;s blog">Striker&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://www.leavesongs.com/" target="_blank" title="离别歌">离别歌</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.stardustsky.net/" target="_blank" title="Stardustsky博客">Stardustsky博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.waitalone.cn/" target="_blank" title="独自等待">独自等待</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.cnblogs.com/S4b0r/" target="_blank" title="S4b0r&#39; blog">S4b0r&#39; blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.leesec.com/" target="_blank" title="leesec">leesec</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://xss1.com/" target="_blank" title="0x_Jin">0x_Jin</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://bl4ck.in/" target="_blank" title="Tomato">Tomato</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackfun.org/" target="_blank" title="4ido10n">4ido10n</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+</aside>
+</div>
+    </div>
+    <footer></footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"xdxd"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253479891'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1253479891' type='text/javascript'%3E%3C/script%3E"));</script>
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

