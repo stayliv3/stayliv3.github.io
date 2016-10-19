@@ -179,13 +179,12 @@ header(<span class="string">"Location: gopher://127.0.0.1:6379/_*1<span class="v
     <link href="http://xdxd.love/2016/10/17/unicode%E5%90%8C%E5%BD%A2%E5%AD%97%E5%BC%95%E8%B5%B7%E7%9A%84%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/"/>
     <id>http://xdxd.love/2016/10/17/unicode同形字引起的安全问题/</id>
     <published>2016-10-17T00:25:08.000Z</published>
-    <updated>2016-10-17T00:25:41.000Z</updated>
-    <content type="html"><![CDATA[<h1 id="历史上的安全漏洞">历史上的安全漏洞</h1><h2 id="spotify的漏洞">spotify的漏洞</h2><p>相关资料：</p>
-<p><a href="https://labs.spotify.com/2013/06/18/creative-usernames/" target="_blank" rel="external">https://labs.spotify.com/2013/06/18/creative-usernames/</a></p>
-<p>spotify的漏洞相比于github的漏洞来说是一个真正的高危漏洞，可以修改任意用户的密码。</p>
+    <updated>2016-10-19T05:42:32.000Z</updated>
+    <content type="html"><![CDATA[<h1 id="历史上的安全漏洞">历史上的安全漏洞</h1><h2 id="spotify的漏洞">spotify的漏洞</h2><p><a href="https://labs.spotify.com/2013/06/18/creative-usernames/" target="_blank" rel="external">spotify任意用户密码修改漏洞</a><br>漏洞简介:<br>找一个需要黑掉的账号，比如以bigbird为例。创建一个账户名为 ᴮᴵᴳᴮᴵᴿᴰ (in python this is the string u’\u1d2e\u1d35\u1d33\u1d2e\u1d35\u1d3f\u1d30′)。然后申请修改忘记密码，修改自己申请的账号密码。修改之后以刚刚设置的密码登录bigbird。就可以成功登录。<br>spotify的漏洞相比于github的漏洞来说是一个真正的高危漏洞，可以修改任意用户的密码。</p>
 <h2 id="github的漏洞">github的漏洞</h2><p>相关资料：</p>
 <p><a href="https://twitter.com/GitHubSecurity/status/757686530748125184" target="_blank" rel="external">https://twitter.com/GitHubSecurity/status/757686530748125184</a><br><a href="https://bounty.github.com/researchers/jagracey.html?ljh" target="_blank" rel="external">https://bounty.github.com/researchers/jagracey.html?ljh</a></p>
-<p>github的邮箱名允许unicode字符，导致可以把找回密码的token发送到攻击者的邮箱。从twitter的讨论来以及自己的测试结果来看提供邮箱服务的产品大部分都是白名单了邮箱的用户名，所以都是不可以使用unicode字符的。测试了网易的企业邮箱和腾讯的企业邮箱，都不可以使用unicode字符。所以只能自己搭一个邮件服务器来测试这个问题。</p>
+<p>漏洞简介：<br>github的邮箱名允许unicode字符，导致可以把找回密码的token发送到攻击者的邮箱。假设有 mike@example.org vs mıke@example.org 两个邮箱。重置mıke@example.org用户的密码。github在处理邮箱名字的时候，会把mıke@example.org标准化成mike@example.org，从而把mike@example.org用户的密码重置token发送到了mıke@example.org的邮箱。</p>
+<p>从twitter的讨论来以及自己的测试结果来看提供邮箱服务的产品大部分都是白名单了邮箱的用户名，所以都是不可以使用unicode字符的。测试了网易的企业邮箱和腾讯的企业邮箱，都不可以使用unicode字符。所以只能自己搭一个邮件服务器来测试这个问题。</p>
 <h1 id="魔法在哪里">魔法在哪里</h1><h2 id="编码的基础知识、unicode编码和同形字">编码的基础知识、unicode编码和同形字</h2><p>参考资料：<br><a href="http://www.freebuf.com/articles/web/25623.html" target="_blank" rel="external">http://www.freebuf.com/articles/web/25623.html</a><br><a href="http://www.irongeek.com/homoglyph-attack-generator.php" target="_blank" rel="external">http://www.irongeek.com/homoglyph-attack-generator.php</a></p>
 <p>了解了编码是二进制和字符之间的映射关系之后，可以了解到unicode字符无非也是一种字符而已，只要程序支持，应该不会有任何问题。为什么这个unicode字符在处理过程中变成了另外一个字符，而且是看起来很相似的字符，难道程序也跟人眼看一样，被相同的外表迷惑了。显然程序处理的是二进制的数据，只要二进制不同，无论外表看起来多么一样，程序都应该可以分辨出来。关于unicode同形字的问题，unicode homoglyphs，其实早就有不少讨论。不过大多是利用同形字来迷惑人钓鱼之类。那么机器怎么也会被同形字迷惑呢。</p>
 <p>github的漏洞描述中是这么写的:a flaw in the way email addresses were being normalized to standard character sets when used to look up accounts during the password recovery flow. 在邮件地址标准化成标准的字符集的时候出现问题。</p>
@@ -210,8 +209,7 @@ header(<span class="string">"Location: gopher://127.0.0.1:6379/_*1<span class="v
 <p>正常重置了自己的密码。链接中的email字段是base64编码的。解码出来是含有unicode字符的邮箱。所以微信的重置密码业务逻辑中没有标准化unicode字符这个处理。不存在unicode同形字引起的漏洞。</p>
 ]]></content>
     <summary type="html">
-    <![CDATA[<h1 id="历史上的安全漏洞">历史上的安全漏洞</h1><h2 id="spotify的漏洞">spotify的漏洞</h2><p>相关资料：</p>
-<p><a href="https://labs.spotify.com/2013/06/18/creative-user]]>
+    <![CDATA[<h1 id="历史上的安全漏洞">历史上的安全漏洞</h1><h2 id="spotify的漏洞">spotify的漏洞</h2><p><a href="https://labs.spotify.com/2013/06/18/creative-usernames/" targe]]>
     </summary>
     
       <category term="渗透测试" scheme="http://xdxd.love/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
