@@ -12,30 +12,27 @@
 
     
     <meta name="description" content="主要记录下手机上使用tcpdump抓包常用的命令和遇到的一个小问题。详细的细节可以参考基于tcpdump的Android智能移动终端数据包捕获完整解决方案,看这名字就足够高大上。
-#adb常用的命令
-adb devices 列出连接的设备
+adb常用的命令adb devices 列出连接的设备
 adb shell  获得android设备shell
 su   提升权限到root
-adb push D:/tcpdump /data/local/tcpdu">
+adb push D:/tcpdump /data/local/tcpdump">
 <meta property="og:type" content="article">
 <meta property="og:title" content="手机上使用tcpdump抓包">
 <meta property="og:url" content="http://xdxd.love/2015/07/07/手机上使用tcpdump抓包分析/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
 <meta property="og:description" content="主要记录下手机上使用tcpdump抓包常用的命令和遇到的一个小问题。详细的细节可以参考基于tcpdump的Android智能移动终端数据包捕获完整解决方案,看这名字就足够高大上。
-#adb常用的命令
-adb devices 列出连接的设备
+adb常用的命令adb devices 列出连接的设备
 adb shell  获得android设备shell
 su   提升权限到root
-adb push D:/tcpdump /data/local/tcpdu">
-<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+adb push D:/tcpdump /data/local/tcpdump">
+<meta property="og:updated_time" content="2016-10-19T08:09:51.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="手机上使用tcpdump抓包">
 <meta name="twitter:description" content="主要记录下手机上使用tcpdump抓包常用的命令和遇到的一个小问题。详细的细节可以参考基于tcpdump的Android智能移动终端数据包捕获完整解决方案,看这名字就足够高大上。
-#adb常用的命令
-adb devices 列出连接的设备
+adb常用的命令adb devices 列出连接的设备
 adb shell  获得android设备shell
 su   提升权限到root
-adb push D:/tcpdump /data/local/tcpdu">
+adb push D:/tcpdump /data/local/tcpdump">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -111,19 +108,17 @@ adb push D:/tcpdump /data/local/tcpdu">
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#adb常用的命令"><span class="toc-number">1.</span> <span class="toc-text">adb常用的命令</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#tcpdump常用命令"><span class="toc-number">2.</span> <span class="toc-text">tcpdump常用命令</span></a></li></ol>
 		
 		</div>
 		
 		<p>主要记录下手机上使用tcpdump抓包常用的命令和遇到的一个小问题。详细的细节可以参考<a href="http://www.cnblogs.com/anee/archive/2013/09/12/3316139.html" target="_blank" rel="external">基于tcpdump的Android智能移动终端数据包捕获完整解决方案</a>,看这名字就足够高大上。</p>
-<p>#adb常用的命令</p>
-<pre><code>adb devices 列出连接的设备
+<h1 id="adb常用的命令">adb常用的命令</h1><pre><code>adb devices 列出连接的设备
 adb <span class="keyword">shell</span>  获得android设备<span class="keyword">shell</span>
 <span class="keyword">su</span>   提升权限到root
 adb push <span class="keyword">D</span>:/tcpdump /data/<span class="keyword">local</span>/tcpdump 上传文件
 adb pull /data/<span class="keyword">local</span>/<span class="keyword">test</span>.pcap .  下载文件
-</code></pre><p>#tcpdump常用命令</p>
-<p>遇到一个问题，就是抓取到的数据包是不全的。每个包最后都少了很多数据。原因是tcpdump没有指定s参数。s参数代表抓取数据包的长度，需要指定为0，不限制数据包的长度即可。</p>
+</code></pre><h1 id="tcpdump常用命令">tcpdump常用命令</h1><p>遇到一个问题，就是抓取到的数据包是不全的。每个包最后都少了很多数据。原因是tcpdump没有指定s参数。s参数代表抓取数据包的长度，需要指定为0，不限制数据包的长度即可。</p>
 <pre><code>./tcpdump -s0 -w test<span class="class">.pcap</span> 
 </code></pre>  
 	</div>
@@ -191,7 +186,7 @@ adb pull /data/<span class="keyword">local</span>/<span class="keyword">test</sp
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#adb常用的命令"><span class="toc-number">1.</span> <span class="toc-text">adb常用的命令</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#tcpdump常用命令"><span class="toc-number">2.</span> <span class="toc-text">tcpdump常用命令</span></a></li></ol>
  
   </div>
 
