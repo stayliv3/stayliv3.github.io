@@ -1,92 +1,17 @@
-<!doctype html>
 
-
-
-  
-
-
-<html class="theme-next mist use-motion">
+ <!DOCTYPE HTML>
+<html lang="zh-Hans">
 <head>
-  <meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
-
-
-
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
-
-
-
-
-
-
-
-
-
-
-
-
+  <meta charset="UTF-8">
   
-  
-  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
-
-
-
-
-  
-  
-  
-  
-
-  
+    <title>瞎折腾之sublime插件导入第三方库 | xd_xd&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
+    <meta name="author" content="xd_xd">
     
-  
 
-  
-
-  
-
-  
-
-  
-
-  
     
-    
-    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
-  
-
-
-
-
-
-
-<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
-
-<link href="/css/main.css?v=5.0.2" rel="stylesheet" type="text/css" />
-
-
-  <meta name="keywords" content="折腾," />
-
-
-
-
-
-  <link rel="alternate" href="/atom.xml" title="xd_xd's blog" type="application/atom+xml" />
-
-
-
-
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.2" />
-
-
-
-
-
-
-<meta name="description" content="花了好几个小时解决了一个问题，走了不少弯路，需要总结分析一下。
+    <meta name="description" content="花了好几个小时解决了一个问题，走了不少弯路，需要总结分析一下。
 需求只是想用写一个sublime插件来完成一些sql操作。python操作sql，很自然的想用MySQLdb库。但是sublime使用的是自己的python环境，跟系统是隔离的。通过stackoverflow得知基本只有两个思路导入第三方库。一个是指定第三方库的路径，加入到sys.path中，另一个就是改变sublime自身使用的py">
 <meta property="og:type" content="article">
 <meta property="og:title" content="瞎折腾之sublime插件导入第三方库">
@@ -100,226 +25,85 @@
 <meta name="twitter:description" content="花了好几个小时解决了一个问题，走了不少弯路，需要总结分析一下。
 需求只是想用写一个sublime插件来完成一些sql操作。python操作sql，很自然的想用MySQLdb库。但是sublime使用的是自己的python环境，跟系统是隔离的。通过stackoverflow得知基本只有两个思路导入第三方库。一个是指定第三方库的路径，加入到sys.path中，另一个就是改变sublime自身使用的py">
 
-
-
-<script type="text/javascript" id="hexo.configuration">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    scheme: 'Mist',
-    sidebar: {"position":"left","display":"post"},
-    fancybox: true,
-    motion: true,
-    duoshuo: {
-      userId: '0',
-      author: '博主'
-    }
-  };
-</script>
-
-
-
-
-  <link rel="canonical" href="http://xdxd.love/2015/11/16/瞎折腾之sublime插件导入第三方库/"/>
-
-
-  <title> 瞎折腾之sublime插件导入第三方库 | xd_xd's blog </title>
+    
+    <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
 </head>
 
-<body itemscope itemtype="//schema.org/WebPage" lang="zh-Hans">
-
-  
-
-
-
-
-
-
-
-
-
-
-  
-  
-    
-  
-
-  <div class="container one-collumn sidebar-position-left page-post-detail ">
-    <div class="headband"></div>
-
-    <header id="header" class="header" itemscope itemtype="//schema.org/WPHeader">
-      <div class="header-inner"><div class="site-meta ">
-  
-
-  <div class="custom-logo-site-title">
-    <a href="/"  class="brand" rel="start">
-      <span class="logo-line-before"><i></i></span>
-      <span class="site-title">xd_xd's blog</span>
-      <span class="logo-line-after"><i></i></span>
-    </a>
-  </div>
-  <p class="site-subtitle"></p>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="xd_xd&#39;s blog" title="xd_xd&#39;s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="xd_xd&#39;s blog">xd_xd&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜單">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:xdxd.love">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
 </div>
-
-<div class="site-nav-toggle">
-  <button>
-    <span class="btn-bar"></span>
-    <span class="btn-bar"></span>
-    <span class="btn-bar"></span>
-  </button>
-</div>
-
-<nav class="site-nav">
-  
-
-  
-    <ul id="menu" class="menu">
-      
-        
-        <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
-            
-            首页
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-archives">
-          <a href="/archives" rel="section">
-            
-            归档
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-tags">
-          <a href="/tags" rel="section">
-            
-            标签
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-schedule">
-          <a href="/schedule" rel="section">
-            
-            日程
-          </a>
-        </li>
-      
-
-      
-    </ul>
-  
-
-  
-</nav>
-
- </div>
     </header>
-
-    <main id="main" class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          <div id="content" class="content">
-            
-
-  <div id="posts" class="posts-expand">
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
     
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="//schema.org/Article">
-
+      <a href="/2015/11/16/瞎折腾之sublime插件导入第三方库/" title="瞎折腾之sublime插件导入第三方库" itemprop="url">瞎折腾之sublime插件导入第三方库</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
+		
+  <p class="article-time">
+    <time datetime="2015-11-16T08:47:47.000Z" itemprop="datePublished"> 發表於 Nov 16 2015</time>
     
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                瞎折腾之sublime插件导入第三方库
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-11-16T16:47:47+08:00" content="Nov 16 2015">
-              Nov 16 2015
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/折腾不止/" itemprop="url" rel="index">
-                    <span itemprop="name">折腾不止</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2015/11/16/瞎折腾之sublime插件导入第三方库/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/11/16/瞎折腾之sublime插件导入第三方库/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-             <span id="/2015/11/16/瞎折腾之sublime插件导入第三方库/" class="leancloud_visitors" data-flag-title="瞎折腾之sublime插件导入第三方库">
-               &nbsp; | &nbsp;
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               <span class="post-meta-item-text">阅读次数 </span>
-               <span class="leancloud-visitors-count"></span>
-              </span>
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        <p>花了好几个小时解决了一个问题，走了不少弯路，需要总结分析一下。</p>
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目錄</strong>
+		
+			
+		
+		</div>
+		
+		<p>花了好几个小时解决了一个问题，走了不少弯路，需要总结分析一下。</p>
 <p>需求只是想用写一个sublime插件来完成一些sql操作。python操作sql，很自然的想用MySQLdb库。但是sublime使用的是自己的python环境，跟系统是隔离的。通过stackoverflow得知基本只有两个思路导入第三方库。一个是指定第三方库的路径，加入到sys.path中，另一个就是改变sublime自身使用的python环境。</p>
 <p>改变python自身的环境一般被认为具有比较高的风险，容易引起各种问题。所以最终定位下载第三方库的代码，修改sys.path。下载MySQLdb的代码之后，import MySQLdb报错，_mysql.so不存在。在本地的python库路径里看了一下，有这个文件。复制到sublime插件目录，结果又报错找不到libmysqlclient.18.dylib。这里有两个解决方式，一个是做一个软连接，但是新版mac os做了安全限制，/usr/lib目录不可以写了。关闭安全限制又不是我理解的恰当的方式，最后参考<a href="http://webcache.googleusercontent.com/search?q=cache:94BSd8uENDAJ:xwsoul.com/posts/840+&amp;cd=5&amp;hl=en&amp;ct=clnk&amp;gl=us&amp;lr=lang_en%7Clang_zh-TW" target="_blank" rel="external">MAC OS 下解决 IMPORT MYSQLDB 报错的问题</a>,使用</p>
 <pre><code>install_name_tool -change libmysqlclient.<span class="number">18</span>.dylib /usr/local/mysql/<span class="class"><span class="keyword">lib</span>/<span class="title">libmysqlclient</span>.18.<span class="title">dylib</span> <span class="title">_mysql</span>.<span class="title">so</span></span>
@@ -332,448 +116,513 @@
 <p>这时候考虑到看到的所有的帖子都说的是sublime2，而我用的是sublime3。思路变成本地安装python3环境，重新安装python3的MySQLdb库，再复制到sublime路径。本地安装python3的MySQLdb库时发现也报错了，开始以为是python3环境有问题，搜了一下发现原来是MySQLdb不支持python3。</p>
 <p>折腾了好久最后是这个结果。找了几个MySQLdb的替代品，发现pymysql是纯python的库，为了避免浪费更多的时间折腾一些底层的东西，直接就用pymysql了。几分钟解决了问题。</p>
 <p>之前遇到的问题几乎google都有现成的方案，这次sublime3 MySQLdb的问题，网上资料很少，最后基本能看的资料都看了。没有新的资料可以参考，突然感觉有点点恐惧。自己解决问题的方式基本是完全依赖Google，基本不用思考，因为google错误提示完全都可以解决。当尝试了多个方案依然无法解决问题的时候就突然不知所措了。这时候才发现原来自己根本没有仔细思考，仔细分析过这个问题。静下来，在本子上理一下现有的田间，要做的事，分析一下可能的思路，可能就不会不知所措了。</p>
-
-      
-    </div>
-
-    <div>
-      
-        
-
-      
-    </div>
-
-    <div>
-      
-        
-  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
-    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
-    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
-      <span>赏</span>
-    </button>
-    <div id="QR" style="display: none;">
-      
-        <div id="wechat" style="display: inline-block">
-          <img id="wechat_qr" src="/path/to/wechat-reward-image" alt="xd_xd WeChat Pay"/>
-          <p>微信打赏</p>
-        </div>
-      
-      
-    </div>
-  </div>
-
-
-      
-    </div>
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/折腾/" rel="tag">#折腾</a>
-          
-        </div>
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2015/11/10/sqlmap使用tips/" rel="next" title="sqlmap使用手册">
-                <i class="fa fa-chevron-left"></i> sqlmap使用手册
-              </a>
-            
-          </div>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2015/11/23/华山杯CTF做过的几道题/" rel="prev" title="华山杯CTF做过的几道题">
-                华山杯CTF做过的几道题 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
-
-      
-      
-    </footer>
-  </article>
-
-
-
-    <div class="post-spread">
-      
-    </div>
-  </div>
-
-
-          </div>
-          
-
-
-          
-  <div class="comments" id="comments">
-    
-      <div class="ds-thread" data-thread-key="2015/11/16/瞎折腾之sublime插件导入第三方库/"
-           data-title="瞎折腾之sublime插件导入第三方库" data-url="http://xdxd.love/2015/11/16/瞎折腾之sublime插件导入第三方库/">
-      </div>
-    
-  </div>
-
-
-        </div>
-        
-          
   
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/折腾不止/">折腾不止</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/折腾/">折腾</a>
   </div>
 
-  <aside id="sidebar" class="sidebar">
-    <div class="sidebar-inner">
+</div>
 
-      
 
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            文章目录
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://xdxd.love/2015/11/16/瞎折腾之sublime插件导入第三方库/" data-title="瞎折腾之sublime插件导入第三方库 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015/11/23/华山杯CTF做过的几道题/" title="华山杯CTF做过的几道题">
+  <strong>上一篇：</strong><br/>
+  <span>
+  华山杯CTF做过的几道题</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015/11/10/sqlmap使用tips/"  title="sqlmap使用手册">
+ <strong>下一篇：</strong><br/> 
+ <span>sqlmap使用手册
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2015/11/16/瞎折腾之sublime插件导入第三方库/" data-title="瞎折腾之sublime插件导入第三方库" data-url="http://xdxd.love/2015/11/16/瞎折腾之sublime插件导入第三方库/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="顯示側邊欄"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目錄</strong>
+ 
+ 
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隱藏側邊欄"></a></div>
+<aside class="clearfix">
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 訂閱</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">新浪微博</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=5256150165&verifier=0935d97e&dpc=1"></iframe>
+</div>
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分類</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>10</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/人生苦短/" title="人生苦短">人生苦短<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>28</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/前端安全/" title="前端安全">前端安全<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/加密解密/" title="加密解密">加密解密<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/奇技淫巧/" title="奇技淫巧">奇技淫巧<sup>2</sup></a></li>
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/渗透测试/" title="渗透测试">渗透测试<sup>7</sup></a></li>
+		  
+		
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/转载收藏/" title="转载收藏">转载收藏<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/黑盒测试/" title="黑盒测试">黑盒测试<sup>8</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">標簽</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/php/" title="php">php<sup>9</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mips/" title="mips">mips<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/支付漏洞/" title="支付漏洞">支付漏洞<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/xss/" title="xss">xss<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/sqlmap/" title="sqlmap">sqlmap<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcpdump/" title="tcpdump">tcpdump<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/密码学/" title="密码学">密码学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/inspeckage/" title="inspeckage">inspeckage<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/csrf/" title="csrf">csrf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/github/" title="github">github<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ctf/" title="ctf">ctf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/xposed/" title="xposed">xposed<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/折腾/" title="折腾">折腾<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/php-wdcp/" title="php,wdcp">php,wdcp<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/XXE/" title="XXE">XXE<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情鏈接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.heysec.org/" target="_blank" title="heysec.org">heysec.org</a>
+            
           </li>
-          <li class="sidebar-nav-overview" data-target="site-overview">
-            站点概览
+        
+          <li>
+            
+            	<a href="http://sco4x0.com" target="_blank" title="sco4x0&#39;s blog">sco4x0&#39;s blog</a>
+            
           </li>
-        </ul>
-      
-
-      <section class="site-overview sidebar-panel ">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="//schema.org/Person">
-          <img class="site-author-image" itemprop="image"
-               src="/images/avatar.gif"
-               alt="xd_xd" />
-          <p class="site-author-name" itemprop="name">xd_xd</p>
-          <p class="site-description motion-element" itemprop="description"></p>
-        </div>
-        <nav class="site-state motion-element">
-          <div class="site-state-item site-state-posts">
-            <a href="/archives">
-              <span class="site-state-item-count">119</span>
-              <span class="site-state-item-name">日志</span>
-            </a>
-          </div>
-
-          
-            <div class="site-state-item site-state-categories">
-              
-                <span class="site-state-item-count">14</span>
-                <span class="site-state-item-name">分类</span>
-              
-            </div>
-          
-
-          
-            <div class="site-state-item site-state-tags">
-              <a href="/tags">
-                <span class="site-state-item-count">45</span>
-                <span class="site-state-item-name">标签</span>
-              </a>
-            </div>
-          
-
-        </nav>
-
         
-          <div class="feed-link motion-element">
-            <a href="/atom.xml" rel="alternate">
-              <i class="fa fa-rss"></i>
-              RSS
-            </a>
-          </div>
-        
-
-        <div class="links-of-author motion-element">
-          
-        </div>
-
-        
-        
-
-        
-        
-
-      </section>
-
-      
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
+          <li>
             
-              
+            	<a href="https://virusdefender.net" target="_blank" title="virusdefender&#39;s blog">virusdefender&#39;s blog</a>
             
-            
-              <p class="post-toc-empty">此文章未包含目录</p>
-            
-          </div>
-        </section>
-      
-
-    </div>
-  </aside>
-
-
+          </li>
         
-      </div>
-    </main>
-
-    <footer id="footer" class="footer">
-      <div class="footer-inner">
-        <div class="copyright" >
-  
-  &copy; 
-  <span itemprop="copyrightYear">2016</span>
-  <span class="with-love">
-    <i class="fa fa-heart"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">xd_xd</span>
+          <li>
+            
+            	<a href="http://www.hackersb.cn/" target="_blank" title="Striker&#39;s blog">Striker&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://www.leavesongs.com/" target="_blank" title="离别歌">离别歌</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.stardustsky.net/" target="_blank" title="Stardustsky博客">Stardustsky博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.waitalone.cn/" target="_blank" title="独自等待">独自等待</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.cnblogs.com/S4b0r/" target="_blank" title="S4b0r&#39; blog">S4b0r&#39; blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.leesec.com/" target="_blank" title="leesec">leesec</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://xss1.com/" target="_blank" title="0x_Jin">0x_Jin</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://bl4ck.in/" target="_blank" title="Tomato">Tomato</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackfun.org/" target="_blank" title="4ido10n">4ido10n</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.lynahex.com/" target="_blank" title="lynahex&#39;s blog">lynahex&#39;s blog</a>
+            
+          </li>
+        
+    </ul>
 </div>
-
-<div class="powered-by">
-  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
-</div>
-
-<div class="theme-info">
-  主题 -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
-    NexT.Mist
-  </a>
-</div>
-
-        
-
-        
-      </div>
-    </footer>
-
-    <div class="back-to-top">
-      <i class="fa fa-arrow-up"></i>
-    </div>
-  </div>
 
   
+
+
+</aside>
+</div>
+    </div>
+    <footer></footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
 
 <script type="text/javascript">
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
-  }
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
 </script>
 
 
 
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"xdxd"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
 
 
 
 
 
 
-  
 
-
-
-  
-  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
-
-  
-  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
-
-  
-  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
-
-  
-  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/utils.js?v=5.0.2"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=5.0.2"></script>
-
-
-
-  
-  
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.2"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.0.2"></script>
-
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.2"></script>
-
-
-
-  
-
-  
-    
-  
-
-  <script type="text/javascript">
-    var duoshuoQuery = {short_name:"xdxd"};
-    (function() {
-      var ds = document.createElement('script');
-      ds.type = 'text/javascript';ds.async = true;
-      ds.id = 'duoshuo-script';
-      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-      ds.charset = 'UTF-8';
-      (document.getElementsByTagName('head')[0]
-      || document.getElementsByTagName('body')[0]).appendChild(ds);
-    })();
-  </script>
-
-  
-    
-    <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
-    <script src="/js/src/hook-duoshuo.js"></script>
-  
-
-
-
-
-
-
-  
-  
-
-  
-
-  
-
-  
-  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
-  <script>AV.initialize("PLNU77uDrLFCiYhhlFPIE1RV-gzGzoHsz", "sCiCpYU3uBWLBKUv0soPSU93");</script>
-  <script>
-    function showTime(Counter) {
-      var query = new AV.Query(Counter);
-      var entries = [];
-      var $visitors = $(".leancloud_visitors");
-
-      $visitors.each(function () {
-        entries.push( $(this).attr("id").trim() );
-      });
-
-      query.containedIn('url', entries);
-      query.find()
-        .done(function (results) {
-          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
-
-          if (results.length === 0) {
-            $visitors.find(COUNT_CONTAINER_REF).text(0);
-            return;
-          }
-
-          for (var i = 0; i < results.length; i++) {
-            var item = results[i];
-            var url = item.get('url');
-            var time = item.get('time');
-            var element = document.getElementById(url);
-
-            $(element).find(COUNT_CONTAINER_REF).text(time);
-          }
-          for(var i = 0; i < entries.length; i++) {
-            var url = entries[i];
-            var element = document.getElementById(url);
-            var countSpan = $(element).find(COUNT_CONTAINER_REF);
-            if( countSpan.text() == '') {
-              countSpan.text(0);
-            }
-          }
-        })
-        .fail(function (object, error) {
-          console.log("Error: " + error.code + " " + error.message);
-        });
-    }
-
-    function addCount(Counter) {
-      var $visitors = $(".leancloud_visitors");
-      var url = $visitors.attr('id').trim();
-      var title = $visitors.attr('data-flag-title').trim();
-      var query = new AV.Query(Counter);
-
-      query.equalTo("url", url);
-      query.find({
-        success: function(results) {
-          if (results.length > 0) {
-            var counter = results[0];
-            counter.fetchWhenSave(true);
-            counter.increment("time");
-            counter.save(null, {
-              success: function(counter) {
-                var $element = $(document.getElementById(url));
-                $element.find('.leancloud-visitors-count').text(counter.get('time'));
-              },
-              error: function(counter, error) {
-                console.log('Failed to save Visitor num, with error message: ' + error.message);
-              }
-            });
-          } else {
-            var newcounter = new Counter();
-            /* Set ACL */
-            var acl = new AV.ACL();
-            acl.setPublicReadAccess(true);
-            acl.setPublicWriteAccess(true);
-            newcounter.setACL(acl);
-            /* End Set ACL */
-            newcounter.set("title", title);
-            newcounter.set("url", url);
-            newcounter.set("time", 1);
-            newcounter.save(null, {
-              success: function(newcounter) {
-                var $element = $(document.getElementById(url));
-                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
-              },
-              error: function(newcounter, error) {
-                console.log('Failed to create');
-              }
-            });
-          }
-        },
-        error: function(error) {
-          console.log('Error:' + error.code + " " + error.message);
-        }
-      });
-    }
-
-    $(function() {
-      var Counter = AV.Object.extend("Counter");
-      if ($('.leancloud_visitors').length == 1) {
-        addCount(Counter);
-      } else if ($('.post-title-link').length > 1) {
-        showTime(Counter);
-      }
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
     });
-  </script>
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
 
 
 
-  
-
-  
+<!-- Analytics Begin -->
 
 
-</body>
+
+
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253479891'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1253479891' type='text/javascript'%3E%3C/script%3E"));</script>
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回頂部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
 </html>
