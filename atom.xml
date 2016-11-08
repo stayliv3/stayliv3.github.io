@@ -234,39 +234,6 @@ header(<span class="string">"Location: gopher://127.0.0.1:6379/_*1<span class="v
   </entry>
   
   <entry>
-    <title><![CDATA[常用linux命令]]></title>
-    <link href="http://xdxd.love/2016/10/10/%E5%B8%B8%E7%94%A8linux%E5%91%BD%E4%BB%A4/"/>
-    <id>http://xdxd.love/2016/10/10/常用linux命令/</id>
-    <published>2016-10-10T07:58:52.000Z</published>
-    <updated>2016-10-11T10:59:42.000Z</updated>
-    <content type="html"><![CDATA[<h2 id="打包目录文件">打包目录文件</h2><p>示例一：将整个 /etc 目录下的文件全部打包成为 /tmp/etc.tar</p>
-<pre><code>[root<span class="constant">@linux</span> ~]<span class="preprocessor"># tar -cvf /tmp/etc.tar /etc &lt;==仅打包，不压缩！</span>
-[root<span class="constant">@linux</span> ~]<span class="preprocessor"># tar -zcvf /tmp/etc.tar.gz /etc &lt;==打包后，以 gzip 压缩</span>
-[root<span class="constant">@linux</span> ~]<span class="preprocessor"># tar -jcvf /tmp/etc.tar.bz2 /etc &lt;==打包后，以 bzip2 压缩</span>
-</code></pre><h2 id="使用nc传输文件">使用nc传输文件</h2><pre><code>我来发送（ubuntu <span class="number">10.04</span>）：  $ nc 接收者ip 端口号 &lt; 要发送的文件 
-同事接收（ubuntu <span class="number">12.04</span>）：  $ nc -l 端口号 &gt; 要保存的文件名  
-注： 端口号（<span class="number">1024</span> ～ <span class="number">65535</span>）要匹配
-</code></pre><h2 id="kali2-0更新源">kali2.0更新源</h2><p>（此源为2.0版本）中科大kali滚动更新版源（即kali2.0源）</p>
-<pre><code><span class="comment">#中科大的源</span>
-<span class="title">deb</span> <span class="url">http://mirrors.ustc.edu.cn/kali</span> kali-rolling main non-free contrib
-</code></pre><p>修改软件更新源配置文件：</p>
-<pre><code>leafpad /etc/apt/sources.<span class="type">list</span>
-</code></pre><p>将新的Kali源粘贴进去，同时将官方源用#号注释掉。<br>再:</p>
-<pre><code>apt-get <span class="operator"><span class="keyword">update</span> &amp; apt-<span class="keyword">get</span> <span class="keyword">upgrade</span>
-apt-<span class="keyword">get</span> dist-<span class="keyword">upgrade</span>
-apt-<span class="keyword">get</span> clean</span>
-</code></pre><p>升级Kali</p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<h2 id="打包目录文件">打包目录文件</h2><p>示例一：将整个 /etc 目录下的文件全部打包成为 /tmp/etc.tar</p>
-<pre><code>[root<span class="constant">@linux</span> ~]<span class=]]>
-    </summary>
-    
-      <category term="折腾不止" scheme="http://xdxd.love/categories/%E6%8A%98%E8%85%BE%E4%B8%8D%E6%AD%A2/"/>
-    
-  </entry>
-  
-  <entry>
     <title><![CDATA[esp8266芯片相关]]></title>
     <link href="http://xdxd.love/2016/10/09/esp8266%E8%8A%AF%E7%89%87%E7%9B%B8%E5%85%B3/"/>
     <id>http://xdxd.love/2016/10/09/esp8266芯片相关/</id>
@@ -1137,6 +1104,26 @@ W/System.err(<span class="number">24780</span>):    <span class="keyword">at</sp
     </summary>
     
       <category term="移动安全" scheme="http://xdxd.love/categories/%E7%A7%BB%E5%8A%A8%E5%AE%89%E5%85%A8/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[bugfree任意文件上传漏洞]]></title>
+    <link href="http://xdxd.love/2016/03/28/bugfree%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E4%BC%A4%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E/"/>
+    <id>http://xdxd.love/2016/03/28/bugfree任意文件伤上传漏洞/</id>
+    <published>2016-03-28T08:57:49.000Z</published>
+    <updated>2016-03-28T09:15:37.000Z</updated>
+    <content type="html"><![CDATA[<h1 id="漏洞详情">漏洞详情</h1><p><a href="http://wooyun.org/bugs/wooyun-2010-023919" target="_blank" rel="external">http://wooyun.org/bugs/wooyun-2010-023919</a><br><a href="http://wooyun.org/bugs/wooyun-2010-074519" target="_blank" rel="external">http://wooyun.org/bugs/wooyun-2010-074519</a></p>
+<p>最近渗透过程中遇到一个3.0.2版本的bugfree。利用这个上传获得shell。这个上传其实并不鸡肋。如果bugfree这种系统一般都会存在弱口令，而上传的目录文件名只有3位随机。所以如果可以解析的话就可以getshell。新版本中设置文件目录为bugFile。位于bugfree程序文件的上一级目录。如果运维配置web目录的时候根目录为bugfree目录上一级，也会存在安全问题。</p>
+<p><img src="/images/bugfree1.png" alt=""></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h1 id="漏洞详情">漏洞详情</h1><p><a href="http://wooyun.org/bugs/wooyun-2010-023919" target="_blank" rel="external">http://wooyun.org/bugs/wooyun-2]]>
+    </summary>
+    
+      <category term="bugfree" scheme="http://xdxd.love/tags/bugfree/"/>
+    
+      <category term="渗透测试" scheme="http://xdxd.love/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
     
   </entry>
   
