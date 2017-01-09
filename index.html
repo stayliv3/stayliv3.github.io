@@ -1,1 +1,665 @@
-<!DOCTYPE html><html lang="zh-Hans"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> xd_xd's blog</title><meta name="description" content="A Blog Powered By Hexo"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.ico"><link rel="stylesheet" href="/css/apollo.css"><script src="/js/jquery-3.1.0.min.js"></script><script src="/js/jquery.goup.js"></script><script src="/js/goup.js"></script><link rel="search" type="application/opensearchdescription+xml" href="http://xdxd.love/atom.xml" title="xd_xd's blog"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/logo.jpg"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/about" target="_self" class="nav-list-link">ABOUT</a></li><li class="nav-list-item"><a href="https://github.com/stayliv3" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/archives" target="_self" class="nav-list-link">ARCHIVES</a></li><li class="nav-list-item"><a href="/friends" target="_self" class="nav-list-link">FRIENDS</a></li></ul></header><section class="container"><ul class="home post-list"><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2016/12/09/一个路由器登录处的溢出分析和利用/" class="post-title-link">一个mips栈溢出利用</a></h2><div class="post-info">Dec 9, 2016</div><div class="post-content"><p>翻译自<a href="http://www.devttys0.com/2012/10/exploiting-a-mips-stack-overflow/">http://www.devttys0.com/2012/10/exploiting-a-mips-stack-overflow/</a>.这是D-link路由器一个未登录前的栈溢出利用.本文并非为原文的对照翻译,而是侧重记录在实践测试过程的问题和分析，算是一个读书笔记。</p></div><a href="/2016/12/09/一个路由器登录处的溢出分析和利用/" class="read-more">...阅读全文</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2016/12/09/一个mips栈溢出利用/" class="post-title-link">一个mips栈溢出利用</a></h2><div class="post-info">Dec 9, 2016</div><div class="post-content"><p>翻译自<a href="http://www.devttys0.com/2012/10/exploiting-a-mips-stack-overflow/">http://www.devttys0.com/2012/10/exploiting-a-mips-stack-overflow/</a>.这是D-link路由器一个未登录前的栈溢出利用.本文并非为原文的对照翻译,而是侧重记录在实践测试过程的问题和分析，算是一个读书笔记。</p></div><a href="/2016/12/09/一个mips栈溢出利用/" class="read-more">...阅读全文</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2016/11/19/一个简单的mips架构缓冲区溢出分析/" class="post-title-link">一个简单的mips架构缓冲区溢出分析</a></h2><div class="post-info">Nov 19, 2016</div><div class="post-content"><h1 id="缓冲区溢出原理">缓冲区溢出原理</h1><p>简单的说，缓冲区溢出就是在大缓冲区数据向小缓冲区复制的过程中，由于没有检查小缓冲区的边界或者检查不严格，导致小缓冲区不足以接受整个大缓冲区的数据，超出的部分覆盖了与小缓冲区的相邻的内存区中的其他数据而引发的内存问题。(注1)<br></div><a href="/2016/11/19/一个简单的mips架构缓冲区溢出分析/" class="read-more">...阅读全文</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2016/10/19/discuz最新版20160601-SSRF漏洞分析/" class="post-title-link">discuz最新版20160601 SSRF漏洞分析及修复方案</a></h2><div class="post-info">Oct 19, 2016</div><div class="post-content"></div><a href="/2016/10/19/discuz最新版20160601-SSRF漏洞分析/" class="read-more">...阅读全文</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2016/10/18/对称NAT穿透的一种新方法/" class="post-title-link">对称NAT穿透的一种新方法</a></h2><div class="post-info">Oct 18, 2016</div><div class="post-content"></div><a href="/2016/10/18/对称NAT穿透的一种新方法/" class="read-more">...阅读全文</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2016/10/17/unicode同形字引起的安全问题/" class="post-title-link">unicode同形字引起的安全问题</a></h2><div class="post-info">Oct 17, 2016</div><div class="post-content"></div><a href="/2016/10/17/unicode同形字引起的安全问题/" class="read-more">...阅读全文</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2016/10/09/esp8266芯片相关/" class="post-title-link">esp8266芯片相关</a></h2><div class="post-info">Oct 9, 2016</div><div class="post-content"></div><a href="/2016/10/09/esp8266芯片相关/" class="read-more">...阅读全文</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2016/10/09/台湾游记/" class="post-title-link">台湾游记</a></h2><div class="post-info">Oct 9, 2016</div><div class="post-content"></div><a href="/2016/10/09/台湾游记/" class="read-more">...阅读全文</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2016/09/26/小脚本之监控论坛帖子更新并发送邮件通知/" class="post-title-link">小脚本之监控论坛帖子更新并发送邮件通知</a></h2><div class="post-info">Sep 26, 2016</div><div class="post-content"><h2 id="需求">需求</h2><p>想要监控某个论坛是否有更新帖。如果有帖子更新并且标题符合某种条件就发送邮件通知</p></div><a href="/2016/09/26/小脚本之监控论坛帖子更新并发送邮件通知/" class="read-more">...阅读全文</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2016/09/20/逆向路由器固件之动态调试/" class="post-title-link">逆向路由器固件之动态调试</a></h2><div class="post-info">Sep 20, 2016</div><div class="post-content"></div><a href="/2016/09/20/逆向路由器固件之动态调试/" class="read-more">...阅读全文</a></article></li></ul></section><footer><div class="paginator"><a href="/page/2/" class="next">下一页</a></div><div class="copyright"><p>© 2016 <a href="http://xdxd.love">xd_xd</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/hkalexling/Yuno-Apollo" target="_blank">Yuno-Apollo</a>.</p></div></footer></div><script src="https://cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script></body></html>
+
+ <!DOCTYPE HTML>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>xd_xd&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="xd_xd">
+    
+
+    
+    <meta name="description">
+<meta property="og:type" content="website">
+<meta property="og:title" content="xd_xd's blog">
+<meta property="og:url" content="http://xdxd.love/index.html">
+<meta property="og:site_name" content="xd_xd's blog">
+<meta property="og:description">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="xd_xd's blog">
+<meta name="twitter:description">
+
+    
+    <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="xd_xd&#39;s blog" title="xd_xd&#39;s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="xd_xd&#39;s blog">xd_xd&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜單">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:xdxd.love">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main">
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/12/09/一个路由器登录处的溢出分析和利用/" title="一个mips栈溢出利用" itemprop="url">
+  
+    <h1 itemprop="name">一个mips栈溢出利用</h1>
+    
+     
+       <p itemprop="description" >翻译自http://www.devttys0.com/2012/10/exploiting-a-mips-stack-overflow/.这是D-link路由器一个未登录前的栈溢出利用.本文并非为原文的对照翻译,而是侧重记录在实践测试过程的问题和分析，算是一个读书笔记。</p>
+      
+    
+    <time datetime="2016-12-09T01:58:59.000Z" itemprop="datePublished">Dec 9 2016</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/12/09/一个mips栈溢出利用/" title="一个mips栈溢出利用" itemprop="url">
+  
+    <h1 itemprop="name">一个mips栈溢出利用</h1>
+    
+     
+       <p itemprop="description" >翻译自http://www.devttys0.com/2012/10/exploiting-a-mips-stack-overflow/.这是D-link路由器一个未登录前的栈溢出利用.本文并非为原文的对照翻译,而是侧重记录在实践测试过程的问题和分析，算是一个读书笔记。</p>
+      
+    
+    <time datetime="2016-12-09T01:58:59.000Z" itemprop="datePublished">Dec 9 2016</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/11/19/一个简单的mips架构缓冲区溢出分析/" title="一个简单的mips架构缓冲区溢出分析" itemprop="url">
+  
+    <h1 itemprop="name">一个简单的mips架构缓冲区溢出分析</h1>
+    
+     
+       <p itemprop="description" >缓冲区溢出原理简单的说，缓冲区溢出就是在大缓冲区数据向小缓冲区复制的过程中，由于没有检查小缓冲区的边界或者检查不严格，导致小缓冲区不足以接受整个大缓冲区的数据，超出的部分覆盖了与小缓冲区的相邻的内存区中的其他数据而引发的内存问题。(注1)</p>
+      
+    
+    <time datetime="2016-11-19T07:00:17.000Z" itemprop="datePublished">Nov 19 2016</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/10/19/discuz最新版20160601-SSRF漏洞分析/" title="discuz最新版20160601 SSRF漏洞分析及修复方案" itemprop="url">
+  
+    <h1 itemprop="name">discuz最新版20160601 SSRF漏洞分析及修复方案</h1>
+    
+     
+           <p itemprop="description" >参考资料SSRF到GET SHELLwooyun:wooyun-2015-0151179
+漏洞poc访问：/forum.php?mod=ajax&amp;amp;action=downremoteimg&amp;amp;message=[img=1,1]http://23.88.58.149/1</p>
+        
+    
+    <time datetime="2016-10-19T01:39:52.000Z" itemprop="datePublished">Oct 19 2016</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/10/18/对称NAT穿透的一种新方法/" title="对称NAT穿透的一种新方法" itemprop="url">
+  
+    <h1 itemprop="name">对称NAT穿透的一种新方法</h1>
+    
+     
+           <p itemprop="description" >前言这种方法从安全的角度来说是利用了目前路由器实现对称NAT的方法中存在端口可以预测的漏洞，利用这个漏洞来实现打洞。加上一次发送大量的包，来增加命中的概率。
+参考资料整理翻译自A New Method for Symmetric NAT Traversal in UDP and </p>
+        
+    
+    <time datetime="2016-10-18T01:57:26.000Z" itemprop="datePublished">Oct 18 2016</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/10/17/unicode同形字引起的安全问题/" title="unicode同形字引起的安全问题" itemprop="url">
+  
+    <h1 itemprop="name">unicode同形字引起的安全问题</h1>
+    
+     
+           <p itemprop="description" >历史上的安全漏洞spotify的漏洞spotify任意用户密码修改漏洞漏洞简介:找一个需要黑掉的账号，比如以bigbird为例。创建一个账户名为 ᴮᴵᴳᴮᴵᴿᴰ (in python this is the string u’\u1d2e\u1d35\u1d33\u1d2e\u1</p>
+        
+    
+    <time datetime="2016-10-17T00:25:08.000Z" itemprop="datePublished">Oct 17 2016</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/10/09/esp8266芯片相关/" title="esp8266芯片相关" itemprop="url">
+  
+    <h1 itemprop="name">esp8266芯片相关</h1>
+    
+     
+           <p itemprop="description" >相关工具flash烧写工具</p>
+        
+    
+    <time datetime="2016-10-09T09:11:15.000Z" itemprop="datePublished">Oct 9 2016</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/10/09/台湾游记/" title="台湾游记" itemprop="url">
+  
+    <h1 itemprop="name">台湾游记</h1>
+    
+     
+           <p itemprop="description" >吐槽穷游网台湾精华帖，感觉穷游上的游记更应该像是攻略。这样的游记可以给后来者很多参考，提供很多有用的信息，穷游貌似也主动引导用户这么写。但是完全按照攻略的旅行岂不是成了另外一种形式的跟团游。几年以前放弃跟团，开始自助旅行。这次的经历发现各种攻略越来越成熟，但是攻略的内容只能依赖一</p>
+        
+    
+    <time datetime="2016-10-09T07:23:23.000Z" itemprop="datePublished">Oct 9 2016</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/09/26/小脚本之监控论坛帖子更新并发送邮件通知/" title="小脚本之监控论坛帖子更新并发送邮件通知" itemprop="url">
+  
+    <h1 itemprop="name">小脚本之监控论坛帖子更新并发送邮件通知</h1>
+    
+     
+       <p itemprop="description" >需求想要监控某个论坛是否有更新帖。如果有帖子更新并且标题符合某种条件就发送邮件通知</p>
+      
+    
+    <time datetime="2016-09-26T06:19:44.000Z" itemprop="datePublished">Sep 26 2016</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/09/20/逆向路由器固件之动态调试/" title="逆向路由器固件之动态调试" itemprop="url">
+  
+    <h1 itemprop="name">逆向路由器固件之动态调试</h1>
+    
+     
+           <p itemprop="description" >本文根据devttyS0的教程Exploiting Embedded Systems – Part 2和Exploiting Embedded Systems – Part 3复现Trendnet一个路由器的SQL注入漏洞分析过程。部门内容直接翻译引用自原文，可以看做是原文的翻译</p>
+        
+    
+    <time datetime="2016-09-20T09:09:52.000Z" itemprop="datePublished">Sep 20 2016</time>
+  </a>
+</section>
+
+
+
+
+
+
+
+  <nav id="page-nav" class="clearfix unexpand">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/2/">Next<span></span></a>
+  </nav>
+
+</div>
+      <div class="openaside"><a class="navbutton" href="#" title="顯示側邊欄"></a></div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隱藏側邊欄"></a></div>
+<aside class="clearfix">
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 訂閱</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">新浪微博</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=5256150165&verifier=0935d97e&dpc=1"></iframe>
+</div>
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分類</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>10</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/人生苦短/" title="人生苦短">人生苦短<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>28</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/前端安全/" title="前端安全">前端安全<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/加密解密/" title="加密解密">加密解密<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/奇技淫巧/" title="奇技淫巧">奇技淫巧<sup>2</sup></a></li>
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/渗透测试/" title="渗透测试">渗透测试<sup>7</sup></a></li>
+		  
+		
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/转载收藏/" title="转载收藏">转载收藏<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/黑盒测试/" title="黑盒测试">黑盒测试<sup>8</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">標簽</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/php/" title="php">php<sup>9</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mips/" title="mips">mips<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/支付漏洞/" title="支付漏洞">支付漏洞<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/xss/" title="xss">xss<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/sqlmap/" title="sqlmap">sqlmap<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcpdump/" title="tcpdump">tcpdump<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/密码学/" title="密码学">密码学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/inspeckage/" title="inspeckage">inspeckage<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/csrf/" title="csrf">csrf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/github/" title="github">github<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ctf/" title="ctf">ctf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/xposed/" title="xposed">xposed<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/折腾/" title="折腾">折腾<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/php-wdcp/" title="php,wdcp">php,wdcp<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/XXE/" title="XXE">XXE<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情鏈接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.heysec.org/" target="_blank" title="heysec.org">heysec.org</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://sco4x0.com" target="_blank" title="sco4x0&#39;s blog">sco4x0&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://virusdefender.net" target="_blank" title="virusdefender&#39;s blog">virusdefender&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackersb.cn/" target="_blank" title="Striker&#39;s blog">Striker&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://www.leavesongs.com/" target="_blank" title="离别歌">离别歌</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.stardustsky.net/" target="_blank" title="Stardustsky博客">Stardustsky博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.waitalone.cn/" target="_blank" title="独自等待">独自等待</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.cnblogs.com/S4b0r/" target="_blank" title="S4b0r&#39; blog">S4b0r&#39; blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.leesec.com/" target="_blank" title="leesec">leesec</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://xss1.com/" target="_blank" title="0x_Jin">0x_Jin</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://bl4ck.in/" target="_blank" title="Tomato">Tomato</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackfun.org/" target="_blank" title="4ido10n">4ido10n</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.lynahex.com/" target="_blank" title="lynahex&#39;s blog">lynahex&#39;s blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+</aside>
+</div>
+    </div>
+    <footer></footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"xdxd"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253479891'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1253479891' type='text/javascript'%3E%3C/script%3E"));</script>
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回頂部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+ </html>

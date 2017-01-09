@@ -1,1 +1,348 @@
-<!DOCTYPE html><html lang="zh-Hans"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> xd_xd's blog</title><meta name="description" content="A Blog Powered By Hexo"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.ico"><link rel="stylesheet" href="/css/apollo.css"><script src="/js/jquery-3.1.0.min.js"></script><script src="/js/jquery.goup.js"></script><script src="/js/goup.js"></script><link rel="search" type="application/opensearchdescription+xml" href="http://xdxd.love/atom.xml" title="xd_xd's blog"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/logo.jpg"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/about" target="_self" class="nav-list-link">ABOUT</a></li><li class="nav-list-item"><a href="https://github.com/stayliv3" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/archives" target="_self" class="nav-list-link">ARCHIVES</a></li><li class="nav-list-item"><a href="/friends" target="_self" class="nav-list-link">FRIENDS</a></li></ul></header><section class="container"><div class="archive"><h2 class="archive-year">2016</h2><div class="post-item"><div class="post-info">Oct 19, 2016</div><a href="/2016/10/19/discuz最新版20160601-SSRF漏洞分析/" class="post-title-link">discuz最新版20160601 SSRF漏洞分析及修复方案</a></div><div class="post-item"><div class="post-info">Sep 14, 2016</div><a href="/2016/09/14/w3school上示例代码的安全漏洞/" class="post-title-link">w3school上示例代码的安全漏洞</a></div><div class="post-item"><div class="post-info">Jun 3, 2016</div><a href="/2016/06/03/confluence任意文件读取漏洞分析/" class="post-title-link">confluence任意文件读取漏洞以及CVE-2016-6596 SSRF漏洞分析</a></div><div class="post-item"><div class="post-info">Mar 21, 2016</div><a href="/2016/03/21/struts2-s2-029-漏洞/" class="post-title-link">struts2 s2-029 漏洞</a></div><div class="post-item"><div class="post-info">Mar 14, 2016</div><a href="/2016/03/14/审计mybatis的sql注入/" class="post-title-link">审计mybatis的sql注入</a></div><div class="post-item"><div class="post-info">Mar 11, 2016</div><a href="/2016/03/11/thinkphp-URL命令执行漏洞分析/" class="post-title-link">thinkphp URL命令执行漏洞分析</a></div><div class="post-item"><div class="post-info">Mar 8, 2016</div><a href="/2016/03/08/php对象注入漏洞/" class="post-title-link">php对象注入漏洞简介</a></div><div class="post-item"><div class="post-info">Mar 3, 2016</div><a href="/2016/03/03/finecms-2-3-0-任意用户密码修改/" class="post-title-link">finecms <= 2.3.0 任意用户密码修改</a></div><div class="post-item"><div class="post-info">Jan 28, 2016</div><a href="/2016/01/28/sqlalchemy记录执行sql/" class="post-title-link">sqlalchemy保存字典对象报语法错误</a></div><div class="post-item"><div class="post-info">Jan 7, 2016</div><a href="/2016/01/07/无状态协议中认证状态保持方案的一些思考/" class="post-title-link">无状态协议中认证状态保持方案的一些思考</a></div></div></section><footer><div class="paginator"><a href="/categories/代码审计/page/2/" class="next">下一页</a></div><div class="copyright"><p>© 2016 <a href="http://xdxd.love">xd_xd</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/hkalexling/Yuno-Apollo" target="_blank">Yuno-Apollo</a>.</p></div></footer></div><script src="https://cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script></body></html>
+
+  <!DOCTYPE HTML>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>分類 : 代码审计 | xd_xd&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="xd_xd">
+    
+
+    
+    <meta name="description">
+<meta property="og:type" content="website">
+<meta property="og:title" content="xd_xd's blog">
+<meta property="og:url" content="http://xdxd.love/categories/代码审计/index.html">
+<meta property="og:site_name" content="xd_xd's blog">
+<meta property="og:description">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="xd_xd's blog">
+<meta name="twitter:description">
+
+    
+    <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+    <body>
+      <header>
+        
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="xd_xd&#39;s blog" title="xd_xd&#39;s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="xd_xd&#39;s blog">xd_xd&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜單">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:xdxd.love">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+      </header>
+      <div id="container">
+        
+
+<div class="archive-title" >
+  <h2 class="category-icon">代码审计</h2>
+  
+</div>
+<div id="main" class="archive-part clearfix">
+  <div id="archive-page">
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2016/10/19/discuz最新版20160601-SSRF漏洞分析/" title="discuz最新版20160601 SSRF漏洞分析及修复方案" itemprop="url">
+  
+
+    <time datetime="2016-10-19T01:39:52.000Z" itemprop="datePublished">Oct 19 2016</time>
+
+
+    <h1 itemprop="name">discuz最新版20160601 SSRF漏洞分析及修复方案</h1>
+
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2016/09/14/w3school上示例代码的安全漏洞/" title="w3school上示例代码的安全漏洞" itemprop="url">
+  
+
+    <time datetime="2016-09-14T05:51:05.000Z" itemprop="datePublished">Sep 14 2016</time>
+
+
+    <h1 itemprop="name">w3school上示例代码的安全漏洞</h1>
+
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2016/06/03/confluence任意文件读取漏洞分析/" title="confluence任意文件读取漏洞以及CVE-2016-6596 SSRF漏洞分析" itemprop="url">
+  
+
+    <time datetime="2016-06-03T09:29:03.000Z" itemprop="datePublished">Jun 3 2016</time>
+
+
+    <h1 itemprop="name">confluence任意文件读取漏洞以及CVE-2016-6596 SSRF漏洞分析</h1>
+
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2016/03/21/struts2-s2-029-漏洞/" title="struts2 s2-029 漏洞" itemprop="url">
+  
+
+    <time datetime="2016-03-21T02:14:55.000Z" itemprop="datePublished">Mar 21 2016</time>
+
+
+    <h1 itemprop="name">struts2 s2-029 漏洞</h1>
+
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2016/03/14/审计mybatis的sql注入/" title="审计mybatis的sql注入" itemprop="url">
+  
+
+    <time datetime="2016-03-14T07:27:24.000Z" itemprop="datePublished">Mar 14 2016</time>
+
+
+    <h1 itemprop="name">审计mybatis的sql注入</h1>
+
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2016/03/11/thinkphp-URL命令执行漏洞分析/" title="thinkphp URL命令执行漏洞分析" itemprop="url">
+  
+
+    <time datetime="2016-03-11T07:14:03.000Z" itemprop="datePublished">Mar 11 2016</time>
+
+
+    <h1 itemprop="name">thinkphp URL命令执行漏洞分析</h1>
+
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2016/03/08/php对象注入漏洞/" title="php对象注入漏洞简介" itemprop="url">
+  
+
+    <time datetime="2016-03-08T10:29:59.000Z" itemprop="datePublished">Mar 8 2016</time>
+
+
+    <h1 itemprop="name">php对象注入漏洞简介</h1>
+
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2016/03/03/finecms-2-3-0-任意用户密码修改/" title="finecms &lt;= 2.3.0 任意用户密码修改" itemprop="url">
+  
+
+    <time datetime="2016-03-03T14:32:33.000Z" itemprop="datePublished">Mar 3 2016</time>
+
+
+    <h1 itemprop="name">finecms &lt;= 2.3.0 任意用户密码修改</h1>
+
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2016/01/28/sqlalchemy记录执行sql/" title="sqlalchemy保存字典对象报语法错误" itemprop="url">
+  
+
+    <time datetime="2016-01-28T09:08:12.000Z" itemprop="datePublished">Jan 28 2016</time>
+
+
+    <h1 itemprop="name">sqlalchemy保存字典对象报语法错误</h1>
+
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2016/01/07/无状态协议中认证状态保持方案的一些思考/" title="无状态协议中认证状态保持方案的一些思考" itemprop="url">
+  
+
+    <time datetime="2016-01-07T03:12:42.000Z" itemprop="datePublished">Jan 7 2016</time>
+
+
+    <h1 itemprop="name">无状态协议中认证状态保持方案的一些思考</h1>
+
+  </a>
+</section>
+
+
+  <nav id="page-nav" class="clearfix archive-nav">
+    <span class="page-number current">1</span><a class="page-number" href="/categories/代码审计/page/2/">2</a><a class="page-number" href="/categories/代码审计/page/3/">3</a><a class="extend next" rel="next" href="/categories/代码审计/page/2/">Next<span></span></a>
+  </nav>
+
+  </div>
+</div>
+
+      </div>
+      <footer></footer>
+      <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"xdxd"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253479891'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1253479891' type='text/javascript'%3E%3C/script%3E"));</script>
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回頂部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+    </body>
+   </html>
