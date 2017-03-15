@@ -78,6 +78,52 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
+    <a href="/2016/03/07/order-by注入点利用方式/" title="order by注入点利用方式分析" itemprop="url">
+  
+    <h1 itemprop="name">order by注入点利用方式分析</h1>
+    
+     
+           <p itemprop="description" >漏洞分析使用sqli-lab中的lesson-52作为测试目标。关键代码为：
+error_reporting(0);
+$id=$_GET[&#39;sort&#39;];  
+if(isset($id))
+{
+    //logging the connection parameters to </p>
+        
+    
+    <time datetime="2016-03-07T02:00:56.000Z" itemprop="datePublished">Mar 7 2016</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/03/03/finecms-2-3-0-任意用户密码修改/" title="finecms &lt;= 2.3.0 任意用户密码修改" itemprop="url">
+  
+    <h1 itemprop="name">finecms &lt;= 2.3.0 任意用户密码修改</h1>
+    
+     
+           <p itemprop="description" >影响版本14年4月18号更新的2.3.0及以前的版本。最新版不存在这个问题。乌云爆过一个http://www.wooyun.org/bugs/wooyun-2014-060197 利用暴力破解验证码的方式来重置密码，这里讨论的方式相对于暴力破解来说成本更低。
+直接看代码验证验证码</p>
+        
+    
+    <time datetime="2016-03-03T14:32:33.000Z" itemprop="datePublished">Mar 3 2016</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
     <a href="/2016/02/26/centos-6安装mitmproxy/" title="centos 6安装mitmproxy" itemprop="url">
   
     <h1 itemprop="name">centos 6安装mitmproxy</h1>
@@ -244,48 +290,6 @@ zoomeye.org
         
     
     <time datetime="2016-01-07T03:12:42.000Z" itemprop="datePublished">Jan 7 2016</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2015/12/30/利用xposed绕过安卓SSL证书的强校验/" title="利用xposed绕过安卓SSL证书的强校验" itemprop="url">
-  
-    <h1 itemprop="name">利用xposed绕过安卓SSL证书的强校验</h1>
-    
-     
-           <p itemprop="description" >什么是SSL pinninghttps协议验证服务器身份的方式通常有三种，一是根据浏览器或者说操作系统（Android）自带的证书链；二是使用自签名证书；三是自签名证书加上SSL Pinning特性。第一种需要到知名证书机构购买证书，需要一定预算。第二种多见于内网使用。第三种在是</p>
-        
-    
-    <time datetime="2015-12-30T02:51:31.000Z" itemprop="datePublished">Dec 30 2015</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2015/12/24/多步csrf漏洞场景及其利用/" title="多步csrf漏洞场景及其利用" itemprop="url">
-  
-    <h1 itemprop="name">多步csrf漏洞场景及其利用</h1>
-    
-     
-           <p itemprop="description" >发布在了Freebuf上，有删改。
-CSRF的漏洞原理和利用方式这里就不多赘述了。平时大家讨论的CSRF利用多是发送一次请求。比如CSRF刷粉丝，CSRF发微博。这里主要讨论一个稍微复杂点的利用场景。
-最近在众测的时候遇到一个案例，用户绑定邮箱的请求没有防御CSRF。但是大家都知</p>
-        
-    
-    <time datetime="2015-12-24T09:05:22.000Z" itemprop="datePublished">Dec 24 2015</time>
   </a>
 </section>
 
