@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xdxd.love/"/>
-  <updated>2017-03-15T08:14:13.000Z</updated>
+  <updated>2017-03-30T08:06:04.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -14,6 +14,42 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>python处理Set-Cookie</title>
+    <link href="http://xdxd.love/2017/03/30/python%E5%A4%84%E7%90%86Set-Cookie/"/>
+    <id>http://xdxd.love/2017/03/30/python处理Set-Cookie/</id>
+    <published>2017-03-30T07:50:18.000Z</published>
+    <updated>2017-03-30T08:06:04.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>之前写了一个小脚本，监控网站帖子变化。最近由于这个论坛被CC了，加了360网站宝的防护。导致脚本失效了。所以花了一点时间看了下360网站宝的防CC策略。</p>
+<p>除了对访问频率的限制，还通过set-cookie设置了一些cookie。通过检查cookie的<br>有效性来决定是否可以访问。</p>
+<p>当没有cookie的访问的时候，是来到一个设置cookie的中间页面。</p>
+<p><img src="/images/session1.png" alt=""></p>
+<p><img src="/images/session2.png" alt=""></p>
+<p>拿到有效的cookie再次访问，才会真正的获得内容。而且cookie是存在有效时间的。获得一个cookie放到脚本里的思路也是不行的。</p>
+<p>所以需要脚本模拟浏览器解析setcookie的设置，根据服务器返回的setcookie头设置cookie，再去请求内容。这个需求使用requests库的session对象，可以方便的实现。</p>
+<p><a href="http://docs.python-requests.org/zh_CN/latest/user/advanced.html" target="_blank" rel="external">http://docs.python-requests.org/zh_CN/latest/user/advanced.html</a></p>
+<pre><code>s = requests.Session()
+
+s.<span class="literal">get</span>('http:<span class="comment">//httpbin.org/cookies/set/sessioncookie/123456789')</span>
+r = s.<span class="literal">get</span>(<span class="string">"http://httpbin.org/cookies"</span>)
+
+<span class="keyword">print</span>(r.text)
+# '{<span class="string">"cookies"</span>: {<span class="string">"sessioncookie"</span>: <span class="string">"123456789"</span>}}'
+</code></pre><p>360网站宝设置了BuJ8<em>2132</em>开头的多个cookie。</p>
+<p><img src="/images/session3.png" alt=""></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;之前写了一个小脚本，监控网站帖子变化。最近由于这个论坛被CC了，加了360网站宝的防护。导致脚本失效了。所以花了一点时间看了下360网站宝的防CC策略。&lt;/p&gt;
+&lt;p&gt;除了对访问频率的限制，还通过set-cookie设置了一些cookie。通过检查cookie的&lt;br&gt;有效
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>mac上安装burpsuite证书</title>
@@ -1404,59 +1440,6 @@ v = c.<span class="keyword">substring</span>(c.indexOf(<span class="string">'='<
     <summary type="html">
     
       &lt;h1 id=&quot;参考资料&quot;&gt;参考资料&lt;/h1&gt;&lt;p&gt;&lt;a href=&quot;http://drops.wooyun.org/papers/6045&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;安卓动态调试七种武器之长生剑 - Smali Instrumentatio
-    
-    </summary>
-    
-      <category term="移动安全" scheme="http://xdxd.love/categories/%E7%A7%BB%E5%8A%A8%E5%AE%89%E5%85%A8/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>logcat使用指南</title>
-    <link href="http://xdxd.love/2016/04/07/logcat%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"/>
-    <id>http://xdxd.love/2016/04/07/logcat使用指南/</id>
-    <published>2016-04-07T06:08:27.000Z</published>
-    <updated>2016-04-07T07:36:37.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>一共5中日志的输出方式：</p>
-<p>android.util.Log：提供了五种输出日志的方法</p>
-<p>Log.e(), Log.w(), Log.i(), Log.d(), Log.v()</p>
-<p>ERROR, WARN, INFO, DEBUG, VERBOSE</p>
-<p>adb logcat 命令会有非常多的输出，可以通过pid来过滤特定app的输出。</p>
-<h1 id="案例">案例</h1><p>房多多新房经纪人app logcat 默认输出了debug日志：</p>
-<pre><code>/ActivityManager( <span class="number">1301</span>): Displayed com.fangdd.mobile.agent/com.fangdd.app.LoginActivity: +<span class="number">536</span>ms (total +<span class="number">1</span>s34ms)
-I/Timeline( <span class="number">1301</span>): Timeline: Activity_windows_visible id: ActivityRecord{<span class="number">43</span>dbf058 u0 com.fangdd.mobile.agent/com.fangdd.app.MainActivity t319} <span class="built_in">time</span>:<span class="number">184792085</span>
-I/Timeline( <span class="number">1301</span>): Timeline: Activity_windows_visible id: ActivityRecord{<span class="number">4549</span>a178 u0 com.fangdd.mobile.agent/com.fangdd.app.LoginActivity t319} <span class="built_in">time</span>:<span class="number">184792510</span>
-D/dalvikvm(<span class="number">24780</span>): Trying <span class="built_in">to</span> <span class="built_in">load</span> lib /data/app-lib/com.fangdd.mobile.agent-<span class="number">1</span>/libfddutils.so <span class="number">0x41a7b430</span>
-D/dalvikvm(<span class="number">24780</span>): Added shared lib /data/app-lib/com.fangdd.mobile.agent-<span class="number">1</span>/libfddutils.so <span class="number">0x41a7b430</span>
-D/dalvikvm(<span class="number">24780</span>): No JNI_OnLoad found <span class="operator">in</span> /data/app-lib/com.fangdd.mobile.agent-<span class="number">1</span>/libfddutils.so <span class="number">0x41a7b430</span>, skipping init
-W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.<span class="operator">a</span>.<span class="operator">a</span>.<span class="operator">a</span>(ProtoUtils.java:<span class="number">40</span>)
-W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.e.<span class="operator">a</span>.<span class="operator">a</span>.<span class="operator">a</span>(NewServerManager.java:<span class="number">412</span>)
-W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.e.<span class="operator">a</span>.<span class="operator">a</span>.<span class="operator">a</span>(NewServerManager.java:<span class="number">188</span>)
-W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.e.n.<span class="operator">a</span>(UserServerManager.java:<span class="number">245</span>)
-W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.ak.<span class="operator">a</span>(LoginActivity.java:<span class="number">147</span>)
-W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.mobile.f.<span class="operator">a</span>.<span class="operator">a</span>(BaseAsyncTask.java:<span class="number">23</span>)
-W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.mobile.f.<span class="operator">a</span>.doInBackground(BaseAsyncTask.java:<span class="number">8</span>)
-W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.<span class="operator">a</span>.<span class="operator">a</span>.<span class="operator">a</span>(ProtoUtils.java:<span class="number">40</span>)
-W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.e.<span class="operator">a</span>.<span class="operator">a</span>.<span class="operator">a</span>(NewServerManager.java:<span class="number">412</span>)
-W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.e.<span class="operator">a</span>.<span class="operator">a</span>.<span class="operator">a</span>(NewServerManager.java:<span class="number">188</span>)
-W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.e.n.<span class="operator">a</span>(UserServerManager.java:<span class="number">245</span>)
-W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.app.ak.<span class="operator">a</span>(LoginActivity.java:<span class="number">147</span>)
-W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.mobile.f.<span class="operator">a</span>.<span class="operator">a</span>(BaseAsyncTask.java:<span class="number">23</span>)
-W/System.err(<span class="number">24780</span>):    <span class="keyword">at</span> com.fangdd.mobile.f.<span class="operator">a</span>.doInBackground(BaseAsyncTask.java:<span class="number">8</span>)
-</code></pre><p>这个是登录过程中的日志。这个app登录采用了tcp传输的二进制协议，而且进行了签名。通过这个日志，可以方便逆向分析。</p>
-<h1 id="参考资料">参考资料</h1><p><a href="http://drops.wooyun.org/tips/3812" target="_blank" rel="external">http://drops.wooyun.org/tips/3812</a></p>
-<p><a href="http://www.cnblogs.com/imouto/archive/2012/12/11/filtering-adb-logcat-output.html" target="_blank" rel="external">http://www.cnblogs.com/imouto/archive/2012/12/11/filtering-adb-logcat-output.html</a></p>
-<p><a href="https://wiki.cyanogenmod.org/w/Doc:_debugging_with_logcat/zh-cn" target="_blank" rel="external">https://wiki.cyanogenmod.org/w/Doc:_debugging_with_logcat/zh-cn</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;一共5中日志的输出方式：&lt;/p&gt;
-&lt;p&gt;android.util.Log：提供了五种输出日志的方法&lt;/p&gt;
-&lt;p&gt;Log.e(), Log.w(), Log.i(), Log.d(), Log.v()&lt;/p&gt;
-&lt;p&gt;ERROR, WARN, INFO, DEBUG, VER
     
     </summary>
     
