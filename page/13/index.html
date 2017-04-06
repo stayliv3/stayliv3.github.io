@@ -14,7 +14,7 @@
     <meta name="description">
 <meta property="og:type" content="website">
 <meta property="og:title" content="xd_xd's blog">
-<meta property="og:url" content="http://xdxd.love/page/12/index.html">
+<meta property="og:url" content="http://xdxd.love/page/13/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
 <meta property="og:description">
 <meta name="twitter:card" content="summary">
@@ -78,215 +78,18 @@
   
 <section class="post" itemscope itemprop="blogitem">
   
-    <a href="/2014/12/05/ipbsql/" title="IP.Board 3.4.7 SQL注入分析" itemprop="url">
+    <a href="/2014/10/21/yxcms/" title="yxcms1.2.6任意文件删除漏洞分析" itemprop="url">
   
-    <h1 itemprop="name">IP.Board 3.4.7 SQL注入分析</h1>
+    <h1 itemprop="name">yxcms1.2.6任意文件删除漏洞分析</h1>
     
      
-           <p itemprop="description" >##参考资料http://www.freebuf.com/articles/web/53018.htmlhttp://seclists.org/fulldisclosure/2014/Nov/20
-##代码分析
-根据之前的漏洞分析可知，入口在interface/ipsconnec</p>
+           <p itemprop="description" >测试版本:1.2.6
+YXcms的在使用unlink函数删除文件的时候没有考虑到对该参数做一个限制，导致存在很多个任意文件删除的漏洞。漏洞代码也比较直接，比如：
+if(!empty($_POST[&#39;oldheadpic&#39;])){
+    $picpath=$this-&amp;gt;up</p>
         
     
-    <time datetime="2014-12-04T18:03:22.000Z" itemprop="datePublished">Dec 5 2014</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2014/12/01/burp/" title="burpsuite csrf poc 乱码问题" itemprop="url">
-  
-    <h1 itemprop="name">burpsuite csrf poc 乱码问题</h1>
-    
-     
-           <p itemprop="description" >burpsuite csrf poc 乱码问题关于burpsuite生成的csrf poc的方法。路径为：右键-&amp;gt; engagement tools -&amp;gt;generate CSRF Poc。
-
-burpsuite自动生成csrf poc的功能已经很强大了。默认可以生成</p>
-        
-    
-    <time datetime="2014-11-30T19:50:12.000Z" itemprop="datePublished">Dec 1 2014</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2014/11/27/wap/" title="wap2.0php代码审计学习" itemprop="url">
-  
-    <h1 itemprop="name">wap2.0php代码审计学习</h1>
-    
-     
-           <p itemprop="description" >wap2.0安装下载地址http://sourceforge.net/projects/awap/files/wap-2.0/，有3种不同操作系统平台的程序包。由于在windows环境下测试的时候发现有些bug。所以这里的测试环境采用了ubuntu+wap-2.0.x86.tar</p>
-        
-    
-    <time datetime="2014-11-27T14:41:27.000Z" itemprop="datePublished">Nov 27 2014</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2014/11/25/discuz/" title="discuz X 任意文件删除漏洞学习" itemprop="url">
-  
-    <h1 itemprop="name">discuz X 任意文件删除漏洞学习</h1>
-    
-     
-           <p itemprop="description" >##测试方式漏洞来源：http://www.wooyun.org/bugs/wooyun-2010-065513先说一下这个漏洞的利用过程吧。这个原帖里已经写的比较清楚了。注册用户。1，访问：http://localhost/Discuz_X3.1_SC_UTF8/upload/</p>
-        
-    
-    <time datetime="2014-11-25T12:46:47.000Z" itemprop="datePublished">Nov 25 2014</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2014/11/17/strcmp/" title="strcmp绕过问题" itemprop="url">
-  
-    <h1 itemprop="name">strcmp绕过问题</h1>
-    
-     
-           <p itemprop="description" >官方说明:
-Note a difference between 5.2 and 5.3 versions
-
-echo (int)strcmp(&#39;pending&#39;,array());
-will output -1 in PHP 5.2.16 (probably in all ver</p>
-        
-    
-    <time datetime="2014-11-16T20:04:14.000Z" itemprop="datePublished">Nov 17 2014</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2014/10/31/mysqlfeature/" title="mysql的几个小特性在sql注入中的应用" itemprop="url">
-  
-    <h1 itemprop="name">mysql的几个小特性在sql注入中的应用</h1>
-    
-     
-           <p itemprop="description" >mysql的几个小特性在sql注入中的应用
-###参考资料
-https://websec.wordpress.com/2008/09/09/mysql-authentication-bypass/
-http://bugs.mysql.com/bug.php?id=39337
-ht</p>
-        
-    
-    <time datetime="2014-10-30T20:04:08.000Z" itemprop="datePublished">Oct 31 2014</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2014/10/29/ecshoplogin/" title="ecshop前台任意用户登录漏洞分析记录" itemprop="url">
-  
-    <h1 itemprop="name">ecshop前台任意用户登录漏洞分析记录</h1>
-    
-     
-           <p itemprop="description" >ecshop前台任意用户登录漏洞分析记录
-漏洞详情参考：http://www.wooyun.org/bugs/wooyun-2014-063655
-这里比较坑的是ecshop的架构设计不是很好。不同页面的登录使用了不同的登录逻辑，虽然都是复制粘贴的，但是没有复制全，导致存在问题。</p>
-        
-    
-    <time datetime="2014-10-28T19:17:43.000Z" itemprop="datePublished">Oct 29 2014</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2014/10/27/mysql布尔类型和php布尔类型的区别/" title="关于mysql中字符串转换成布尔类型数据" itemprop="url">
-  
-    <h1 itemprop="name">关于mysql中字符串转换成布尔类型数据</h1>
-    
-     
-           <p itemprop="description" >关于mysql中字符串转换成布尔类型数据
-先看一下php中布尔类型的转换。http://php.net/manual/zh/language.types.boolean.php
-转换为布尔值 
-
-要明确地将一个值转换成 boolean，用 (bool) 或者 (boolean) </p>
-        
-    
-    <time datetime="2014-10-27T14:37:27.000Z" itemprop="datePublished">Oct 27 2014</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2014/10/27/xctf1/" title="xctf web150" itemprop="url">
-  
-    <h1 itemprop="name">xctf web150</h1>
-    
-     
-           <p itemprop="description" >只只做出来第一题~，说一下第一题。访问给出的url，返回doggy!php!。由于经验不足一开始不知道这是什么意思。根据题目的内容说登录验证有问题，就猜测登录的入口。login.php admin.php都不对。然后尝试Doggy.php也是不存在，根据返回信息说是ubuntu服</p>
-        
-    
-    <time datetime="2014-10-26T21:01:09.000Z" itemprop="datePublished">Oct 27 2014</time>
-  </a>
-</section>
-
-
-
-
-
-
-  
-<section class="post" itemscope itemprop="blogitem">
-  
-    <a href="/2014/10/23/yxcmssql/" title="yxcms一个二次注入分析" itemprop="url">
-  
-    <h1 itemprop="name">yxcms一个二次注入分析</h1>
-    
-     
-           <p itemprop="description" >漏洞来源:http://huakai.paxmac.org/?p=751分析版本1.2.6
-/protected/apps/member/controller/photoController.php
-添加图集的时候，public function add() 中$data[‘so</p>
-        
-    
-    <time datetime="2014-10-22T19:44:18.000Z" itemprop="datePublished">Oct 23 2014</time>
+    <time datetime="2014-10-20T20:07:34.000Z" itemprop="datePublished">Oct 21 2014</time>
   </a>
 </section>
 
@@ -297,7 +100,7 @@ ht</p>
 
 
   <nav id="page-nav" class="clearfix unexpand">
-    <a class="extend prev" rel="prev" href="/page/11/"><span></span>Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="page-number" href="/page/11/">11</a><span class="page-number current">12</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/13/">Next<span></span></a>
+    <a class="extend prev" rel="prev" href="/page/12/"><span></span>Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="page-number" href="/page/12/">12</a><span class="page-number current">13</span>
   </nav>
 
 </div>

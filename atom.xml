@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xdxd.love/"/>
-  <updated>2017-03-30T08:06:04.000Z</updated>
+  <updated>2017-04-06T05:58:05.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -14,6 +14,31 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>docker下locale与编码问题</title>
+    <link href="http://xdxd.love/2017/04/05/docker%E4%B8%8Blocale%E4%B8%8E%E7%BC%96%E7%A0%81%E9%97%AE%E9%A2%98/"/>
+    <id>http://xdxd.love/2017/04/05/docker下locale与编码问题/</id>
+    <published>2017-04-05T11:27:47.000Z</published>
+    <updated>2017-04-06T05:58:05.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>在docker ubuntu:16.04中部署<a href="https://github.com/0xbug/SQLiScanner，遇到报错：" target="_blank" rel="external">https://github.com/0xbug/SQLiScanner，遇到报错：</a></p>
+<pre><code>UnicodeDecodeError at /api/har/upload
+<span class="attribute">'ascii</span>' codec can<span class="attribute">'t</span> decode byte <span class="number">0</span>xef <span class="keyword">in</span> position <span class="number">642</span>: ordinal <span class="keyword">not</span> <span class="keyword">in</span> <span class="keyword">range</span>(<span class="number">128</span>)
+</code></pre><p>在python编程中经常见到这个错误，是由于没有使用utf8编码导致的。但是这里代码中指定了<br>utf8编码，而且在其他的环境中部署是正常的。</p>
+<p>经过一番google，发现是docker中ubuntu的问题。参考这里：</p>
+<p><a href="https://github.com/buildinspace/peru/issues/136" target="_blank" rel="external">https://github.com/buildinspace/peru/issues/136</a><br><a href="http://jaredmarkell.com/docker-and-locales/" target="_blank" rel="external">http://jaredmarkell.com/docker-and-locales/</a></p>
+<p>docker中locale变量设置问题。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在docker ubuntu:16.04中部署&lt;a href=&quot;https://github.com/0xbug/SQLiScanner，遇到报错：&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;https://github.com/0xbug/SQLiS
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>python处理Set-Cookie</title>
@@ -1411,40 +1436,6 @@ v = c.<span class="keyword">substring</span>(c.indexOf(<span class="string">'='<
     
     
       <category term="xss" scheme="http://xdxd.love/tags/xss/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>smali插桩调试apk</title>
-    <link href="http://xdxd.love/2016/04/08/smali%E6%8F%92%E6%A1%A9%E8%B0%83%E8%AF%95apk/"/>
-    <id>http://xdxd.love/2016/04/08/smali插桩调试apk/</id>
-    <published>2016-04-08T01:45:16.000Z</published>
-    <updated>2016-04-08T02:28:55.000Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="参考资料">参考资料</h1><p><a href="http://drops.wooyun.org/papers/6045" target="_blank" rel="external">安卓动态调试七种武器之长生剑 - Smali Instrumentation</a></p>
-<p><a href="http://www.52pojie.cn/thread-255754-1-1.html" target="_blank" rel="external">Smali注入之打造属于自己的安卓crack利器</a></p>
-<h1 id="利用代码">利用代码</h1><pre><code><span class="keyword">.class</span><span class="keyword"> public</span> <span class="class">Lcrack;</span>
-<span class="keyword">.super</span> <span class="class">Ljava/lang/Object;</span>
-<span class="keyword">.source</span> <span class="string">"crack.java"</span>
-
-<span class="keyword">.method</span><span class="keyword"> public</span><span class="keyword"> static</span><span class="function"> log(</span><span class="class">Ljava/lang/String;</span><span class="function">)</span>V
-<span class="keyword">    .locals</span> 1
-<span class="keyword">    .prologue</span>
-
-   <span class="instruction"> const-string </span><span class="variable">v0</span>, <span class="string">"info"</span>
-   <span class="instruction"> invoke-static </span>{<span class="variable">v0</span>, <span class="variable">p0</span>}, <span class="class">Landroid/util/Log;</span><span class="function">-&gt;d(</span><span class="class">Ljava/lang/String;</span><span class="class">Ljava/lang/String;</span><span class="function">)</span>I
-   <span class="instruction"> return-void
-</span><span class="keyword">.end method</span>
-</code></pre>]]></content>
-    
-    <summary type="html">
-    
-      &lt;h1 id=&quot;参考资料&quot;&gt;参考资料&lt;/h1&gt;&lt;p&gt;&lt;a href=&quot;http://drops.wooyun.org/papers/6045&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;安卓动态调试七种武器之长生剑 - Smali Instrumentatio
-    
-    </summary>
-    
-      <category term="移动安全" scheme="http://xdxd.love/categories/%E7%A7%BB%E5%8A%A8%E5%AE%89%E5%85%A8/"/>
-    
     
   </entry>
   
