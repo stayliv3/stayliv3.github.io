@@ -24,7 +24,9 @@ mybatis存在的sql注入问题">
 <meta property="og:image" content="http://xdxd.love/images/mybatis23.png">
 <meta property="og:image" content="http://xdxd.love/images/mybatis24.png">
 <meta property="og:image" content="http://xdxd.love/images/mybatis25.png">
-<meta property="og:updated_time" content="2016-03-15T02:24:39.000Z">
+<meta property="og:image" content="http://xdxd.love/images/mybatisa1.png">
+<meta property="og:image" content="http://xdxd.love/images/mybatisa2.png">
+<meta property="og:updated_time" content="2017-05-24T06:37:51.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="审计mybatis的sql注入">
 <meta name="twitter:description" content="mybatis 概述MyBatis是支持定制化 SQL、存储过程以及高级映射的优秀的持久层框架。MyBatis 避免了几乎所有的 JDBC 代码和手动设置参数以及获取结果集。MyBatis 可以对配置和原生Map使用简单的 XML 或注解，将接口和 Java 的 POJOs(Plain Old Java Objects,普通的 Java对象)映射成数据库中的记录
@@ -56,7 +58,7 @@ mybatis存在的sql注入问题">
 				<h1 class="site-name"><a href="/" title="xd_xd&#39;s blog">xd_xd&#39;s blog</a></h1>
 				<h2 class="blog-motto"></h2>
 			</div>
-			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜單">
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
 			</a></div>
 			<nav class="animated">
 				<ul>
@@ -72,7 +74,7 @@ mybatis存在的sql注入问题">
  					
 					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
 						<label>Search</label>
-						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
 						<input type="hidden" name="q" value="site:xdxd.love">
 					</form>
 					
@@ -95,16 +97,16 @@ mybatis存在的sql注入问题">
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2016-03-14T07:27:24.000Z" itemprop="datePublished"> 發表於 Mar 14 2016</time>
+    <time datetime="2016-03-14T07:27:24.000Z" itemprop="datePublished"> Published Mar 14 2016</time>
     
   </p>
 </header>
 	<div class="article-content">
 		
 		<div id="toc" class="toc-article">
-			<strong class="toc-title">文章目錄</strong>
+			<strong class="toc-title">Contents</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#mybatis_概述"><span class="toc-number">1.</span> <span class="toc-text">mybatis 概述</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#mybatis存在的sql注入问题"><span class="toc-number">2.</span> <span class="toc-text">mybatis存在的sql注入问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#demo演示"><span class="toc-number">3.</span> <span class="toc-text">demo演示</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#实战分析"><span class="toc-number">4.</span> <span class="toc-text">实战分析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#修复方案"><span class="toc-number">5.</span> <span class="toc-text">修复方案</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#mybatis_概述"><span class="toc-number">1.</span> <span class="toc-text">mybatis 概述</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#mybatis存在的sql注入问题"><span class="toc-number">2.</span> <span class="toc-text">mybatis存在的sql注入问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#demo演示"><span class="toc-number">3.</span> <span class="toc-text">demo演示</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#实战分析"><span class="toc-number">4.</span> <span class="toc-text">实战分析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#修复方案"><span class="toc-number">5.</span> <span class="toc-text">修复方案</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#容易发生注入的点"><span class="toc-number">6.</span> <span class="toc-text">容易发生注入的点</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">7.</span> <span class="toc-text">参考资料</span></a></li></ol>
 		
 		</div>
 		
@@ -209,6 +211,24 @@ mybatis存在的sql注入问题">
 <p>查看执行的SQL为：</p>
 <p><img src="/images/mybatis25.png" alt=""></p>
 <h1 id="修复方案">修复方案</h1><p>尽量使用<code>#</code>描述参数，如果一定要使用<code>$</code>，则需要自己过滤用户输入。</p>
+<h1 id="容易发生注入的点">容易发生注入的点</h1><p><a href="https://mp.weixin.qq.com/s?__biz=MjM5OTk2MTMxOQ==&amp;mid=2727827368&amp;idx=1&amp;sn=765d0835f0069b5145523c31e8229850&amp;mpshare=1&amp;scene=1&amp;srcid=0926a6QC3pGbQ3Pznszb4n2q#rd" target="_blank" rel="external">Mybatis框架下SQL注入漏洞面面观</a>中提到了3个点。</p>
+<pre><code>1. 模糊查询like SQL注入修复建议
+按照新闻标题对新闻进行模糊查询，可将SQL查询语句设计如下：
+<span class="operator"><span class="keyword">select</span> * <span class="keyword">from</span> news <span class="keyword">where</span> tile <span class="keyword">like</span> <span class="keyword">concat</span>(‘%’,#{title}, ‘%’)，
+采用预编译机制，避免了<span class="keyword">SQL</span>语句拼接的问题，从根源上防止了<span class="keyword">SQL</span>注入漏洞的产生。
+
+<span class="number">2.</span>  <span class="keyword">in</span>之后的参数<span class="keyword">SQL</span>注入修复建议
+在对新闻进行同条件多值查询的时候，可使用Mybatis自带循环指令解决<span class="keyword">SQL</span>语句动态拼接的问题：
+<span class="keyword">select</span> * <span class="keyword">from</span> news <span class="keyword">where</span> <span class="keyword">id</span> <span class="keyword">in</span>
+&lt;foreach collection=<span class="string">"ids"</span> item=<span class="string">"item"</span> <span class="keyword">open</span>=<span class="string">"("</span>separator=<span class="string">","</span> <span class="keyword">close</span>=<span class="string">")"</span>&gt;#{item} &lt;/foreach&gt;
+
+<span class="number">3.</span> <span class="keyword">order</span> <span class="keyword">by</span> <span class="keyword">SQL</span>注入修复建议<span class="comment">--在Java层面做映射</span>
+预编译机制只能处理查询参数，其他地方还需要研发人员根据具体情况来解决。如前面提到的排序情景： <span class="keyword">Select</span> * <span class="keyword">from</span> news <span class="keyword">where</span> title =‘京东’ <span class="keyword">order</span> <span class="keyword">by</span> #{<span class="keyword">time</span>} <span class="keyword">asc</span>，这里<span class="keyword">time</span>不是查询参数，无法使用预编译机制，只能这样拼接：<span class="keyword">Select</span> * <span class="keyword">from</span> news <span class="keyword">where</span> title =‘京东’ <span class="keyword">order</span> <span class="keyword">by</span> ${<span class="keyword">time</span>} <span class="keyword">asc</span> 。
+针对这种情况研发人员可以在<span class="keyword">java</span>层面做映射来进行解决。如当存在发布时间<span class="keyword">time</span>和点击量click两种排序选择时，我们可以限制用户只能输入<span class="number">1</span>和<span class="number">2</span>。当用户输入<span class="number">1</span>时，我们在代码层面将其映射为<span class="keyword">time</span>，当用户输入<span class="number">2</span>时，将其映射为click。而当用户输入<span class="number">1</span>和<span class="number">2</span>之外的其他内容时，我们可以将其转换为默认排序选择<span class="keyword">time</span>(或者click)。</span>
+</code></pre><p>目前在使用mybatis中，一般会使用插件自动生成代码。插件自动生成的代码中，in语句已经是默认安全的方式了。只有orderby和limit处是使用字符串拼接。而默认情况下应该是没有like语句。如果程序员需要使用like需要自己实现。</p>
+<p><img src="/images/mybatisa1.png" alt=""></p>
+<p><img src="/images/mybatisa2.png" alt=""></p>
+<h1 id="参考资料">参考资料</h1><p><a href="https://mp.weixin.qq.com/s?__biz=MjM5OTk2MTMxOQ==&amp;mid=2727827368&amp;idx=1&amp;sn=765d0835f0069b5145523c31e8229850&amp;mpshare=1&amp;scene=1&amp;srcid=0926a6QC3pGbQ3Pznszb4n2q#rd" target="_blank" rel="external">Mybatis框架下SQL注入漏洞面面观</a></p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -270,32 +290,32 @@ mybatis存在的sql注入问题">
 
 
 </div>  
-      <div class="openaside"><a class="navbutton" href="#" title="顯示側邊欄"></a></div>
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
 
   <div id="toc" class="toc-aside">
-  <strong class="toc-title">文章目錄</strong>
+  <strong class="toc-title">Contents</strong>
  
- <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#mybatis_概述"><span class="toc-number">1.</span> <span class="toc-text">mybatis 概述</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#mybatis存在的sql注入问题"><span class="toc-number">2.</span> <span class="toc-text">mybatis存在的sql注入问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#demo演示"><span class="toc-number">3.</span> <span class="toc-text">demo演示</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#实战分析"><span class="toc-number">4.</span> <span class="toc-text">实战分析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#修复方案"><span class="toc-number">5.</span> <span class="toc-text">修复方案</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#mybatis_概述"><span class="toc-number">1.</span> <span class="toc-text">mybatis 概述</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#mybatis存在的sql注入问题"><span class="toc-number">2.</span> <span class="toc-text">mybatis存在的sql注入问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#demo演示"><span class="toc-number">3.</span> <span class="toc-text">demo演示</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#实战分析"><span class="toc-number">4.</span> <span class="toc-text">实战分析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#修复方案"><span class="toc-number">5.</span> <span class="toc-text">修复方案</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#容易发生注入的点"><span class="toc-number">6.</span> <span class="toc-text">容易发生注入的点</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">7.</span> <span class="toc-text">参考资料</span></a></li></ol>
  
   </div>
 
 <div id="asidepart">
-<div class="closeaside"><a class="closebutton" href="#" title="隱藏側邊欄"></a></div>
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
 <aside class="clearfix">
 
   <div class="rsspart">
-	<a href="/atom.xml" target="_blank" title="rss">RSS 訂閱</a>
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
 </div>
 
   <div class="weiboshow">
-  <p class="asidetitle">新浪微博</p>
+  <p class="asidetitle">Weibo</p>
     <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=5256150165&verifier=0935d97e&dpc=1"></iframe>
 </div>
 
 
   
 <div class="categorieslist">
-	<p class="asidetitle">分類</p>
+	<p class="asidetitle">Categories</p>
 		<ul>
 		
 		  
@@ -356,7 +376,7 @@ mybatis存在的sql注入问题">
 
   
 <div class="tagslist">
-	<p class="asidetitle">標簽</p>
+	<p class="asidetitle">Tags</p>
 		<ul class="clearfix">
 		
 			
@@ -444,7 +464,7 @@ mybatis存在的sql注入问题">
 
 
   <div class="linkslist">
-  <p class="asidetitle">友情鏈接</p>
+  <p class="asidetitle">Links</p>
     <ul>
         
           <li>
@@ -715,7 +735,7 @@ $(document).ready(function(){
 <!-- Totop Begin -->
 
 	<div id="totop">
-	<a title="返回頂部"><img src="/img/scrollup.png"/></a>
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
 	</div>
 	<script src="/js/totop.js"></script>
 
