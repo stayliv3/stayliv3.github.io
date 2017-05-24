@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xdxd.love/"/>
-  <updated>2017-04-06T05:58:05.000Z</updated>
+  <updated>2017-05-24T06:42:22.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -14,6 +14,147 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>审计mybatis的sql注入</title>
+    <link href="http://xdxd.love/2017/05/24/%E5%AE%A1%E8%AE%A1mybatis%E7%9A%84sql%E6%B3%A8%E5%85%A5new/"/>
+    <id>http://xdxd.love/2017/05/24/审计mybatis的sql注入new/</id>
+    <published>2017-05-24T07:27:24.000Z</published>
+    <updated>2017-05-24T06:42:22.000Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="mybatis_概述">mybatis 概述</h1><p><a href="http://www.mybatis.org/" target="_blank" rel="external">MyBatis</a>是支持定制化 SQL、存储过程以及高级映射的优秀的持久层框架。MyBatis 避免了几乎所有的 JDBC 代码和手动设置参数以及获取结果集。MyBatis 可以对配置和原生Map使用简单的 XML 或注解，将接口和 Java 的 POJOs(Plain Old Java Objects,普通的 Java对象)映射成数据库中的记录</p>
+<h1 id="mybatis存在的sql注入问题">mybatis存在的sql注入问题</h1><p>mybatis避免了用户直接拼接SQL语句，但是认为只要使用了mybatis就可以杜绝SQL注入的观点是不正确的。mybatis在配置SQL语句的时候，有两种描述参数的方式。<code>#{}</code>和<code>${}</code>。</p>
+<p>比如：</p>
+<pre><code>&lt;<span class="keyword">select</span> id=<span class="string">"selectPerson"</span> parameterType=<span class="string">"int"</span> resultType=<span class="string">"hashmap"</span>&gt;
+  <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> PERSON <span class="keyword">WHERE</span> ID = <span class="preprocessor">#{id}</span>
+&lt;/<span class="keyword">select</span>&gt;
+</code></pre><p>这个语句被称作 selectPerson，接受一个 int（或 Integer）类型的参数，并返回一个 HashMap类型的对象，其中的键是列名，值便是结果行中的对应值。</p>
+<p>注意参数符号：</p>
+<pre><code>#{<span class="ruby">id}</span>
+</code></pre><p>这就告诉 MyBatis 创建一个预处理语句参数，通过 JDBC，这样的一个参数在 SQL中会由一个“?”来标识，并被传递到一个新的预处理语句中，就像这样：</p>
+<pre><code>// Similar JDBC <span class="preprocessor">code</span>, NOT MyBatis…
+<span class="keyword">String </span><span class="keyword">selectPerson </span>= <span class="string">"SELECT * FROM PERSON WHERE ID=?"</span><span class="comment">;</span>
+<span class="label">PreparedStatement</span> ps = conn.prepareStatement(<span class="keyword">selectPerson);
+</span><span class="label">ps.setInt</span>(<span class="number">1</span>,id)<span class="comment">;</span>
+</code></pre><p>使用<code>#</code>mybatis会使用预编译来处理参数，这样子可以避免SQL注入。</p>
+<p>但是使用<code>$</code>描述参数会直接把变量拼接到SQL语句中，不做任何处理。相当于直接字符串拼接SQL。这样的方式就可能存在SQL注入。下面的描述来自mybatis官方文档。</p>
+<pre><code>默认情况下,使用#{}格式的语法会导致 MyBatis 创建预处理语句属性并安全地设置值（比如?）。这样做更安全，更迅速，通常也是首选做法，不过有时你只是想直接在 SQL 语句中插入一个不改变的字符串。比如，像 <span class="keyword">ORDER</span> <span class="keyword">BY</span>，你可以这样来使用：
+
+<span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="label">${columnName}</span>
+这里 MyBatis 不会修改或转义字符串。
+
+<span class="keyword">NOTE</span> 以这种方式接受从用户输出的内容并提供给语句中不变的字符串是不安全的，会导致潜在的 SQL 注入攻击，因此要么不允许用户输入这些字段，要么自行转义并检验。
+</code></pre><h1 id="demo演示">demo演示</h1><p>使用<a href="http://www.cnblogs.com/zhanjindong/p/3397828.html" target="_blank" rel="external">MyBatis使用示例</a>作为demo测试。</p>
+<p>mapper文件：</p>
+<pre><code><span class="pi">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;</span>
+<span class="doctype">&lt;!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"&gt;</span>
+<span class="tag">&lt;<span class="title">mapper</span> <span class="attribute">namespace</span>=<span class="value">"test.mybatis.UserMapper"</span>&gt;</span>
+    <span class="comment">&lt;!-- 这里namespace必须是UserMapper接口的路径” --&gt;</span>
+    <span class="tag">&lt;<span class="title">insert</span> <span class="attribute">id</span>=<span class="value">"insertUser"</span> <span class="attribute">parameterType</span>=<span class="value">"User"</span>&gt;</span>
+        insert into user(name,age) values(#{name},#{age})
+        <span class="comment">&lt;!-- 这里sql结尾不能加分号，否则报“ORA-00911”的错误 --&gt;</span>
+    <span class="tag">&lt;/<span class="title">insert</span>&gt;</span>
+    <span class="comment">&lt;!-- 这里的id必须和UserMapper接口中的接口方法名相同 --&gt;</span>
+    <span class="tag">&lt;<span class="title">select</span> <span class="attribute">id</span>=<span class="value">"getUser"</span> <span class="attribute">resultType</span>=<span class="value">"User"</span>&gt;</span>
+        select * from user where name=#{name}
+    <span class="tag">&lt;/<span class="title">select</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">mapper</span>&gt;</span>
+</code></pre><p>在输入中插入单引号</p>
+<pre><code><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">getUser</span>(<span class="params"></span>) </span>{
+    SqlSession sqlSession = sqlSessionFactory.openSession();
+    <span class="keyword">try</span> {
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        User user = userMapper.getUser(<span class="string">"'zhangsan"</span>);
+        System.<span class="keyword">out</span>.println(<span class="string">"name: "</span> + user.getName() + <span class="string">"|age: "</span>
+                + user.getAge());
+    } <span class="keyword">finally</span> {
+        sqlSession.close();
+    }
+</code></pre><p>查看执行的sql语句：</p>
+<p><img src="/images/mybatis21.png" alt=""></p>
+<p>可以看到输入被单引号包裹，并且对字符串中的单引号进行了转义。</p>
+<p>将<code>#</code>改成<code>$</code>,mapper文件为：</p>
+<pre><code>&lt;<span class="keyword">select</span> id=<span class="string">"getUser"</span> resultType=<span class="string">"User"</span>&gt;
+    <span class="keyword">select</span> * <span class="keyword">from</span> user <span class="keyword">where</span> name=${_parameter}
+&lt;/<span class="keyword">select</span>&gt;
+</code></pre><p>这里由于代码的写法问题，name需要改成_parameter,参考<a href="http://woshixy.blog.51cto.com/5637578/1180914" target="_blank" rel="external">Mybatis中传参包There is no getter for property named XXX in class java.lang.String</a>。</p>
+<p>查看执行的SQL语句：</p>
+<p><img src="/images/mybatis22.png" alt=""></p>
+<p>输入没有任何改变的拼接到SQL中，造成了SQL注入。</p>
+<h1 id="实战分析">实战分析</h1><p>mybatis generator插件默认生成的order by 条件是使用<code>$</code>表示变量。</p>
+<pre><code>...
+ <span class="tag">&lt;<span class="title">select</span> <span class="attribute">id</span>=<span class="value">"selectByExample"</span> <span class="attribute">resultMap</span>=<span class="value">"BaseResultMap"</span> <span class="attribute">parameterType</span>=<span class="value">"com.tgwoo.ctspmt.model.MtVMsgItemExample"</span> &gt;</span>
+    <span class="tag">&lt;<span class="title">include</span> <span class="attribute">refid</span>=<span class="value">"OracleDialectPrefix"</span> /&gt;</span>
+    select
+    <span class="tag">&lt;<span class="title">if</span> <span class="attribute">test</span>=<span class="value">"distinct"</span> &gt;</span>
+      distinct
+    <span class="tag">&lt;/<span class="title">if</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">include</span> <span class="attribute">refid</span>=<span class="value">"Base_Column_List"</span> /&gt;</span>
+    from CTSPMT.MT_V_MSG_ITEM
+    <span class="tag">&lt;<span class="title">if</span> <span class="attribute">test</span>=<span class="value">"_parameter != null"</span> &gt;</span>
+      <span class="tag">&lt;<span class="title">include</span> <span class="attribute">refid</span>=<span class="value">"Example_Where_Clause"</span> /&gt;</span>
+    <span class="tag">&lt;/<span class="title">if</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">if</span> <span class="attribute">test</span>=<span class="value">"orderByClause != null"</span> &gt;</span>
+      order by ${orderByClause}
+    <span class="tag">&lt;/<span class="title">if</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">include</span> <span class="attribute">refid</span>=<span class="value">"OracleDialectSuffix"</span> /&gt;</span>
+  <span class="tag">&lt;/<span class="title">select</span>&gt;</span>
+...
+  <span class="tag">&lt;<span class="title">sql</span> <span class="attribute">id</span>=<span class="value">"OracleDialectPrefix"</span> &gt;</span>
+    <span class="tag">&lt;<span class="title">if</span> <span class="attribute">test</span>=<span class="value">"page != null"</span> &gt;</span>
+      select * from ( select row_.*, rownum rownum_ from ( 
+    <span class="tag">&lt;/<span class="title">if</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">sql</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">sql</span> <span class="attribute">id</span>=<span class="value">"OracleDialectSuffix"</span> &gt;</span>
+    <span class="tag">&lt;<span class="title">if</span> <span class="attribute">test</span>=<span class="value">"page != null"</span> &gt;</span>
+      <span class="cdata">&lt;![CDATA[ ) row_ ) where rownum_ &gt; #{page.begin} and rownum_ &lt;= #{page.end} ]]&gt;</span>
+    <span class="tag">&lt;/<span class="title">if</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">sql</span>&gt;</span>
+...
+</code></pre><p>所以使用mybatis generator插件生成的代码中，需要自己过滤order by参数，如果用户可控就会导致SQL注入。而大部分情况下，开发者可能没有意识到这个问题。</p>
+<p>以freecms为例。<a href="http://www.freeteam.cn/" target="_blank" rel="external">Freecms</a>是一款开源javacms。最新版下载<a href="http://www.freeteam.cn/freecms1.5.rar" target="_blank" rel="external">地址</a>。freecms中的orderby都是使用的<code>$</code>描述变量。</p>
+<p><img src="/images/mybatis23.png" alt=""></p>
+<p>前面的分析可以知道，这种情况，mybatis会直接拼接字符串到SQL中不做任何处理。</p>
+<p>注册用户登录访问：</p>
+<pre><code>http://192.168.99.100:8080/freecms/member/creditlog_list.do?order=extractvalue(1,concat(0x7C,(select%20user()),0x7C))
+</code></pre><p><img src="/images/mybatis24.png" alt=""></p>
+<p>查看执行的SQL为：</p>
+<p><img src="/images/mybatis25.png" alt=""></p>
+<h1 id="修复方案">修复方案</h1><p>尽量使用<code>#</code>描述参数，如果一定要使用<code>$</code>，则需要自己过滤用户输入。</p>
+<h1 id="容易发生注入的点">容易发生注入的点</h1><p><a href="https://mp.weixin.qq.com/s?__biz=MjM5OTk2MTMxOQ==&amp;mid=2727827368&amp;idx=1&amp;sn=765d0835f0069b5145523c31e8229850&amp;mpshare=1&amp;scene=1&amp;srcid=0926a6QC3pGbQ3Pznszb4n2q#rd" target="_blank" rel="external">Mybatis框架下SQL注入漏洞面面观</a>中提到了3个点。</p>
+<pre><code>1. 模糊查询like SQL注入修复建议
+按照新闻标题对新闻进行模糊查询，可将SQL查询语句设计如下：
+<span class="operator"><span class="keyword">select</span> * <span class="keyword">from</span> news <span class="keyword">where</span> tile <span class="keyword">like</span> <span class="keyword">concat</span>(‘%’,#{title}, ‘%’)，
+采用预编译机制，避免了<span class="keyword">SQL</span>语句拼接的问题，从根源上防止了<span class="keyword">SQL</span>注入漏洞的产生。
+
+<span class="number">2.</span>  <span class="keyword">in</span>之后的参数<span class="keyword">SQL</span>注入修复建议
+在对新闻进行同条件多值查询的时候，可使用Mybatis自带循环指令解决<span class="keyword">SQL</span>语句动态拼接的问题：
+<span class="keyword">select</span> * <span class="keyword">from</span> news <span class="keyword">where</span> <span class="keyword">id</span> <span class="keyword">in</span>
+&lt;foreach collection=<span class="string">"ids"</span> item=<span class="string">"item"</span> <span class="keyword">open</span>=<span class="string">"("</span>separator=<span class="string">","</span> <span class="keyword">close</span>=<span class="string">")"</span>&gt;#{item} &lt;/foreach&gt;
+
+<span class="number">3.</span> <span class="keyword">order</span> <span class="keyword">by</span> <span class="keyword">SQL</span>注入修复建议<span class="comment">--在Java层面做映射</span>
+预编译机制只能处理查询参数，其他地方还需要研发人员根据具体情况来解决。如前面提到的排序情景： <span class="keyword">Select</span> * <span class="keyword">from</span> news <span class="keyword">where</span> title =‘京东’ <span class="keyword">order</span> <span class="keyword">by</span> #{<span class="keyword">time</span>} <span class="keyword">asc</span>，这里<span class="keyword">time</span>不是查询参数，无法使用预编译机制，只能这样拼接：<span class="keyword">Select</span> * <span class="keyword">from</span> news <span class="keyword">where</span> title =‘京东’ <span class="keyword">order</span> <span class="keyword">by</span> ${<span class="keyword">time</span>} <span class="keyword">asc</span> 。
+针对这种情况研发人员可以在<span class="keyword">java</span>层面做映射来进行解决。如当存在发布时间<span class="keyword">time</span>和点击量click两种排序选择时，我们可以限制用户只能输入<span class="number">1</span>和<span class="number">2</span>。当用户输入<span class="number">1</span>时，我们在代码层面将其映射为<span class="keyword">time</span>，当用户输入<span class="number">2</span>时，将其映射为click。而当用户输入<span class="number">1</span>和<span class="number">2</span>之外的其他内容时，我们可以将其转换为默认排序选择<span class="keyword">time</span>(或者click)。</span>
+</code></pre><p>目前在使用mybatis中，一般会使用插件自动生成代码。插件自动生成的代码中，in语句已经是默认安全的方式了。只有orderby和limit处是使用字符串拼接。而默认情况下应该是没有like语句。如果程序员需要使用like需要自己实现。</p>
+<p><img src="/images/mybatisa1.png" alt=""></p>
+<p><img src="/images/mybatisa2.png" alt=""></p>
+<h1 id="参考资料">参考资料</h1><p><a href="https://mp.weixin.qq.com/s?__biz=MjM5OTk2MTMxOQ==&amp;mid=2727827368&amp;idx=1&amp;sn=765d0835f0069b5145523c31e8229850&amp;mpshare=1&amp;scene=1&amp;srcid=0926a6QC3pGbQ3Pznszb4n2q#rd" target="_blank" rel="external">Mybatis框架下SQL注入漏洞面面观</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;mybatis_概述&quot;&gt;mybatis 概述&lt;/h1&gt;&lt;p&gt;&lt;a href=&quot;http://www.mybatis.org/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;MyBatis&lt;/a&gt;是支持定制化 SQL、存储过程以及高级映射的优秀的持
+    
+    </summary>
+    
+      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+    
+    
+      <category term="java" scheme="http://xdxd.love/tags/java/"/>
+    
+  </entry>
   
   <entry>
     <title>docker下locale与编码问题</title>
@@ -1138,147 +1279,6 @@ cp $(<span class="built_in">which</span> qemu-mipsel-static) ./qemu
     <summary type="html">
     
       &lt;h2 id=&quot;poc&quot;&gt;poc&lt;/h2&gt;&lt;p&gt;&lt;a href=&quot;https://www.exploit-db.com/exploits/39170/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;exploit-db&lt;/a&gt;中提供了poc，可以读取conflu
-    
-    </summary>
-    
-      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
-    
-    
-      <category term="java" scheme="http://xdxd.love/tags/java/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>审计mybatis的sql注入</title>
-    <link href="http://xdxd.love/2016/05/24/%E5%AE%A1%E8%AE%A1mybatis%E7%9A%84sql%E6%B3%A8%E5%85%A5/"/>
-    <id>http://xdxd.love/2016/05/24/审计mybatis的sql注入/</id>
-    <published>2016-05-24T07:27:24.000Z</published>
-    <updated>2017-05-24T06:38:19.000Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="mybatis_概述">mybatis 概述</h1><p><a href="http://www.mybatis.org/" target="_blank" rel="external">MyBatis</a>是支持定制化 SQL、存储过程以及高级映射的优秀的持久层框架。MyBatis 避免了几乎所有的 JDBC 代码和手动设置参数以及获取结果集。MyBatis 可以对配置和原生Map使用简单的 XML 或注解，将接口和 Java 的 POJOs(Plain Old Java Objects,普通的 Java对象)映射成数据库中的记录</p>
-<h1 id="mybatis存在的sql注入问题">mybatis存在的sql注入问题</h1><p>mybatis避免了用户直接拼接SQL语句，但是认为只要使用了mybatis就可以杜绝SQL注入的观点是不正确的。mybatis在配置SQL语句的时候，有两种描述参数的方式。<code>#{}</code>和<code>${}</code>。</p>
-<p>比如：</p>
-<pre><code>&lt;<span class="keyword">select</span> id=<span class="string">"selectPerson"</span> parameterType=<span class="string">"int"</span> resultType=<span class="string">"hashmap"</span>&gt;
-  <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> PERSON <span class="keyword">WHERE</span> ID = <span class="preprocessor">#{id}</span>
-&lt;/<span class="keyword">select</span>&gt;
-</code></pre><p>这个语句被称作 selectPerson，接受一个 int（或 Integer）类型的参数，并返回一个 HashMap类型的对象，其中的键是列名，值便是结果行中的对应值。</p>
-<p>注意参数符号：</p>
-<pre><code>#{<span class="ruby">id}</span>
-</code></pre><p>这就告诉 MyBatis 创建一个预处理语句参数，通过 JDBC，这样的一个参数在 SQL中会由一个“?”来标识，并被传递到一个新的预处理语句中，就像这样：</p>
-<pre><code>// Similar JDBC <span class="preprocessor">code</span>, NOT MyBatis…
-<span class="keyword">String </span><span class="keyword">selectPerson </span>= <span class="string">"SELECT * FROM PERSON WHERE ID=?"</span><span class="comment">;</span>
-<span class="label">PreparedStatement</span> ps = conn.prepareStatement(<span class="keyword">selectPerson);
-</span><span class="label">ps.setInt</span>(<span class="number">1</span>,id)<span class="comment">;</span>
-</code></pre><p>使用<code>#</code>mybatis会使用预编译来处理参数，这样子可以避免SQL注入。</p>
-<p>但是使用<code>$</code>描述参数会直接把变量拼接到SQL语句中，不做任何处理。相当于直接字符串拼接SQL。这样的方式就可能存在SQL注入。下面的描述来自mybatis官方文档。</p>
-<pre><code>默认情况下,使用#{}格式的语法会导致 MyBatis 创建预处理语句属性并安全地设置值（比如?）。这样做更安全，更迅速，通常也是首选做法，不过有时你只是想直接在 SQL 语句中插入一个不改变的字符串。比如，像 <span class="keyword">ORDER</span> <span class="keyword">BY</span>，你可以这样来使用：
-
-<span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="label">${columnName}</span>
-这里 MyBatis 不会修改或转义字符串。
-
-<span class="keyword">NOTE</span> 以这种方式接受从用户输出的内容并提供给语句中不变的字符串是不安全的，会导致潜在的 SQL 注入攻击，因此要么不允许用户输入这些字段，要么自行转义并检验。
-</code></pre><h1 id="demo演示">demo演示</h1><p>使用<a href="http://www.cnblogs.com/zhanjindong/p/3397828.html" target="_blank" rel="external">MyBatis使用示例</a>作为demo测试。</p>
-<p>mapper文件：</p>
-<pre><code><span class="pi">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;</span>
-<span class="doctype">&lt;!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"&gt;</span>
-<span class="tag">&lt;<span class="title">mapper</span> <span class="attribute">namespace</span>=<span class="value">"test.mybatis.UserMapper"</span>&gt;</span>
-    <span class="comment">&lt;!-- 这里namespace必须是UserMapper接口的路径” --&gt;</span>
-    <span class="tag">&lt;<span class="title">insert</span> <span class="attribute">id</span>=<span class="value">"insertUser"</span> <span class="attribute">parameterType</span>=<span class="value">"User"</span>&gt;</span>
-        insert into user(name,age) values(#{name},#{age})
-        <span class="comment">&lt;!-- 这里sql结尾不能加分号，否则报“ORA-00911”的错误 --&gt;</span>
-    <span class="tag">&lt;/<span class="title">insert</span>&gt;</span>
-    <span class="comment">&lt;!-- 这里的id必须和UserMapper接口中的接口方法名相同 --&gt;</span>
-    <span class="tag">&lt;<span class="title">select</span> <span class="attribute">id</span>=<span class="value">"getUser"</span> <span class="attribute">resultType</span>=<span class="value">"User"</span>&gt;</span>
-        select * from user where name=#{name}
-    <span class="tag">&lt;/<span class="title">select</span>&gt;</span>
-<span class="tag">&lt;/<span class="title">mapper</span>&gt;</span>
-</code></pre><p>在输入中插入单引号</p>
-<pre><code><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">getUser</span>(<span class="params"></span>) </span>{
-    SqlSession sqlSession = sqlSessionFactory.openSession();
-    <span class="keyword">try</span> {
-        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-        User user = userMapper.getUser(<span class="string">"'zhangsan"</span>);
-        System.<span class="keyword">out</span>.println(<span class="string">"name: "</span> + user.getName() + <span class="string">"|age: "</span>
-                + user.getAge());
-    } <span class="keyword">finally</span> {
-        sqlSession.close();
-    }
-</code></pre><p>查看执行的sql语句：</p>
-<p><img src="/images/mybatis21.png" alt=""></p>
-<p>可以看到输入被单引号包裹，并且对字符串中的单引号进行了转义。</p>
-<p>将<code>#</code>改成<code>$</code>,mapper文件为：</p>
-<pre><code>&lt;<span class="keyword">select</span> id=<span class="string">"getUser"</span> resultType=<span class="string">"User"</span>&gt;
-    <span class="keyword">select</span> * <span class="keyword">from</span> user <span class="keyword">where</span> name=${_parameter}
-&lt;/<span class="keyword">select</span>&gt;
-</code></pre><p>这里由于代码的写法问题，name需要改成_parameter,参考<a href="http://woshixy.blog.51cto.com/5637578/1180914" target="_blank" rel="external">Mybatis中传参包There is no getter for property named XXX in class java.lang.String</a>。</p>
-<p>查看执行的SQL语句：</p>
-<p><img src="/images/mybatis22.png" alt=""></p>
-<p>输入没有任何改变的拼接到SQL中，造成了SQL注入。</p>
-<h1 id="实战分析">实战分析</h1><p>mybatis generator插件默认生成的order by 条件是使用<code>$</code>表示变量。</p>
-<pre><code>...
- <span class="tag">&lt;<span class="title">select</span> <span class="attribute">id</span>=<span class="value">"selectByExample"</span> <span class="attribute">resultMap</span>=<span class="value">"BaseResultMap"</span> <span class="attribute">parameterType</span>=<span class="value">"com.tgwoo.ctspmt.model.MtVMsgItemExample"</span> &gt;</span>
-    <span class="tag">&lt;<span class="title">include</span> <span class="attribute">refid</span>=<span class="value">"OracleDialectPrefix"</span> /&gt;</span>
-    select
-    <span class="tag">&lt;<span class="title">if</span> <span class="attribute">test</span>=<span class="value">"distinct"</span> &gt;</span>
-      distinct
-    <span class="tag">&lt;/<span class="title">if</span>&gt;</span>
-    <span class="tag">&lt;<span class="title">include</span> <span class="attribute">refid</span>=<span class="value">"Base_Column_List"</span> /&gt;</span>
-    from CTSPMT.MT_V_MSG_ITEM
-    <span class="tag">&lt;<span class="title">if</span> <span class="attribute">test</span>=<span class="value">"_parameter != null"</span> &gt;</span>
-      <span class="tag">&lt;<span class="title">include</span> <span class="attribute">refid</span>=<span class="value">"Example_Where_Clause"</span> /&gt;</span>
-    <span class="tag">&lt;/<span class="title">if</span>&gt;</span>
-    <span class="tag">&lt;<span class="title">if</span> <span class="attribute">test</span>=<span class="value">"orderByClause != null"</span> &gt;</span>
-      order by ${orderByClause}
-    <span class="tag">&lt;/<span class="title">if</span>&gt;</span>
-    <span class="tag">&lt;<span class="title">include</span> <span class="attribute">refid</span>=<span class="value">"OracleDialectSuffix"</span> /&gt;</span>
-  <span class="tag">&lt;/<span class="title">select</span>&gt;</span>
-...
-  <span class="tag">&lt;<span class="title">sql</span> <span class="attribute">id</span>=<span class="value">"OracleDialectPrefix"</span> &gt;</span>
-    <span class="tag">&lt;<span class="title">if</span> <span class="attribute">test</span>=<span class="value">"page != null"</span> &gt;</span>
-      select * from ( select row_.*, rownum rownum_ from ( 
-    <span class="tag">&lt;/<span class="title">if</span>&gt;</span>
-  <span class="tag">&lt;/<span class="title">sql</span>&gt;</span>
-  <span class="tag">&lt;<span class="title">sql</span> <span class="attribute">id</span>=<span class="value">"OracleDialectSuffix"</span> &gt;</span>
-    <span class="tag">&lt;<span class="title">if</span> <span class="attribute">test</span>=<span class="value">"page != null"</span> &gt;</span>
-      <span class="cdata">&lt;![CDATA[ ) row_ ) where rownum_ &gt; #{page.begin} and rownum_ &lt;= #{page.end} ]]&gt;</span>
-    <span class="tag">&lt;/<span class="title">if</span>&gt;</span>
-  <span class="tag">&lt;/<span class="title">sql</span>&gt;</span>
-...
-</code></pre><p>所以使用mybatis generator插件生成的代码中，需要自己过滤order by参数，如果用户可控就会导致SQL注入。而大部分情况下，开发者可能没有意识到这个问题。</p>
-<p>以freecms为例。<a href="http://www.freeteam.cn/" target="_blank" rel="external">Freecms</a>是一款开源javacms。最新版下载<a href="http://www.freeteam.cn/freecms1.5.rar" target="_blank" rel="external">地址</a>。freecms中的orderby都是使用的<code>$</code>描述变量。</p>
-<p><img src="/images/mybatis23.png" alt=""></p>
-<p>前面的分析可以知道，这种情况，mybatis会直接拼接字符串到SQL中不做任何处理。</p>
-<p>注册用户登录访问：</p>
-<pre><code>http://192.168.99.100:8080/freecms/member/creditlog_list.do?order=extractvalue(1,concat(0x7C,(select%20user()),0x7C))
-</code></pre><p><img src="/images/mybatis24.png" alt=""></p>
-<p>查看执行的SQL为：</p>
-<p><img src="/images/mybatis25.png" alt=""></p>
-<h1 id="修复方案">修复方案</h1><p>尽量使用<code>#</code>描述参数，如果一定要使用<code>$</code>，则需要自己过滤用户输入。</p>
-<h1 id="容易发生注入的点">容易发生注入的点</h1><p><a href="https://mp.weixin.qq.com/s?__biz=MjM5OTk2MTMxOQ==&amp;mid=2727827368&amp;idx=1&amp;sn=765d0835f0069b5145523c31e8229850&amp;mpshare=1&amp;scene=1&amp;srcid=0926a6QC3pGbQ3Pznszb4n2q#rd" target="_blank" rel="external">Mybatis框架下SQL注入漏洞面面观</a>中提到了3个点。</p>
-<pre><code>1. 模糊查询like SQL注入修复建议
-按照新闻标题对新闻进行模糊查询，可将SQL查询语句设计如下：
-<span class="operator"><span class="keyword">select</span> * <span class="keyword">from</span> news <span class="keyword">where</span> tile <span class="keyword">like</span> <span class="keyword">concat</span>(‘%’,#{title}, ‘%’)，
-采用预编译机制，避免了<span class="keyword">SQL</span>语句拼接的问题，从根源上防止了<span class="keyword">SQL</span>注入漏洞的产生。
-
-<span class="number">2.</span>  <span class="keyword">in</span>之后的参数<span class="keyword">SQL</span>注入修复建议
-在对新闻进行同条件多值查询的时候，可使用Mybatis自带循环指令解决<span class="keyword">SQL</span>语句动态拼接的问题：
-<span class="keyword">select</span> * <span class="keyword">from</span> news <span class="keyword">where</span> <span class="keyword">id</span> <span class="keyword">in</span>
-&lt;foreach collection=<span class="string">"ids"</span> item=<span class="string">"item"</span> <span class="keyword">open</span>=<span class="string">"("</span>separator=<span class="string">","</span> <span class="keyword">close</span>=<span class="string">")"</span>&gt;#{item} &lt;/foreach&gt;
-
-<span class="number">3.</span> <span class="keyword">order</span> <span class="keyword">by</span> <span class="keyword">SQL</span>注入修复建议<span class="comment">--在Java层面做映射</span>
-预编译机制只能处理查询参数，其他地方还需要研发人员根据具体情况来解决。如前面提到的排序情景： <span class="keyword">Select</span> * <span class="keyword">from</span> news <span class="keyword">where</span> title =‘京东’ <span class="keyword">order</span> <span class="keyword">by</span> #{<span class="keyword">time</span>} <span class="keyword">asc</span>，这里<span class="keyword">time</span>不是查询参数，无法使用预编译机制，只能这样拼接：<span class="keyword">Select</span> * <span class="keyword">from</span> news <span class="keyword">where</span> title =‘京东’ <span class="keyword">order</span> <span class="keyword">by</span> ${<span class="keyword">time</span>} <span class="keyword">asc</span> 。
-针对这种情况研发人员可以在<span class="keyword">java</span>层面做映射来进行解决。如当存在发布时间<span class="keyword">time</span>和点击量click两种排序选择时，我们可以限制用户只能输入<span class="number">1</span>和<span class="number">2</span>。当用户输入<span class="number">1</span>时，我们在代码层面将其映射为<span class="keyword">time</span>，当用户输入<span class="number">2</span>时，将其映射为click。而当用户输入<span class="number">1</span>和<span class="number">2</span>之外的其他内容时，我们可以将其转换为默认排序选择<span class="keyword">time</span>(或者click)。</span>
-</code></pre><p>目前在使用mybatis中，一般会使用插件自动生成代码。插件自动生成的代码中，in语句已经是默认安全的方式了。只有orderby和limit处是使用字符串拼接。而默认情况下应该是没有like语句。如果程序员需要使用like需要自己实现。</p>
-<p><img src="/images/mybatisa1.png" alt=""></p>
-<p><img src="/images/mybatisa2.png" alt=""></p>
-<h1 id="参考资料">参考资料</h1><p><a href="https://mp.weixin.qq.com/s?__biz=MjM5OTk2MTMxOQ==&amp;mid=2727827368&amp;idx=1&amp;sn=765d0835f0069b5145523c31e8229850&amp;mpshare=1&amp;scene=1&amp;srcid=0926a6QC3pGbQ3Pznszb4n2q#rd" target="_blank" rel="external">Mybatis框架下SQL注入漏洞面面观</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h1 id=&quot;mybatis_概述&quot;&gt;mybatis 概述&lt;/h1&gt;&lt;p&gt;&lt;a href=&quot;http://www.mybatis.org/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;MyBatis&lt;/a&gt;是支持定制化 SQL、存储过程以及高级映射的优秀的持
     
     </summary>
     
