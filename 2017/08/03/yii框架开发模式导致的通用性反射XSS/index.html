@@ -28,8 +28,7 @@ defined(&apos;YII_DEBUG&apos;) or define(&apos;YII_DEBUG&apos;, true)">
 <meta property="og:image" content="http://xdxd.love/images/yiixss2.png">
 <meta property="og:image" content="http://xdxd.love/images/yiixss3.png">
 <meta property="og:image" content="http://xdxd.love/images/yiixss4.png">
-<meta property="og:image" content="http://xdxd.love/images/yiixss4.png">
-<meta property="og:updated_time" content="2017-08-03T02:13:09.000Z">
+<meta property="og:updated_time" content="2017-08-03T02:19:23.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CVE-2017-11516 yii框架开发模式导致的通用性反射XSS">
 <meta name="twitter:description" content="漏洞测试测试版本：最新版2.0.10
@@ -148,7 +147,7 @@ public <span class="keyword">function</span> renderRequest()
 <pre><code>use yii\helpers\Html;
     <span class="keyword">return</span> <span class="string">'&lt;pre&gt;'</span> . rtrim(**Html::encode(<span class="variable">$request</span>)**, <span class="string">"\n"</span>) . <span class="string">'&lt;/pre&gt;'</span>;
 </code></pre><p>的方式解决XSS的问题。<br><img src="/images/yiixss3.png" alt=""></p>
-<h2 id="总结思考">总结思考</h2><p>一个问题是debug模式下的安全问题是否是安全漏洞。可能的有的观点是框架都已经建议开发者在线上关闭debug模式了。我觉得评判的标准应该是这个问题是否可以利用，是否存在危害。<br>只有debug模式才存在只是大幅减少了漏洞的影响面，而不能否认漏洞本身。可以参考struts2开发模式存在的安全问题。比较巧的是struts2开发模式也出现过XSS的问题。<br><img src="/images/yiixss4.png" alt=""></p>
+<h2 id="总结思考">总结思考</h2><p>一个问题是debug模式下的安全问题是否是安全漏洞。可能的有的观点是框架都已经建议开发者在线上关闭debug模式了。我觉得评判的标准应该是这个问题是否可以利用，是否存在危害。<br>只有debug模式才存在只是大幅减少了漏洞的影响面，而不能否认漏洞本身。可以参考struts2开发模式存在的安全问题。比较巧的是struts2开发模式也出现过XSS的问题。<br><!-- ![](/images/yiixss4.png) --></p>
 <h2 id="漏洞报告">漏洞报告</h2><p>20170116 邮件汇报给Yii官方<br>20170118 得到确认<br><img src="/images/yiixss4.png" alt=""><br>20170721 发布patch</p>
   
 	</div>
