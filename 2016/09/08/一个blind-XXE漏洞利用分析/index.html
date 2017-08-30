@@ -26,7 +26,7 @@
 <meta property="og:image" content="http://xdxd.love/images/onexxe1.png">
 <meta property="og:image" content="http://xdxd.love/images/onexxe3.png">
 <meta property="og:image" content="http://xdxd.love/images/onexxe2.png">
-<meta property="og:updated_time" content="2016-09-09T01:58:19.000Z">
+<meta property="og:updated_time" content="2017-08-30T08:12:26.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="一个blind XXE漏洞利用工具XXEinjector">
 <meta name="twitter:description" content="参考资料关于Blind XXE你所不知道的XML安全未知攻焉知防——XXE漏洞攻防XXE漏洞以及Blind XXE总结XXEinjector – XXE自动化测试工具
@@ -108,7 +108,7 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目錄</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#漏洞探测"><span class="toc-number">2.</span> <span class="toc-text">漏洞探测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#文件读取"><span class="toc-number">3.</span> <span class="toc-text">文件读取</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#修复方案"><span class="toc-number">4.</span> <span class="toc-text">修复方案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#备注"><span class="toc-number">5.</span> <span class="toc-text">备注</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#漏洞探测"><span class="toc-number">2.</span> <span class="toc-text">漏洞探测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#文件读取"><span class="toc-number">3.</span> <span class="toc-text">文件读取</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#修复方案"><span class="toc-number">4.</span> <span class="toc-text">修复方案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#备注"><span class="toc-number">5.</span> <span class="toc-text">备注</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更新"><span class="toc-number">6.</span> <span class="toc-text">更新</span></a></li></ol>
 		
 		</div>
 		
@@ -130,6 +130,8 @@
 <p>使用提取的payload用burp测试可以获取数据。<br><img src="/images/onexxe2.png" alt=""></p>
 <h2 id="修复方案">修复方案</h2><p>参考<a href="https://www.owasp.org/index.php/XML_External_Entity_(XXE" target="_blank" rel="external">XML_External<em>Entity</em>(XXE)_Prevention_Cheat_Sheet</a>_Prevention_Cheat_Sheet)，根据相应的库的方式禁用外部实体解析。</p>
 <h2 id="备注">备注</h2><p>XXE作为一种攻击形式，在不同的环境中会有各种比较灵活的利用。<a href="https://jiji262.github.io/wooyun_articles/drops/%E4%BD%A0%E6%89%80%E4%B8%8D%E7%9F%A5%E9%81%93%E7%9A%84XML%E5%AE%89%E5%85%A8.html" target="_blank" rel="external">你所不知道的XML安全</a>中提到的禁用外部实体的情况下，利用uri Invocation来实现SSRF攻击。目前这个点的分析比较少，如果可以实现http的ssrf其实也是可以做不少事情的。</p>
+<h2 id="更新">更新</h2><p>遇到一个XXE的环境，使用简单payload测试，可以对外发起http请求。但是直接使用XXEinjector，无法获得数据，第二个请求一直发不出来，使用oob参数为http可以成功利用。因为oob默认使用ftp。可能是这个环境中ftp端口是不通的。</p>
+<p>当时的测试思路是自己修改恶意dtd文件，替换为简单的发起http请求，发现可以成功，然后再增加嵌套。最终定位为可以利用。应该可以理解成只要可以发出一个http请求，那么漏洞一定就是可以利用的。只是使用oob为http，只能读取文件内容的一行。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -196,7 +198,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目錄</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#漏洞探测"><span class="toc-number">2.</span> <span class="toc-text">漏洞探测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#文件读取"><span class="toc-number">3.</span> <span class="toc-text">文件读取</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#修复方案"><span class="toc-number">4.</span> <span class="toc-text">修复方案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#备注"><span class="toc-number">5.</span> <span class="toc-text">备注</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#漏洞探测"><span class="toc-number">2.</span> <span class="toc-text">漏洞探测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#文件读取"><span class="toc-number">3.</span> <span class="toc-text">文件读取</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#修复方案"><span class="toc-number">4.</span> <span class="toc-text">修复方案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#备注"><span class="toc-number">5.</span> <span class="toc-text">备注</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更新"><span class="toc-number">6.</span> <span class="toc-text">更新</span></a></li></ol>
  
   </div>
 
