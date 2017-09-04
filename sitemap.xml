@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://xdxd.love/2017/09/04/openstack%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%8Adocker%E5%AE%B9%E5%99%A8%E6%97%A0%E6%B3%95%E4%B8%8A%E7%BD%91%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/</loc>
+    
+    <lastmod>2017-09-04T07:06:57.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://xdxd.love/2016/09/08/%E4%B8%80%E4%B8%AAblind-XXE%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8%E5%88%86%E6%9E%90/</loc>
     
     <lastmod>2017-08-30T08:12:26.000Z</lastmod>
@@ -541,14 +548,14 @@
   </url>
   
   <url>
-    <loc>http://xdxd.love/2015/04/03/refer-xss/</loc>
+    <loc>http://xdxd.love/2015/03/24/phpshe/</loc>
     
     <lastmod>2015-11-24T03:27:38.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://xdxd.love/2015/03/24/phpshe/</loc>
+    <loc>http://xdxd.love/2015/06/18/phpcms%E5%8A%A0%E8%A7%A3%E5%AF%86%E5%8E%86%E5%8F%B2%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/</loc>
     
     <lastmod>2015-11-24T03:27:38.000Z</lastmod>
     
@@ -688,7 +695,7 @@
   </url>
   
   <url>
-    <loc>http://xdxd.love/2015/01/14/piwigo/</loc>
+    <loc>http://xdxd.love/2015/04/03/refer-xss/</loc>
     
     <lastmod>2015-11-24T03:27:38.000Z</lastmod>
     
@@ -716,7 +723,7 @@
   </url>
   
   <url>
-    <loc>http://xdxd.love/2015/06/18/phpcms%E5%8A%A0%E8%A7%A3%E5%AF%86%E5%8E%86%E5%8F%B2%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/</loc>
+    <loc>http://xdxd.love/2015/05/19/php-multipartform-data-DOS%E6%BC%8F%E6%B4%9E/</loc>
     
     <lastmod>2015-11-24T03:27:38.000Z</lastmod>
     
@@ -772,7 +779,7 @@
   </url>
   
   <url>
-    <loc>http://xdxd.love/2015/05/19/php-multipartform-data-DOS%E6%BC%8F%E6%B4%9E/</loc>
+    <loc>http://xdxd.love/2015/01/14/piwigo/</loc>
     
     <lastmod>2015-11-24T03:27:38.000Z</lastmod>
     

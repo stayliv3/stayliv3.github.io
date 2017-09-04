@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xdxd.love/"/>
-  <updated>2017-08-03T02:19:23.000Z</updated>
+  <updated>2017-09-04T07:06:57.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -14,6 +14,64 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>openstack虚拟机上docker容器无法上网解决方案</title>
+    <link href="http://xdxd.love/2017/09/04/openstack%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%8Adocker%E5%AE%B9%E5%99%A8%E6%97%A0%E6%B3%95%E4%B8%8A%E7%BD%91%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/"/>
+    <id>http://xdxd.love/2017/09/04/openstack虚拟机上docker容器无法上网解决方案/</id>
+    <published>2017-09-04T06:30:52.000Z</published>
+    <updated>2017-09-04T07:06:57.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="问题">问题</h2><p>虚拟机上安装docker之后，docker容器内无法访问外网。DNS解析和部分http可以通信。</p>
+<p>虚拟机版本为：ubuntu 14.04<br>docker版本为：17.07.0-ce<br>虚拟环境为：openstack</p>
+<h2 id="GOOGLE">GOOGLE</h2><p>搜索发现可能是由于openstack默认mtu是1450，而docker默认mtu是1500导致的。ifconfig查看，果然如此。eth0 mtu是1450.而docker0 mtu是1500.</p>
+<h2 id="探索">探索</h2><p>尝试修改docker0的mtu。发现了两个方案：</p>
+<p>1，编辑/etc/docker/daemon.json文件。ubuntu上默认没有这个文件。可以新建，内容如下。</p>
+<pre><code>{
+  "<span class="attribute">mtu</span>": <span class="value"><span class="number">1500</span>
+</span>}
+</code></pre><p>2，编辑/etc/default/docker文件。ubuntu上有这个文件。默认内容为空。</p>
+<pre><code>DOCKER_OPTS=“--mtu=<span class="number">1450</span><span class="string">"</span>
+</code></pre><p>测试发现这两个方法修改之后。docker0显示的mtu依然是1500。此时陷入迷茫。</p>
+<p>通过docker network inspect bridge 命令发现bridge网络的属性中mtu被设置成了1450.</p>
+<p>而我测试的docker容器使用了docker compose。看了下<a href="https://docs.docker.com/compose/networking/#updating-containers" target="_blank" rel="external">docker compose的文档</a>。得知docker compose会自动创建一个新的网络。可以通过如下的方式配置网络的参数：</p>
+<pre><code><span class="attribute">networks</span>:
+  <span class="attribute">frontend</span>:
+    # Use a custom driver
+    <span class="attribute">driver</span>: custom-driver-<span class="number">1</span>
+  <span class="attribute">backend</span>:
+    # Use a custom driver which takes special options
+    <span class="attribute">driver</span>: custom-driver-<span class="number">2</span>
+    <span class="attribute">driver_opts</span>:
+      <span class="attribute">foo</span>: <span class="string">"1"</span>
+      <span class="attribute">bar</span>: <span class="string">"2"</span>
+</code></pre><p>先在docker-compose.yml中配置如下：</p>
+<pre><code>networks：
+ <span class="keyword">default</span>:
+  mtu: <span class="number">1450</span>
+</code></pre><p>发现并没有效果。使用docker network inspect compose-default 查看，参数一栏写的是：</p>
+<pre><code><span class="string">"mtu"</span>: <span class="string">"1450"</span>
+</code></pre><p>注意到之前在bridge中，参数一栏是”com.docker.network.driver.mtu”，所以尝试修改docker-compose.yml文件中参数为：</p>
+<pre><code>networks:
+ default:
+  com<span class="class">.docker</span><span class="class">.network</span><span class="class">.driver</span><span class="class">.mtu</span>: <span class="number">1450</span>
+</code></pre><p>重启生效。</p>
+<h2 id="解决方案">解决方案</h2><p>所以在docker-compose.yml文件中修改networks的参数mtu为1450即可。</p>
+<p>疑问：</p>
+<p>docker0显示的mtu并不会发生改变。看到一些文档里写的是修改docker0属性，可能是对于docker0的理解有误。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;问题&quot;&gt;问题&lt;/h2&gt;&lt;p&gt;虚拟机上安装docker之后，docker容器内无法访问外网。DNS解析和部分http可以通信。&lt;/p&gt;
+&lt;p&gt;虚拟机版本为：ubuntu 14.04&lt;br&gt;docker版本为：17.07.0-ce&lt;br&gt;虚拟环境为：openstack
+    
+    </summary>
+    
+      <category term="折腾不止" scheme="http://xdxd.love/categories/%E6%8A%98%E8%85%BE%E4%B8%8D%E6%AD%A2/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>CVE-2017-11516 yii框架开发模式导致的通用性反射XSS</title>
@@ -1345,141 +1403,6 @@ cp $(<span class="built_in">which</span> qemu-mipsel-static) ./qemu
     
     
       <category term="java" scheme="http://xdxd.love/tags/java/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>一个任意文件读取漏洞记录</title>
-    <link href="http://xdxd.love/2016/05/23/%E4%B8%80%E4%B8%AA%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"/>
-    <id>http://xdxd.love/2016/05/23/一个任意文件读取漏洞分析/</id>
-    <published>2016-05-23T07:27:05.000Z</published>
-    <updated>2016-05-26T14:05:32.000Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="黑盒测试">黑盒测试</h1><p>黑盒测试发现某个接口存在任意文件读取的漏洞。<br><img src="/images/wenjianduqu1.gif" alt=""><br>首选判断是文件读取还是文件包含，因为file_get_content(“/etc/passwd”)和include(“/etc/passwd”)黑盒来看的表现可能一样。而文件包含是可以getshell的，文件读取就只能读取文件。可以通过尝试读取相对路径的脚本文件，比如<code>/read.php?file=read.php</code>的方式，如果可以读取到文件源码，说明是文件读取，如果不能读取到文件源码说明是文件包含。</p>
-<h1 id="文件读取">文件读取</h1><p>服务器上有价值的文件主要可以分为3类。通用的系统/应用配置文件，个性化的文件以及web应用的源码文件。而想要读取到一个文件只需要知道这个文件的绝对路径或者相对路径就可以了。</p>
-<p>把web应用的源码单独出来是觉得应用源码可以很方便的通过相对路径获取到，不需要费劲得到源码的绝对路径。系统的通用配置文件比如</p>
-<pre><code><span class="regexp">/etc/</span>passwd
-<span class="regexp">/etc/my</span>.cnf
-<span class="regexp">/etc/</span>shadow
-<span class="regexp">/etc/</span>sysconfig<span class="regexp">/network-scripts/i</span>fcfg-eth0   ip地址
-<span class="regexp">/etc/</span>hosts                                  通常配置了一些内网域名
-</code></pre><p>等等可以通过字典的方式来猜解。</p>
-<p>这个案例通过passwd中获得的用户来获取到了这个用户的bash_history，从bash_history获取到了一些压缩包的地址。从而读取到了个性化的文件,一些压缩包的文件。<br><img src="/images/wenjianduqu2.png" alt=""><br><img src="/images/wenjianduqu3.png" alt=""></p>
-<p>通过mysql的配置文件得知了数据的存储目录。通过直接读取数据库文件可以获取到数据库内的信息。</p>
-<p><img src="/images/wenjianduqu4.png" alt=""></p>
-<p>在说到文件包含利用的时候，会讲到有个小技巧，某些情况下可以包含proc下的文件。文件读取的情况下当然可以可以读取proc目录下的文件来获得更多系统的信息。</p>
-<p><img src="/images/wenjianduqu5.png" alt=""></p>
-<pre><code>/<span class="keyword">proc</span>/sched_debug  提供cpu上正在运行的进程信息，可以获得进程的pid号，可以配合后面需要pid的利用
-/<span class="keyword">proc</span>/mounts 挂载的文件系统列表
-/<span class="keyword">proc</span>/net/arp  arp表，可以获得内网其他机器的地址
-/<span class="keyword">proc</span>/net/route 路由表信息
-/<span class="keyword">proc</span>/net/tcp <span class="keyword">and</span> /<span class="keyword">proc</span>/net/udp  活动连接的信息
-/<span class="keyword">proc</span>/net/fib_trie 路由缓存
-/<span class="keyword">proc</span>/version  内核版本
-/<span class="keyword">proc</span>/[<span class="type">PID</span>]/cmdline 可能包含有用的路径信息
-/<span class="keyword">proc</span>/[<span class="type">PID</span>]/environ 程序运行的环境变量信息，可以用来包含getshell
-/<span class="keyword">proc</span>/[<span class="type">PID</span>]/cwd     当前进程的工作目录
-/<span class="keyword">proc</span>/[<span class="type">PID</span>]/fd/[<span class="comment">#]  访问file descriptors，某写情况可以读取到进程正在使用的文件，比如access.log</span>
-</code></pre><p>fuzz字典：</p>
-<pre><code>/<span class="keyword">proc</span>/self/cmdline
-/<span class="keyword">proc</span>/self/stat
-/<span class="keyword">proc</span>/self/status
-/<span class="keyword">proc</span>/self/environ
-/<span class="keyword">proc</span>/verison
-/<span class="keyword">proc</span>/cmdline
-/<span class="keyword">proc</span>/self/cwd
-/<span class="keyword">proc</span>/self/fd/<span class="number">0</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">1</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">2</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">3</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">4</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">5</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">6</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">7</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">8</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">9</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">10</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">11</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">12</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">13</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">14</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">15</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">16</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">17</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">18</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">19</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">20</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">21</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">22</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">23</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">24</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">25</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">26</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">27</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">28</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">29</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">30</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">31</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">32</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">33</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">34</span>
-/<span class="keyword">proc</span>/self/fd/<span class="number">35</span>
-/<span class="keyword">proc</span>/sched_debug
-/<span class="keyword">proc</span>/mounts
-/<span class="keyword">proc</span>/net/arp
-/<span class="keyword">proc</span>/net/route
-/<span class="keyword">proc</span>/net/tcp
-/<span class="keyword">proc</span>/net/udp
-/<span class="keyword">proc</span>/net/fib_trie
-/<span class="keyword">proc</span>/version
-</code></pre><h1 id="漏洞分析">漏洞分析</h1><p>读取到应用代码，对漏洞原因进行分析。</p>
-<p>通过入口初始化文件读取到配置文件。</p>
-<pre><code><span class="comment">/* 初始化设置 END */</span>
-<span class="comment">//--------------------------------------------------</span>
-<span class="keyword">require</span> (ROOT_PATH <span class="built_in">. </span>ADMIN_PATH <span class="built_in">. </span><span class="string">'/includes/config.php'</span>);
-<span class="class"><span class="keyword">define</span></span>(<span class="string">'CLS_PATH'</span>, ROOT_PATH <span class="built_in">. </span>ADMIN_PATH <span class="built_in">. </span><span class="string">'/'</span>);
-include ROOT_PATH <span class="built_in">. </span>ADMIN_PATH <span class="built_in">. </span><span class="string">'/includes/base/autoload.class.php'</span>;
-autoloader<span class="tag">::init</span>();
-<span class="comment">/* 初始化memcached */</span>
-<span class="comment">//$cache = new base_memcached();</span>
-</code></pre><p>配置文件中自然有数据库账号，这个暂且不说。先看autoload.class.php。autoload实现自动加载类的功能。通过其实现方式拼接出存在漏洞的action类文件路径。</p>
-<pre><code>/**
- * 固定路径的class 类文件 以.class.php 结尾
- */
-private <span class="keyword">function</span> base_class(<span class="variable">$className</span>) {
-    // echo <span class="string">"1 $className&lt;br /&gt;"</span>;
-    <span class="variable">$path</span> = array();
-    <span class="variable">$pathDir</span> = array();
-    <span class="variable">$path</span> = explode(<span class="string">'_'</span>, <span class="variable">$className</span>);
-    <span class="variable">$arrCount</span> = count(<span class="variable">$path</span>) - <span class="number">1</span>;
-    <span class="variable">$pathDir</span> = implode(<span class="string">"/"</span>, array_slice(<span class="variable">$path</span>, <span class="number">0</span>, <span class="variable">$arrCount</span>));
-    // set_include_path(get_include_path() . PATH_SEPARATOR . <span class="string">'/includes/'</span> . <span class="variable">$pathDir</span> . <span class="string">"/"</span>);
-    set_include_path(CLS_PATH . <span class="string">"/includes/"</span> . <span class="variable">$pathDir</span>);
-    spl_autoload_extensions(<span class="string">'.class.php'</span>);
-    spl_autoload(<span class="variable">$path</span>[<span class="variable">$arrCount</span>]);
-}
-</code></pre><p>读到关键函数的源码：</p>
-<pre><code>class models_index {
-    public function newsList(<span class="variable">$url</span> = <span class="string">''</span>) {
-        <span class="variable">$list</span> = @file_get_contents(<span class="variable">$this</span> -&gt; host.<span class="variable">$url</span>);
-        return <span class="variable">$list</span>? <span class="variable">$list</span> : <span class="variable">$this-</span>&gt;getErr(<span class="string">'出错了，没有找到该页面！'</span>);
-    public function detail(<span class="variable">$url</span>) {
-        <span class="variable">$content</span> = @file_get_contents(<span class="variable">$url</span>);
-        return <span class="variable">$content</span>? <span class="variable">$content</span> : <span class="variable">$this-</span>&gt;getErr(<span class="string">'404'</span>,<span class="string">'出错了，没有找到该页面！'</span>);
-    }
-</code></pre><p>detail 方法获取到了url参数之后直接file_get_contents输出。最典型的任意文件读取漏洞。</p>
-<h1 id="修复方案">修复方案</h1><p>白名单用户的输入就可以了。</p>
-<h1 id="参考资料">参考资料</h1><p><a href="http://zone.wooyun.org/content/27434" target="_blank" rel="external">http://zone.wooyun.org/content/27434</a><br><a href="https://blog.netspi.com/directory-traversal-file-inclusion-proc-file-system/" target="_blank" rel="external">https://blog.netspi.com/directory-traversal-file-inclusion-proc-file-system/</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h1 id=&quot;黑盒测试&quot;&gt;黑盒测试&lt;/h1&gt;&lt;p&gt;黑盒测试发现某个接口存在任意文件读取的漏洞。&lt;br&gt;&lt;img src=&quot;/images/wenjianduqu1.gif&quot; alt=&quot;&quot;&gt;&lt;br&gt;首选判断是文件读取还是文件包含，因为file_get_content(“/etc/
-    
-    </summary>
-    
-      <category term="渗透测试" scheme="http://xdxd.love/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
-    
     
   </entry>
   
