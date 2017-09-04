@@ -21,7 +21,7 @@ GOOGLE搜索发现可能是由于openstack默认mtu是1450，而docker默认mtu�
 <meta property="og:description" content="问题虚拟机上安装docker之后，docker容器内无法访问外网。DNS解析和部分http可以通信。
 虚拟机版本为：ubuntu 14.04docker版本为：17.07.0-ce虚拟环境为：openstack
 GOOGLE搜索发现可能是由于openstack默认mtu是1450，而docker默认mtu是1500导致的。ifconfig查看，果然如此。eth0 mtu是1450.而docker0">
-<meta property="og:updated_time" content="2017-09-04T07:06:57.000Z">
+<meta property="og:updated_time" content="2017-09-04T07:11:20.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="openstack虚拟机上docker容器无法上网解决方案">
 <meta name="twitter:description" content="问题虚拟机上安装docker之后，docker容器内无法访问外网。DNS解析和部分http可以通信。
@@ -54,7 +54,7 @@ GOOGLE搜索发现可能是由于openstack默认mtu是1450，而docker默认mtu�
 				<h1 class="site-name"><a href="/" title="xd_xd&#39;s blog">xd_xd&#39;s blog</a></h1>
 				<h2 class="blog-motto"></h2>
 			</div>
-			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜單">
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
 			</a></div>
 			<nav class="animated">
 				<ul>
@@ -93,14 +93,14 @@ GOOGLE搜索发现可能是由于openstack默认mtu是1450，而docker默认mtu�
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2017-09-04T06:30:52.000Z" itemprop="datePublished"> 發表於 Sep 4 2017</time>
+    <time datetime="2017-09-04T06:30:52.000Z" itemprop="datePublished"> 发表于 Sep 4 2017</time>
     
   </p>
 </header>
 	<div class="article-content">
 		
 		<div id="toc" class="toc-article">
-			<strong class="toc-title">文章目錄</strong>
+			<strong class="toc-title">文章目录</strong>
 		
 			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#问题"><span class="toc-number">1.</span> <span class="toc-text">问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GOOGLE"><span class="toc-number">2.</span> <span class="toc-text">GOOGLE</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#探索"><span class="toc-number">3.</span> <span class="toc-text">探索</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解决方案"><span class="toc-number">4.</span> <span class="toc-text">解决方案</span></a></li></ol>
 		
@@ -117,8 +117,23 @@ GOOGLE搜索发现可能是由于openstack默认mtu是1450，而docker默认mtu�
 </code></pre><p>2，编辑/etc/default/docker文件。ubuntu上有这个文件。默认内容为空。</p>
 <pre><code>DOCKER_OPTS=“--mtu=<span class="number">1450</span><span class="string">"</span>
 </code></pre><p>测试发现这两个方法修改之后。docker0显示的mtu依然是1500。此时陷入迷茫。</p>
-<p>通过docker network inspect bridge 命令发现bridge网络的属性中mtu被设置成了1450.</p>
-<p>而我测试的docker容器使用了docker compose。看了下<a href="https://docs.docker.com/compose/networking/#updating-containers" target="_blank" rel="external">docker compose的文档</a>。得知docker compose会自动创建一个新的网络。可以通过如下的方式配置网络的参数：</p>
+<p>通过docker network inspect bridge 命令发现bridge网络的属性中mtu被设置成了1450.如下：</p>
+<pre><code><span class="string">"Options"</span>: {
+
+    <span class="string">"com.docker.network.bridge.default_bridge"</span>: <span class="string">"true"</span>,
+
+    <span class="string">"com.docker.network.bridge.enable_icc"</span>: <span class="string">"true"</span>,
+
+    <span class="string">"com.docker.network.bridge.enable_ip_masquerade"</span>: <span class="string">"true"</span>,
+
+    <span class="string">"com.docker.network.bridge.host_binding_ipv4"</span>: <span class="string">"0.0.0.0"</span>,
+
+    <span class="string">"com.docker.network.bridge.name"</span>: <span class="string">"docker0"</span>,
+
+    <span class="string">"com.docker.network.driver.mtu"</span>: <span class="string">"1450"</span>
+
+},
+</code></pre><p>而我测试的docker容器使用了docker compose。看了下<a href="https://docs.docker.com/compose/networking/#updating-containers" target="_blank" rel="external">docker compose的文档</a>。得知docker compose会自动创建一个新的网络。可以通过如下的方式配置网络的参数：</p>
 <pre><code><span class="attribute">networks</span>:
   <span class="attribute">frontend</span>:
     # Use a custom driver
@@ -191,21 +206,21 @@ GOOGLE搜索发现可能是由于openstack默认mtu是1450，而docker默认mtu�
 
 
 </div>  
-      <div class="openaside"><a class="navbutton" href="#" title="顯示側邊欄"></a></div>
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
 
   <div id="toc" class="toc-aside">
-  <strong class="toc-title">文章目錄</strong>
+  <strong class="toc-title">文章目录</strong>
  
  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#问题"><span class="toc-number">1.</span> <span class="toc-text">问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GOOGLE"><span class="toc-number">2.</span> <span class="toc-text">GOOGLE</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#探索"><span class="toc-number">3.</span> <span class="toc-text">探索</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解决方案"><span class="toc-number">4.</span> <span class="toc-text">解决方案</span></a></li></ol>
  
   </div>
 
 <div id="asidepart">
-<div class="closeaside"><a class="closebutton" href="#" title="隱藏側邊欄"></a></div>
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
 <aside class="clearfix">
 
   <div class="rsspart">
-	<a href="/atom.xml" target="_blank" title="rss">RSS 訂閱</a>
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
 </div>
 
   <div class="weiboshow">
@@ -216,7 +231,7 @@ GOOGLE搜索发现可能是由于openstack默认mtu是1450，而docker默认mtu�
 
   
 <div class="categorieslist">
-	<p class="asidetitle">分類</p>
+	<p class="asidetitle">分类</p>
 		<ul>
 		
 		  
@@ -277,7 +292,7 @@ GOOGLE搜索发现可能是由于openstack默认mtu是1450，而docker默认mtu�
 
   
 <div class="tagslist">
-	<p class="asidetitle">標簽</p>
+	<p class="asidetitle">标签</p>
 		<ul class="clearfix">
 		
 			
@@ -365,7 +380,7 @@ GOOGLE搜索发现可能是由于openstack默认mtu是1450，而docker默认mtu�
 
 
   <div class="linkslist">
-  <p class="asidetitle">友情鏈接</p>
+  <p class="asidetitle">友情链接</p>
     <ul>
         
           <li>
@@ -636,7 +651,7 @@ $(document).ready(function(){
 <!-- Totop Begin -->
 
 	<div id="totop">
-	<a title="返回頂部"><img src="/img/scrollup.png"/></a>
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
 	</div>
 	<script src="/js/totop.js"></script>
 

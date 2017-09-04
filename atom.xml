@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xdxd.love/"/>
-  <updated>2017-09-04T07:06:57.000Z</updated>
+  <updated>2017-09-04T07:11:20.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://xdxd.love/2017/09/04/openstack%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%8Adocker%E5%AE%B9%E5%99%A8%E6%97%A0%E6%B3%95%E4%B8%8A%E7%BD%91%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/"/>
     <id>http://xdxd.love/2017/09/04/openstack虚拟机上docker容器无法上网解决方案/</id>
     <published>2017-09-04T06:30:52.000Z</published>
-    <updated>2017-09-04T07:06:57.000Z</updated>
+    <updated>2017-09-04T07:11:20.000Z</updated>
     
     <content type="html"><![CDATA[<h2 id="问题">问题</h2><p>虚拟机上安装docker之后，docker容器内无法访问外网。DNS解析和部分http可以通信。</p>
 <p>虚拟机版本为：ubuntu 14.04<br>docker版本为：17.07.0-ce<br>虚拟环境为：openstack</p>
@@ -33,8 +33,23 @@
 </code></pre><p>2，编辑/etc/default/docker文件。ubuntu上有这个文件。默认内容为空。</p>
 <pre><code>DOCKER_OPTS=“--mtu=<span class="number">1450</span><span class="string">"</span>
 </code></pre><p>测试发现这两个方法修改之后。docker0显示的mtu依然是1500。此时陷入迷茫。</p>
-<p>通过docker network inspect bridge 命令发现bridge网络的属性中mtu被设置成了1450.</p>
-<p>而我测试的docker容器使用了docker compose。看了下<a href="https://docs.docker.com/compose/networking/#updating-containers" target="_blank" rel="external">docker compose的文档</a>。得知docker compose会自动创建一个新的网络。可以通过如下的方式配置网络的参数：</p>
+<p>通过docker network inspect bridge 命令发现bridge网络的属性中mtu被设置成了1450.如下：</p>
+<pre><code><span class="string">"Options"</span>: {
+
+    <span class="string">"com.docker.network.bridge.default_bridge"</span>: <span class="string">"true"</span>,
+
+    <span class="string">"com.docker.network.bridge.enable_icc"</span>: <span class="string">"true"</span>,
+
+    <span class="string">"com.docker.network.bridge.enable_ip_masquerade"</span>: <span class="string">"true"</span>,
+
+    <span class="string">"com.docker.network.bridge.host_binding_ipv4"</span>: <span class="string">"0.0.0.0"</span>,
+
+    <span class="string">"com.docker.network.bridge.name"</span>: <span class="string">"docker0"</span>,
+
+    <span class="string">"com.docker.network.driver.mtu"</span>: <span class="string">"1450"</span>
+
+},
+</code></pre><p>而我测试的docker容器使用了docker compose。看了下<a href="https://docs.docker.com/compose/networking/#updating-containers" target="_blank" rel="external">docker compose的文档</a>。得知docker compose会自动创建一个新的网络。可以通过如下的方式配置网络的参数：</p>
 <pre><code><span class="attribute">networks</span>:
   <span class="attribute">frontend</span>:
     # Use a custom driver
