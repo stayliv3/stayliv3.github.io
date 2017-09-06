@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xdxd.love/"/>
-  <updated>2017-09-06T08:36:03.000Z</updated>
+  <updated>2017-09-06T08:38:06.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://xdxd.love/2017/09/06/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95mips%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E5%88%86%E6%9E%90/"/>
     <id>http://xdxd.love/2017/09/06/一个简单mips可执行文件分析/</id>
     <published>2017-09-06T08:31:04.000Z</published>
-    <updated>2017-09-06T08:36:03.000Z</updated>
+    <updated>2017-09-06T08:38:06.000Z</updated>
     
     <content type="html"><![CDATA[<h2 id="参考资料">参考资料</h2><p><a href="http://bbs.pediy.com/thread-219062.htm" target="_blank" rel="external">[分享]蝶澈的CTF题</a></p>
 <p>之前分析蝶澈的CTF题过程中，学到了一些新东西。一直想记录一下，算是交流和来往。可是等到忘的快差不多了也还是没写。</p>
@@ -36,8 +36,8 @@ diff <span class="number">1.</span>txt <span class="number">2.</span>txt
 <p>经过简单的尝试，发现应该是需要输入一个密码。如果密码正确，可以获得flag。<br><img src="/images/kanxue5.png" alt=""></p>
 <p>通过getflag。socket等关键字，可以定位到关键函数400310。通过一番调试发现，</p>
 <p>这里：<br>loc_400710:<br>lw      $v1, 0x850+var_830($fp)<br>li      $v0, 1<br>beq     $v1, $v0, loc_40038C<br>nop</p>
-<p>需要v1不等v0才能进入有getflag相关的逻辑。而当我们随便输入密码的时候，v1都是等于v0=1的。所以，在这里把v0修改成其他的值，就可以继续运行到getflag相关的逻辑。<br><img src="/images/kanxue6.png" alt=""></p>
-<p>其实我也分析过了一下加密的函数，只是没看懂。<br><img src="/images/kanxue7.png" alt=""></p>
+<p>需要v1不等v0才能进入有getflag相关的逻辑。而当我们随便输入密码的时候，v1都是等于v0=1的。所以，在这里把v0修改成其他的值，就可以继续运行到getflag相关的逻辑。<br><img src="/images/kanxue7.png" alt=""></p>
+<p>其实我也分析过了一下加密的函数，只是没看懂。<br><img src="/images/kanxue6.png" alt=""></p>
 ]]></content>
     
     <summary type="html">
