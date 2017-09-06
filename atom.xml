@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xdxd.love/"/>
-  <updated>2017-09-04T07:11:20.000Z</updated>
+  <updated>2017-09-06T08:36:03.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -14,6 +14,43 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>一个简单mips可执行文件分析</title>
+    <link href="http://xdxd.love/2017/09/06/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95mips%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E5%88%86%E6%9E%90/"/>
+    <id>http://xdxd.love/2017/09/06/一个简单mips可执行文件分析/</id>
+    <published>2017-09-06T08:31:04.000Z</published>
+    <updated>2017-09-06T08:36:03.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="参考资料">参考资料</h2><p><a href="http://bbs.pediy.com/thread-219062.htm" target="_blank" rel="external">[分享]蝶澈的CTF题</a></p>
+<p>之前分析蝶澈的CTF题过程中，学到了一些新东西。一直想记录一下，算是交流和来往。可是等到忘的快差不多了也还是没写。</p>
+<h2 id="简单分析">简单分析</h2><p>看到文件名感觉像是一个正常的设备固件，搜索一下发现是一个真是的路由器的固件，还曾出过漏洞。<br><img src="/images/kanxue1.png" alt=""><br>下载了原版固件，使用binwalk解包之后，对所有的文件进行了对比。<br>我采用的方式是针对每个文件hash，然后比较。</p>
+<pre><code>find . -type f |xargs md5 &gt; test.txt
+diff <span class="number">1.</span>txt <span class="number">2.</span>txt
+</code></pre><p><img src="/images/kanxue2.png" alt=""></p>
+<p>可以看到文件大概有3处修改，增加了nc文件，passwd和services文件。以及help目录删掉了一些文件。</p>
+<p>看蝶澈的writeup中使用了<a href="https://github.com/bmaia/binwally这个工具做两个目录的文件比较。" target="_blank" rel="external">https://github.com/bmaia/binwally这个工具做两个目录的文件比较。</a></p>
+<h2 id="静态分析：">静态分析：</h2><p>看一下字符串，可以看到不少有价值的字符串。不过看不到中文的字符串。<br><img src="/images/kanxue3.png" alt=""></p>
+<p>直接cat可以看到中文：<br><img src="/images/kanxue4.png" alt=""></p>
+<h2 id="动态调试">动态调试</h2><p>路由器的环境搭建可以参考<a href="http://bbs.pediy.com/thread-212369.htm。通常来说搭建一个mips的调试环境还是需要花费不少时间，踩一些坑的。为了方便分析。我做了一个基于docker的一键测试环境https://github.com/stayliv3/embedded-device-lab" target="_blank" rel="external">http://bbs.pediy.com/thread-212369.htm。通常来说搭建一个mips的调试环境还是需要花费不少时间，踩一些坑的。为了方便分析。我做了一个基于docker的一键测试环境https://github.com/stayliv3/embedded-device-lab</a> 可以直接使用gdb或者ida动态调试。</p>
+<p>经过简单的尝试，发现应该是需要输入一个密码。如果密码正确，可以获得flag。<br><img src="/images/kanxue5.png" alt=""></p>
+<p>通过getflag。socket等关键字，可以定位到关键函数400310。通过一番调试发现，</p>
+<p>这里：<br>loc_400710:<br>lw      $v1, 0x850+var_830($fp)<br>li      $v0, 1<br>beq     $v1, $v0, loc_40038C<br>nop</p>
+<p>需要v1不等v0才能进入有getflag相关的逻辑。而当我们随便输入密码的时候，v1都是等于v0=1的。所以，在这里把v0修改成其他的值，就可以继续运行到getflag相关的逻辑。<br><img src="/images/kanxue6.png" alt=""></p>
+<p>其实我也分析过了一下加密的函数，只是没看懂。<br><img src="/images/kanxue7.png" alt=""></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;参考资料&quot;&gt;参考资料&lt;/h2&gt;&lt;p&gt;&lt;a href=&quot;http://bbs.pediy.com/thread-219062.htm&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;[分享]蝶澈的CTF题&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;之前分析蝶澈的CTF题
+    
+    </summary>
+    
+      <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>openstack虚拟机上docker容器无法上网解决方案</title>
@@ -1257,167 +1294,6 @@ cp $(<span class="built_in">which</span> qemu-mipsel-static) ./qemu
     
     
       <category term="inspeckage" scheme="http://xdxd.love/tags/inspeckage/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>confluence任意文件读取漏洞以及CVE-2016-6596 SSRF漏洞分析</title>
-    <link href="http://xdxd.love/2016/06/03/confluence%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"/>
-    <id>http://xdxd.love/2016/06/03/confluence任意文件读取漏洞分析/</id>
-    <published>2016-06-03T09:29:03.000Z</published>
-    <updated>2016-09-23T05:46:48.000Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="poc">poc</h2><p><a href="https://www.exploit-db.com/exploits/39170/" target="_blank" rel="external">exploit-db</a>中提供了poc，可以读取confluence配置文件。后来跟漏洞发现者邮件沟通得知他也是通过黑盒测试的方式发现这个漏洞的。<a href="http://zone.wooyun.org/content/27104" target="_blank" rel="external">有关Atlassian Confluence信息泄露漏洞的尝试</a>中分析了使用了../../无法跳到系统根目录，但是可以使用file://协议读取系统文件。所以这个漏洞的危害是读取任意系统文件。</p>
-<h2 id="漏洞分析">漏洞分析</h2><p>经过fuzz发现某些特殊字符会导致系统500，报错。比如<code>%0a</code></p>
-<pre><code><span class="symbol">http:</span>/<span class="regexp">/115.159.160.174:8099/spaces</span><span class="regexp">/viewdefaultdecorator.action?decoratorName=file:/</span><span class="regexp">//etc</span><span class="regexp">/passwdd%0a</span>
-</code></pre><p>获得stack trace信息</p>
-<p><img src="/images/confluence7.png" alt=""></p>
-<p>反编译存在漏洞的confluence jar文件获得源代码。</p>
-<p>jar文件目录为：/opt/atlassian/confluence/lib</p>
-<p>使用<a href="https://github.com/kwart/jd-cmd" target="_blank" rel="external">jd-cmd</a>反编译jar。命令为：</p>
-<pre><code>./jd-cli ../confluence/<span class="class"><span class="keyword">lib</span>/*.<span class="title">jar</span> -<span class="title">od</span> <span class="title">test</span></span>
-</code></pre><p>根据stack trace定位com.atlassian.confluence.admin.actions.lookandfeel.ViewDefaultDecoratorAction.execute方法。其实第一次分析，是通过查找字符串的方式定位代码的，后来发现可以通过stack trace快速定位。</p>
-<pre><code>public <span class="class"><span class="keyword">class</span> <span class="title">ViewDefaultDecoratorAction</span>
-  <span class="keyword">extends</span> <span class="title">AbstractDecoratorAction</span>
-  <span class="keyword">implements</span> <span class="title">LookAndFeel</span>
-</span>{
-  private <span class="literal">static</span> <span class="keyword">final</span> <span class="built_in">String</span> HTML_QUOTE = <span class="string">"&amp;quot;"</span>;
-
-  public <span class="built_in">String</span> execute()
-    throws Exception
-  {
-    <span class="built_in">String</span> template = readDefaultTemplate();
-    <span class="keyword">if</span> (template == <span class="keyword">null</span>)
-    {
-      addActionError(<span class="string">"template.not.found"</span>, <span class="keyword">new</span> <span class="built_in">String</span>[] { decoratorName });
-      <span class="keyword">return</span> <span class="string">"success"</span>;
-    }
-    BufferedReader br = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> StringReader(template));
-
-    <span class="built_in">String</span> decoratorSource = <span class="string">""</span>;
-    <span class="built_in">String</span> s;
-    <span class="keyword">while</span> ((s = br.readLine()) != <span class="keyword">null</span>) {
-      decoratorSource = decoratorSource + getIndent(s) + GeneralUtil.htmlEncode(s) + <span class="string">"&lt;br/&gt;"</span>;
-    }
-    setContent(linkIncludes(decoratorSource));
-
-    <span class="keyword">return</span> <span class="string">"success"</span>;
-  }
-</code></pre><p>跟进readDefaultTemplate方法：</p>
-<pre><code><span class="keyword">public</span> <span class="keyword">abstract</span> class AbstractDecoratorAction
-  extends AbstractLookAndFeelAction
-{
-  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Logger <span class="built_in">log</span> = LoggerFactory.getLogger(AbstractDecoratorAction.class);
-  <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> KLUDGE_WWRESOURCE_TEMPLATE = <span class="string">"decorators/wwloader.vmd"</span>;
-  <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> KLUDGE_CLASSPATH_TEMPLATE = <span class="string">"com/atlassian/confluence/cploader.vm"</span>;
-  <span class="keyword">String</span> content;
-  <span class="keyword">protected</span> <span class="keyword">String</span> decoratorName;
-
-  <span class="keyword">protected</span> <span class="keyword">String</span> readDefaultTemplate()
-  {
-    <span class="keyword">String</span> templateSource = getTemplateFromResourceLoader(<span class="string">"decorators/wwloader.vmd"</span>, decoratorName);
-    <span class="keyword">if</span> (templateSource == <span class="keyword">null</span>) {
-      templateSource = getTemplateFromResourceLoader(<span class="string">"com/atlassian/confluence/cploader.vm"</span>, decoratorName);
-    }
-    <span class="keyword">if</span> (templateSource == <span class="keyword">null</span>) {
-      <span class="built_in">log</span>.warn(<span class="string">"Couldn't load default template source for "</span> + decoratorName);
-    }
-    <span class="keyword">return</span> templateSource;
-  }
-
-  <span class="keyword">protected</span> <span class="keyword">String</span> getTemplateFromResourceLoader(<span class="keyword">String</span> knownTemplatePath, <span class="keyword">String</span> templateToRetrieve)
-  {
-    <span class="keyword">if</span> ((!<span class="string">""</span>.equals(decoratorName)) &amp;&amp; (isUnderConfluenceApp(ServletContextThreadLocal.getRequest(), decoratorName)) &amp;&amp; (
-      (decoratorName.endsWith(<span class="string">".vm"</span>)) || (decoratorName.endsWith(<span class="string">".vmd"</span>)))) {
-      <span class="keyword">try</span>
-      {
-        Template t = VelocityManager.getInstance().getVelocityEngine().getTemplate(knownTemplatePath);
-        <span class="keyword">return</span> getTemplateSource(templateToRetrieve, t.getResourceLoader(), t.getEncoding());
-      }
-      <span class="keyword">catch</span> (Exception e)
-      {
-        <span class="keyword">return</span> <span class="keyword">null</span>;
-      }
-    }
-    <span class="keyword">return</span> <span class="keyword">null</span>;
-  }
-
-  <span class="keyword">protected</span> <span class="keyword">String</span> getTemplateSource(<span class="keyword">String</span> template, ResourceLoader resourceLoader, <span class="keyword">String</span> encoding)
-  {
-    <span class="keyword">String</span> result = <span class="string">""</span>;
-    InputStream is = <span class="keyword">null</span>;
-    <span class="keyword">try</span>
-    {
-      is = resourceLoader.getResourceStream(template);
-      <span class="keyword">BufferedReader</span> br = <span class="keyword">new</span> <span class="keyword">BufferedReader</span>(<span class="keyword">new</span> InputStreamReader(is, encoding));
-      <span class="keyword">while</span> ((s = br.readLine()) != <span class="keyword">null</span>) {
-        result = result + s + System.getProperty(<span class="string">"line.separator"</span>);
-      }
-      <span class="keyword">return</span> result;
-    }
-    <span class="keyword">catch</span> (Exception e)
-    {
-      <span class="keyword">String</span> s;
-      <span class="built_in">log</span>.warn(<span class="string">"Trouble reading velocity template"</span>, e);
-      <span class="keyword">return</span> <span class="keyword">null</span>;
-    }
-    <span class="keyword">finally</span>
-    {
-      <span class="keyword">if</span> (is != <span class="keyword">null</span>) {
-        <span class="keyword">try</span>
-        {
-          is.close();
-        }
-        <span class="keyword">catch</span> (IOException e)
-        {
-          <span class="built_in">log</span>.warn(<span class="string">"Trouble closing velocity template"</span>, e);
-        }
-      }
-    }
-  }
-</code></pre><p>猜测是框架读取模板文件导致的任意文件读取。反编译最新版的confluence，对比代码。</p>
-<p>可以看到getTemplateFromResourceLoader方法增加了一个条件判断。</p>
-<pre><code><span class="list">(!<span class="string">""</span>.equals<span class="list">(<span class="keyword">decoratorName</span>)</span>)</span> &amp;&amp; <span class="list">(<span class="keyword">isUnderConfluenceApp</span><span class="list">(<span class="keyword">ServletContextThreadLocal</span>.getRequest<span class="list">()</span>, decoratorName)</span>)</span> &amp;&amp; <span class="list">(
-      <span class="list">(<span class="keyword">decoratorName</span>.endsWith<span class="list">(<span class="string">".vm"</span>)</span>)</span> || <span class="list">(<span class="keyword">decoratorName</span>.endsWith<span class="list">(<span class="string">".vmd"</span>)</span>)</span>)</span>
-</code></pre><p>判断decoratorName不能为空，且要以.vm或者.vmd结尾。</p>
-<pre><code><span class="keyword">protected</span> <span class="keyword">String</span> getTemplateFromResourceLoader(<span class="keyword">String</span> knownTemplatePath, <span class="keyword">String</span> templateToRetrieve)
-{
-  <span class="keyword">if</span> ((!<span class="string">""</span>.equals(decoratorName)) &amp;&amp; (isUnderConfluenceApp(ServletContextThreadLocal.getRequest(), decoratorName)) &amp;&amp; (
-    (decoratorName.endsWith(<span class="string">".vm"</span>)) || (decoratorName.endsWith(<span class="string">".vmd"</span>)))) {
-    <span class="keyword">try</span>
-    {
-      Template t = VelocityManager.getInstance().getVelocityEngine().getTemplate(knownTemplatePath);
-      <span class="keyword">return</span> getTemplateSource(templateToRetrieve, t.getResourceLoader(), t.getEncoding());
-    }
-    <span class="keyword">catch</span> (Exception e)
-    {
-      <span class="keyword">return</span> <span class="keyword">null</span>;
-    }
-  }
-  <span class="keyword">return</span> <span class="keyword">null</span>;
-}
-</code></pre><p>在最新版系统系统中新建一个text.vm文件，通过file协议读取，发现可以成功读取。所以confluence是通过文件名结尾这个方式来修复这个任意文件读取漏洞的。如果有file协议阶段的问题，就可能再次导致漏洞。不过目前所知，并没有可以截断的方法。</p>
-<p><img src="/images/confluence8.png" alt=""></p>
-<h2 id="ssrf问题">ssrf问题</h2><p>这个加载模板的方法支持file协议，通过报错信息可以得知，是通过java.net.URI.create来读取文件的。</p>
-<p>尝试其他协议，包括https，ftp协议都是支持的。</p>
-<pre><code><span class="symbol">http:</span>/<span class="regexp">/115.159.160.174:8099/spaces</span><span class="regexp">/viewdefaultdecorator.action?decoratorName=ftp:/</span><span class="regexp">/127.0.0.1:3306/</span>.vm
-</code></pre><p><img src="/images/confluence9.png" alt=""></p>
-<pre><code><span class="symbol">http:</span>/<span class="regexp">/115.159.160.174:8099/spaces</span><span class="regexp">/viewdefaultdecorator.action?decoratorName=https:/</span><span class="regexp">/127.0.0.1:3399/</span>?.vm
-</code></pre><p><img src="/images/confluence10.png" alt=""></p>
-<p>不知道为什么不支持http。不知道是否做了限制。想尝试通过https302到http测试。但是默认需要https证书正确才可以访问。尝试通过在java添加自签名证书失败。</p>
-<h1 id="参考资料">参考资料</h1><p><a href="https://www.exploit-db.com/exploits/39170/" target="_blank" rel="external">https://www.exploit-db.com/exploits/39170/</a><br><a href="http://zone.wooyun.org/content/27104" target="_blank" rel="external">http://zone.wooyun.org/content/27104</a><br><a href="http://www.wooyun.org/bugs/wooyun-2010-0207331" target="_blank" rel="external">http://www.wooyun.org/bugs/wooyun-2010-0207331</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h2 id=&quot;poc&quot;&gt;poc&lt;/h2&gt;&lt;p&gt;&lt;a href=&quot;https://www.exploit-db.com/exploits/39170/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;exploit-db&lt;/a&gt;中提供了poc，可以读取conflu
-    
-    </summary>
-    
-      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
-    
-    
-      <category term="java" scheme="http://xdxd.love/tags/java/"/>
     
   </entry>
   
