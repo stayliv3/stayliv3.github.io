@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xdxd.love/"/>
-  <updated>2017-09-06T08:38:06.000Z</updated>
+  <updated>2017-09-07T02:43:36.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -16,11 +16,47 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>S2-052简单测试</title>
+    <link href="http://xdxd.love/2017/09/07/S2-052%E7%AE%80%E5%8D%95%E6%B5%8B%E8%AF%95/"/>
+    <id>http://xdxd.love/2017/09/07/S2-052简单测试/</id>
+    <published>2017-09-07T01:54:50.000Z</published>
+    <updated>2017-09-07T02:43:36.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="漏洞公告">漏洞公告</h2><p><img src="/images/s20521.png" alt=""></p>
+<h2 id="测试环境">测试环境</h2><p>网上公开比较早的是CSDN的这个博客。<a href="https://github.com/jas502n/St2-052" target="_blank" rel="external">不过很快删掉了</a>。由于有快照，网上也出现了很多转载。</p>
+<p>测试环境使用vulhub。直接使用048的测试环境，替换成新的app就可以。docker-compose.yml如下：</p>
+<pre><code><span class="attribute">version</span>: <span class="string">'2'</span>
+<span class="attribute">services</span>:
+ <span class="attribute">struts2</span>:
+   <span class="attribute">image</span>: vulhub/<span class="attribute">struts2</span>:<span class="number">2.3</span>.<span class="number">32</span>-showcase
+   <span class="attribute">volumes</span>:
+    - ./ROOT.<span class="attribute">war</span>:/usr/local/tomcat/webapps/ROOT.war
+   <span class="attribute">ports</span>:
+    - <span class="string">"8080:8080"</span>
+</code></pre><p>测试用的<a href="http://archive.apache.org/dist/struts/2.3.32/struts-2.3.32-apps.zip" target="_blank" rel="external">app用的2.3.32版本</a></p>
+<h2 id="marshalsec">marshalsec</h2><pre><code>java -cp target/marshalsec-<span class="number">0.0</span>.<span class="number">1</span>-SNAPSHOT-all<span class="class">.jar</span> marshalsec<span class="class">.XStream</span>  ImageIO  touch /tmp/ls
+</code></pre><p>使用marshalsec生成测试poc</p>
+<h2 id="参考资料">参考资料</h2><p><a href="http://xxlegend.com/2017/09/06/S2-052%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E5%8F%8A%E5%AE%98%E6%96%B9%E7%BC%93%E8%A7%A3%E6%8E%AA%E6%96%BD%E6%97%A0%E6%95%88%E9%AA%8C%E8%AF%81/" target="_blank" rel="external">S2-052漏洞分析及官方缓解措施无效验证</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;漏洞公告&quot;&gt;漏洞公告&lt;/h2&gt;&lt;p&gt;&lt;img src=&quot;/images/s20521.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h2 id=&quot;测试环境&quot;&gt;测试环境&lt;/h2&gt;&lt;p&gt;网上公开比较早的是CSDN的这个博客。&lt;a href=&quot;https://github.com
+    
+    </summary>
+    
+      <category term="渗透测试" scheme="http://xdxd.love/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
+    
+    
+  </entry>
+  
+  <entry>
     <title>一个简单mips可执行文件分析</title>
     <link href="http://xdxd.love/2017/09/06/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95mips%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E5%88%86%E6%9E%90/"/>
     <id>http://xdxd.love/2017/09/06/一个简单mips可执行文件分析/</id>
     <published>2017-09-06T08:31:04.000Z</published>
-    <updated>2017-09-06T08:38:06.000Z</updated>
+    <updated>2017-09-06T08:58:06.000Z</updated>
     
     <content type="html"><![CDATA[<h2 id="参考资料">参考资料</h2><p><a href="http://bbs.pediy.com/thread-219062.htm" target="_blank" rel="external">[分享]蝶澈的CTF题</a></p>
 <p>之前分析蝶澈的CTF题过程中，学到了一些新东西。一直想记录一下，算是交流和来往。可是等到忘的快差不多了也还是没写。</p>
@@ -32,11 +68,16 @@ diff <span class="number">1.</span>txt <span class="number">2.</span>txt
 <p>看蝶澈的writeup中使用了<a href="https://github.com/bmaia/binwally这个工具做两个目录的文件比较。" target="_blank" rel="external">https://github.com/bmaia/binwally这个工具做两个目录的文件比较。</a></p>
 <h2 id="静态分析：">静态分析：</h2><p>看一下字符串，可以看到不少有价值的字符串。不过看不到中文的字符串。<br><img src="/images/kanxue3.png" alt=""></p>
 <p>直接cat可以看到中文：<br><img src="/images/kanxue4.png" alt=""></p>
-<h2 id="动态调试">动态调试</h2><p>路由器的环境搭建可以参考<a href="http://bbs.pediy.com/thread-212369.htm。通常来说搭建一个mips的调试环境还是需要花费不少时间，踩一些坑的。为了方便分析。我做了一个基于docker的一键测试环境https://github.com/stayliv3/embedded-device-lab" target="_blank" rel="external">http://bbs.pediy.com/thread-212369.htm。通常来说搭建一个mips的调试环境还是需要花费不少时间，踩一些坑的。为了方便分析。我做了一个基于docker的一键测试环境https://github.com/stayliv3/embedded-device-lab</a> 可以直接使用gdb或者ida动态调试。</p>
+<h2 id="动态调试">动态调试</h2><p>路由器的环境搭建可以参考<a href="http://bbs.pediy.com/thread-212369.htm" target="_blank" rel="external">看雪</a>。通常来说搭建一个mips的调试环境还是需要花费不少时间，踩一些坑的。为了方便分析。我做了一个基于docker的一键测试环境<a href="https://github.com/stayliv3/embedded-device-lab" target="_blank" rel="external">embedded-device-lab</a>可以直接使用gdb或者ida动态调试。</p>
 <p>经过简单的尝试，发现应该是需要输入一个密码。如果密码正确，可以获得flag。<br><img src="/images/kanxue5.png" alt=""></p>
 <p>通过getflag。socket等关键字，可以定位到关键函数400310。通过一番调试发现，</p>
-<p>这里：<br>loc_400710:<br>lw      $v1, 0x850+var_830($fp)<br>li      $v0, 1<br>beq     $v1, $v0, loc_40038C<br>nop</p>
-<p>需要v1不等v0才能进入有getflag相关的逻辑。而当我们随便输入密码的时候，v1都是等于v0=1的。所以，在这里把v0修改成其他的值，就可以继续运行到getflag相关的逻辑。<br><img src="/images/kanxue7.png" alt=""></p>
+<p>这里：</p>
+<pre><code>loc_40071<span class="number">0</span>:
+lw      <span class="variable">$v1</span>, <span class="number">0x850</span>+var_83<span class="number">0</span>(<span class="variable">$fp</span>)
+li      <span class="variable">$v0</span>, <span class="number">1</span>
+beq     <span class="variable">$v1</span>, <span class="variable">$v0</span>, loc_40038C
+nop
+</code></pre><p>需要v1不等v0才能进入有getflag相关的逻辑。而当我们随便输入密码的时候，v1都是等于v0=1的。所以，在这里把v0修改成其他的值，就可以继续运行到getflag相关的逻辑。<br><img src="/images/kanxue7.png" alt=""></p>
 <p>其实我也分析过了一下加密的函数，只是没看懂。<br><img src="/images/kanxue6.png" alt=""></p>
 ]]></content>
     
@@ -1248,52 +1289,6 @@ cp $(<span class="built_in">which</span> qemu-mipsel-static) ./qemu
     
     
       <category term="XXE" scheme="http://xdxd.love/tags/XXE/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>安卓分析工具Inspeckage介绍</title>
-    <link href="http://xdxd.love/2016/08/09/%E5%AE%89%E5%8D%93%E5%88%86%E6%9E%90%E8%BE%85%E5%8A%A9%E5%B7%A5%E5%85%B7Inspeckage%E4%BB%8B%E7%BB%8D/"/>
-    <id>http://xdxd.love/2016/08/09/安卓分析辅助工具Inspeckage介绍/</id>
-    <published>2016-08-09T07:12:04.000Z</published>
-    <updated>2016-08-09T08:00:37.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>Inspeckage是一个用来动态分析安卓app的xposed模块。Inspeckage对动态分析很多常用的功能进行了汇总并且内建一个webserver。整个分析操作可以在友好的界面环境中进行。可以参考:<a href="http://repo.xposed.info/module/mobi.acpm.inspeckage" target="_blank" rel="external">Inspeckage - Android Package Inspector</a></p>
-<p>Inspeckage的安装就不赘述了，参考xposed框架的安装以及使用。下面主要介绍一下Inspeckage的功能和使用。</p>
-<p>安装之后，可以在桌面上看到inspeckage的图标。点开之后主界面如下：</p>
-<p><img src="/images/inspeckage3.png" alt=""></p>
-<p>在choose target下拉列表中选择要分析的app，这里以乌云峰会puzzle1中的apk为例进行介绍。然后在电脑的terminal中执行</p>
-<p><code>adb forward tcp:8008 tcp:8008</code></p>
-<p>转发手机的8008端口到本地。在电脑上访问<a href="http://127.0.0.1:8008" target="_blank" rel="external">http://127.0.0.1:8008</a> 就可以看到inspeckage的web界面了。</p>
-<p><img src="/images/inspeckage5.png" alt=""></p>
-<p>如图所示，inspeckage提供了对所分析apk的一些基本信息，提供直接下载apk到电脑，截图手机屏幕等辅助功能，最核心的功能是监控share preferences，加解密函数的使用，http访问等。下面一一分析。</p>
-<p>设置选项中，提供了ssl uncheck，设置代理等。经过测试发现SSL uncheck效果一般。https流量依然很多抓不到。</p>
-<p><img src="/images/inspeckage6.png" alt=""></p>
-<p>使用logcat功能需要先转发端口到本地。<code>adb forward tcp:8887 tcp:8887</code></p>
-<p>点击start，再点connect就可以在网页中实时查看该app的logcat输出。</p>
-<p><img src="/images/inspeckage8.png" alt=""></p>
-<p>Tree view按钮可以实时浏览app的数据目录并直接下载文件到本地。</p>
-<p><img src="/images/inspeckage7.png" alt=""></p>
-<p>wooyun这个puzzle的writeup中是使用smali插桩的方式打印出了aes加密的密钥。</p>
-<p><img src="/images/inspeckage10.png" alt=""></p>
-<p>如果采用inspeckage来分析的话，直接在crypto记录中就可以看到。</p>
-<p><img src="/images/inspeckage11.png" alt=""></p>
-<p>由于这个apk采用的md5方法是写在so中的，所以inspeckage的hash记录中并没有相关的记录。这个可以采用hook自定义函数的方式来解决。<br>反编译apk，找到调用so的方法为getPart2，同理其实也可以手动hookgetPart1。<br><img src="/images/inspeckage12.png" alt=""></p>
-<p>设置好hook的方法后，重启app生效。</p>
-<p><img src="/images/inspeckage13.png" alt=""></p>
-<p>在hook的记录中可以看到getPart2的返回值。Inspeckage在动态分析apk的过程可以快速获得一些信息，节省分析的时间。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;Inspeckage是一个用来动态分析安卓app的xposed模块。Inspeckage对动态分析很多常用的功能进行了汇总并且内建一个webserver。整个分析操作可以在友好的界面环境中进行。可以参考:&lt;a href=&quot;http://repo.xposed.info/mo
-    
-    </summary>
-    
-      <category term="移动安全" scheme="http://xdxd.love/categories/%E7%A7%BB%E5%8A%A8%E5%AE%89%E5%85%A8/"/>
-    
-    
-      <category term="inspeckage" scheme="http://xdxd.love/tags/inspeckage/"/>
     
   </entry>
   

