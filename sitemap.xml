@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://xdxd.love/2015/12/18/%E9%80%9A%E8%BF%87multipart-form-data%E7%BB%95%E8%BF%87waf/</loc>
+    
+    <lastmod>2017-09-07T08:30:37.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://xdxd.love/2016/01/18/mysql%E8%A1%A8%E5%90%8D%E5%A4%A7%E5%B0%8F%E5%86%99%E6%95%8F%E6%84%9F%E9%97%AE%E9%A2%98/</loc>
     
     <lastmod>2017-09-07T08:28:28.000Z</lastmod>
@@ -474,13 +481,6 @@
     <loc>http://xdxd.love/2015/12/23/docker-cheat-sheet/</loc>
     
     <lastmod>2015-12-23T01:51:45.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://xdxd.love/2015/12/18/%E9%80%9A%E8%BF%87multipart-form-data%E7%BB%95%E8%BF%87waf/</loc>
-    
-    <lastmod>2015-12-18T11:02:11.000Z</lastmod>
     
   </url>
   
