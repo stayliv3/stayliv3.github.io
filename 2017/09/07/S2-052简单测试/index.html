@@ -32,7 +32,7 @@ services:
    image: vulhub/struts2:2.3.32-showcase
    volumes:">
 <meta property="og:image" content="http://xdxd.love/images/s20521.png">
-<meta property="og:updated_time" content="2017-09-07T02:43:36.000Z">
+<meta property="og:updated_time" content="2017-09-07T02:51:10.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="S2-052简单测试">
 <meta name="twitter:description" content="漏洞公告
@@ -136,6 +136,7 @@ services:
 </code></pre><p>测试用的<a href="http://archive.apache.org/dist/struts/2.3.32/struts-2.3.32-apps.zip" target="_blank" rel="external">app用的2.3.32版本</a></p>
 <h2 id="marshalsec">marshalsec</h2><pre><code>java -cp target/marshalsec-<span class="number">0.0</span>.<span class="number">1</span>-SNAPSHOT-all<span class="class">.jar</span> marshalsec<span class="class">.XStream</span>  ImageIO  touch /tmp/ls
 </code></pre><p>使用marshalsec生成测试poc</p>
+<p>官方也不是很靠谱，一开始说是影响2.5-2.5.12。结果用2.3.32测试同样存在漏洞。后来官方又修改了公告。影响范围为2.1.2-2.3.33，2.5-2.5.12</p>
 <h2 id="参考资料">参考资料</h2><p><a href="http://xxlegend.com/2017/09/06/S2-052%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E5%8F%8A%E5%AE%98%E6%96%B9%E7%BC%93%E8%A7%A3%E6%8E%AA%E6%96%BD%E6%97%A0%E6%95%88%E9%AA%8C%E8%AF%81/" target="_blank" rel="external">S2-052漏洞分析及官方缓解措施无效验证</a></p>
   
 	</div>
