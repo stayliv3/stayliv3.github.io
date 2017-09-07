@@ -149,13 +149,6 @@
   </url>
   
   <url>
-    <loc>http://xdxd.love/2016/10/09/esp8266%E8%8A%AF%E7%89%87%E7%9B%B8%E5%85%B3/</loc>
-    
-    <lastmod>2016-10-09T09:20:47.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://xdxd.love/2016/03/08/php%E5%AF%B9%E8%B1%A1%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E/</loc>
     
     <lastmod>2016-09-29T08:01:35.000Z</lastmod>
@@ -562,6 +555,13 @@
   </url>
   
   <url>
+    <loc>http://xdxd.love/2015/03/24/phpshe/</loc>
+    
+    <lastmod>2015-11-24T03:27:38.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://xdxd.love/2015/06/18/phpcms%E5%8A%A0%E8%A7%A3%E5%AF%86%E5%8E%86%E5%8F%B2%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/</loc>
     
     <lastmod>2015-11-24T03:27:38.000Z</lastmod>
@@ -576,21 +576,7 @@
   </url>
   
   <url>
-    <loc>http://xdxd.love/2015/05/19/php-multipartform-data-DOS%E6%BC%8F%E6%B4%9E/</loc>
-    
-    <lastmod>2015-11-24T03:27:38.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://xdxd.love/2015/05/27/wdcp%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/</loc>
-    
-    <lastmod>2015-11-24T03:27:38.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://xdxd.love/2015/03/25/maccms/</loc>
     
     <lastmod>2015-11-24T03:27:38.000Z</lastmod>
     
@@ -604,7 +590,21 @@
   </url>
   
   <url>
+    <loc>http://xdxd.love/2015/03/25/maccms/</loc>
+    
+    <lastmod>2015-11-24T03:27:38.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://xdxd.love/2015/03/24/xionghaicms/</loc>
+    
+    <lastmod>2015-11-24T03:27:38.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://xdxd.love/2015/04/27/xkungfoo2015%E8%AE%B0%E5%BD%95/</loc>
     
     <lastmod>2015-11-24T03:27:38.000Z</lastmod>
     
@@ -625,7 +625,7 @@
   </url>
   
   <url>
-    <loc>http://xdxd.love/2015/04/27/xkungfoo2015%E8%AE%B0%E5%BD%95/</loc>
+    <loc>http://xdxd.love/2015/10/20/xss%E5%B7%A5%E5%85%B7sleep-puppy%E6%89%8B%E5%86%8C/</loc>
     
     <lastmod>2015-11-24T03:27:38.000Z</lastmod>
     
@@ -640,13 +640,6 @@
   
   <url>
     <loc>http://xdxd.love/2015/04/14/%E8%AE%BF%E9%97%AE%E6%8E%A7%E5%88%B6/</loc>
-    
-    <lastmod>2015-11-24T03:27:38.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://xdxd.love/2015/10/20/xss%E5%B7%A5%E5%85%B7sleep-puppy%E6%89%8B%E5%86%8C/</loc>
     
     <lastmod>2015-11-24T03:27:38.000Z</lastmod>
     
@@ -709,7 +702,7 @@
   </url>
   
   <url>
-    <loc>http://xdxd.love/2015/03/24/phpshe/</loc>
+    <loc>http://xdxd.love/2015/04/03/refer-xss/</loc>
     
     <lastmod>2015-11-24T03:27:38.000Z</lastmod>
     
@@ -744,7 +737,7 @@
   </url>
   
   <url>
-    <loc>http://xdxd.love/2015/04/03/refer-xss/</loc>
+    <loc>http://xdxd.love/2015/05/19/php-multipartform-data-DOS%E6%BC%8F%E6%B4%9E/</loc>
     
     <lastmod>2015-11-24T03:27:38.000Z</lastmod>
     
