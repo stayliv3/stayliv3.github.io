@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xdxd.love/"/>
-  <updated>2017-09-07T02:51:10.000Z</updated>
+  <updated>2017-09-13T07:43:06.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -14,6 +14,57 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>使用vscode远程调试docker容器内的php应用</title>
+    <link href="http://xdxd.love/2017/09/13/%E4%BD%BF%E7%94%A8vscode%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95docker%E5%AE%B9%E5%99%A8%E5%86%85%E7%9A%84php%E5%BA%94%E7%94%A8/"/>
+    <id>http://xdxd.love/2017/09/13/使用vscode远程调试docker容器内的php应用/</id>
+    <published>2017-09-13T07:14:38.000Z</published>
+    <updated>2017-09-13T07:43:06.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>经常使用docker搭建各种环境进行漏洞测试。如何调试docker内的代码的也成为了一个新需求。使用xdebug插件，可以方便的调试docker内的php应用。</p>
+<h2 id="docker环境安装xdebug">docker环境安装xdebug</h2><p>已经整合成docker-compose环境。可以直接clone <a href="https://github.com/stayliv3/docker-xdebug" target="_blank" rel="external">github.com/stayliv3/docker-xdebug</a>。</p>
+<p>修改xdebug.ini文件内的xdebug.remote_host=172.16.1.203  ip为vscode的机器IP(docker宿主机ip)。</p>
+<h2 id="vscode_配置">vscode 配置</h2><p>vscode安装PHP Debug Adapter for Visual Studio Code。</p>
+<p>配置文件为：</p>
+<pre><code><span class="collection">{
+    <span class="string">"version"</span>: <span class="string">"0.2.0"</span>,
+    <span class="string">"configurations"</span>: <span class="collection">[
+
+        <span class="collection">{
+            <span class="string">"name"</span>: <span class="string">"Listen for XDebug"</span>,
+            <span class="string">"type"</span>: <span class="string">"php"</span>,
+            <span class="string">"request"</span>: <span class="string">"launch"</span>,
+            <span class="string">"port"</span>: <span class="number">9000</span>,
+            // <span class="string">"stopOnEntry"</span>: <span class="number">1</span>, 运行开始断点，用于调试。
+            <span class="string">"serverSourceRoot"</span>: <span class="string">"/var/www/html/"</span>,
+            <span class="string">"localSourceRoot"</span>: <span class="string">"/Users/xxxxx/security/coding/xdebug-docker/app"</span>
+        }</span>,
+        <span class="collection">{
+            <span class="string">"name"</span>: <span class="string">"Launch currently open script"</span>,
+            <span class="string">"type"</span>: <span class="string">"php"</span>,
+            <span class="string">"request"</span>: <span class="string">"launch"</span>,
+            <span class="string">"program"</span>: <span class="string">"${file}"</span>,
+            <span class="string">"cwd"</span>: <span class="string">"${fileDirname}"</span>,
+            <span class="string">"port"</span>: <span class="number">9000</span>
+        }</span>
+    ]</span>
+}</span>
+</code></pre><p>主要是配置serverSourceRoot和localSourceRoot两个路径。localSourceRoot为vscode看到的php文件路径。然后就可以设置断点，使用vscode进行调试了。</p>
+<p><img src="/images/dockerdebug1.png" alt=""></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;经常使用docker搭建各种环境进行漏洞测试。如何调试docker内的代码的也成为了一个新需求。使用xdebug插件，可以方便的调试docker内的php应用。&lt;/p&gt;
+&lt;h2 id=&quot;docker环境安装xdebug&quot;&gt;docker环境安装xdebug&lt;/h2&gt;&lt;p&gt;已经
+    
+    </summary>
+    
+      <category term="cve and others" scheme="http://xdxd.love/categories/cve-and-others/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>S2-052简单测试</title>
@@ -1269,52 +1320,6 @@ cp $(<span class="built_in">which</span> qemu-mipsel-static) ./qemu
     
     
       <category term="XXE" scheme="http://xdxd.love/tags/XXE/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>安卓分析工具Inspeckage介绍</title>
-    <link href="http://xdxd.love/2016/08/09/%E5%AE%89%E5%8D%93%E5%88%86%E6%9E%90%E8%BE%85%E5%8A%A9%E5%B7%A5%E5%85%B7Inspeckage%E4%BB%8B%E7%BB%8D/"/>
-    <id>http://xdxd.love/2016/08/09/安卓分析辅助工具Inspeckage介绍/</id>
-    <published>2016-08-09T07:12:04.000Z</published>
-    <updated>2016-08-09T08:00:37.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>Inspeckage是一个用来动态分析安卓app的xposed模块。Inspeckage对动态分析很多常用的功能进行了汇总并且内建一个webserver。整个分析操作可以在友好的界面环境中进行。可以参考:<a href="http://repo.xposed.info/module/mobi.acpm.inspeckage" target="_blank" rel="external">Inspeckage - Android Package Inspector</a></p>
-<p>Inspeckage的安装就不赘述了，参考xposed框架的安装以及使用。下面主要介绍一下Inspeckage的功能和使用。</p>
-<p>安装之后，可以在桌面上看到inspeckage的图标。点开之后主界面如下：</p>
-<p><img src="/images/inspeckage3.png" alt=""></p>
-<p>在choose target下拉列表中选择要分析的app，这里以乌云峰会puzzle1中的apk为例进行介绍。然后在电脑的terminal中执行</p>
-<p><code>adb forward tcp:8008 tcp:8008</code></p>
-<p>转发手机的8008端口到本地。在电脑上访问<a href="http://127.0.0.1:8008" target="_blank" rel="external">http://127.0.0.1:8008</a> 就可以看到inspeckage的web界面了。</p>
-<p><img src="/images/inspeckage5.png" alt=""></p>
-<p>如图所示，inspeckage提供了对所分析apk的一些基本信息，提供直接下载apk到电脑，截图手机屏幕等辅助功能，最核心的功能是监控share preferences，加解密函数的使用，http访问等。下面一一分析。</p>
-<p>设置选项中，提供了ssl uncheck，设置代理等。经过测试发现SSL uncheck效果一般。https流量依然很多抓不到。</p>
-<p><img src="/images/inspeckage6.png" alt=""></p>
-<p>使用logcat功能需要先转发端口到本地。<code>adb forward tcp:8887 tcp:8887</code></p>
-<p>点击start，再点connect就可以在网页中实时查看该app的logcat输出。</p>
-<p><img src="/images/inspeckage8.png" alt=""></p>
-<p>Tree view按钮可以实时浏览app的数据目录并直接下载文件到本地。</p>
-<p><img src="/images/inspeckage7.png" alt=""></p>
-<p>wooyun这个puzzle的writeup中是使用smali插桩的方式打印出了aes加密的密钥。</p>
-<p><img src="/images/inspeckage10.png" alt=""></p>
-<p>如果采用inspeckage来分析的话，直接在crypto记录中就可以看到。</p>
-<p><img src="/images/inspeckage11.png" alt=""></p>
-<p>由于这个apk采用的md5方法是写在so中的，所以inspeckage的hash记录中并没有相关的记录。这个可以采用hook自定义函数的方式来解决。<br>反编译apk，找到调用so的方法为getPart2，同理其实也可以手动hookgetPart1。<br><img src="/images/inspeckage12.png" alt=""></p>
-<p>设置好hook的方法后，重启app生效。</p>
-<p><img src="/images/inspeckage13.png" alt=""></p>
-<p>在hook的记录中可以看到getPart2的返回值。Inspeckage在动态分析apk的过程可以快速获得一些信息，节省分析的时间。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;Inspeckage是一个用来动态分析安卓app的xposed模块。Inspeckage对动态分析很多常用的功能进行了汇总并且内建一个webserver。整个分析操作可以在友好的界面环境中进行。可以参考:&lt;a href=&quot;http://repo.xposed.info/mo
-    
-    </summary>
-    
-      <category term="移动安全" scheme="http://xdxd.love/categories/%E7%A7%BB%E5%8A%A8%E5%AE%89%E5%85%A8/"/>
-    
-    
-      <category term="inspeckage" scheme="http://xdxd.love/tags/inspeckage/"/>
     
   </entry>
   
