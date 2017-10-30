@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xdxd.love/"/>
-  <updated>2017-10-30T03:23:03.000Z</updated>
+  <updated>2017-10-30T03:23:23.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -16,11 +16,11 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>netgear WNR2200的一个heap overflow漏洞利用</title>
+    <title>【翻译】netgear WNR2200的一个heap overflow漏洞利用</title>
     <link href="http://xdxd.love/2017/10/16/netgear-WNR2200%E7%9A%84%E4%B8%80%E4%B8%AAheap-overflow%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/"/>
     <id>http://xdxd.love/2017/10/16/netgear-WNR2200的一个heap-overflow漏洞利用/</id>
     <published>2017-10-16T10:20:17.000Z</published>
-    <updated>2017-10-30T03:23:03.000Z</updated>
+    <updated>2017-10-30T03:23:23.000Z</updated>
     
     <content type="html"><![CDATA[<p>软件漏洞和对应的利用程序现在已经非常常见了。幸运的是近几年对于漏洞的响应速度和补丁的更新时间也有了显著提高。但是在嵌入式设备的领域，由于固件升级需要用户下载一个新的固件包，然后升级设备才能解决存在的问题，所以嵌入式设备通常都是使用了比较老的操作系统和软件，没有及时更新到安全的新版本。</p>
 <p>但是由于嵌入式设备为了省电的原因通常都是使用RISC架构的CPU，比如ARM和MIPS。而目前的大部分exploit都是针对X86的，针对RISC的POC相对较少也导致嵌入式设备的安全没有得到足够的重视。</p>
