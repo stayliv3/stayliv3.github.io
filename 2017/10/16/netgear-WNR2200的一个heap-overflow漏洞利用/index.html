@@ -1,0 +1,732 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>netgear WNR2200的一个heap overflow漏洞利用 | xd_xd&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="xd_xd">
+    
+
+    
+    <meta name="description" content="软件漏洞和对应的利用程序现在已经非常常见了。幸运的是近几年对于漏洞的响应速度和补丁的更新时间也有了显著提高。但是在嵌入式设备的领域，由于固件升级需要用户下载一个新的固件包，然后升级设备才能解决存在的问题，所以嵌入式设备通常都是使用了比较老的操作系统和软件，没有及时更新到安全的新版本。
+但是由于嵌入式设备为了省电的原因通常都是使用RISC架构的CPU，比如ARM和MIPS。而目前的大部分exploi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="netgear WNR2200的一个heap overflow漏洞利用">
+<meta property="og:url" content="http://xdxd.love/2017/10/16/netgear-WNR2200的一个heap-overflow漏洞利用/index.html">
+<meta property="og:site_name" content="xd_xd's blog">
+<meta property="og:description" content="软件漏洞和对应的利用程序现在已经非常常见了。幸运的是近几年对于漏洞的响应速度和补丁的更新时间也有了显著提高。但是在嵌入式设备的领域，由于固件升级需要用户下载一个新的固件包，然后升级设备才能解决存在的问题，所以嵌入式设备通常都是使用了比较老的操作系统和软件，没有及时更新到安全的新版本。
+但是由于嵌入式设备为了省电的原因通常都是使用RISC架构的CPU，比如ARM和MIPS。而目前的大部分exploi">
+<meta property="og:image" content="http://xdxd.love/images/netgearsamba1.jpg">
+<meta property="og:image" content="http://xdxd.love/images/netgearsamba2.jpg">
+<meta property="og:image" content="http://xdxd.love/images/netgearsamba3.jpg">
+<meta property="og:image" content="http://xdxd.love/images/netgearsamba4.jpg">
+<meta property="og:image" content="http://xdxd.love/images/netgearsamba5.jpg">
+<meta property="og:image" content="http://xdxd.love/images/netgearsamba6.jpg">
+<meta property="og:image" content="http://xdxd.love/images/netgearsamba7.jpg">
+<meta property="og:image" content="http://xdxd.love/images/netgearsamba8.jpg">
+<meta property="og:image" content="http://xdxd.love/images/netgearsamba9.jpg">
+<meta property="og:image" content="http://xdxd.love/images/netgearsamba10.jpg">
+<meta property="og:image" content="http://xdxd.love/images/netgearsamba11.jpg">
+<meta property="og:image" content="http://xdxd.love/images/netgearsamba12.jpg">
+<meta property="og:updated_time" content="2017-10-30T03:16:09.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="netgear WNR2200的一个heap overflow漏洞利用">
+<meta name="twitter:description" content="软件漏洞和对应的利用程序现在已经非常常见了。幸运的是近几年对于漏洞的响应速度和补丁的更新时间也有了显著提高。但是在嵌入式设备的领域，由于固件升级需要用户下载一个新的固件包，然后升级设备才能解决存在的问题，所以嵌入式设备通常都是使用了比较老的操作系统和软件，没有及时更新到安全的新版本。
+但是由于嵌入式设备为了省电的原因通常都是使用RISC架构的CPU，比如ARM和MIPS。而目前的大部分exploi">
+
+    
+    <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="xd_xd&#39;s blog" title="xd_xd&#39;s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="xd_xd&#39;s blog">xd_xd&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜單">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:xdxd.love">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/10/16/netgear-WNR2200的一个heap-overflow漏洞利用/" title="netgear WNR2200的一个heap overflow漏洞利用" itemprop="url">netgear WNR2200的一个heap overflow漏洞利用</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
+		
+  <p class="article-time">
+    <time datetime="2017-10-16T10:20:17.000Z" itemprop="datePublished"> 發表於 Oct 16 2017</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目錄</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#固件分析"><span class="toc-number">1.</span> <span class="toc-text">固件分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#虚拟机运行samba进程"><span class="toc-number">2.</span> <span class="toc-text">虚拟机运行samba进程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#寻找漏洞"><span class="toc-number">3.</span> <span class="toc-text">寻找漏洞</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#动态调试"><span class="toc-number">4.</span> <span class="toc-text">动态调试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#修改x86的利用程序"><span class="toc-number">5.</span> <span class="toc-text">修改x86的利用程序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#调试exploit"><span class="toc-number">6.</span> <span class="toc-text">调试exploit</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#重定向执行流程"><span class="toc-number">7.</span> <span class="toc-text">重定向执行流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#备注"><span class="toc-number">8.</span> <span class="toc-text">备注</span></a></li></ol>
+		
+		</div>
+		
+		<p>软件漏洞和对应的利用程序现在已经非常常见了。幸运的是近几年对于漏洞的响应速度和补丁的更新时间也有了显著提高。但是在嵌入式设备的领域，由于固件升级需要用户下载一个新的固件包，然后升级设备才能解决存在的问题，所以嵌入式设备通常都是使用了比较老的操作系统和软件，没有及时更新到安全的新版本。</p>
+<p>但是由于嵌入式设备为了省电的原因通常都是使用RISC架构的CPU，比如ARM和MIPS。而目前的大部分exploit都是针对X86的，针对RISC的POC相对较少也导致嵌入式设备的安全没有得到足够的重视。</p>
+<p>本篇博客介绍将一个已知的x86的exploit修改成适用于mips架构的过程。分析对象为netgear WNR2200路由器。</p>
+<h2 id="固件分析">固件分析</h2><p>为了寻找合适的exploit，需要先对固件进行分析。从网上可以下载到<br> (version 1.0.1.96) 版本的固件，解压之后发现是个img后缀的文件。使用binwalk进行分析如下：</p>
+<pre><code>DECIMAL       HEXADECIMAL     DESCRIPTION
+--------------------------------------------------------------------------------
+<span class="number">192</span>           <span class="number">0xC0</span>            Squashfs filesystem, big endian,
+version <span class="number">3.0</span>, size: <span class="number">6033818</span> bytes,{jump-to-offset:<span class="number">6033818</span>}{file-size:<span class="number">6033818</span>}
+<span class="number">1379</span> inodes, blocksize: <span class="number">65536</span> bytes, created: Thu Mar <span class="number">26</span> <span class="number">03</span>:<span class="number">33</span>:<span class="number">52</span> <span class="number">2015</span>
+<span class="number">336044</span>        <span class="number">0x520AC</span>         LZMA compressed data, properties:
+<span class="number">0x5D</span>, dictionary size: <span class="number">8388608</span> bytes, uncompressed size: <span class="number">2740358</span> bytes
+</code></pre><p>根据分析结果，binwalk识别出在这个文件中包含一个squashFS格式的文件系统。使用unsquashfs工具进行分析。命令为<br>“unsquashfs –s”</p>
+<pre><code>Reading a different endian SQUASHFS filesystem <span class="function_start"><span class="keyword">on</span></span> C0.squashfs
+Found a valid big endian SQUASHFS <span class="number">3</span>:<span class="number">0</span> superblock <span class="function_start"><span class="keyword">on</span></span> C0.squashfs.
+Creation <span class="keyword">or</span> <span class="keyword">last</span> append <span class="property">time</span> Thu Mar <span class="number">26</span> <span class="number">03</span>:<span class="number">33</span>:<span class="number">52</span> <span class="number">2015</span>
+Filesystem size <span class="number">5892.40</span> Kbytes (<span class="number">5.75</span> Mbytes)
+Block size <span class="number">65536</span>
+Filesystem <span class="keyword">is</span> <span class="keyword">not</span> exportable via NFS
+Inodes are compressed
+Data <span class="keyword">is</span> compressed
+Fragments are compressed
+Always_use_fragments option <span class="keyword">is</span> <span class="keyword">not</span> specified
+Check data <span class="keyword">is</span> <span class="keyword">not</span> present <span class="keyword">in</span> <span class="keyword">the</span> filesystem
+Duplicates are removed
+Number <span class="keyword">of</span> fragments <span class="number">101</span>
+Number <span class="keyword">of</span> inodes <span class="number">1379</span>
+Number <span class="keyword">of</span> uids <span class="number">1</span>
+Number <span class="keyword">of</span> gids <span class="number">0</span>
+</code></pre><p>这也确认了固件文件中确实存在一个有效的SquashFS格式的文件系统。然后尝试进行解压，程序报错。</p>
+<pre><code>Reading a different endian SQUASHFS filesystem <span class="keyword">on</span> C0.squashfs
+<span class="keyword">Parallel</span> unsquashfs: <span class="keyword">Using</span> <span class="number">8</span> processors
+gzip uncompress failed <span class="keyword">with</span> error code -<span class="number">3</span>
+read_block: failed <span class="keyword">to</span> <span class="keyword">read</span> <span class="keyword">block</span> @<span class="number">0</span>x5c0f6d
+read_fragment_table: failed <span class="keyword">to</span> <span class="keyword">read</span> fragment table <span class="keyword">block</span>
+FATAL ERROR:failed <span class="keyword">to</span> <span class="keyword">read</span> fragment table
+</code></pre><p>通过对这个错误信息进行调查分析，得知可能是使用了非标准的squashfs进行的压缩。我下载了最新版的SquashFS工具，重新进行编译。但是还是解压失败。更进一步的分析发现Firmware Mod Kit这个工具可能可以解压这个固件，虽然FMK这个工具好久不更新了。最后使用FMK的unsquashfs_all脚本，成功解压了固件。程序识别出，固件使用的squashfs版本为”./src/squashfs-3.0/mksquashfs-lzma”。</p>
+<p>解压之后发现是一个基于OpenWRT的linux系统。老的Netgear路由器通过发送一个特定的包可以打开telent，具体的<a href="https://wiki.openwrt.org/toh/netgear/telnet.console" target="_blank" rel="external">技术分析参考</a>。连上telnet之后可以获得OpenWRT的版本为Kamikaze。</p>
+<pre><code>BusyBox v1.4.2 (2013-12-23 15:48:24 CST) Built-in shell (ash)
+Enter 'help' for a list of built-in commands.
+
+ _______                     ________        __ 
+|<span class="string">       </span>|<span class="string">.-----.-----.-----.</span>|<span class="string">  </span>|<span class="string">  </span>|<span class="string">  </span>|<span class="string">.----.</span>|<span class="string">  </span>|<span class="string">_ 
+</span>|<span class="string">   -   </span>||<span class="string">  _  </span>|<span class="string">  -__</span>|<span class="string">     </span>||<span class="string">  </span>|<span class="string">  </span>|<span class="string">  </span>||<span class="string">   _</span>||<span class="string">   _</span>|<span class="string"> 
+</span>|<span class="string">_______</span>||<span class="string">   __</span>|<span class="string">_____</span>|<span class="string">__</span>|<span class="string">__</span>||<span class="string">________</span>||<span class="string">__</span>|<span class="string">  </span>|<span class="string">____</span>|
+         |<span class="string">__</span>|<span class="string"> W I R E L E S S   F R E E D O M
+KAMIKAZE (7.09)
+-----------------------------------
+ - 10 oz Vodka       Shake well with ice and strain
+ - 10 oz Triple sec  mixture into 10 shot glasses.
+ - 10 oz lime juice  Salute!
+---------------------------------------------------
+root@WNR2200:/#</span>
+</code></pre><p>其他的版本信息<br><img src="/images/netgearsamba1.jpg" alt=""></p>
+<p>很幸运，samba和linux kernel的版本都很低，更容易找到相对应的漏洞利用。</p>
+<h2 id="虚拟机运行samba进程">虚拟机运行samba进程</h2><p>现在我们有了整个解压之后的虚拟机固件，第一步是想在qemu虚拟机中运行起来，当然我们选择只是虚拟运行samba进程。</p>
+<p>首先需要安装qemu-static相关的程序。然后把“qemu-mips-static”复制到固件的根目录，之后使用chroot切换到固件的根目录执行。命令如下：</p>
+<pre><code>“sudo chroot . ./qemu-mips-<span class="keyword">static</span> -g <span class="number">5656</span> ./usr/sbin/smbd -i -d <span class="number">10</span> &gt; fileout.txt”
+</code></pre><p>具体解释一下这个命令：</p>
+<p>1，chroot到固件的目录下，这样samba就可以认为固件目录是文件根目录。可以加载相关的lib库文件。</p>
+<p>2，使用qemu虚拟运行samba。g参数是开启gdb调试，监听在5656端口。</p>
+<p>3，d参数是设置调试模式为最高10。这样可以输出更多的调试信息。</p>
+<p>4，重定向输出信息到文件里，方便后期查看。</p>
+<p>运行这个文件的时候，会遇到一些问题。提示samba找不到smb.conf文件。在正常运行的路由器里查看，在/tmp目录有一些配置文件，但是在解压出来的固件里这个目录是空白的。可见这些文件是系统启动的时候，动态创建的。所以我们需要手动创建这些缺失的文件。</p>
+<p>主要涉及到以下文件：</p>
+<p>/etc/init.d/samba  这个文件会动态创建所需要的目录，复制配置到/tmp目录。然后执行下面的2个程序。</p>
+<p>/usr/sbin/update_user 一个bash脚本。在/tmp/passwd文件中写入用户信息。</p>
+<p>/usr/sbin/update_smb 一个二进制文件。更新tmp目录下的smb.conf配置信息。</p>
+<p>bash脚本中的命令，可以手动一条条的执行。二进制文件使用 qemu-mips-static 模拟执行。最后检查/etc/目录中的相关软链接是否正确指向到了正确的文件。这时最开始的命令就可以正确执行了。</p>
+<h2 id="寻找漏洞">寻找漏洞</h2><p>对应的samba版本的源代码可以在这里<a href="https://download.samba.org/pub/samba/stable/" target="_blank" rel="external">下载</a> 。通过查找对应版本存在的CVE发现一个典型的堆溢出漏洞。这个数据中有一个数值用来分配缓冲区，然后程序利用第二个数值来解组数据，写进缓冲区。如果第一个数值小于第二个数值就会导致堆溢出漏洞。</p>
+<p>这个漏洞的编号是CVE-2007-2446。samba使用一个自定义的堆分配器talloc。talloc使用树形结构分配内存。在树形结构的任何一个节点都可以释放这个和他的子节点。为了实现这个特性，talloc实现了一个自定义的释放程序，他的指针保存在堆的元数据上，可以通过溢出覆盖。当一个chunk被释放的时候，通过覆盖堆的元数据可以实现任意代码执行。</p>
+<p>已经有个x86的<a href="https://www.exploit-db.com/exploits/16875/" target="_blank" rel="external">metasploit利用模块</a>。这会对我们想在MIPS目标上实现漏洞利用有比较大的帮助。</p>
+<h2 id="动态调试">动态调试</h2><p>现在我们已经已经可以用qemu虚拟机运行samba程序。使用IDA加载samba二进制文件，然后使用debugger模块可以进行远程调试。</p>
+<p>一开始调试我们就遇到了一个问题。IDA直接展示了进程的整个内存空间的扁平视图，但是IDA并没有正确识别出我们的二进制文件中的起始位置。这导致在内存视图中所有的符号都没有关联到正确的位置，甚至IDA都无法识别哪些区域是数据哪些区域是代码。在这样的环境中调试是比较困难的，因为我们无法再感兴趣的函数上断点，也无法知道当前运行的是哪个函数。下图展示了IDA加载了进程之后的内存布局<br><img src="/images/netgearsamba2.jpg" alt=""></p>
+<p>我一开始推测IDA停在的这个初始的点是在smbd的二进制程序中。但是通过比较smbd的main函数和二进制文件的入口点发现都不是。在这个断点处选取一些指令进行搜索，在smbd中却没有找到对应的结果。这让我觉得这段代码可能并不在smbd中。</p>
+<p>为了定位这个函数，我向后寻找到最近的一个页边界。获得了一些有用的信息。</p>
+<p>模块页边界 地址0x76436000<br><img src="/images/netgearsamba3.jpg" alt=""></p>
+<p>从上图可以看到ELF这个魔术值。通过分析头上的指令可以知道这是ld-uClibc.so.0中的代码。通过readelf分析smbd可以确定ld-uClibc.so.0是smbd的动态加载器。</p>
+<p>分析uClibc的代码发现这里可能是uClibc/ldso/ldso/mips/dl-startup.h相关的函数。函数中的最后一个跳转指令是跳到真正的二进制文件的入口点。单步调试跟踪到该跳转指令然后进入跳转，会让我们来到如下的代码处。<br><img src="/images/netgearsamba4.jpg" alt=""></p>
+<p>0x76CB76C0 处的代码看起来很像是二进制程序的入口点。__uClibc_main的调用指令也印证了这一点。</p>
+<p>我在IDA的反汇编里查找了一下__uClibc_main的交叉引用，结果有好几个。其中一个是上图中的函数。这个函数在二进制文件中的偏移是0x0003B6C0。使用内存中的地址0x76CB76C0减去二进制文件中的地址，得到在内存中的基址是0x76C7C000。然后使用IDA的rabase功能，填入正确的基址。这样调试的时候就可以看到正确的符号和函数名。</p>
+<p><img src="/images/netgearsamba5.jpg" alt=""></p>
+<h2 id="修改x86的利用程序">修改x86的利用程序</h2><p>首先需要修改的是获得一个针对mips的nop sled。因为内存布局不是百分百可以预测的，所有利用程序使用了nop sled技术来提高利用的成功率。所谓nop sled就是一堆什么都不做的处理器指令。它不会改变程序的状态。所以我们把一大段这种指令放在内存中，从这段指令的任何一个位置开始执行，都可以正常执行到我们真正的payload指令。这样可以提高成功率。</p>
+<p>在MIPS汇编语言中，最基本的nop指令就是0x00000000，对应的汇编语言为“sll $0, 0”。一共大概有接近170个MIPS指令可以作为没有副作用的NOP指令。</p>
+<p>如下图所示：</p>
+<p><img src="/images/netgearsamba6.jpg" alt=""></p>
+<h2 id="调试exploit">调试exploit</h2><p>本来也没有预期一次可以成功，第一次运行的时候在talloc_chunk_from_ptr函数中抛出了异常。<br><img src="/images/netgearsamba7.jpg" alt=""></p>
+<p>talloc_chunk_from_ptr函数的作用是传入内存地址，给出相应的chunk的header和metadata。此外它还会验证元数据中的魔术数字是否是有效的和当前内存是否已经释放。异常出现在图中标识的代码上方，当从$a0寄存器的某个偏移处加载数据时异常。在MIPS架构中，$a0寄存器用来传递函数的第一个参数。查看一下寄存器的值可以看到，$a0的值是0x41414141。漏洞利用程序覆盖了一个chunk 的header。导致一些header中一些重要的值(魔术字和一些重要的指针)。</p>
+<p><img src="/images/netgearsamba8.jpg" alt=""></p>
+<p>所以初步假设元数据中的几个指针(前一个chunk,后一个chunk，父节点和子节点)被覆盖成了不正确的值。检查exploit的代码发现只有next和prev两个指针被设置成了0x41414141。为了进一步确认我们的猜想，可以看一下crash时候的调用栈。</p>
+<p><img src="/images/netgearsamba9.jpg" alt=""></p>
+<p>在crash之前，talloc_total_size被调用。分析一下这个函数的代码可以证实我们的猜测。</p>
+<p><img src="/images/netgearsamba10.jpg" alt=""></p>
+<p>上图展示了talloc_total_size函数的源码。用来计算内存分配树某个特定分支的大小。这个函数是递归的，并在每次迭代时会调用talloc_chunk_from_prt函数(发生崩溃的函数)，参数是链表的指针。图中高亮的代码“c=c-&gt;next”就是那个错误的值进入了talloc_total_size函数，最终进入talloc_chunk_from_prt的根源。</p>
+<p>修复这个崩溃相对来说也比较简单。只要我们将覆盖头文件的next和prev指针的值修改为0x00000000,talloc_total_size中的循环将会提前终止，我们的指针就不会进入到后面的处理函数。</p>
+<p>修改这个点之后，exploit就成功运行了。程序计数器成功被我们的标记值覆盖。</p>
+<h2 id="重定向执行流程">重定向执行流程</h2><p>现有的exploit通过发送一个特定的SMB请求，在内存中创建一个巨大的nop sled。当这个缓冲区被解组的时候，会分配另一个缓冲区并写入数据溢出。溢出的talloc头部有一个函数指针被覆盖指向了原始缓冲区(nop sled位置)。由于堆内存的布局并不是百分百确定的，所以可以尝试暴力猜测，根据堆内存可能的位置每次每次使用不一样的控制指针。如果尝试失败，进程实例会被结束。因为samba是为每个进入的连接创建一个进程来处理，所以一个实例被杀掉是可以接受的。</p>
+<p>除了暴力尝试猜测堆地址，我们尝试找到一个更可控的方式来控制执行流程。MIPS比x86架构有更多的寄存器，所以当获得执行权限的时候，其中更可能存在一些可预测的和有利用价值的值。可能存在实现ROP利用的机会，而ROP的利用会更加稳定。经过分析，尽管部分寄存器指向堆上可控的数据，但是却是不可利用的。他们指向的是talloc头部被溢出覆盖的区域。因为talloc头部在被写入和执行之间会被修改，所以尝试在这个区域写入shellcode是没法成功的。尝试找一个带偏移的寄存器来绕过这段不稳定的区域但是没有成功，没有找到合适的gadget。</p>
+<p>既然没有找到更稳定的ROP利用，只好回到暴力堆地址的方法上来。在路由器上分析smbd的进程内存布局发现所有的实例的内存布局都是相同的，即使系统重新启动。这表明内核没有开启ASLR，内存布局都是可以预测的。有意思的是通过查看/proc/sys/kernel/randomize_va_space 文件的值为1。这表明内核认为ASLR已经开启了。</p>
+<p>想要找到合适的地址需要先知道堆的边界，通过查看“/proc//maps” 就可以。查看路由器的这个文件显示如图。<br><img src="/images/netgearsamba11.jpg" alt=""></p>
+<p>根据上图中的值，0x558be000到0x55965000可以作为暴力猜测的边界。</p>
+<p>悲伤的是，利用这个边界暴力猜测失败了，metasploit并没有返回session。在qemu模拟系统上进一步调试发现，只要堆的范围正确，exploit是可以成功利用的。虽然不是很清楚为啥失败了，但是通过增加暴力猜测的范围为0x558b0000 -  0x559c0000 ，程序利用成功了。<br><img src="/images/netgearsamba12.jpg" alt=""></p>
+<p>最终在在0x559b4000地址处，exploit成功利用。这个地址是稳定的，而且系统重启也不会发生变化。奇怪的是这个地址是在系统显示的堆的边界以外的。我还没有发现这个问题的根本原因，不过我猜测堆内存在运行过程中范围增加了，但是系统并没有恰当的跟踪好变化后的地址范围。</p>
+<h2 id="备注">备注</h2><p>1，解压固件使用最新版的binwalk已经可以直接解压。docker版binwalk工具：<a href="https://github.com/stayliv3/embedded-device-lab/tree/master/docker-binwalk" target="_blank" rel="external">download</a><br>2，metasploit已经更新了针对mips samba的exploit。可以直接成功利用。<br>3，<a href="https://www.contextis.com/blog/porting-exploits-netgear-wnr2200" target="_blank" rel="external">原文地址：</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/万物互联/">万物互联</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/万物互联/">万物互联</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://xdxd.love/2017/10/16/netgear-WNR2200的一个heap-overflow漏洞利用/" data-title="netgear WNR2200的一个heap overflow漏洞利用 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2017/09/13/使用vscode远程调试docker容器内的php应用/"  title="使用vscode远程调试docker容器内的php应用">
+ <strong>下一篇：</strong><br/> 
+ <span>使用vscode远程调试docker容器内的php应用
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/10/16/netgear-WNR2200的一个heap-overflow漏洞利用/" data-title="netgear WNR2200的一个heap overflow漏洞利用" data-url="http://xdxd.love/2017/10/16/netgear-WNR2200的一个heap-overflow漏洞利用/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="顯示側邊欄"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目錄</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#固件分析"><span class="toc-number">1.</span> <span class="toc-text">固件分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#虚拟机运行samba进程"><span class="toc-number">2.</span> <span class="toc-text">虚拟机运行samba进程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#寻找漏洞"><span class="toc-number">3.</span> <span class="toc-text">寻找漏洞</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#动态调试"><span class="toc-number">4.</span> <span class="toc-text">动态调试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#修改x86的利用程序"><span class="toc-number">5.</span> <span class="toc-text">修改x86的利用程序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#调试exploit"><span class="toc-number">6.</span> <span class="toc-text">调试exploit</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#重定向执行流程"><span class="toc-number">7.</span> <span class="toc-text">重定向执行流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#备注"><span class="toc-number">8.</span> <span class="toc-text">备注</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隱藏側邊欄"></a></div>
+<aside class="clearfix">
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 訂閱</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">新浪微博</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=5256150165&verifier=0935d97e&dpc=1"></iframe>
+</div>
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分類</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/cve-and-others/" title="cve and others">cve and others<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>10</sup></a></li>
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/人生苦短/" title="人生苦短">人生苦短<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>29</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/前端安全/" title="前端安全">前端安全<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/加密解密/" title="加密解密">加密解密<sup>3</sup></a></li>
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/渗透测试/" title="渗透测试">渗透测试<sup>10</sup></a></li>
+		  
+		
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/黑盒测试/" title="黑盒测试">黑盒测试<sup>8</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">標簽</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/php/" title="php">php<sup>9</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mips/" title="mips">mips<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/支付漏洞/" title="支付漏洞">支付漏洞<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/xss/" title="xss">xss<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/sqlmap/" title="sqlmap">sqlmap<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcpdump/" title="tcpdump">tcpdump<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/密码学/" title="密码学">密码学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/inspeckage/" title="inspeckage">inspeckage<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/csrf/" title="csrf">csrf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/github/" title="github">github<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ctf/" title="ctf">ctf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/xposed/" title="xposed">xposed<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/折腾/" title="折腾">折腾<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/php-wdcp/" title="php,wdcp">php,wdcp<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/XXE/" title="XXE">XXE<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情鏈接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.heysec.org/" target="_blank" title="heysec.org">heysec.org</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://sco4x0.com" target="_blank" title="sco4x0&#39;s blog">sco4x0&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://virusdefender.net" target="_blank" title="virusdefender&#39;s blog">virusdefender&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackersb.cn/" target="_blank" title="Striker&#39;s blog">Striker&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://www.leavesongs.com/" target="_blank" title="离别歌">离别歌</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.stardustsky.net/" target="_blank" title="Stardustsky博客">Stardustsky博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.waitalone.cn/" target="_blank" title="独自等待">独自等待</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.cnblogs.com/S4b0r/" target="_blank" title="S4b0r&#39; blog">S4b0r&#39; blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.leesec.com/" target="_blank" title="leesec">leesec</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://xss1.com/" target="_blank" title="0x_Jin">0x_Jin</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://bl4ck.in/" target="_blank" title="Tomato">Tomato</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackfun.org/" target="_blank" title="4ido10n">4ido10n</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.lynahex.com/" target="_blank" title="lynahex&#39;s blog">lynahex&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.codersec.net/" target="_blank" title="Bsmali4很忙">Bsmali4很忙</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://blog.leanote.com/thorns" target="_blank" title="thorns">thorns</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+</aside>
+</div>
+    </div>
+    <footer></footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"xdxd"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253479891'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1253479891' type='text/javascript'%3E%3C/script%3E"));</script>
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回頂部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
