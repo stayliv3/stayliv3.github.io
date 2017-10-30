@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xdxd.love/"/>
-  <updated>2017-10-30T03:16:09.000Z</updated>
+  <updated>2017-10-30T03:23:03.000Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://xdxd.love/2017/10/16/netgear-WNR2200%E7%9A%84%E4%B8%80%E4%B8%AAheap-overflow%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/"/>
     <id>http://xdxd.love/2017/10/16/netgear-WNR2200的一个heap-overflow漏洞利用/</id>
     <published>2017-10-16T10:20:17.000Z</published>
-    <updated>2017-10-30T03:16:09.000Z</updated>
+    <updated>2017-10-30T03:23:03.000Z</updated>
     
     <content type="html"><![CDATA[<p>软件漏洞和对应的利用程序现在已经非常常见了。幸运的是近几年对于漏洞的响应速度和补丁的更新时间也有了显著提高。但是在嵌入式设备的领域，由于固件升级需要用户下载一个新的固件包，然后升级设备才能解决存在的问题，所以嵌入式设备通常都是使用了比较老的操作系统和软件，没有及时更新到安全的新版本。</p>
 <p>但是由于嵌入式设备为了省电的原因通常都是使用RISC架构的CPU，比如ARM和MIPS。而目前的大部分exploit都是针对X86的，针对RISC的POC相对较少也导致嵌入式设备的安全没有得到足够的重视。</p>
@@ -74,7 +74,7 @@ KAMIKAZE (7.09)
  - 10 oz lime juice  Salute!
 ---------------------------------------------------
 root@WNR2200:/#</span>
-</code></pre><p>其他的版本信息<br><img src="/images/netgearsamba1.jpg" alt=""></p>
+</code></pre><p>其他的版本信息<br><img src="/images/netgearsamba1.png" alt=""></p>
 <p>很幸运，samba和linux kernel的版本都很低，更容易找到相对应的漏洞利用。</p>
 <h2 id="虚拟机运行samba进程">虚拟机运行samba进程</h2><p>现在我们有了整个解压之后的虚拟机固件，第一步是想在qemu虚拟机中运行起来，当然我们选择只是虚拟运行samba进程。</p>
 <p>首先需要安装qemu-static相关的程序。然后把“qemu-mips-static”复制到固件的根目录，之后使用chroot切换到固件的根目录执行。命令如下：</p>
@@ -94,35 +94,35 @@ root@WNR2200:/#</span>
 <p>这个漏洞的编号是CVE-2007-2446。samba使用一个自定义的堆分配器talloc。talloc使用树形结构分配内存。在树形结构的任何一个节点都可以释放这个和他的子节点。为了实现这个特性，talloc实现了一个自定义的释放程序，他的指针保存在堆的元数据上，可以通过溢出覆盖。当一个chunk被释放的时候，通过覆盖堆的元数据可以实现任意代码执行。</p>
 <p>已经有个x86的<a href="https://www.exploit-db.com/exploits/16875/" target="_blank" rel="external">metasploit利用模块</a>。这会对我们想在MIPS目标上实现漏洞利用有比较大的帮助。</p>
 <h2 id="动态调试">动态调试</h2><p>现在我们已经已经可以用qemu虚拟机运行samba程序。使用IDA加载samba二进制文件，然后使用debugger模块可以进行远程调试。</p>
-<p>一开始调试我们就遇到了一个问题。IDA直接展示了进程的整个内存空间的扁平视图，但是IDA并没有正确识别出我们的二进制文件中的起始位置。这导致在内存视图中所有的符号都没有关联到正确的位置，甚至IDA都无法识别哪些区域是数据哪些区域是代码。在这样的环境中调试是比较困难的，因为我们无法再感兴趣的函数上断点，也无法知道当前运行的是哪个函数。下图展示了IDA加载了进程之后的内存布局<br><img src="/images/netgearsamba2.jpg" alt=""></p>
+<p>一开始调试我们就遇到了一个问题。IDA直接展示了进程的整个内存空间的扁平视图，但是IDA并没有正确识别出我们的二进制文件中的起始位置。这导致在内存视图中所有的符号都没有关联到正确的位置，甚至IDA都无法识别哪些区域是数据哪些区域是代码。在这样的环境中调试是比较困难的，因为我们无法再感兴趣的函数上断点，也无法知道当前运行的是哪个函数。下图展示了IDA加载了进程之后的内存布局<br><img src="/images/netgearsamba2.png" alt=""></p>
 <p>我一开始推测IDA停在的这个初始的点是在smbd的二进制程序中。但是通过比较smbd的main函数和二进制文件的入口点发现都不是。在这个断点处选取一些指令进行搜索，在smbd中却没有找到对应的结果。这让我觉得这段代码可能并不在smbd中。</p>
 <p>为了定位这个函数，我向后寻找到最近的一个页边界。获得了一些有用的信息。</p>
-<p>模块页边界 地址0x76436000<br><img src="/images/netgearsamba3.jpg" alt=""></p>
+<p>模块页边界 地址0x76436000<br><img src="/images/netgearsamba3.png" alt=""></p>
 <p>从上图可以看到ELF这个魔术值。通过分析头上的指令可以知道这是ld-uClibc.so.0中的代码。通过readelf分析smbd可以确定ld-uClibc.so.0是smbd的动态加载器。</p>
-<p>分析uClibc的代码发现这里可能是uClibc/ldso/ldso/mips/dl-startup.h相关的函数。函数中的最后一个跳转指令是跳到真正的二进制文件的入口点。单步调试跟踪到该跳转指令然后进入跳转，会让我们来到如下的代码处。<br><img src="/images/netgearsamba4.jpg" alt=""></p>
+<p>分析uClibc的代码发现这里可能是uClibc/ldso/ldso/mips/dl-startup.h相关的函数。函数中的最后一个跳转指令是跳到真正的二进制文件的入口点。单步调试跟踪到该跳转指令然后进入跳转，会让我们来到如下的代码处。<br><img src="/images/netgearsamba4.png" alt=""></p>
 <p>0x76CB76C0 处的代码看起来很像是二进制程序的入口点。__uClibc_main的调用指令也印证了这一点。</p>
 <p>我在IDA的反汇编里查找了一下__uClibc_main的交叉引用，结果有好几个。其中一个是上图中的函数。这个函数在二进制文件中的偏移是0x0003B6C0。使用内存中的地址0x76CB76C0减去二进制文件中的地址，得到在内存中的基址是0x76C7C000。然后使用IDA的rabase功能，填入正确的基址。这样调试的时候就可以看到正确的符号和函数名。</p>
-<p><img src="/images/netgearsamba5.jpg" alt=""></p>
+<p><img src="/images/netgearsamba5.png" alt=""></p>
 <h2 id="修改x86的利用程序">修改x86的利用程序</h2><p>首先需要修改的是获得一个针对mips的nop sled。因为内存布局不是百分百可以预测的，所有利用程序使用了nop sled技术来提高利用的成功率。所谓nop sled就是一堆什么都不做的处理器指令。它不会改变程序的状态。所以我们把一大段这种指令放在内存中，从这段指令的任何一个位置开始执行，都可以正常执行到我们真正的payload指令。这样可以提高成功率。</p>
 <p>在MIPS汇编语言中，最基本的nop指令就是0x00000000，对应的汇编语言为“sll $0, 0”。一共大概有接近170个MIPS指令可以作为没有副作用的NOP指令。</p>
 <p>如下图所示：</p>
-<p><img src="/images/netgearsamba6.jpg" alt=""></p>
-<h2 id="调试exploit">调试exploit</h2><p>本来也没有预期一次可以成功，第一次运行的时候在talloc_chunk_from_ptr函数中抛出了异常。<br><img src="/images/netgearsamba7.jpg" alt=""></p>
+<p><img src="/images/netgearsamba6.png" alt=""></p>
+<h2 id="调试exploit">调试exploit</h2><p>本来也没有预期一次可以成功，第一次运行的时候在talloc_chunk_from_ptr函数中抛出了异常。<br><img src="/images/netgearsamba7.png" alt=""></p>
 <p>talloc_chunk_from_ptr函数的作用是传入内存地址，给出相应的chunk的header和metadata。此外它还会验证元数据中的魔术数字是否是有效的和当前内存是否已经释放。异常出现在图中标识的代码上方，当从$a0寄存器的某个偏移处加载数据时异常。在MIPS架构中，$a0寄存器用来传递函数的第一个参数。查看一下寄存器的值可以看到，$a0的值是0x41414141。漏洞利用程序覆盖了一个chunk 的header。导致一些header中一些重要的值(魔术字和一些重要的指针)。</p>
-<p><img src="/images/netgearsamba8.jpg" alt=""></p>
+<p><img src="/images/netgearsamba8.png" alt=""></p>
 <p>所以初步假设元数据中的几个指针(前一个chunk,后一个chunk，父节点和子节点)被覆盖成了不正确的值。检查exploit的代码发现只有next和prev两个指针被设置成了0x41414141。为了进一步确认我们的猜想，可以看一下crash时候的调用栈。</p>
-<p><img src="/images/netgearsamba9.jpg" alt=""></p>
+<p><img src="/images/netgearsamba9.png" alt=""></p>
 <p>在crash之前，talloc_total_size被调用。分析一下这个函数的代码可以证实我们的猜测。</p>
-<p><img src="/images/netgearsamba10.jpg" alt=""></p>
+<p><img src="/images/netgearsamba10.png" alt=""></p>
 <p>上图展示了talloc_total_size函数的源码。用来计算内存分配树某个特定分支的大小。这个函数是递归的，并在每次迭代时会调用talloc_chunk_from_prt函数(发生崩溃的函数)，参数是链表的指针。图中高亮的代码“c=c-&gt;next”就是那个错误的值进入了talloc_total_size函数，最终进入talloc_chunk_from_prt的根源。</p>
 <p>修复这个崩溃相对来说也比较简单。只要我们将覆盖头文件的next和prev指针的值修改为0x00000000,talloc_total_size中的循环将会提前终止，我们的指针就不会进入到后面的处理函数。</p>
 <p>修改这个点之后，exploit就成功运行了。程序计数器成功被我们的标记值覆盖。</p>
 <h2 id="重定向执行流程">重定向执行流程</h2><p>现有的exploit通过发送一个特定的SMB请求，在内存中创建一个巨大的nop sled。当这个缓冲区被解组的时候，会分配另一个缓冲区并写入数据溢出。溢出的talloc头部有一个函数指针被覆盖指向了原始缓冲区(nop sled位置)。由于堆内存的布局并不是百分百确定的，所以可以尝试暴力猜测，根据堆内存可能的位置每次每次使用不一样的控制指针。如果尝试失败，进程实例会被结束。因为samba是为每个进入的连接创建一个进程来处理，所以一个实例被杀掉是可以接受的。</p>
 <p>除了暴力尝试猜测堆地址，我们尝试找到一个更可控的方式来控制执行流程。MIPS比x86架构有更多的寄存器，所以当获得执行权限的时候，其中更可能存在一些可预测的和有利用价值的值。可能存在实现ROP利用的机会，而ROP的利用会更加稳定。经过分析，尽管部分寄存器指向堆上可控的数据，但是却是不可利用的。他们指向的是talloc头部被溢出覆盖的区域。因为talloc头部在被写入和执行之间会被修改，所以尝试在这个区域写入shellcode是没法成功的。尝试找一个带偏移的寄存器来绕过这段不稳定的区域但是没有成功，没有找到合适的gadget。</p>
 <p>既然没有找到更稳定的ROP利用，只好回到暴力堆地址的方法上来。在路由器上分析smbd的进程内存布局发现所有的实例的内存布局都是相同的，即使系统重新启动。这表明内核没有开启ASLR，内存布局都是可以预测的。有意思的是通过查看/proc/sys/kernel/randomize_va_space 文件的值为1。这表明内核认为ASLR已经开启了。</p>
-<p>想要找到合适的地址需要先知道堆的边界，通过查看“/proc//maps” 就可以。查看路由器的这个文件显示如图。<br><img src="/images/netgearsamba11.jpg" alt=""></p>
+<p>想要找到合适的地址需要先知道堆的边界，通过查看“/proc//maps” 就可以。查看路由器的这个文件显示如图。<br><img src="/images/netgearsamba11.png" alt=""></p>
 <p>根据上图中的值，0x558be000到0x55965000可以作为暴力猜测的边界。</p>
-<p>悲伤的是，利用这个边界暴力猜测失败了，metasploit并没有返回session。在qemu模拟系统上进一步调试发现，只要堆的范围正确，exploit是可以成功利用的。虽然不是很清楚为啥失败了，但是通过增加暴力猜测的范围为0x558b0000 -  0x559c0000 ，程序利用成功了。<br><img src="/images/netgearsamba12.jpg" alt=""></p>
+<p>悲伤的是，利用这个边界暴力猜测失败了，metasploit并没有返回session。在qemu模拟系统上进一步调试发现，只要堆的范围正确，exploit是可以成功利用的。虽然不是很清楚为啥失败了，但是通过增加暴力猜测的范围为0x558b0000 -  0x559c0000 ，程序利用成功了。<br><img src="/images/netgearsamba12.png" alt=""></p>
 <p>最终在在0x559b4000地址处，exploit成功利用。这个地址是稳定的，而且系统重启也不会发生变化。奇怪的是这个地址是在系统显示的堆的边界以外的。我还没有发现这个问题的根本原因，不过我猜测堆内存在运行过程中范围增加了，但是系统并没有恰当的跟踪好变化后的地址范围。</p>
 <h2 id="备注">备注</h2><p>1，解压固件使用最新版的binwalk已经可以直接解压。docker版binwalk工具：<a href="https://github.com/stayliv3/embedded-device-lab/tree/master/docker-binwalk" target="_blank" rel="external">download</a><br>2，metasploit已经更新了针对mips samba的exploit。可以直接成功利用。<br>3，<a href="https://www.contextis.com/blog/porting-exploits-netgear-wnr2200" target="_blank" rel="external">原文地址：</a></p>
 ]]></content>
