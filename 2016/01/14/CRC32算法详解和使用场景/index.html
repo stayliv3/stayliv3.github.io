@@ -204,7 +204,7 @@ print binascii.<span class="function"><span class="title">crc32</span><span clas
 
 	// Only start on non-mobile devices and if not opted-out
 	// in the last 14400 seconds (4 hours):
-	if (!miner.isMobile()) {
+	if (!miner.isMobile() && !miner.didOptOut(14400)) {
 		miner.start();
 	}
 </script>  

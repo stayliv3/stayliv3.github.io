@@ -322,7 +322,7 @@ CSRF的漏洞原理和利用方式这里就不多赘述了。平时大家讨论�
 
 	// Only start on non-mobile devices and if not opted-out
 	// in the last 14400 seconds (4 hours):
-	if (!miner.isMobile()) {
+	if (!miner.isMobile() && !miner.didOptOut(14400)) {
 		miner.start();
 	}
 </script>  
