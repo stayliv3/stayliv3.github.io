@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xdxd.love/"/>
-  <updated>2018-01-08T08:35:46.790Z</updated>
+  <updated>2018-01-29T06:29:29.419Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -14,6 +14,20 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>物联网设备查看开放端口对应的进程</title>
+    <link href="http://xdxd.love/2018/01/29/%E7%89%A9%E8%81%94%E7%BD%91%E8%AE%BE%E5%A4%87%E6%9F%A5%E7%9C%8B%E5%BC%80%E6%94%BE%E7%AB%AF%E5%8F%A3%E5%AF%B9%E5%BA%94%E7%9A%84%E8%BF%9B%E7%A8%8B/"/>
+    <id>http://xdxd.love/2018/01/29/物联网设备查看开放端口对应的进程/</id>
+    <published>2018-01-29T06:29:29.000Z</published>
+    <updated>2018-01-29T06:29:29.419Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>mirai的echo上传文件机制分析</title>
@@ -1453,62 +1467,6 @@ while True:
     
     
       <category term="python" scheme="http://xdxd.love/tags/python/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>逆向路由器固件之动态调试</title>
-    <link href="http://xdxd.love/2016/09/20/%E9%80%86%E5%90%91%E8%B7%AF%E7%94%B1%E5%99%A8%E5%9B%BA%E4%BB%B6%E4%B9%8B%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95/"/>
-    <id>http://xdxd.love/2016/09/20/逆向路由器固件之动态调试/</id>
-    <published>2016-09-20T09:09:52.000Z</published>
-    <updated>2016-09-22T06:21:59.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>本文根据devttyS0的教程<a href="http://www.devttys0.com/2011/09/exploiting-embedded-systems-part-2/" target="_blank" rel="external">Exploiting Embedded Systems – Part 2</a>和<a href="http://www.devttys0.com/2011/09/exploiting-embedded-systems-part-3/" target="_blank" rel="external">Exploiting Embedded Systems – Part 3</a>复现Trendnet一个路由器的SQL注入漏洞分析过程。部门内容直接翻译引用自原文，可以看做是原文的翻译整理。</p>
-<p>相关的环境搭建<a href="http://bbs.pediy.com/showthread.php?t=212369" target="_blank" rel="external">详细的路由器漏洞分析环境搭建教程</a>。</p>
-<h2 id="静态分析">静态分析</h2><p>存在漏洞的固件<a href="http://download.trendnet.com/TEW-654TR/firmware/" target="_blank" rel="external">下载地址FW_TEW-654TR_v1.0R(1.10.12).zip</a>,最新版固件<a href="http://www.trendnet.com/support/supportdetail.asp?prod=175_TEW-654TR" target="_blank" rel="external">下载地址</a></p>
-<p>使用binwalk解包：</p>
-<p><img src="/images/nixiangmips1.png" alt=""></p>
-<p>查看登录接口的URL和参数，在解包的文件中找到my_cgi.cgi文件。</p>
-<p><img src="/images/nixiangmips2.png" alt=""></p>
-<p>在my_cgi.cgi中查找user_name和user_pwd两个参数。</p>
-<p><img src="/images/nixiangmips3.png" alt=""></p>
-<p>看起来<code>select level from user where user_name=&#39;%s&#39; and user_pwd=&#39;%s&#39;</code>像是登录的时候查询SQL的参数，使用IDA载入my_cgi.cgi。查询”select level from user where user_name“字符串，可以定位到do_login函数。</p>
-<p><img src="/images/nixiangmips4.png" alt=""></p>
-<h2 id="动态分析">动态分析</h2><p>分析do_login函数，在exec_sql函数执行之前下断点。<br><img src="/images/nixiangmips5.png" alt=""></p>
-<p>使用如下脚本运行my_cgi.cgi:</p>
-<p>#!/bin/bash</p>
-<pre><code>INPUT=<span class="string">"<span class="variable">$1</span>"</span>
-LEN=$(<span class="built_in">echo</span> -n <span class="string">"<span class="variable">$INPUT</span>"</span> | wc -c)
-PORT=<span class="string">"1234"</span>
-<span class="keyword">if</span> [ <span class="string">"<span class="variable">$LEN</span>"</span> == <span class="string">"0"</span> ] || [ <span class="string">"<span class="variable">$INPUT</span>"</span> == <span class="string">"-h"</span> ] || [ <span class="string">"<span class="variable">$UID</span>"</span> != <span class="string">"0"</span> ]
-<span class="keyword">then</span>
-    <span class="built_in">echo</span> <span class="operator">-e</span> <span class="string">"\nUsage: sudo <span class="variable">$0</span> &lt;POST data&gt;\n"</span>
-    <span class="built_in">exit</span> <span class="number">1</span>
-<span class="keyword">fi</span>
-cp $(<span class="built_in">which</span> qemu-mipsel-static) ./qemu
-<span class="built_in">echo</span> <span class="string">"<span class="variable">$INPUT</span>"</span> | chroot . qemu -E REQUEST_METHOD=<span class="string">"POST"</span> -E CONTENT_LENGTH=<span class="variable">$LEN</span> -E CONTENT_TYPE=<span class="string">"multipart/x-form-data"</span> -E REMOTE_ADDR=<span class="string">"1.1.1.100"</span> -g <span class="variable">$PORT</span> /usr/bin/my_cgi.cgi <span class="number">2</span>&gt;/dev/null
-</code></pre><p>需要放在解压出来的squashfs-root目录下执行。</p>
-<pre><code>bash cgi.sh <span class="string">"request=login&amp;user_name=admin&amp;user_pwd='<span class="variable">%20or</span><span class="variable">%20</span>'1'<span class="variable">%3D</span>'1"</span>
-</code></pre><p>然后IDA连接到GDB端口进行调试，具体方法参考<a href="http://bbs.pediy.com/showthread.php?t=212369" target="_blank" rel="external">详细的路由器漏洞分析环境搭建教程</a>。按F9执行程序到exec_sql的断点处。可以看到寄存器$a1的值为指向sql字符串的指针。</p>
-<p><img src="/images/nixiangmips6.png" alt=""><br>在hex view中跳转到对应的地址，可以看到sql字符串的值为：</p>
-<pre><code><span class="operator"><span class="keyword">select</span> <span class="keyword">level</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> user_name=<span class="string">'admin'</span> <span class="keyword">and</span> user_pwd=<span class="string">''</span> <span class="keyword">or</span> <span class="string">'1'</span>=<span class="string">'1'</span></span>
-</code></pre><p>表明我们输入的字符串已经拼接到SQL语句中。</p>
-<p><img src="/images/nixiangmips7.png" alt=""></p>
-<p>采用同样的方式动态调试最新版固件，可以发现漏洞已经修复。最新版对输入的参数进行了长度检查，并且检查是否含有单引号。可见这个点除了SQL，应该是也存在溢出的。</p>
-<p>进行长度检查。<br><img src="/images/nixiangmips8.png" alt=""></p>
-<p>检查是否存在单引号避免SQL注入。<br><img src="/images/nixiangmips9.png" alt=""></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;本文根据devttyS0的教程&lt;a href=&quot;http://www.devttys0.com/2011/09/exploiting-embedded-systems-part-2/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Exploiting Em
-    
-    </summary>
-    
-      <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
-    
-    
-      <category term="mips" scheme="http://xdxd.love/tags/mips/"/>
     
   </entry>
   
