@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xdxd.love/"/>
-  <updated>2018-01-31T10:03:39.021Z</updated>
+  <updated>2018-01-31T10:08:45.589Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -20,12 +20,11 @@
     <link href="http://xdxd.love/2018/01/31/wpa-krack-%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/"/>
     <id>http://xdxd.love/2018/01/31/wpa-krack-漏洞学习/</id>
     <published>2018-01-31T09:58:52.000Z</published>
-    <updated>2018-01-31T10:03:39.021Z</updated>
+    <updated>2018-01-31T10:08:45.589Z</updated>
     
     <content type="html"><![CDATA[<p>网上已经有不少的分析文章，也有分析的比较好的文章。由于这是一系列漏洞，多个CVE，而且涉及到不了解的WPA协议。所以一开始看起来感觉有些无法掌控。其实这里主要掌握的知识点一个是WPA的4次握手协议。</p>
 <p>先看一下WPA的4次握手。4次握手主要有两个作用，一个是完成了客户端和服务端的双向身份认证，同时进行了密钥交换。确定了通信密钥。</p>
-<p>简单点说是以个基于共享密钥的身份认证和密钥交换协议。在网上找到一个华为的专利[一种基于预共享密钥的密钥分发方法 </p>
-<p>]( <a href="https://www.google.com/patents/CN1534935A?cl=zh)。本质上是使用了基于挑战的身份认证。https://zh.wikipedia.org/wiki/%E8%AF%A2%E9%97%AE%E6%8F%A1%E6%89%8B%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE" target="_blank" rel="external">https://www.google.com/patents/CN1534935A?cl=zh)。本质上是使用了基于挑战的身份认证。https://zh.wikipedia.org/wiki/%E8%AF%A2%E9%97%AE%E6%8F%A1%E6%89%8B%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE</a></p>
+<p>简单点说是以个基于共享密钥的身份认证和密钥交换协议。在网上找到一个华为的专利<a href="https://www.google.com/patents/CN1534935A?cl=zh" target="_blank" rel="external">一种基于预共享密钥的密钥分发方法</a>。本质上是使用了<a href="https://zh.wikipedia.org/wiki/%E8%AF%A2%E9%97%AE%E6%8F%A1%E6%89%8B%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE" target="_blank" rel="external">基于挑战的身份认证</a></p>
 <h2 id="认证">认证</h2><p>通常登录一个web应用的时候，是直接将密码发送到服务器进行验证的。类似于下图这样。</p>
 <p><img src="/images/krack1.png" alt=""></p>
 <p>但是wifi这个场景如果直接发送明文密码给服务器，就会直接导致密码的泄露了。</p>
@@ -37,9 +36,7 @@
 <p>4次握手抓包分析：</p>
 <p><img src="/images/krack4.png" alt=""></p>
 <h2 id="密钥重装漏洞">密钥重装漏洞</h2><p>这个漏洞的一个简单点的利用模型就是重放message3，导致sta重新install这个message3对应的密钥。本来sta每次连接经过4次握手之后都会生成不一样的临时密钥，由于重放导致使用了之前使用过的密钥进行数据加密传输。</p>
-<p>使用同样的密钥导致的问题在论文中只是说可导致数据被解密，并没有详细描述。可能是属于密码学中比较基本部分。但是我一开始也不是很理解。经过一些学习，应该是类似[<br>流加密算法XOR解密</p>
-<p>](<a href="http://jasonye.xyz/2016/03/17/stream-cipher-xor/" target="_blank" rel="external">http://jasonye.xyz/2016/03/17/stream-cipher-xor/</a>)<br>这样一些攻击收到导致数据被解密。而全零的这个bug才是一个真正比较有真实利用价值的高危漏洞。adlab的[</p>
-<p>WPA2 “KRACK”漏洞简介与重现](<a href="https://paper.seebug.org/512/)对密钥重装的过程和全零漏洞的分析比较清晰。" target="_blank" rel="external">https://paper.seebug.org/512/)对密钥重装的过程和全零漏洞的分析比较清晰。</a></p>
+<p>使用同样的密钥导致的问题在论文中只是说可导致数据被解密，并没有详细描述。可能是属于密码学中比较基本部分。但是我一开始也不是很理解。经过一些学习，应该是类似<a href="http://jasonye.xyz/2016/03/17/stream-cipher-xor/" target="_blank" rel="external">流加密算法XOR解密</a><br>这样一些攻击收到导致数据被解密。而全零的这个bug才是一个真正比较有真实利用价值的高危漏洞。adlab的<a href="https://paper.seebug.org/512/" target="_blank" rel="external">WPA2 “KRACK”漏洞简介与重现</a>对密钥重装的过程和全零漏洞的分析比较清晰。</p>
 <h2 id="参考资料">参考资料</h2><p><a href="https://paper.seebug.org/512/" target="_blank" rel="external">https://paper.seebug.org/512/</a><br><a href="http://jasonye.xyz/2016/03/17/stream-cipher-xor/" target="_blank" rel="external">http://jasonye.xyz/2016/03/17/stream-cipher-xor/</a><br><a href="http://www.cnblogs.com/wsine/p/5608975.html" target="_blank" rel="external">http://www.cnblogs.com/wsine/p/5608975.html</a></p>
 ]]></content>
     
