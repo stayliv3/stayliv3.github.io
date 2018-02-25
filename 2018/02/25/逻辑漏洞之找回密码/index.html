@@ -11,27 +11,27 @@
     
 
     
-    <meta name="description" content="毫无疑问，找回密码这个功能是一个很容易出现漏洞的功能。乌云知识库已经有4篇文章介绍找回密码的测试方式。总的来说，姿势很多。所以这里想从找回密码功能设计的角度分析一下，怎么设计一个安全的找回密码功能。当进行安全测试的时候，需要从哪几个角度去考虑可能出现的问题。目的是尝试在一个统一的模型里归纳找回密码功能的安全问题。
-#逻辑本质
-目前的用户体系里，依然是采用用户名和密码的方式来进行用户认证的。用户忘记">
+    <meta name="description" content="更新记录：2015-06-11 14:01:03
+更新内容：通过对大量案例进行分析，可以总结出容易出现问题的可以归纳为两种。一是临时密码的设计和保护出现问题，位数太少可以爆破，算法泄露，返回到了客户端。二是把客户端发送的数据作为了后端逻辑的依据，主要是发送验证码到客户端提供的手机上，根据客户端提供的UID修改对应的密码，导致了平行权限的漏洞。
+毫无疑问，找回密码这个功能是一个很容易出现漏洞的功能。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="逻辑漏洞之找回密码">
-<meta property="og:url" content="http://xdxd.love/2015/06/11/逻辑漏洞之找回密码/index.html">
+<meta property="og:url" content="http://xdxd.love/2018/02/25/逻辑漏洞之找回密码/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description" content="毫无疑问，找回密码这个功能是一个很容易出现漏洞的功能。乌云知识库已经有4篇文章介绍找回密码的测试方式。总的来说，姿势很多。所以这里想从找回密码功能设计的角度分析一下，怎么设计一个安全的找回密码功能。当进行安全测试的时候，需要从哪几个角度去考虑可能出现的问题。目的是尝试在一个统一的模型里归纳找回密码功能的安全问题。
-#逻辑本质
-目前的用户体系里，依然是采用用户名和密码的方式来进行用户认证的。用户忘记">
+<meta property="og:description" content="更新记录：2015-06-11 14:01:03
+更新内容：通过对大量案例进行分析，可以总结出容易出现问题的可以归纳为两种。一是临时密码的设计和保护出现问题，位数太少可以爆破，算法泄露，返回到了客户端。二是把客户端发送的数据作为了后端逻辑的依据，主要是发送验证码到客户端提供的手机上，根据客户端提供的UID修改对应的密码，导致了平行权限的漏洞。
+毫无疑问，找回密码这个功能是一个很容易出现漏洞的功能。">
 <meta property="og:image" content="http://xdxd.love/images/zhaohuimima1.png">
 <meta property="og:image" content="http://xdxd.love/images/zhaohuimima2.png">
 <meta property="og:image" content="http://xdxd.love/images/zhaohuimima3.png">
 <meta property="og:image" content="http://xdxd.love/images/zhaohuimima4.png">
 <meta property="og:image" content="http://xdxd.love/images/zhaohuimima5.png">
-<meta property="og:updated_time" content="2015-11-24T03:27:38.000Z">
+<meta property="og:updated_time" content="2018-02-25T07:24:02.408Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="逻辑漏洞之找回密码">
-<meta name="twitter:description" content="毫无疑问，找回密码这个功能是一个很容易出现漏洞的功能。乌云知识库已经有4篇文章介绍找回密码的测试方式。总的来说，姿势很多。所以这里想从找回密码功能设计的角度分析一下，怎么设计一个安全的找回密码功能。当进行安全测试的时候，需要从哪几个角度去考虑可能出现的问题。目的是尝试在一个统一的模型里归纳找回密码功能的安全问题。
-#逻辑本质
-目前的用户体系里，依然是采用用户名和密码的方式来进行用户认证的。用户忘记">
+<meta name="twitter:description" content="更新记录：2015-06-11 14:01:03
+更新内容：通过对大量案例进行分析，可以总结出容易出现问题的可以归纳为两种。一是临时密码的设计和保护出现问题，位数太少可以爆破，算法泄露，返回到了客户端。二是把客户端发送的数据作为了后端逻辑的依据，主要是发送验证码到客户端提供的手机上，根据客户端提供的UID修改对应的密码，导致了平行权限的漏洞。
+毫无疑问，找回密码这个功能是一个很容易出现漏洞的功能。">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -94,14 +94,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/06/11/逻辑漏洞之找回密码/" title="逻辑漏洞之找回密码" itemprop="url">逻辑漏洞之找回密码</a>
+      <a href="/2018/02/25/逻辑漏洞之找回密码/" title="逻辑漏洞之找回密码" itemprop="url">逻辑漏洞之找回密码</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
 		
   <p class="article-time">
-    <time datetime="2015-06-11T06:01:03.000Z" itemprop="datePublished"> 發表於 Jun 11 2015</time>
+    <time datetime="2018-02-25T06:01:03.000Z" itemprop="datePublished"> 發表於 Feb 25 2018</time>
     
   </p>
 </header>
@@ -110,28 +110,24 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目錄</strong>
 		
-			
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#更新记录："><span class="toc-number">1.</span> <span class="toc-text">更新记录：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#更新内容："><span class="toc-number">2.</span> <span class="toc-text">更新内容：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#逻辑本质"><span class="toc-number">3.</span> <span class="toc-text">逻辑本质</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#验证流程"><span class="toc-number">4.</span> <span class="toc-text">验证流程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞挖掘"><span class="toc-number">5.</span> <span class="toc-text">漏洞挖掘</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#微信的案例"><span class="toc-number">6.</span> <span class="toc-text">微信的案例</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#360的案例"><span class="toc-number">7.</span> <span class="toc-text">360的案例</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#易付宝的案例"><span class="toc-number">8.</span> <span class="toc-text">易付宝的案例</span></a></li></ol>
 		
 		</div>
 		
-		<p>毫无疑问，找回密码这个功能是一个很容易出现漏洞的功能。乌云知识库已经有4篇文章介绍找回密码的测试方式。总的来说，姿势很多。所以这里想从找回密码功能设计的角度分析一下，怎么设计一个安全的找回密码功能。当进行安全测试的时候，需要从哪几个角度去考虑可能出现的问题。目的是尝试在一个统一的模型里归纳找回密码功能的安全问题。</p>
-<p>#逻辑本质</p>
-<p>目前的用户体系里，依然是采用用户名和密码的方式来进行用户认证的。用户忘记了密码也是一个十分常见的场景。所以需要给用户提供一个忘记密码的场景下重新获得账号控制权的方式。所以这个功能设计的一个场景其实是一个用户并不拥有某个账号的密码，他需要通过某些途径向系统证明他是这个账号的所有者。反过来我们在设计找回密码功能的时候，是提供一个认证用户的途径。正常情况下，是通过密码来认证用户的。找回密码的情况是在没有密码的基础上正确认证用户。</p>
+		<h1 id="更新记录：">更新记录：</h1><p>2015-06-11 14:01:03</p>
+<h1 id="更新内容：">更新内容：</h1><p>通过对大量案例进行分析，可以总结出容易出现问题的可以归纳为两种。一是临时密码的设计和保护出现问题，位数太少可以爆破，算法泄露，返回到了客户端。二是把客户端发送的数据作为了后端逻辑的依据，主要是发送验证码到客户端提供的手机上，根据客户端提供的UID修改对应的密码，导致了平行权限的漏洞。</p>
+<p>毫无疑问，找回密码这个功能是一个很容易出现漏洞的功能。乌云知识库已经有4篇文章介绍找回密码的测试方式。总的来说，姿势很多。所以这里想从找回密码功能设计的角度分析一下，怎么设计一个安全的找回密码功能。当进行安全测试的时候，需要从哪几个角度去考虑可能出现的问题。目的是尝试在一个统一的模型里归纳找回密码功能的安全问题。</p>
+<h1 id="逻辑本质">逻辑本质</h1><p>目前的用户体系里，依然是采用用户名和密码的方式来进行用户认证的。用户忘记了密码也是一个十分常见的场景。所以需要给用户提供一个忘记密码的场景下重新获得账号控制权的方式。所以这个功能设计的一个场景其实是一个用户并不拥有某个账号的密码，他需要通过某些途径向系统证明他是这个账号的所有者。反过来我们在设计找回密码功能的时候，是提供一个认证用户的途径。正常情况下，是通过密码来认证用户的。找回密码的情况是在没有密码的基础上正确认证用户。</p>
 <p>常见的方式有回答预设的问题，通过手机发送验证码，通过邮件发送链接或者验证码等。这样设计的一个基础是账户的拥有者虽然忘记了密码，但是该账户的拥有者具备一些其他人不具备的属性，比如知道之前拥有者自己设置的保护问题的答案，类似于我的爸爸叫什么，小学哪里上的之类，比如拥有该账户关联的手机和邮箱的所有权。显然密保问题的答案虽然相对私密，但是依赖于具体的问题。有些问题的答案也许通过社工就可以获得。所以一般找回密码功能都是基于账号拥有者具备该账户关联的手机和邮箱的所有权进行设计的。</p>
-<p>#验证流程</p>
-<p>通过上面的分析，找回密码的逻辑可以转化为如何识别某一个用户是某个手机或者邮箱的拥有者。常见的手段是服务端给手机(邮箱)发送一个验证码或者链接，用户正确输入验证码或者点击链接就认为是手机(邮箱)的拥有者，给他恢复与该手机(邮箱)关联的用户权限。验证码和链接的作用相当于临时密码。所以整个找回密码的核心流程如下:</p>
+<h1 id="验证流程">验证流程</h1><p>通过上面的分析，找回密码的逻辑可以转化为如何识别某一个用户是某个手机或者邮箱的拥有者。常见的手段是服务端给手机(邮箱)发送一个验证码或者链接，用户正确输入验证码或者点击链接就认为是手机(邮箱)的拥有者，给他恢复与该手机(邮箱)关联的用户权限。验证码和链接的作用相当于临时密码。所以整个找回密码的核心流程如下:</p>
 <p><img src="/images/zhaohuimima1.png" alt=""></p>
 <p>最简单的情况下，客户端只需要发送2次请求就可以找回密码，流程越少越安全。但是目前大部分厂商依然使用了3步请求来完成重置密码的操作。可能是为了用户体验的考虑，一般都加了一步临时密码的验证。下面是概括的一个安全的找回密码设计方案。目前大部分厂商的找回密码流程可以看做是下面流程的子集。<br><img src="/images/zhaohuimima2.png" alt=""></p>
-<p>#漏洞挖掘</p>
-<p>CSRF，SQL注入，越权修改密码，越权绑定邮箱等等漏洞也会导致修改任意用户密码。这里只讨论找回密码流程设计实现上出现的问题。通过对大量案例进行分析，可以总结出容易出现问题的可以归纳为两种。一是临时密码的保护出现问题，位数太少可以爆破，算法泄露，返回到了客户端。二是把客户端发送的数据作为了后端逻辑的依据，主要是发送验证码到客户端提供的手机上，根据客户端提供的UID修改对应的密码。实际上找回密码这个场景，需要客户端的数据之后一个就是需要找回密码的账户的ID。其他的数据都应该从后台查而不是从客户端获取。此外还有一种特殊点的情况，使用session作为用户身份的识别。这种情况一般出现相对大一些的网站比如聚美优品和易付宝，在这个功能开发中有了一定的多步骤业务逻辑的设计，可惜没有设计完美。在整个找回密码过程中，通过session识别用户。但是没有考虑到。第一步进行session绑定的时候，session对应的用户是可以伪造的。本质上是把客户端发送的数据作为了后端逻辑的依据。这个测试的时候基本就两种情况。一是在验证临时密码的时候伪造session对应的用户，再一个是在修改密码的环节伪造session。</p>
-<p>#微信的案例</p>
-<p><a href="http://www.wooyun.org/bugs/wooyun-2010-011720" target="_blank" rel="external">微信任意用户密码修改漏洞</a><br><img src="/images/zhaohuimima3.png" alt=""><br>微信的这个问题，表面上是对验证次数的限制被绕过导致的。扯远一点，这个绕过挺有意思的。它是对数据进行了清洗，然后传入了后面的逻辑。从安全设计上来说，最完全的做法是对数据进行检查，如果发现非法数据就阻断请求，而不是清洗之后进入后续逻辑。从找回密码功能来说，采用了 4-5位的小空间的随机数做临时密码是导致这个漏洞出现的根源。</p>
-<p>#360的案例</p>
-<p><a href="http://www.wooyun.org/bugs/wooyun-2012-08333" target="_blank" rel="external">奇虎360任意用户密码修改漏洞</a><br><img src="/images/zhaohuimima4.png" alt=""></p>
+<h1 id="漏洞挖掘">漏洞挖掘</h1><p>CSRF，SQL注入，越权修改密码，越权绑定邮箱等等漏洞也会导致修改任意用户密码。这里只讨论找回密码流程设计实现上出现的问题。通过对大量案例进行分析，可以总结出容易出现问题的可以归纳为两种。一是临时密码的设计和保护出现问题，位数太少可以爆破，算法泄露，返回到了客户端。二是把客户端发送的数据作为了后端逻辑的依据，主要是发送验证码到客户端提供的手机上，根据客户端提供的UID修改对应的密码，导致了平行权限的漏洞。实际上找回密码这个场景，需要客户端的数据之后一个就是需要找回密码的账户的ID。其他的数据都应该从后台查而不是从客户端获取。此外还有一种特殊点的情况，使用session作为用户身份的识别。这种情况一般出现相对大一些的网站比如聚美优品和易付宝，在这个功能开发中有了一定的多步骤业务逻辑的设计，可惜没有设计完美。在整个找回密码过程中，通过session识别用户。但是没有考虑到。第一步进行session绑定的时候，session对应的用户是可以伪造的。本质上是把客户端发送的数据作为了后端逻辑的依据。这个测试的时候基本就两种情况。一是在验证临时密码的时候伪造session对应的用户，再一个是在修改密码的环节伪造session。</p>
+<h1 id="微信的案例">微信的案例</h1><p><a href="http://www.wooyun.org/bugs/wooyun-2010-011720" target="_blank" rel="external">微信任意用户密码修改漏洞</a><br><img src="/images/zhaohuimima3.png" alt=""><br>微信的这个问题，表面上是对验证次数的限制被绕过导致的。扯远一点，这个绕过挺有意思的。它是对数据进行了清洗，然后传入了后面的逻辑。从安全设计上来说，最完全的做法是对数据进行检查，如果发现非法数据就阻断请求，而不是清洗之后进入后续逻辑。从找回密码功能来说，采用了 4-5位的小空间的随机数做临时密码是导致这个漏洞出现的根源。</p>
+<h1 id="360的案例">360的案例</h1><p><a href="http://www.wooyun.org/bugs/wooyun-2012-08333" target="_blank" rel="external">奇虎360任意用户密码修改漏洞</a><br><img src="/images/zhaohuimima4.png" alt=""></p>
 <pre><code>重设密码地址：<span class="link_url">http://i.360.cn/findpwd/setpwdfromemail?vc=c4ce4dd3d566ef83f9</span>[<span class="link_label">马赛克</span>]&amp;u=[马赛克]%40gmail.com,马上重设密码！
 </code></pre><p>这个案例中是由于生成临时密码的算法被破解。从32位字母数字推断出是时间戳md5。临时密码泄露也就导致了整个找回密码功能的用户识别机制失效。其实这种类型的漏洞，<a href="http://www.wooyun.org/bugs/wooyun-2013-046999" target="_blank" rel="external">当当网的例子更加经典</a>,采用了手机号加验证码md5取前10位，都被猜出来了。</p>
-<p>#易付宝的案例</p>
-<p>易付宝这个案例就是上面说过的</p>
+<h1 id="易付宝的案例">易付宝的案例</h1><p>易付宝这个案例就是上面说过的</p>
 <p><a href="http://www.wooyun.org/bugs/wooyun-2015-0120853" target="_blank" rel="external">苏宁易付宝任意重置密码登入</a><br><img src="/images/zhaohuimima5.png" alt=""></p>
 <p>这个案例虽然没有公开，但是重置密码就是上面说过的几个分析角度。最复杂的情况就是通过session识别用户而已。这里就是最后修改密码的环节，采用了session对应的用户作为被修改的对象。但是绑定session是在第一步的时候做的。可以伪造。造成了任意用户密码修改。</p>
   
@@ -158,7 +154,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://xdxd.love/2015/06/11/逻辑漏洞之找回密码/" data-title="逻辑漏洞之找回密码 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  <div data-url="http://xdxd.love/2018/02/25/逻辑漏洞之找回密码/" data-title="逻辑漏洞之找回密码 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -171,19 +167,11 @@
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2015/06/18/phpcms加解密历史漏洞学习/" title="phpcms加解密历史漏洞学习">
-  <strong>上一篇：</strong><br/>
-  <span>
-  phpcms加解密历史漏洞学习</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2015/06/09/代码审计之命令执行/"  title="代码审计之命令执行">
+<a href="/2018/02/10/华为HG532远程命令执行漏洞-学习笔记/"  title="华为HG532远程命令执行漏洞 学习笔记">
  <strong>下一篇：</strong><br/> 
- <span>代码审计之命令执行
+ <span>华为HG532远程命令执行漏洞 学习笔记
 </span>
 </a>
 </div>
@@ -192,7 +180,7 @@
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/06/11/逻辑漏洞之找回密码/" data-title="逻辑漏洞之找回密码" data-url="http://xdxd.love/2015/06/11/逻辑漏洞之找回密码/"></div>
+	<div class="ds-thread" data-thread-key="2018/02/25/逻辑漏洞之找回密码/" data-title="逻辑漏洞之找回密码" data-url="http://xdxd.love/2018/02/25/逻辑漏洞之找回密码/"></div>
 </section>
 
 
@@ -202,7 +190,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目錄</strong>
  
- 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#更新记录："><span class="toc-number">1.</span> <span class="toc-text">更新记录：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#更新内容："><span class="toc-number">2.</span> <span class="toc-text">更新内容：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#逻辑本质"><span class="toc-number">3.</span> <span class="toc-text">逻辑本质</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#验证流程"><span class="toc-number">4.</span> <span class="toc-text">验证流程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞挖掘"><span class="toc-number">5.</span> <span class="toc-text">漏洞挖掘</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#微信的案例"><span class="toc-number">6.</span> <span class="toc-text">微信的案例</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#360的案例"><span class="toc-number">7.</span> <span class="toc-text">360的案例</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#易付宝的案例"><span class="toc-number">8.</span> <span class="toc-text">易付宝的案例</span></a></li></ol>
  
   </div>
 
