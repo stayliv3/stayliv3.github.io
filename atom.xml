@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xdxd.love/"/>
-  <updated>2018-03-05T08:51:25.447Z</updated>
+  <updated>2018-03-05T08:55:38.342Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://xdxd.love/2018/03/05/%E5%8F%98%E9%87%8F%E8%A6%86%E7%9B%96%E6%BC%8F%E6%B4%9E%E7%9A%84%E6%80%9D%E8%80%83/"/>
     <id>http://xdxd.love/2018/03/05/变量覆盖漏洞的思考/</id>
     <published>2018-03-05T08:50:16.000Z</published>
-    <updated>2018-03-05T08:51:25.447Z</updated>
+    <updated>2018-03-05T08:55:38.342Z</updated>
     
     <content type="html"><![CDATA[<h2 id="变量覆盖漏洞原理">变量覆盖漏洞原理</h2><p>变量覆盖漏洞原理比较简单，《代码审计》书中和网上都有了不少分析。主要是以下几个场景：$$使用不当，extract()函数使用不当，parse_str()函数使用不当，import_request_variables()使用不当，开启了全局变量注册等。具体可以参考<a href="http://www.freebuf.com/column/150731.html" target="_blank" rel="external">代码审计|变量覆盖漏洞</a>。</p>
 <h2 id="修复方案">修复方案</h2><p>从原理上来讲，只需要注册变量之前判断变量是否存在，如果存在就跳过或者退出变量注册，返回错误信息，就可以避免变量覆盖漏洞。</p>
@@ -31,7 +31,7 @@
 <p><img src="/images/phpbianliang2.png" alt=""></p>
 <p>而extract的第二个参数。如果不指定，默认值是EXTR_OVERWRITE。覆盖已经存在的变量。</p>
 <p><img src="/images/phpbianliang3.png" alt=""></p>
-<p>默认会覆盖变量这个设计，我觉得违背了安全设计原则中的默认安全了。虽然如果默认skip的话可能会导致bug，但是默认覆盖也是会导致更严重的安全bug。所以采用默认加前缀，或者默认跳过都应该是更好的选择。也许后续的php版本中会有改进。</p>
+<p><strong>默认会覆盖变量这个设计，我觉得违背了安全设计原则中的默认安全了。虽然如果默认skip的话可能会导致bug，但是默认覆盖也是会导致更严重的安全bug。所以采用默认加前缀，或者默认跳过都应该是更好的选择。</strong>也许后续的php版本中会有改进。</p>
 <h2 id="参考资料">参考资料</h2><p><a href="http://xdxd.love/2015/06/05/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E4%B9%8Bwdcp%E5%A4%9A%E5%A4%84%E6%BC%8F%E6%B4%9E/">代码审计之wdcp多处漏洞</a></p>
 ]]></content>
     
