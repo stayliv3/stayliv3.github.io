@@ -1,0 +1,816 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>一次php内核源码分析的经历 | xd_xd&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="xd_xd">
+    
+
+    
+    <meta name="description" content="solveme.peng.kr winter  sleepsolveme是一个CTF的练习平台，其中winter sleep题目是这样的。
+&amp;lt;?php
+   error_reporting(0);
+   require __DIR__.&apos;/lib.php&apos;;
+   if(isset($_GET[&apos;time&apos;])){
+       if(!is_numeric($_GET[&apos;time&apos;])){">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一次php内核源码分析的经历">
+<meta property="og:url" content="http://xdxd.love/2018/04/12/一次php内核源码分析的经历/index.html">
+<meta property="og:site_name" content="xd_xd's blog">
+<meta property="og:description" content="solveme.peng.kr winter  sleepsolveme是一个CTF的练习平台，其中winter sleep题目是这样的。
+&amp;lt;?php
+   error_reporting(0);
+   require __DIR__.&apos;/lib.php&apos;;
+   if(isset($_GET[&apos;time&apos;])){
+       if(!is_numeric($_GET[&apos;time&apos;])){">
+<meta property="og:image" content="http://xdxd.love/images/phpcore1.png">
+<meta property="og:image" content="http://xdxd.love/images/phpcore2.png">
+<meta property="og:image" content="http://xdxd.love/images/phpcore3.png">
+<meta property="og:image" content="http://xdxd.love/images/phpcore4.png">
+<meta property="og:image" content="http://xdxd.love/images/phpcore5.png">
+<meta property="og:image" content="http://xdxd.love/images/phpcore6.png">
+<meta property="og:image" content="http://xdxd.love/images/phpcore7.png">
+<meta property="og:image" content="http://xdxd.love/images/phpcore8.png">
+<meta property="og:image" content="http://xdxd.love/images/phpcore9.png">
+<meta property="og:updated_time" content="2018-04-12T02:25:58.854Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一次php内核源码分析的经历">
+<meta name="twitter:description" content="solveme.peng.kr winter  sleepsolveme是一个CTF的练习平台，其中winter sleep题目是这样的。
+&amp;lt;?php
+   error_reporting(0);
+   require __DIR__.&apos;/lib.php&apos;;
+   if(isset($_GET[&apos;time&apos;])){
+       if(!is_numeric($_GET[&apos;time&apos;])){">
+
+    
+    <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+    <style>
+    pre {white-space: pre-wrap;}
+    </style>
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="xd_xd&#39;s blog" title="xd_xd&#39;s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="xd_xd&#39;s blog">xd_xd&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜單">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:xdxd.love">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/04/12/一次php内核源码分析的经历/" title="一次php内核源码分析的经历" itemprop="url">一次php内核源码分析的经历</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="xd_xd" target="_blank" itemprop="author">xd_xd</a>
+		
+  <p class="article-time">
+    <time datetime="2018-04-12T02:16:08.000Z" itemprop="datePublished"> 發表於 Apr 12 2018</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目錄</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#solveme-peng-kr_winter_sleep"><span class="toc-number">1.</span> <span class="toc-text">solveme.peng.kr winter  sleep</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#黑盒测试"><span class="toc-number">2.</span> <span class="toc-text">黑盒测试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#feature_or_bug"><span class="toc-number">3.</span> <span class="toc-text">feature or bug</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#php内核分析"><span class="toc-number">4.</span> <span class="toc-text">php内核分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#动态调试php内核"><span class="toc-number">5.</span> <span class="toc-text">动态调试php内核</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#编译debug版php。"><span class="toc-number"></span> <span class="toc-text">编译debug版php。</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#gdb调试"><span class="toc-number"></span> <span class="toc-text">gdb调试</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#思考"><span class="toc-number">1.</span> <span class="toc-text">思考</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">2.</span> <span class="toc-text">参考资料</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="solveme-peng-kr_winter_sleep">solveme.peng.kr winter  sleep</h2><p>solveme是一个CTF的练习平台，其中winter sleep题目是这样的。</p>
+<pre><code><span class="php"><span class="preprocessor">&lt;?php</span>
+   error_reporting(<span class="number">0</span>);
+   <span class="keyword">require</span> <span class="keyword">__DIR__</span>.<span class="string">'/lib.php'</span>;
+   <span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">'time'</span>])){
+       <span class="keyword">if</span>(!is_numeric(<span class="variable">$_GET</span>[<span class="string">'time'</span>])){
+           <span class="keyword">echo</span> <span class="string">'The time must be number.'</span>;
+       }<span class="keyword">else</span> <span class="keyword">if</span>(<span class="variable">$_GET</span>[<span class="string">'time'</span>] &lt; <span class="number">60</span> * <span class="number">60</span> * <span class="number">24</span> * <span class="number">30</span> * <span class="number">2</span>){
+           <span class="keyword">echo</span> <span class="string">'This time is too short.'</span>;
+       }<span class="keyword">else</span> <span class="keyword">if</span>(<span class="variable">$_GET</span>[<span class="string">'time'</span>] &gt; <span class="number">60</span> * <span class="number">60</span> * <span class="number">24</span> * <span class="number">30</span> * <span class="number">3</span>){
+           <span class="keyword">echo</span> <span class="string">'This time is too long.'</span>;
+       }<span class="keyword">else</span>{
+           sleep((int)<span class="variable">$_GET</span>[<span class="string">'time'</span>]);
+           <span class="keyword">echo</span> <span class="variable">$flag</span>;
+       }
+       <span class="keyword">echo</span> <span class="string">'&lt;hr&gt;'</span>;
+   }
+   highlight_file(<span class="keyword">__FILE__</span>);</span>
+</code></pre><p>输入一个字符串，通过is_numric的判断，要大于5184000小于777600，最后通过sleep函数，就可以输出flag。显然，如果输入一个较大的数，会sleep很长时间。需要一个数大于5184000，然后int之后又要是一个很小的数。</p>
+<p>解决的方案是这样的：</p>
+<pre><code><span class="php"><span class="preprocessor">&lt;?php</span>
+<span class="keyword">echo</span> <span class="number">60</span> * <span class="number">60</span> * <span class="number">24</span> * <span class="number">30</span> * <span class="number">2</span>;
+<span class="keyword">echo</span> <span class="string">"\n"</span>;
+<span class="keyword">echo</span> <span class="number">6e6</span>;
+<span class="keyword">echo</span> <span class="string">"\n"</span>;
+<span class="keyword">echo</span> (int)<span class="string">'6e6'</span>;
+<span class="keyword">echo</span> <span class="string">"\n"</span>;
+<span class="keyword">echo</span> <span class="number">60</span> * <span class="number">60</span> * <span class="number">24</span> * <span class="number">30</span> * <span class="number">3</span>;</span>
+</code></pre><p>可以看以上脚本输出内容:</p>
+<pre><code><span class="number">5184000</span>
+<span class="number">6000000</span>
+<span class="number">6</span>
+<span class="number">7776000</span>
+</code></pre><p>使用科学计数法。</p>
+<p>看了一些writeup，只是给出了解决的办法，但是并没有详细的说明，为什么会这样。有的地方提到说是弱类型，虽然这几次比较存在类型的自动转换，但是跟我理解的弱类型的自动转换存在差异。所以想要探究一番。</p>
+<h2 id="黑盒测试">黑盒测试</h2><p><img src="/images/phpcore1.png" alt=""><br>可以看到当接收到科学计数法表示的字符串跟一个整型变量运算(‘6e6’-0)，6e6自动并不是自动转换成了int型，而是转换成了float，所以最终的数字是float型的6000000。最后两行代码可以直接的说明了问题。使用int强制转换一个科学计数法表示的字符串，转换过程中并不能识别科学计数法，只是把e当做普通字符了。效果跟6a6是一样的。而用float转成浮点数，则可以成功识别科学计数法。</p>
+<p><img src="/images/phpcore2.png" alt=""></p>
+<h2 id="feature_or_bug">feature or bug</h2><p>我的感觉是这应该是php的一个bug。同一个字符串，转换成int型和float型有着两种解释。正常的逻辑应该是(int)’6e6’ = (int)(float)’6e6’。这样才比较符合正常的一个理解逻辑。</p>
+<p>找了几个php的版本，分别做了下测试：</p>
+<p>测试脚本如下：</p>
+<pre><code>import docker
+client = docker.<span class="function"><span class="title">from_env</span><span class="params">()</span></span>
+
+
+php_versions = [<span class="string">'5.3'</span>,<span class="string">'5.4'</span>,<span class="string">'5.5'</span>,<span class="string">'5.6'</span>, <span class="string">'7.0'</span>,<span class="string">'7.1'</span>,<span class="string">'7.2'</span>]
+<span class="keyword">for</span> version <span class="function"><span class="title">in</span><span class="params">(php_versions)</span></span>:
+php = <span class="string">"php:"</span>+version + <span class="string">"-cli"</span>
+
+<span class="function"><span class="title">print</span><span class="params">(php)</span></span>
+<span class="function"><span class="title">print</span><span class="params">(<span class="string">"echo((int)'6e6')"</span>)</span></span>
+<span class="function"><span class="title">print</span><span class="params">(client.containers.run(<span class="string">"php:"</span>+version+<span class="string">"-cli"</span>, <span class="string">''</span><span class="string">'php -r "echo((int)'</span><span class="number">6</span>e6<span class="string">');"'</span><span class="string">''</span>)</span></span>)
+<span class="function"><span class="title">print</span><span class="params">(<span class="string">"echo((float)'6e6')"</span>)</span></span>
+<span class="function"><span class="title">print</span><span class="params">(client.containers.run(<span class="string">"php:"</span>+version+<span class="string">"-cli"</span>, <span class="string">''</span><span class="string">'php -r "echo((float)'</span><span class="number">6</span>e6<span class="string">');"'</span><span class="string">'’))</span></span></span>
+</code></pre><p>结果如下：</p>
+<pre><code>➜  dockerpy python phptest<span class="class">.py</span>
+php:<span class="number">5.3</span>-cli
+<span class="function"><span class="title">echo</span><span class="params">((int)</span></span><span class="string">'6e6'</span>)
+<span class="number">6</span>
+<span class="function"><span class="title">echo</span><span class="params">((float)</span></span><span class="string">'6e6'</span>)
+<span class="number">6000000</span>
+php:<span class="number">5.4</span>-cli
+<span class="function"><span class="title">echo</span><span class="params">((int)</span></span><span class="string">'6e6'</span>)
+<span class="number">6</span>
+<span class="function"><span class="title">echo</span><span class="params">((float)</span></span><span class="string">'6e6'</span>)
+<span class="number">6000000</span>
+php:<span class="number">5.5</span>-cli
+<span class="function"><span class="title">echo</span><span class="params">((int)</span></span><span class="string">'6e6'</span>)
+<span class="number">6</span>
+<span class="function"><span class="title">echo</span><span class="params">((float)</span></span><span class="string">'6e6'</span>)
+<span class="number">6000000</span>
+php:<span class="number">5.6</span>-cli
+<span class="function"><span class="title">echo</span><span class="params">((int)</span></span><span class="string">'6e6'</span>)
+<span class="number">6</span>
+<span class="function"><span class="title">echo</span><span class="params">((float)</span></span><span class="string">'6e6'</span>)
+<span class="number">6000000</span>
+php:<span class="number">7.0</span>-cli
+<span class="function"><span class="title">echo</span><span class="params">((int)</span></span><span class="string">'6e6'</span>)
+<span class="number">6</span>
+<span class="function"><span class="title">echo</span><span class="params">((float)</span></span><span class="string">'6e6'</span>)
+<span class="number">6000000</span>
+php:<span class="number">7.1</span>-cli
+<span class="function"><span class="title">echo</span><span class="params">((int)</span></span><span class="string">'6e6'</span>)
+<span class="number">6000000</span>
+<span class="function"><span class="title">echo</span><span class="params">((float)</span></span><span class="string">'6e6'</span>)
+<span class="number">6000000</span>
+php:<span class="number">7.2</span>-cli
+<span class="function"><span class="title">echo</span><span class="params">((int)</span></span><span class="string">'6e6'</span>)
+<span class="number">6000000</span>
+<span class="function"><span class="title">echo</span><span class="params">((float)</span></span><span class="string">'6e6'</span>)
+<span class="number">6000000</span>
+</code></pre><p>在php7.0以前的版本中(int)’6e6’结果是6，但是在7.1以后的版本中，(int)’6e6’已经是6000000，符合(int)’6e6’ = (int)(float)’6e6’这个逻辑了。</p>
+<h2 id="php内核分析">php内核分析</h2><p>以下内容引用自《php7内核剖析》：</p>
+<p>PHP是弱类型语言，不需要明确的定义变量的类型，变量的类型根据使用时的上下文所决定，也就是变量会根据不同表达式所需要的类型自动转换，比如求和，PHP会将两个相加的值转为long、double再进行加和。每种类型转为另外一种类型都有固定的规则，当某个操作发现类型不符时就会按照这个规则进行转换，这个规则正是弱类型实现的基础。<br>除了自动类型转换，PHP还提供了一种强制的转换方式:</p>
+<ul>
+<li>(int)/(integer)：转换为整形 integer</li>
+<li>(bool)/(boolean)：转换为布尔类型 boolean</li>
+<li>(float)/(double)/(real)：转换为浮点型 float</li>
+<li>(string)：转换为字符串 string</li>
+<li>(array)：转换为数组 array</li>
+<li>(object)：转换为对象 object</li>
+<li>(unset)：转换为 NULL<br>无论是自动类型转换还是强制类型转换，不是每种类型都可以转为任意其他类型。</li>
+</ul>
+<p>4.1.3 转换为整型</p>
+<p>其它类型转为整形的转换规则：</p>
+<ul>
+<li>NULL：转为0</li>
+<li>布尔型：false转为0，true转为1</li>
+<li>浮点型：向下取整，比如：(int)2.8 =&gt; 2</li>
+<li>字符串：就是C语言strtoll()的规则，如果字符串以合法的数值开始，则使用该数值，否则其值为 0（零），合法数值由可选的正负号，后面跟着一个或多个数字（可能有小数点），再跟着可选的指数部分</li>
+<li>数组：很多操作不支持将一个数组自动整形处理，比如：array() + 2，将报error错误，但可以强制把数组转为整形，非空数组转为1，空数组转为0，没有其他值</li>
+<li>对象：与数组类似，很多操作也不支持将对象自动转为整形，但有些操作只会抛一个warning警告，还是会把对象转为1操作的，这个需要看不同操作的处理情况</li>
+<li><p>资源：转为分配给这个资源的唯一编号<br>具体处理：</p>
+<p>  ZEND_API zend_long ZEND_FASTCALL _zval_get_long_func(zval *op)<br>  {<br>  try_again:</p>
+<pre><code><span class="keyword">switch</span> (Z_TYPE_P(op)) {
+    <span class="keyword">case</span> <span class="string">IS_NULL:</span>
+    <span class="keyword">case</span> <span class="string">IS_FALSE:</span>
+        <span class="keyword">return</span> <span class="number">0</span>;
+    <span class="keyword">case</span> <span class="string">IS_TRUE:</span>
+        <span class="keyword">return</span> <span class="number">1</span>;
+    <span class="keyword">case</span> <span class="string">IS_RESOURCE:</span>
+        <span class="comment">//资源将转为zend_resource-&gt;handler</span>
+        <span class="keyword">return</span> Z_RES_HANDLE_P(op);
+    <span class="keyword">case</span> <span class="string">IS_LONG:</span>
+        <span class="keyword">return</span> Z_LVAL_P(op);
+    <span class="keyword">case</span> <span class="string">IS_DOUBLE:</span>
+        <span class="keyword">return</span> zend_dval_to_lval(Z_DVAL_P(op));
+    <span class="keyword">case</span> <span class="string">IS_STRING:</span>
+        <span class="comment">//字符串的转换调用C语言的strtoll()处理</span>
+        <span class="keyword">return</span> ZEND_STRTOL(Z_STRVAL_P(op), NULL, <span class="number">10</span>);
+    <span class="keyword">case</span> <span class="string">IS_ARRAY:</span>
+        <span class="comment">//根据数组是否为空转为0,1</span>
+        <span class="keyword">return</span> zend_hash_num_elements(Z_ARRVAL_P(op)) ? 1 : <span class="number">0</span>;
+    <span class="keyword">case</span> <span class="string">IS_OBJECT:</span>
+        {  
+            zval dst;
+            convert_object_to_type(op, &amp;dst, IS_LONG, convert_to_long);
+            <span class="keyword">if</span> (Z_TYPE(dst) == IS_LONG) {
+                <span class="keyword">return</span> Z_LVAL(dst);
+            } <span class="keyword">else</span> {
+                <span class="comment">//默认情况就是1</span>
+                <span class="keyword">return</span> <span class="number">1</span>;
+            }
+        }
+    <span class="keyword">case</span> <span class="string">IS_REFERENCE:</span>
+        op = Z_REFVAL_P(op);
+        goto try_again;
+        EMPTY_SWITCH_DEFAULT_CASE()
+}
+<span class="keyword">return</span> <span class="number">0</span>;
+</code></pre><p>  }</p>
+</li>
+</ul>
+<p>4.1.4 转换为浮点型</p>
+<p>除字符串类型外，其它类型转换规则与整形基本一致，就是整形转换结果加了一位小数，字符串转为浮点数由zend_strtod()完成，这个函数非常长，定义在zend_strtod.c中，这里不作说明。</p>
+<p>书中提到，字符串转换为整型，是C语言strtol()的规则，由ZEND_STRTOL函数完成的，字符串转换成浮点数，是用zend_strtod函数完成的。</p>
+<p>对比一下C语言的strtol和strtod</p>
+<p><img src="/images/phpcore3.png" alt=""></p>
+<p><img src="/images/phpcore4.png" alt=""></p>
+<p>strtol不能识别科学计数法，字符串6e6转成整型是6，而strtod可以识别科学计数法，6e6转成浮点数是6000000。</p>
+<h2 id="动态调试php内核">动态调试php内核</h2><h1 id="编译debug版php。">编译debug版php。</h1><pre><code>git clone http://git.php.net/repository/php-src.git
+cd php-src
+git checkout PHP-<span class="number">7.0</span>
+./buildconf
+./configure --disable-all --enable-debug --prefix=<span class="variable">$HOME</span>/myphp
+make
+make install
+</code></pre><h1 id="gdb调试">gdb调试</h1><pre><code>gdb --<span class="keyword">args</span> php -<span class="keyword">r</span> "<span class="keyword">echo</span>((<span class="keyword">int</span>)<span class="string">'6e6'</span>);”
+</code></pre><p>在类型转换函数上下断点：</p>
+<pre><code><span class="tag">b</span> _zval_get_long_func
+</code></pre><p><img src="/images/phpcore5.png" alt=""></p>
+<p>可以看到使用zend_strtol函数进行转换。</p>
+<p><img src="/images/phpcore6.png" alt=""></p>
+<p>zent_strtol 直接是使用strtoll。</p>
+<p>调试一下7.1版本php</p>
+<p><img src="/images/phpcore7.png" alt=""></p>
+<p>可以看到7.1版中使用了新的函数is_numeric_string替代strtoll。注释中说明使用新函数是为了避免strtoll的溢出问题，自己实现了is_number_string函数来替代strtoll。然而并没有提到科学计数法表示的字符串的问题。但是实际实现上跟strtoll有不同。妥善的处理科学计数法表示的数字。</p>
+<p><img src="/images/phpcore8.png" alt=""></p>
+<p>最终的字符串转整型的逻辑如下：</p>
+<p><img src="/images/phpcore9.png" alt=""></p>
+<p>最终的处理逻辑是如果发现了小数点或者数字e，就采用zend_strtod来处理，这样就跟字符串转浮点数是一模一样的处理逻辑了。所以最终的结果也就符合了(int)’6e6’ = (int)(float)’6e6’这个逻辑。</p>
+<h2 id="思考">思考</h2><p>那么这到底是个bug还是feature呢。最终的结果来看，php7.0及以前的版本使用strtoll转字符串到整型，7.1以后的版本使用了strtod来转换。所以strtoll不能识别科学计数法表示的数字是不是一个bug。</p>
+<h2 id="参考资料">参考资料</h2><p><a href="http://www.freebuf.com/articles/web/165537.html" target="_blank" rel="external">solveme.peng.kr的中文writeup:http://www.freebuf.com/articles/web/165537.html</a><br><a href="https://gywbd.github.io/posts/2016/2/debug-php-source-code.html" target="_blank" rel="external">php源码调试的文章:https://gywbd.github.io/posts/2016/2/debug-php-source-code.html</a><br><a href="https://github.com/pangudashu/php7-internal" target="_blank" rel="external">php7内核分析：https://github.com/pangudashu/php7-internal</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<p>个人微信公众号</p>
+<img src="/images/coffee.png">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/代码审计/">代码审计</a>
+</div>
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://xdxd.love/2018/04/12/一次php内核源码分析的经历/" data-title="一次php内核源码分析的经历 | xd_xd&#39;s blog" data-tsina="5256150165" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2018/03/05/变量覆盖漏洞的思考/"  title="变量覆盖漏洞的思考">
+ <strong>下一篇：</strong><br/> 
+ <span>变量覆盖漏洞的思考
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2018/04/12/一次php内核源码分析的经历/" data-title="一次php内核源码分析的经历" data-url="http://xdxd.love/2018/04/12/一次php内核源码分析的经历/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="顯示側邊欄"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目錄</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#solveme-peng-kr_winter_sleep"><span class="toc-number">1.</span> <span class="toc-text">solveme.peng.kr winter  sleep</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#黑盒测试"><span class="toc-number">2.</span> <span class="toc-text">黑盒测试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#feature_or_bug"><span class="toc-number">3.</span> <span class="toc-text">feature or bug</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#php内核分析"><span class="toc-number">4.</span> <span class="toc-text">php内核分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#动态调试php内核"><span class="toc-number">5.</span> <span class="toc-text">动态调试php内核</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#编译debug版php。"><span class="toc-number"></span> <span class="toc-text">编译debug版php。</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#gdb调试"><span class="toc-number"></span> <span class="toc-text">gdb调试</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#思考"><span class="toc-number">1.</span> <span class="toc-text">思考</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">2.</span> <span class="toc-text">参考资料</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隱藏側邊欄"></a></div>
+<aside class="clearfix">
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 訂閱</a>
+</div>
+
+  
+  <div class="widget-wrap">
+    <img src="/images/coffee.png" width="100%" height="100%"/>
+    
+  </div>
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分類</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/cve-and-others/" title="cve and others">cve and others<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>15</sup></a></li>
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/人生苦短/" title="人生苦短">人生苦短<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/代码审计/" title="代码审计">代码审计<sup>31</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/前端安全/" title="前端安全">前端安全<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/加密解密/" title="加密解密">加密解密<sup>4</sup></a></li>
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/折腾不止/" title="折腾不止">折腾不止<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/渗透测试/" title="渗透测试">渗透测试<sup>10</sup></a></li>
+		  
+		
+		  
+		
+		  
+		
+		  
+			<li><a href="/categories/移动安全/" title="移动安全">移动安全<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/黑盒测试/" title="黑盒测试">黑盒测试<sup>8</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">標簽</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/php/" title="php">php<sup>9</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mips/" title="mips">mips<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/万物互联/" title="万物互联">万物互联<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/支付漏洞/" title="支付漏洞">支付漏洞<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/xss/" title="xss">xss<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ssi/" title="ssi">ssi<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcpdump/" title="tcpdump">tcpdump<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/固件/" title="固件">固件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/密码学/" title="密码学">密码学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/折腾/" title="折腾">折腾<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/inspeckage/" title="inspeckage">inspeckage<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/csrf/" title="csrf">csrf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/github/" title="github">github<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ctf/" title="ctf">ctf<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/xposed/" title="xposed">xposed<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/binwalk/" title="binwalk">binwalk<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/php-wdcp/" title="php,wdcp">php,wdcp<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情鏈接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.heysec.org/" target="_blank" title="heysec.org">heysec.org</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://sco4x0.com" target="_blank" title="sco4x0&#39;s blog">sco4x0&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://virusdefender.net" target="_blank" title="virusdefender&#39;s blog">virusdefender&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackersb.cn/" target="_blank" title="Striker&#39;s blog">Striker&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://www.leavesongs.com/" target="_blank" title="离别歌">离别歌</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.stardustsky.net/" target="_blank" title="Stardustsky博客">Stardustsky博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.waitalone.cn/" target="_blank" title="独自等待">独自等待</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.cnblogs.com/S4b0r/" target="_blank" title="S4b0r&#39; blog">S4b0r&#39; blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.leesec.com/" target="_blank" title="leesec">leesec</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://xss1.com/" target="_blank" title="0x_Jin">0x_Jin</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://bl4ck.in/" target="_blank" title="Tomato">Tomato</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.hackfun.org/" target="_blank" title="4ido10n">4ido10n</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.lynahex.com/" target="_blank" title="lynahex&#39;s blog">lynahex&#39;s blog</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.codersec.net/" target="_blank" title="Bsmali4很忙">Bsmali4很忙</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://blog.leanote.com/thorns" target="_blank" title="thorns">thorns</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+</aside>
+</div>
+    </div>
+    <footer></footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"xdxd"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253479891'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1253479891' type='text/javascript'%3E%3C/script%3E"));</script>
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回頂部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
