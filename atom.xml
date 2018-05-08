@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xdxd.love/"/>
-  <updated>2018-04-12T02:32:20.479Z</updated>
+  <updated>2018-05-08T08:49:25.989Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -14,6 +14,20 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Fireeye关于Logitech Harmony Hub设备安全的读blog笔记</title>
+    <link href="http://xdxd.love/2018/05/08/Fireeye%E5%85%B3%E4%BA%8ELogitech-Harmony-Hub%E8%AE%BE%E5%A4%87%E5%AE%89%E5%85%A8%E7%9A%84%E8%AF%BBblog%E7%AC%94%E8%AE%B0/"/>
+    <id>http://xdxd.love/2018/05/08/Fireeye关于Logitech-Harmony-Hub设备安全的读blog笔记/</id>
+    <published>2018-05-08T08:49:25.000Z</published>
+    <updated>2018-05-08T08:49:25.989Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>一个CTF GAME引发的php内核分析</title>
@@ -2256,36 +2270,6 @@ r = s.<span class="literal">get</span>(<span class="string">"http://httpbin.org/
     
       &lt;p&gt;之前写了一个小脚本，监控网站帖子变化。最近由于这个论坛被CC了，加了360网站宝的防护。导致脚本失效了。所以花了一点时间看了下360网站宝的防CC策略。&lt;/p&gt;
 &lt;p&gt;除了对访问频率的限制，还通过set-cookie设置了一些cookie。通过检查cookie的&lt;br&gt;有效
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>mac上安装burpsuite证书</title>
-    <link href="http://xdxd.love/2017/03/15/mac%E4%B8%8A%E5%AE%89%E8%A3%85burpsuite%E8%AF%81%E4%B9%A6/"/>
-    <id>http://xdxd.love/2017/03/15/mac上安装burpsuite证书/</id>
-    <published>2017-03-15T07:01:29.000Z</published>
-    <updated>2017-03-15T08:14:13.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>环境：burpsuite 1.7.12  mac sierra</p>
-<p>问题：burpsuite无法拦截https的请求，报错信息为：使用了不受支持的协议。ERR_SSL_VERSION_OR_CIPHER_MISMATCH.协议不受支持。</p>
-<p><img src="/images/burpsuitecert1.png" alt=""></p>
-<p>思路：考虑是证书的问题。查看project options的SSL配置。从default修改为Use custom pro<br>tocols and ciphers</p>
-<p><img src="/images/burpsuitecert2.png" alt=""></p>
-<p>发现浏览器报证书不正确，手动同意以后可以打开网站。但是外部的https无法自动加载。</p>
-<p>最终解决方案。在mac上导入burpsuite的证书。</p>
-<p>访问<a href="http://burp/cert" target="_blank" rel="external">http://burp/cert</a> 下载证书。然后打开mac的钥匙串访问。导入证书并且修改<br>PortSwigger CA为始终信任。<br><img src="/images/burpsuitecert3.png" alt=""></p>
-<p>最终效果，浏览器显示为信任。</p>
-<p><img src="/images/burpsuitecert4.png" alt=""></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;环境：burpsuite 1.7.12  mac sierra&lt;/p&gt;
-&lt;p&gt;问题：burpsuite无法拦截https的请求，报错信息为：使用了不受支持的协议。ERR_SSL_VERSION_OR_CIPHER_MISMATCH.协议不受支持。&lt;/p&gt;
-&lt;p&gt;&lt;img s
     
     </summary>
     
