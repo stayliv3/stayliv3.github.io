@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xdxd.love/"/>
-  <updated>2018-05-08T08:49:25.989Z</updated>
+  <updated>2018-05-08T08:58:07.837Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -20,11 +20,34 @@
     <link href="http://xdxd.love/2018/05/08/Fireeye%E5%85%B3%E4%BA%8ELogitech-Harmony-Hub%E8%AE%BE%E5%A4%87%E5%AE%89%E5%85%A8%E7%9A%84%E8%AF%BBblog%E7%AC%94%E8%AE%B0/"/>
     <id>http://xdxd.love/2018/05/08/Fireeye关于Logitech-Harmony-Hub设备安全的读blog笔记/</id>
     <published>2018-05-08T08:49:25.000Z</published>
-    <updated>2018-05-08T08:49:25.989Z</updated>
+    <updated>2018-05-08T08:58:07.837Z</updated>
+    
+    <content type="html"><![CDATA[<p>Fireeye发了一篇文章，标题叫Rooting a Logitech Harmony Hub: Improving Security in Today’s IoT World。root了Logitech Harmony Hub，为今天的物联网世界安全做贡献。也是充满了情怀。</p>
+<p>发现了一下4个漏洞：</p>
+<p>1，不恰当的证书验证<br>2，不安全的升级过程<br>3，固件中存在调试用的符号<br>4，空的root用户密码</p>
+<p>看起来都是逻辑设计上的问题，不是技术宅关心的内存破坏类的漏洞。</p>
+<h2 id="分析过程">分析过程</h2><p>通过串口获取到一些信息</p>
+<p><img src="/images/fireeyehub1.png" alt=""></p>
+<p>手机和设备之间通过http通信，通过做中间人获取到升级包的地址。拿到升级包。</p>
+<p><img src="/images/fireeyehub2.png" alt=""></p>
+<p>分析升级包：<br>使用unsqashfs_all.sh解压升级包。目测用binwalk应该可以。</p>
+<p><img src="/images/fireeyehub3.png" alt=""></p>
+<p>文件没有strip<br><img src="/images/fireeyehub4.png" alt=""></p>
+<p>etc/passwd中root密码为空<br><img src="/images/fireeyehub5.png" alt=""></p>
+<p>但是ssh默认没有启动。</p>
+<p>通过替换升级包，执行命令，启动ssh。获取root权限</p>
+<p><img src="/images/fireeyehub6fir.png" alt=""></p>
+<h2 id="总结">总结</h2><p>简单点说应该是利用中间人攻击，替换升级包获得命令执行权限。一直觉得中间人攻击是一种偏理论的攻击方式。现在大家都用https了。http也被认为是不安全的了。可见防中间人攻击的能力应该作为一种基础的防御能力了。</p>
+<h2 id="参考资料">参考资料</h2><p><a href="https://www.fireeye.com/blog/threat-research/2018/05/rooting-logitech-harmony-hub-improving-iot-security.html" target="_blank" rel="external">https://www.fireeye.com/blog/threat-research/2018/05/rooting-logitech-harmony-hub-improving-iot-security.html</a></p>
+]]></content>
     
     <summary type="html">
     
+      &lt;p&gt;Fireeye发了一篇文章，标题叫Rooting a Logitech Harmony Hub: Improving Security in Today’s IoT World。root了Logitech Harmony Hub，为今天的物联网世界安全做贡献。也是充满了情怀
+    
     </summary>
+    
+      <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
     
     
   </entry>

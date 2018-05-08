@@ -11,16 +11,31 @@
     
 
     
-    <meta name="description">
+    <meta name="description" content="Fireeye发了一篇文章，标题叫Rooting a Logitech Harmony Hub: Improving Security in Today’s IoT World。root了Logitech Harmony Hub，为今天的物联网世界安全做贡献。也是充满了情怀。
+发现了一下4个漏洞：
+1，不恰当的证书验证2，不安全的升级过程3，固件中存在调试用的符号4，空的root用户密码
+看起来都">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Fireeye关于Logitech Harmony Hub设备安全的读blog笔记">
 <meta property="og:url" content="http://xdxd.love/2018/05/08/Fireeye关于Logitech-Harmony-Hub设备安全的读blog笔记/index.html">
 <meta property="og:site_name" content="xd_xd's blog">
-<meta property="og:description">
-<meta property="og:updated_time" content="2018-05-08T08:49:25.989Z">
+<meta property="og:description" content="Fireeye发了一篇文章，标题叫Rooting a Logitech Harmony Hub: Improving Security in Today’s IoT World。root了Logitech Harmony Hub，为今天的物联网世界安全做贡献。也是充满了情怀。
+发现了一下4个漏洞：
+1，不恰当的证书验证2，不安全的升级过程3，固件中存在调试用的符号4，空的root用户密码
+看起来都">
+<meta property="og:image" content="http://xdxd.love/images/fireeyehub1.png">
+<meta property="og:image" content="http://xdxd.love/images/fireeyehub2.png">
+<meta property="og:image" content="http://xdxd.love/images/fireeyehub3.png">
+<meta property="og:image" content="http://xdxd.love/images/fireeyehub4.png">
+<meta property="og:image" content="http://xdxd.love/images/fireeyehub5.png">
+<meta property="og:image" content="http://xdxd.love/images/fireeyehub6fir.png">
+<meta property="og:updated_time" content="2018-05-08T08:58:07.837Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Fireeye关于Logitech Harmony Hub设备安全的读blog笔记">
-<meta name="twitter:description">
+<meta name="twitter:description" content="Fireeye发了一篇文章，标题叫Rooting a Logitech Harmony Hub: Improving Security in Today’s IoT World。root了Logitech Harmony Hub，为今天的物联网世界安全做贡献。也是充满了情怀。
+发现了一下4个漏洞：
+1，不恰当的证书验证2，不安全的升级过程3，固件中存在调试用的符号4，空的root用户密码
+看起来都">
 
     
     <link rel="alternative" href="/atom.xml" title="xd_xd&#39;s blog" type="application/atom+xml">
@@ -99,16 +114,38 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目錄</strong>
 		
-			
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#分析过程"><span class="toc-number">1.</span> <span class="toc-text">分析过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">2.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">3.</span> <span class="toc-text">参考资料</span></a></li></ol>
 		
 		</div>
 		
-		  
+		<p>Fireeye发了一篇文章，标题叫Rooting a Logitech Harmony Hub: Improving Security in Today’s IoT World。root了Logitech Harmony Hub，为今天的物联网世界安全做贡献。也是充满了情怀。</p>
+<p>发现了一下4个漏洞：</p>
+<p>1，不恰当的证书验证<br>2，不安全的升级过程<br>3，固件中存在调试用的符号<br>4，空的root用户密码</p>
+<p>看起来都是逻辑设计上的问题，不是技术宅关心的内存破坏类的漏洞。</p>
+<h2 id="分析过程">分析过程</h2><p>通过串口获取到一些信息</p>
+<p><img src="/images/fireeyehub1.png" alt=""></p>
+<p>手机和设备之间通过http通信，通过做中间人获取到升级包的地址。拿到升级包。</p>
+<p><img src="/images/fireeyehub2.png" alt=""></p>
+<p>分析升级包：<br>使用unsqashfs_all.sh解压升级包。目测用binwalk应该可以。</p>
+<p><img src="/images/fireeyehub3.png" alt=""></p>
+<p>文件没有strip<br><img src="/images/fireeyehub4.png" alt=""></p>
+<p>etc/passwd中root密码为空<br><img src="/images/fireeyehub5.png" alt=""></p>
+<p>但是ssh默认没有启动。</p>
+<p>通过替换升级包，执行命令，启动ssh。获取root权限</p>
+<p><img src="/images/fireeyehub6fir.png" alt=""></p>
+<h2 id="总结">总结</h2><p>简单点说应该是利用中间人攻击，替换升级包获得命令执行权限。一直觉得中间人攻击是一种偏理论的攻击方式。现在大家都用https了。http也被认为是不安全的了。可见防中间人攻击的能力应该作为一种基础的防御能力了。</p>
+<h2 id="参考资料">参考资料</h2><p><a href="https://www.fireeye.com/blog/threat-research/2018/05/rooting-logitech-harmony-hub-improving-iot-security.html" target="_blank" rel="external">https://www.fireeye.com/blog/threat-research/2018/05/rooting-logitech-harmony-hub-improving-iot-security.html</a></p>
+  
 	</div>
 		<footer class="article-footer clearfix">
 <p>个人微信公众号</p>
 <img src="/images/coffee.png">
 <div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/万物互联/">万物互联</a>
+</div>
 
 
 </div>
@@ -153,7 +190,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目錄</strong>
  
- 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#分析过程"><span class="toc-number">1.</span> <span class="toc-text">分析过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">2.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">3.</span> <span class="toc-text">参考资料</span></a></li></ol>
  
   </div>
 
@@ -182,7 +219,7 @@
 		  
 		
 		  
-			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>15</sup></a></li>
+			<li><a href="/categories/万物互联/" title="万物互联">万物互联<sup>16</sup></a></li>
 		  
 		
 		  
