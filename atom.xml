@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xdxd.love/"/>
-  <updated>2018-05-08T08:58:07.837Z</updated>
+  <updated>2018-05-09T01:57:33.245Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -14,6 +14,128 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>exploit_me 基于ARM架构的二进制漏洞教程之整数溢出</title>
+    <link href="http://xdxd.love/2018/05/09/exploit-me-%E5%9F%BA%E4%BA%8EARM%E6%9E%B6%E6%9E%84%E7%9A%84%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%BC%8F%E6%B4%9E%E6%95%99%E7%A8%8B%E4%B9%8B%E6%95%B4%E6%95%B0%E6%BA%A2%E5%87%BA/"/>
+    <id>http://xdxd.love/2018/05/09/exploit-me-基于ARM架构的二进制漏洞教程之整数溢出/</id>
+    <published>2018-05-09T01:56:32.000Z</published>
+    <updated>2018-05-09T01:57:33.245Z</updated>
+    
+    <content type="html"><![CDATA[<p><a href="https://github.com/bkerler/exploit_me" target="_blank" rel="external">https://github.com/bkerler/exploit_me</a> 是github上一个学习ARM架构下二进制漏洞的项目。目前包括13个不同类型的漏洞，包括</p>
+<p>Level 1: Integer overflow</p>
+<p>Level 2: Stack overflow</p>
+<p>Level 3: Array overflow</p>
+<p>Level 4: Off by one</p>
+<p>Level 5: Stack cookie</p>
+<p>Level 6: Format string</p>
+<p>Level 7: Heap overflow</p>
+<p>Level 8: Structure redirection / Type confusion</p>
+<p>Level 9: Zero pointers</p>
+<p>Level 10: Command injection</p>
+<p>Level 11: Path Traversal</p>
+<p>Level 12: Basic ROP</p>
+<p>Level 13: Use-after-free</p>
+<p>本系列文章会一一介绍每个漏洞的详细原理和常见的利用方式和联系真实世界的物联网设备漏洞做分析。</p>
+<h2 id="测试环境">测试环境</h2><p>exploit_me提供了一个vagrant环境用作测试，不过下载vagrant速度非常慢，建议自己编译源码，在自己的arm环境中调试。也可以直接下载我编译好的可执行文件。<a href="https://github.com/stayliv3/blog_material/blob/master/exploit4" target="_blank" rel="external">https://github.com/stayliv3/blog_material/blob/master/exploit4</a></p>
+<h2 id="ida反汇编">ida反汇编</h2><p>第一关的密码试hello。先尝试运行。</p>
+<p><img src="http://image.3001.net/images/20180508/15257632679296.png!small" alt="armint1.png"></p>
+<p>降低难度，可以先看一下源码：</p>
+<p>/<em> LEVEL 1 </em>/</p>
+<p>int int_overflow(char* value)</p>
+<p>{</p>
+<pre><code><span class="keyword">unsigned</span> <span class="keyword">short</span> number;
+
+<span class="keyword">int</span> i = atoi(value);
+
+    <span class="keyword">unsigned</span> <span class="keyword">int</span> h=i;
+
+<span class="keyword">if</span> (h&lt;=<span class="number">0</span>)
+
+{
+
+    <span class="built_in">printf</span>(<span class="string">"Value less or equal 0 is not allowed.\n"</span>);
+
+    <span class="built_in">exit</span>(<span class="number">0</span>);
+
+}
+
+number=i;
+
+<span class="keyword">if</span> (number!=<span class="number">0</span>)
+
+{
+
+    <span class="built_in">printf</span>(<span class="string">"Value %d defined.\n"</span>,number);
+
+    <span class="built_in">exit</span>(<span class="number">0</span>);
+
+}
+
+<span class="keyword">if</span> (i&lt;<span class="number">0</span> || number==<span class="number">0</span>) <span class="comment">// Two ways of overflow possible ... int AND short :)</span>
+
+{
+
+    <span class="built_in">printf</span>(<span class="string">"Level 2 Password: \"%s\"\n"</span>,passwds[<span class="number">1</span>]);
+
+}
+</code></pre><p>return 0;</p>
+<p>}</p>
+<p>unsigned short number;</p>
+<pre><code><span class="keyword">int</span> i = atoi(value);
+
+    <span class="keyword">unsigned</span> <span class="keyword">int</span> h=i;
+
+<span class="keyword">if</span> (h&lt;=<span class="number">0</span>)
+
+{
+
+    <span class="built_in">printf</span>(<span class="string">"Value less or equal 0 is not allowed.\n"</span>);
+
+    <span class="built_in">exit</span>(<span class="number">0</span>);
+
+} 
+</code></pre><p>将输入字符串使用atoi转换成int类型，然后转换成无符号int，如果结果小于0则退出，这里显然输入一个正数就可以不退出。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">if (number!=0)&#10;&#10;&#160;&#160;&#160; &#123;&#10;&#10;&#160;&#160;&#160;&#160;&#160;&#160;&#160; printf(&#34;Value %d defined.\n&#34;,number);&#10;&#10;&#160;&#160;&#160;&#160;&#160;&#160;&#160; exit(0);&#10;&#10;&#160;&#160;&#160; &#125;&#10;&#10;&#160;&#160;&#160; if (i&#60;0 || number==0) // Two ways of overflow possible ... int AND short :)&#10;&#10;&#160;&#160;&#160; &#123;&#10;&#10;&#160;&#160;&#160;&#160;&#160;&#160;&#160; printf(&#34;Level 2 Password: \&#34;%s\&#34;\n&#34;,passwds[1]);&#10;&#10;&#160;&#160;&#160; &#125;</span><br></pre></td></tr></table></figure>
+<p>number是short型，将int赋值给short会造成整数的截断问题。然后判断number是否等于0，如果不等于0则退出，如果小于0或者等于0 则打印出下一关的password。显然，我们的输入需要满足这个条件，进入这个分支逻辑。</p>
+<p>根据程序输入，在ida中定位相关的函数：<img src="http://image.3001.net/images/20180508/15257634881105.png!small" alt="armint2.png"></p>
+<h2 id="gdb调试">gdb调试</h2><p>设置断点和程序运行的参数：</p>
+<p>gef&gt; b int_overflowBreakpoint 1 at 0x11164</p>
+<p>gef&gt; set args hello 2222</p>
+<p>第一个可能出现问题的语句是</p>
+<p>int i = atoi(value); </p>
+<p> unsigned int h=i;</p>
+<p>有符号数转换成无符号数，由于有符号数和无符号数的表示范围不一致，在转换过程中容易出现问题。查看对应的汇编代码：当输入 -1时：</p>
+<p><img src="http://image.3001.net/images/20180508/15257635873493.png!small" alt="armint3.png"></p>
+<p>可以看到对应的汇编代码为：</p>
+<p>str r0,[r11,#-8]</p>
+<p>ldr r3,[r11,#-8]</p>
+<p>str r3,[r11,#-12]</p>
+<p>ldr r3,[r11,#-12]</p>
+<p>进行了2次内存的读写，但是依然是r0的值没有变化，其实在汇编语言层面是没有有符号数和无符号数的区别的。是否有符号是更上一层的语言的解释效果。可以参考附录中关于符号数，补码的原理。对底层来说只有二进制加法而已。所以有符号数和无符号数的转换，本身变量的二进制是不变的，变的只是上一层语言对其的解释。</p>
+<p>第二个容易出现问题的点： number=i;将整型赋值给short int。会造成截断。</p>
+<p><img src="http://image.3001.net/images/20180508/15257636375401.png!small" alt="armint4.png"></p>
+<p>对应的汇编代码为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0x111a4 &#60;int_overflow(char*)+64&#62; ldr    r3,  [r11,  #-8]&#10;0x111a8 &#60;int_overflow(char*)+68&#62; strh   r3,  [r11,  #-14]&#10;0x111ac &#60;int_overflow(char*)+72&#62; ldrh   r3,  [r11,  #-14]</span><br></pre></td></tr></table></figure>
+<p>strh 加了h标记表示half word。取低位的2个字节。</p>
+<p>所以保证低位2个字节是全零就可以绕过这个判断。</p>
+<p>比如0x10000,10进制是65536，利用整数的阶段问题。也可以使用负数-2147483648，利用了有符号数转无符号数的问题。</p>
+<p><img src="http://image.3001.net/images/20180508/15257636751284.png!small" alt="armint6.png"><br><img src="/images/armint7.png" alt="armint6.png"></p>
+<h2 id="参考资料">参考资料</h2><p><a href="http://phrack.org/issues/60/10.html#article" target="_blank" rel="external">http://phrack.org/issues/60/10.html#article</a></p>
+<p><a href="http://roo0.me/2017/11/06/%E6%95%B4%E6%95%B0%E6%BA%A2%E5%87%BA/" target="_blank" rel="external">http://roo0.me/2017/11/06/%E6%95%B4%E6%95%B0%E6%BA%A2%E5%87%BA/</a></p>
+<p><a href="https://www.zhihu.com/question/20159860" target="_blank" rel="external">https://www.zhihu.com/question/20159860</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;a href=&quot;https://github.com/bkerler/exploit_me&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;https://github.com/bkerler/exploit_me&lt;/a&gt; 是github上一个学习ARM架
+    
+    </summary>
+    
+      <category term="万物互联" scheme="http://xdxd.love/categories/%E4%B8%87%E7%89%A9%E4%BA%92%E8%81%94/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>Fireeye关于Logitech Harmony Hub设备安全的读blog笔记</title>
@@ -2257,42 +2379,6 @@ public <span class="keyword">function</span> renderRequest()
     <summary type="html">
     
       &lt;p&gt;在docker ubuntu:16.04中部署&lt;a href=&quot;https://github.com/0xbug/SQLiScanner，遇到报错：&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;https://github.com/0xbug/SQLiS
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>python处理Set-Cookie</title>
-    <link href="http://xdxd.love/2017/03/30/python%E5%A4%84%E7%90%86Set-Cookie/"/>
-    <id>http://xdxd.love/2017/03/30/python处理Set-Cookie/</id>
-    <published>2017-03-30T07:50:18.000Z</published>
-    <updated>2017-03-30T08:06:04.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>之前写了一个小脚本，监控网站帖子变化。最近由于这个论坛被CC了，加了360网站宝的防护。导致脚本失效了。所以花了一点时间看了下360网站宝的防CC策略。</p>
-<p>除了对访问频率的限制，还通过set-cookie设置了一些cookie。通过检查cookie的<br>有效性来决定是否可以访问。</p>
-<p>当没有cookie的访问的时候，是来到一个设置cookie的中间页面。</p>
-<p><img src="/images/session1.png" alt=""></p>
-<p><img src="/images/session2.png" alt=""></p>
-<p>拿到有效的cookie再次访问，才会真正的获得内容。而且cookie是存在有效时间的。获得一个cookie放到脚本里的思路也是不行的。</p>
-<p>所以需要脚本模拟浏览器解析setcookie的设置，根据服务器返回的setcookie头设置cookie，再去请求内容。这个需求使用requests库的session对象，可以方便的实现。</p>
-<p><a href="http://docs.python-requests.org/zh_CN/latest/user/advanced.html" target="_blank" rel="external">http://docs.python-requests.org/zh_CN/latest/user/advanced.html</a></p>
-<pre><code>s = requests.Session()
-
-s.<span class="literal">get</span>('http:<span class="comment">//httpbin.org/cookies/set/sessioncookie/123456789')</span>
-r = s.<span class="literal">get</span>(<span class="string">"http://httpbin.org/cookies"</span>)
-
-<span class="keyword">print</span>(r.text)
-# '{<span class="string">"cookies"</span>: {<span class="string">"sessioncookie"</span>: <span class="string">"123456789"</span>}}'
-</code></pre><p>360网站宝设置了BuJ8<em>2132</em>开头的多个cookie。</p>
-<p><img src="/images/session3.png" alt=""></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;之前写了一个小脚本，监控网站帖子变化。最近由于这个论坛被CC了，加了360网站宝的防护。导致脚本失效了。所以花了一点时间看了下360网站宝的防CC策略。&lt;/p&gt;
-&lt;p&gt;除了对访问频率的限制，还通过set-cookie设置了一些cookie。通过检查cookie的&lt;br&gt;有效
     
     </summary>
     
