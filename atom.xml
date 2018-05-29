@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xdxd.love/"/>
-  <updated>2018-05-09T01:57:33.245Z</updated>
+  <updated>2018-05-23T07:16:46.420Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -14,6 +14,38 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>360固件分析服务分析报告</title>
+    <link href="http://xdxd.love/2018/05/23/360%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E6%9C%8D%E5%8A%A1%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A/"/>
+    <id>http://xdxd.love/2018/05/23/360固件分析服务分析报告/</id>
+    <published>2018-05-23T06:40:30.000Z</published>
+    <updated>2018-05-23T07:16:46.420Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="该服务是否合适引入">该服务是否合适引入</h2><p>目前360开放的固件扫描服务提供的报告只有固件的一些概要信息和发现的漏洞个数，没有具体的漏洞细节。我用这个扫描360摄像机的固件也显示了发现十几个CVE漏洞，对我们业务来说是基本没有价值。如果他们可以开放报告细节的话，会对我们的固件安全分析有一定的参考价值。<br>报告内容如下：<br><img src="/images/3601.png" alt=""><br>他们目前开放的这个服务的作用基本只对360自身业务有用，用来吸引客户咨询安全服务，作为SAAS服务收集设备固件和分析报告。</p>
+<h2 id="后台架构设计猜想">后台架构设计猜想</h2><p>目前360的固件安全监测服务给出的报告有4个监测项发现的问题数量。监测项分别如下：</p>
+<p>包含密码文件数量<br>包含密钥文件数量<br>包含危险函数的可执行文件数量<br>已知CVE漏洞</p>
+<p>从他们的分析项目来看，应该是解包之后，做反汇编的静态分析和三方库和系统指纹的自动分析。他们做的事情基本如下图所示，都是静态分析层面的事情。物联网固件跟传统的可执行文件自动化分析相比，由于固件一般会有对硬件的依赖，所以动态分析会比较难。很难以有统一的自动化动态分析方案。</p>
+<p><img src="/images/3602.png" alt=""></p>
+<p>通过360代码安全的同学拿到了后台导出的详细报告。通过分析报告发现，他们对CVE漏洞的识别除了三方库的指纹的方式，看起来像是做了CVE漏洞指纹，通过深度学习的方式来识别某个文件代码段是否存在漏洞。因为他分析一个小米的固件，会关联到思科等其他品牌设备的漏洞。所以他们应该是在做物联网设备漏洞库和漏洞代码特征识别这样子的事情。</p>
+<p><img src="/images/3603.png" alt=""></p>
+<h2 id="附录:海康威视NAS设备扫描报告">附录:海康威视NAS设备扫描报告</h2><p>########################## 检测报告</p>
+<p>+++++++++++固件信息</p>
+<p>[+] 固件名称: all.tar<br>[+] MD5: 195c4b7c2c28d990c1bd6464916ba3d7<br>[+] 固件大小: 39448067 (Byte)</p>
+<p>+++++++++++文件系统信息</p>
+<p>[+] 文件系统大小: 22057041 (Byte)<br>[+] 系统架构: AArch64 64-bit LSB<br>[+] 可执行文件数量: 31<br> |<br>  -&gt; /bin/busybox<br>  -&gt; /bin/bash<br>  -&gt; /bin/psh<br>  -&gt; /lib/libgcc_s.so.1<br>  -&gt; /lib/libc-2.22.so<br>  -&gt; /lib/libpthread-2.22.so<br>  -&gt; /lib/libutil-2.22.so<br>  -&gt; /lib/libnss_dns-2.22.so<br>  -&gt; /lib/libatomic.so.1.1.0<br>  -&gt; /lib/libresolv-2.22.so<br>  -&gt; /lib/librt-2.22.so<br>  -&gt; /lib/libdl-2.22.so<br>  -&gt; /lib/libnss_files-2.22.so<br>  -&gt; /lib/libcrypt-2.22.so<br>  -&gt; /lib/libuuid.so.1.3.0<br>  -&gt; /lib/libnsl-2.22.so<br>  -&gt; /lib/ld-2.22.so<br>  -&gt; /lib/libm-2.22.so<br>  -&gt; /lib/libblkid.so.1.1.0<br>  -&gt; /histor/bin/temp_control<br>  -&gt; /histor/bin/product_test<br>  -&gt; /histor/bin/freetest<br>  -&gt; /histor/bin/upgrade<br>  -&gt; /histor/bin/tutk_uid_test<br>  -&gt; /histor/bin/P2PTunnelServer<br>  -&gt; /histor/bin/unix_sock_system<br>  -&gt; /histor/bin/P2PTunnelTest<br>  -&gt; /histor/bin/busybox<br>  -&gt; /histor/bin/emclient<br>  -&gt; /histor/bin/unix_sock_cli<br>  -&gt; /histor/bin/emhistor<br>[+] 动态链接库数量: 16<br> |<br>  -&gt; /lib/libgcc_s.so.1<br>  -&gt; /lib/libc-2.22.so<br>  -&gt; /lib/libpthread-2.22.so<br>  -&gt; /lib/libutil-2.22.so<br>  -&gt; /lib/libnss_dns-2.22.so<br>  -&gt; /lib/libatomic.so.1.1.0<br>  -&gt; /lib/libresolv-2.22.so<br>  -&gt; /lib/librt-2.22.so<br>  -&gt; /lib/libdl-2.22.so<br>  -&gt; /lib/libnss_files-2.22.so<br>  -&gt; /lib/libcrypt-2.22.so<br>  -&gt; /lib/libuuid.so.1.3.0<br>  -&gt; /lib/libnsl-2.22.so<br>  -&gt; /lib/ld-2.22.so<br>  -&gt; /lib/libm-2.22.so<br>  -&gt; /lib/libblkid.so.1.1.0</p>
+<p>+++++++++++风险信息</p>
+<p>[+] 包含密钥文件数量: 2<br> |<br>  -&gt; /tmp/Cert.pem<br>  -&gt; /tmp/key.pem<br>[+] 包含危险函数的可执行文件数量: 23<br> |<br>  -&gt; /lib/libdl-2.22.so: strcpy<br>  -&gt; /histor/bin/emclient: strcpy, strncpy, strcat, memcpy, system, popen, sscanf, memset, memmove, sprintf<br>  -&gt; /histor/bin/unix_sock_system: strcpy, memcpy, system, popen, sscanf, memset, sprintf<br>  -&gt; /histor/bin/unix_sock_cli: strcpy, memcpy, popen, sscanf, memset, sprintf<br>  -&gt; /histor/bin/freetest: strcpy, strncpy, strcat, memcpy, sscanf, memset, memmove, sprintf<br>  -&gt; /lib/libpthread-2.22.so: memcpy, sscanf, memset, sprintf<br>  -&gt; /histor/bin/emhistor: strcpy, strncpy, strcat, strncat, memcpy, system, popen, sscanf, memset, memmove, sprintf<br>  -&gt; /histor/bin/P2PTunnelServer: sprintf<br>  -&gt; /histor/bin/upgrade: strcpy, strncpy, memcpy, system, popen, sscanf, memset, sprintf<br>  -&gt; /lib/libnss_dns-2.22.so: memcpy, sprintf<br>  -&gt; /lib/libm-2.22.so: memset, sprintf<br>  -&gt; /lib/libnss_files-2.22.so: strcpy, strncpy, memcpy<br>  -&gt; /histor/bin/product_test: strcpy, strncpy, strcat, strncat, memcpy, system, popen, sscanf, memset, memmove, sprintf<br>  -&gt; /lib/libatomic.so.1.1.0: memcpy<br>  -&gt; /histor/bin/temp_control: strcpy, strncpy, memcpy, system, popen, sscanf, memset, sprintf<br>  -&gt; /histor/bin/tutk_uid_test: memset<br>  -&gt; /lib/libnsl-2.22.so: strcpy, strncpy, memcpy, memmove<br>  -&gt; /lib/libcrypt-2.22.so: strncpy, memcpy, memset<br>  -&gt; /lib/librt-2.22.so: memcpy<br>  -&gt; /lib/libblkid.so.1.1.0: strcpy, strncpy, memcpy, sscanf, memset, memmove, sprintf<br>  -&gt; /lib/libutil-2.22.so: strcpy, strncpy, memcpy, memset<br>  -&gt; /lib/libuuid.so.1.3.0: strncpy, memset, sprintf<br>  -&gt; /lib/libresolv-2.22.so: strcpy, strncpy, memcpy, memset, memmove, sprintf<br>[+] 已知CVE漏洞: 20<br>[+] 注意: CVE结果为模糊匹配, 是可能与此固件相关的漏洞信息, 需要人工审核确定<br> |<br>  -&gt; CVE-2018-0099<br>  -&gt; CVE-2017-5671<br>  -&gt; CVE-2017-16544<br>  -&gt; CVE-2017-15874<br>  -&gt; CVE-2017-15873<br>  -&gt; CVE-2017-14116<br>  -&gt; CVE-2017-14115<br>  -&gt; CVE-2016-6301<br>  -&gt; CVE-2016-5791<br>  -&gt; CVE-2016-2148<br>  -&gt; CVE-2016-2147<br>  -&gt; CVE-2014-9645<br>  -&gt; CVE-2013-1813<br>  -&gt; CVE-2011-5325<br>  -&gt; CVE-2011-2716<br>  -&gt; CVE-2006-5050<br>  -&gt; CVE-2006-1058<br>  -&gt; CVE-2005-2136<br>  -&gt; CVE-2008-1951<br>  -&gt; CVE-2007-3280<br>[+] 包含密码文件数量: 36<br> |<br>  -&gt; /bin/psh<br>  -&gt; /tmp/nand_config/config.txt<br>  -&gt; /lib/libc-2.22.so<br>  -&gt; /lib/libnss_files-2.22.so<br>  -&gt; /histor/init.sh<br>  -&gt; /histor/bin/product_test<br>  -&gt; /histor/bin/tutk_uid_test<br>  -&gt; /histor/bin/emclient<br>  -&gt; /histor/bin/emhistor<br>  -&gt; /histor/bin/wifi/wifimanager/wifi_sta_connect.sh<br>  -&gt; /etc/nsswitch.conf<br>  -&gt; /etc/services<br>  -&gt; /etc/sudoers.d/ctdb<br>  -&gt; /etc/ctdb/debug-hung-script.sh<br>  -&gt; /etc/ctdb/statd-callout<br>  -&gt; /etc/ctdb/ctdb-crash-cleanup.sh<br>  -&gt; /etc/ctdb/debug_locks.sh<br>  -&gt; /etc/ctdb/events.d/20.multipathd<br>  -&gt; /etc/ctdb/events.d/40.fs_use<br>  -&gt; /etc/ctdb/events.d/60.nfs<br>  -&gt; /etc/ctdb/events.d/91.lvs<br>  -&gt; /etc/ctdb/events.d/11.natgw<br>  -&gt; /etc/ctdb/events.d/40.vsftpd<br>  -&gt; /etc/ctdb/events.d/01.reclock<br>  -&gt; /etc/ctdb/events.d/50.samba<br>  -&gt; /etc/ctdb/events.d/49.winbind<br>  -&gt; /etc/ctdb/events.d/11.routing<br>  -&gt; /etc/ctdb/events.d/13.per_ip_routing<br>  -&gt; /etc/ctdb/events.d/31.clamd<br>  -&gt; /etc/ctdb/events.d/41.httpd<br>  -&gt; /etc/ctdb/events.d/10.external<br>  -&gt; /etc/ctdb/events.d/10.interface<br>  -&gt; /etc/ctdb/events.d/62.cnfs<br>  -&gt; /etc/ctdb/events.d/70.iscsi<br>  -&gt; /etc/ctdb/events.d/99.timeout<br>  -&gt; /etc/ctdb/events.d/00.ctdb</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;该服务是否合适引入&quot;&gt;该服务是否合适引入&lt;/h2&gt;&lt;p&gt;目前360开放的固件扫描服务提供的报告只有固件的一些概要信息和发现的漏洞个数，没有具体的漏洞细节。我用这个扫描360摄像机的固件也显示了发现十几个CVE漏洞，对我们业务来说是基本没有价值。如果他们可以开放报告
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>exploit_me 基于ARM架构的二进制漏洞教程之整数溢出</title>
@@ -2357,31 +2389,6 @@ public <span class="keyword">function</span> renderRequest()
     
     
       <category term="java" scheme="http://xdxd.love/tags/java/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>docker下locale与编码问题</title>
-    <link href="http://xdxd.love/2017/04/05/docker%E4%B8%8Blocale%E4%B8%8E%E7%BC%96%E7%A0%81%E9%97%AE%E9%A2%98/"/>
-    <id>http://xdxd.love/2017/04/05/docker下locale与编码问题/</id>
-    <published>2017-04-05T11:27:47.000Z</published>
-    <updated>2017-04-06T05:58:05.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>在docker ubuntu:16.04中部署<a href="https://github.com/0xbug/SQLiScanner，遇到报错：" target="_blank" rel="external">https://github.com/0xbug/SQLiScanner，遇到报错：</a></p>
-<pre><code>UnicodeDecodeError at /api/har/upload
-<span class="attribute">'ascii</span>' codec can<span class="attribute">'t</span> decode byte <span class="number">0</span>xef <span class="keyword">in</span> position <span class="number">642</span>: ordinal <span class="keyword">not</span> <span class="keyword">in</span> <span class="keyword">range</span>(<span class="number">128</span>)
-</code></pre><p>在python编程中经常见到这个错误，是由于没有使用utf8编码导致的。但是这里代码中指定了<br>utf8编码，而且在其他的环境中部署是正常的。</p>
-<p>经过一番google，发现是docker中ubuntu的问题。参考这里：</p>
-<p><a href="https://github.com/buildinspace/peru/issues/136" target="_blank" rel="external">https://github.com/buildinspace/peru/issues/136</a><br><a href="http://jaredmarkell.com/docker-and-locales/" target="_blank" rel="external">http://jaredmarkell.com/docker-and-locales/</a></p>
-<p>docker中locale变量设置问题。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;在docker ubuntu:16.04中部署&lt;a href=&quot;https://github.com/0xbug/SQLiScanner，遇到报错：&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;https://github.com/0xbug/SQLiS
-    
-    </summary>
-    
     
   </entry>
   
