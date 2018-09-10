@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xdxd.love/"/>
-  <updated>2018-05-09T01:57:33.245Z</updated>
+  <updated>2018-09-10T02:39:39.990Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -14,6 +14,20 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>利用SSL问题绕过WAF文章分析</title>
+    <link href="http://xdxd.love/2018/09/10/%E5%88%A9%E7%94%A8SSL%E9%97%AE%E9%A2%98%E7%BB%95%E8%BF%87WAF%E6%96%87%E7%AB%A0%E5%88%86%E6%9E%90/"/>
+    <id>http://xdxd.love/2018/09/10/利用SSL问题绕过WAF文章分析/</id>
+    <published>2018-09-10T02:39:39.000Z</published>
+    <updated>2018-09-10T02:39:39.990Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>exploit_me 基于ARM架构的二进制漏洞教程之整数溢出</title>
@@ -2357,31 +2371,6 @@ public <span class="keyword">function</span> renderRequest()
     
     
       <category term="java" scheme="http://xdxd.love/tags/java/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>docker下locale与编码问题</title>
-    <link href="http://xdxd.love/2017/04/05/docker%E4%B8%8Blocale%E4%B8%8E%E7%BC%96%E7%A0%81%E9%97%AE%E9%A2%98/"/>
-    <id>http://xdxd.love/2017/04/05/docker下locale与编码问题/</id>
-    <published>2017-04-05T11:27:47.000Z</published>
-    <updated>2017-04-06T05:58:05.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>在docker ubuntu:16.04中部署<a href="https://github.com/0xbug/SQLiScanner，遇到报错：" target="_blank" rel="external">https://github.com/0xbug/SQLiScanner，遇到报错：</a></p>
-<pre><code>UnicodeDecodeError at /api/har/upload
-<span class="attribute">'ascii</span>' codec can<span class="attribute">'t</span> decode byte <span class="number">0</span>xef <span class="keyword">in</span> position <span class="number">642</span>: ordinal <span class="keyword">not</span> <span class="keyword">in</span> <span class="keyword">range</span>(<span class="number">128</span>)
-</code></pre><p>在python编程中经常见到这个错误，是由于没有使用utf8编码导致的。但是这里代码中指定了<br>utf8编码，而且在其他的环境中部署是正常的。</p>
-<p>经过一番google，发现是docker中ubuntu的问题。参考这里：</p>
-<p><a href="https://github.com/buildinspace/peru/issues/136" target="_blank" rel="external">https://github.com/buildinspace/peru/issues/136</a><br><a href="http://jaredmarkell.com/docker-and-locales/" target="_blank" rel="external">http://jaredmarkell.com/docker-and-locales/</a></p>
-<p>docker中locale变量设置问题。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;在docker ubuntu:16.04中部署&lt;a href=&quot;https://github.com/0xbug/SQLiScanner，遇到报错：&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;https://github.com/0xbug/SQLiS
-    
-    </summary>
-    
     
   </entry>
   

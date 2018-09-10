@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://xdxd.love/2018/09/10/%E5%88%A9%E7%94%A8SSL%E9%97%AE%E9%A2%98%E7%BB%95%E8%BF%87WAF%E6%96%87%E7%AB%A0%E5%88%86%E6%9E%90/</loc>
+    
+    <lastmod>2018-09-10T02:39:39.990Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://xdxd.love/2018/05/09/exploit-me-%E5%9F%BA%E4%BA%8EARM%E6%9E%B6%E6%9E%84%E7%9A%84%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%BC%8F%E6%B4%9E%E6%95%99%E7%A8%8B%E4%B9%8B%E6%95%B4%E6%95%B0%E6%BA%A2%E5%87%BA/</loc>
     
     <lastmod>2018-05-09T01:57:33.245Z</lastmod>
@@ -639,35 +646,14 @@
   </url>
   
   <url>
-    <loc>http://xdxd.love/2014/10/31/mysqlfeature/</loc>
+    <loc>http://xdxd.love/2015/05/20/java%E6%9C%AC%E5%9C%B0%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E7%9A%84%E5%B0%8F%E6%8A%80%E5%B7%A7/</loc>
     
     <lastmod>2015-11-24T03:27:38.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://xdxd.love/2015/07/07/%E5%AF%86%E7%A0%81%E5%AD%A6%E4%B9%8BReused-Key-Attack/</loc>
-    
-    <lastmod>2015-11-24T03:27:38.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://xdxd.love/2015/06/05/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E4%B9%8Bwdcp%E5%A4%9A%E5%A4%84%E6%BC%8F%E6%B4%9E/</loc>
-    
-    <lastmod>2015-11-24T03:27:38.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://xdxd.love/2015/06/05/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E4%B9%8Becshop%E4%BD%8E%E6%9D%83%E9%99%90%E7%94%A8%E6%88%B7%E6%8F%90%E6%9D%83/</loc>
-    
-    <lastmod>2015-11-24T03:27:38.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://xdxd.love/2015/03/25/maccms/</loc>
+    <loc>http://xdxd.love/2015/05/27/wdcp%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/</loc>
     
     <lastmod>2015-11-24T03:27:38.000Z</lastmod>
     
@@ -681,14 +667,35 @@
   </url>
   
   <url>
-    <loc>http://xdxd.love/2015/05/12/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E5%AE%89%E8%A3%85%E6%B5%81%E7%A8%8Bchecklist/</loc>
+    <loc>http://xdxd.love/2015/11/23/%E5%8D%8E%E5%B1%B1%E6%9D%AFCTF%E5%81%9A%E8%BF%87%E7%9A%84%E5%87%A0%E9%81%93%E9%A2%98/</loc>
     
     <lastmod>2015-11-24T03:27:38.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://xdxd.love/2015/05/20/java%E6%9C%AC%E5%9C%B0%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E7%9A%84%E5%B0%8F%E6%8A%80%E5%B7%A7/</loc>
+    <loc>http://xdxd.love/2015/03/25/maccms/</loc>
+    
+    <lastmod>2015-11-24T03:27:38.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://xdxd.love/2015/06/05/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E4%B9%8Becshop%E4%BD%8E%E6%9D%83%E9%99%90%E7%94%A8%E6%88%B7%E6%8F%90%E6%9D%83/</loc>
+    
+    <lastmod>2015-11-24T03:27:38.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://xdxd.love/2015/03/24/xionghaicms/</loc>
+    
+    <lastmod>2015-11-24T03:27:38.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://xdxd.love/2015/04/27/xkungfoo2015%E8%AE%B0%E5%BD%95/</loc>
     
     <lastmod>2015-11-24T03:27:38.000Z</lastmod>
     
@@ -696,6 +703,13 @@
   
   <url>
     <loc>http://xdxd.love/2014/12/05/ipbsql/</loc>
+    
+    <lastmod>2015-11-24T03:27:38.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://xdxd.love/2015/04/03/refer-xss/</loc>
     
     <lastmod>2015-11-24T03:27:38.000Z</lastmod>
     
@@ -716,63 +730,7 @@
   </url>
   
   <url>
-    <loc>http://xdxd.love/2015/04/15/%E6%92%9E%E5%BA%93%E6%94%BB%E5%87%BB%E9%98%B2%E5%BE%A1%E6%96%B9%E6%A1%88/</loc>
-    
-    <lastmod>2015-11-24T03:27:38.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://xdxd.love/2015/11/23/%E5%8D%8E%E5%B1%B1%E6%9D%AFCTF%E5%81%9A%E8%BF%87%E7%9A%84%E5%87%A0%E9%81%93%E9%A2%98/</loc>
-    
-    <lastmod>2015-11-24T03:27:38.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://xdxd.love/2015/11/16/%E7%9E%8E%E6%8A%98%E8%85%BE%E4%B9%8Bsublime%E6%8F%92%E4%BB%B6%E5%AF%BC%E5%85%A5%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93/</loc>
-    
-    <lastmod>2015-11-24T03:27:38.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://xdxd.love/2015/03/30/%E5%AE%89%E5%85%A8%E4%BD%93%E7%B3%BB%E5%BB%BA%E8%AE%BE/</loc>
-    
-    <lastmod>2015-11-24T03:27:38.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://xdxd.love/2015/05/06/%E9%AA%8C%E8%AF%81%E7%A0%81%E5%AE%89%E5%85%A8%E8%AE%BE%E8%AE%A1/</loc>
-    
-    <lastmod>2015-11-24T03:27:38.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://xdxd.love/2015/04/24/%E5%85%B3%E4%BA%8E%E5%AF%86%E7%A0%81%E5%93%88%E5%B8%8C%E5%AD%98%E5%82%A8%E6%96%B9%E6%A1%88%E7%9A%84%E8%AE%BE%E8%AE%A1/</loc>
-    
-    <lastmod>2015-11-24T03:27:38.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://xdxd.love/2015/04/02/yiqicms-xss/</loc>
-    
-    <lastmod>2015-11-24T03:27:38.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://xdxd.love/2015/04/03/refer-xss/</loc>
-    
-    <lastmod>2015-11-24T03:27:38.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://xdxd.love/2015/04/17/%E5%A4%B1%E6%95%88%E7%9A%84%E6%92%9E%E5%BA%93%E9%98%B2%E5%BE%A1%E7%AD%96%E7%95%A5%E4%B9%8Bcookie/</loc>
+    <loc>http://xdxd.love/2015/06/05/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E4%B9%8Bwdcp%E5%A4%9A%E5%A4%84%E6%BC%8F%E6%B4%9E/</loc>
     
     <lastmod>2015-11-24T03:27:38.000Z</lastmod>
     
@@ -793,7 +751,7 @@
   </url>
   
   <url>
-    <loc>http://xdxd.love/2015/04/27/xkungfoo2015%E8%AE%B0%E5%BD%95/</loc>
+    <loc>http://xdxd.love/2015/05/14/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E4%B9%8B%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/</loc>
     
     <lastmod>2015-11-24T03:27:38.000Z</lastmod>
     
@@ -807,6 +765,13 @@
   </url>
   
   <url>
+    <loc>http://xdxd.love/2015/11/16/%E7%9E%8E%E6%8A%98%E8%85%BE%E4%B9%8Bsublime%E6%8F%92%E4%BB%B6%E5%AF%BC%E5%85%A5%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93/</loc>
+    
+    <lastmod>2015-11-24T03:27:38.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://xdxd.love/2015/06/18/phpcms%E5%8A%A0%E8%A7%A3%E5%AF%86%E5%8E%86%E5%8F%B2%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/</loc>
     
     <lastmod>2015-11-24T03:27:38.000Z</lastmod>
@@ -814,7 +779,35 @@
   </url>
   
   <url>
-    <loc>http://xdxd.love/2015/03/24/xionghaicms/</loc>
+    <loc>http://xdxd.love/2015/04/17/%E5%A4%B1%E6%95%88%E7%9A%84%E6%92%9E%E5%BA%93%E9%98%B2%E5%BE%A1%E7%AD%96%E7%95%A5%E4%B9%8Bcookie/</loc>
+    
+    <lastmod>2015-11-24T03:27:38.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://xdxd.love/2015/05/13/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E4%B9%8B%E6%96%87%E4%BB%B6%E6%93%8D%E4%BD%9C/</loc>
+    
+    <lastmod>2015-11-24T03:27:38.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://xdxd.love/2014/11/17/strcmp/</loc>
+    
+    <lastmod>2015-11-24T03:27:38.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://xdxd.love/2015/03/30/%E5%AE%89%E5%85%A8%E4%BD%93%E7%B3%BB%E5%BB%BA%E8%AE%BE/</loc>
+    
+    <lastmod>2015-11-24T03:27:38.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://xdxd.love/2015/04/02/yiqicms-xss/</loc>
     
     <lastmod>2015-11-24T03:27:38.000Z</lastmod>
     
@@ -822,6 +815,20 @@
   
   <url>
     <loc>http://xdxd.love/2015/03/31/%E6%98%93%E4%BC%81CMS%E5%AE%89%E8%A3%85%E6%B5%81%E7%A8%8B%E7%BC%BA%E9%99%B7%E5%88%86%E6%9E%90/</loc>
+    
+    <lastmod>2015-11-24T03:27:38.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://xdxd.love/2015/04/24/%E5%85%B3%E4%BA%8E%E5%AF%86%E7%A0%81%E5%93%88%E5%B8%8C%E5%AD%98%E5%82%A8%E6%96%B9%E6%A1%88%E7%9A%84%E8%AE%BE%E8%AE%A1/</loc>
+    
+    <lastmod>2015-11-24T03:27:38.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://xdxd.love/2015/07/07/%E5%AF%86%E7%A0%81%E5%AD%A6%E4%B9%8BReused-Key-Attack/</loc>
     
     <lastmod>2015-11-24T03:27:38.000Z</lastmod>
     
@@ -842,7 +849,7 @@
   </url>
   
   <url>
-    <loc>http://xdxd.love/2015/05/13/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E4%B9%8B%E6%96%87%E4%BB%B6%E6%93%8D%E4%BD%9C/</loc>
+    <loc>http://xdxd.love/2015/05/13/whonix%E9%85%8D%E7%BD%AEwindows%E8%99%9A%E6%8B%9F%E6%9C%BA/</loc>
     
     <lastmod>2015-11-24T03:27:38.000Z</lastmod>
     
@@ -863,28 +870,28 @@
   </url>
   
   <url>
-    <loc>http://xdxd.love/2015/05/13/whonix%E9%85%8D%E7%BD%AEwindows%E8%99%9A%E6%8B%9F%E6%9C%BA/</loc>
+    <loc>http://xdxd.love/2015/05/12/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E5%AE%89%E8%A3%85%E6%B5%81%E7%A8%8Bchecklist/</loc>
     
     <lastmod>2015-11-24T03:27:38.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://xdxd.love/2015/05/27/wdcp%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/</loc>
+    <loc>http://xdxd.love/2015/04/15/%E6%92%9E%E5%BA%93%E6%94%BB%E5%87%BB%E9%98%B2%E5%BE%A1%E6%96%B9%E6%A1%88/</loc>
     
     <lastmod>2015-11-24T03:27:38.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://xdxd.love/2015/05/14/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E4%B9%8B%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/</loc>
+    <loc>http://xdxd.love/2014/10/31/mysqlfeature/</loc>
     
     <lastmod>2015-11-24T03:27:38.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://xdxd.love/2014/11/17/strcmp/</loc>
+    <loc>http://xdxd.love/2015/05/06/%E9%AA%8C%E8%AF%81%E7%A0%81%E5%AE%89%E5%85%A8%E8%AE%BE%E8%AE%A1/</loc>
     
     <lastmod>2015-11-24T03:27:38.000Z</lastmod>
     
