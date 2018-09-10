@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xdxd.love/"/>
-  <updated>2018-09-10T02:39:39.990Z</updated>
+  <updated>2018-09-10T02:48:59.718Z</updated>
   <id>http://xdxd.love/</id>
   
   <author>
@@ -20,11 +20,47 @@
     <link href="http://xdxd.love/2018/09/10/%E5%88%A9%E7%94%A8SSL%E9%97%AE%E9%A2%98%E7%BB%95%E8%BF%87WAF%E6%96%87%E7%AB%A0%E5%88%86%E6%9E%90/"/>
     <id>http://xdxd.love/2018/09/10/利用SSL问题绕过WAF文章分析/</id>
     <published>2018-09-10T02:39:39.000Z</published>
-    <updated>2018-09-10T02:39:39.990Z</updated>
+    <updated>2018-09-10T02:48:59.718Z</updated>
+    
+    <content type="html"><![CDATA[<h4 id="利用SSL密钥支持不对称绕过WAF">利用SSL密钥支持不对称绕过WAF</h4><p>orange大神在讲到前后矛盾导致的安全问题时提到了利用SSL密钥支持情况的前后矛盾导致WAF绕过的文章。</p>
+<blockquote>
+<p>There is also another very cool article Bypassing Web-Application Firewalls by abusing SSL/TLS to illustrate how “inconsistency” be awesome by @0x09AL</p>
+</blockquote>
+<p>文中的大致思路是WAF TLS 支持的算法和WEB server支持的算法不完全一致。所以可以选择一个web server支持，但是WAF不支持的算法。这样子WAF由于不支持这个算法而无法分析TLS流量，导致WAF失效。</p>
+<p>文中给出的架构图如下：</p>
+<p><img src="/images/Screen Shot 2018-09-05 at 11.40.09 AM.png" alt="Alt text"></p>
+<p>WAF支持的算法如下：</p>
+<p><img src="/images/Screen Shot 2018-09-05 at 11.41.08 AM.png" alt="Alt text"></p>
+<p>所以选用一个WAF不支持但是服务器支持的算法，选用TLSv1 256 bits ECDHE-RSA-AES256-SHA。就可以是WAF无法识别导致绕过。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pwn@thinkpad:~$ curl --ciphers ECDHE-RSA-AES256-SHA https://waf-test.lab.local/ssl-cipher-test&#10;&#60;html lang=en&#62;&#10;  &#60;title&#62;HELLO &#60;/title&#62;&#10;  &#60;p&#62;Bypass worked&#60;/p&#62;&#10;pwn@thinkpad:~$</span><br></pre></td></tr></table></figure>
+<h4 id="利用条件和WAF的部署方式">利用条件和WAF的部署方式</h4><p>这个思路初看十分惊奇,而且绕过是彻底完全的绕过。如果在realworld里这种类型的利用会威力比较大。但是仔细一想，想考虑一下具体绕过的原理就会觉得好像有些问题。文章图中，WAF作为中间人的位置，看起来会理解成反向代理的部署模式。如果WAF不支持这个算法，那么在TLS协商算法的时候应该会失败才对，怎么实现正常的通信呢。</p>
+<p><a href="https://www.reddit.com/r/netsec/comments/8vq2dx/bypassing_webapplication_firewalls_by_abusing/" target="_blank" rel="external">reddit</a>下面的评论指出了文章中有些不清楚的地方。</p>
+<p><img src="/images/Screen Shot 2018-09-10 at 10.20.38 AM.png" alt="Alt text"></p>
+<p>这里提到的bypass是指WAF在旁路部署的时候，由于TLS的原理，WAF只能解密部分算法的加密数据。所以WAF旁路部署并不是好的实践，考虑到文中作者提到是在测试这个WAF，所以可能是测试阶段才选择了旁路部署。</p>
+<p>原文中没有明确说明WAF的部署方式，是一个小缺陷。考虑到部署方式的这个利用条件，这个bypass的方式在真实世界的利用效果就会大打折扣了。</p>
+<h4 id="TLS流量的解密">TLS流量的解密</h4><p>要理解为什么旁路部署的WAF不直接解密某些算法，需要详细分析TLS协议和部分算法的原理。具体可以参考后文的资料。</p>
+<p>简单点介绍就是当TLS选用了RSA算法的时候，由于密钥是用服务器公钥加密传输的，所有只要有了服务器的私钥，就可以获得对称加密的密钥从而可以解密流量。这个可以在0x09AL的文中看到WAF支持的算法都是用RSA交换密钥。WAF即使配置了私钥，也只能解密这些算法的流量。</p>
+<p><img src="/images/Screen Shot 2018-09-10 at 10.30.02 AM.png" alt="Alt text"></p>
+<p>而后来0x09AL用来绕过的算法是ECDHE-RSA-AES256-SHA。ECDH算法用来交换密钥的话，仅仅旁路是无法获得真正的加密密钥的，所以也就无法解密流量。而在TLS1.2中，都已经是优先选择ECDH算法。所以旁路部署的WAF其实是不适合https的场景的。</p>
+<h4 id="思考">思考</h4><h4 id="参考资料">参考资料</h4><h5 id="图解密码学技术_读书笔记">图解密码学技术 读书笔记</h5><p>SSL/TLS的目标</p>
+<p>保证数据传输过程的保密性，传输过程的完成性，以及不可否认性。</p>
+<p>要确保机密性，可以使用对称密码。由于对称密钥不能被攻击者预测，因此我们使用伪随机数生成器来生成密钥。若要将对称密码的密钥发送给通信对象，可以使用公钥密码或者Diffie-Hellman密钥交换。</p>
+<p>要识别篡改，对数据进行认证，可以使用消息认证码。消息认证码是使用单向散列函数来实现的。</p>
+<p>要对通信对象进行认证，可以使用对公钥加上数字签名所生成的证书。</p>
+<p>下面只需要用一个框架把上面这些工具组合起来就可以了。SSL/TLS其实就扮演了这样一种框架的角色。</p>
+<p>TLS握手协议包括：握手协议、密码规格变更协议、警告协议和应用数据协议。</p>
+<p><a href="http://www.freebuf.com/articles/network/116497.html" target="_blank" rel="external">传输层安全协议抓包分析之SSL/TLS</a><br><a href="http://www.freebuf.com/articles/web/135545.html" target="_blank" rel="external">TLS1.3</a><br><a href="https://www.anquanke.com/post/id/150718" target="_blank" rel="external">如何通过滥用SSL/TLS绕过Web应用防火墙(WAF)</a><br><a href="https://www.reddit.com/r/netsec/comments/8vq2dx/bypassing_webapplication_firewalls_by_abusing/" target="_blank" rel="external">Bypassing Web-Application Firewalls by abusing SSL/TLS</a></p>
+]]></content>
     
     <summary type="html">
     
+      &lt;h4 id=&quot;利用SSL密钥支持不对称绕过WAF&quot;&gt;利用SSL密钥支持不对称绕过WAF&lt;/h4&gt;&lt;p&gt;orange大神在讲到前后矛盾导致的安全问题时提到了利用SSL密钥支持情况的前后矛盾导致WAF绕过的文章。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;There is also 
+    
     </summary>
+    
+      <category term="加密解密" scheme="http://xdxd.love/categories/%E5%8A%A0%E5%AF%86%E8%A7%A3%E5%AF%86/"/>
     
     
   </entry>
